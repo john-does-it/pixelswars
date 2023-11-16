@@ -1,0 +1,56 @@
+.grid-container {
+  max-width: 100%;
+  display: grid;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  box-shadow: #1e1e1e73 20px 12px 20px 20px;
+  z-index: 1;
+  margin-top: 2em;
+  margin-bottom: 2em;
+
+  // 64 cells board game (square)
+  &.-board1 {
+    grid-template-columns: repeat(8, 0fr);
+    grid-template-rows: repeat(8, 0fr);
+  }
+
+  // 96 cells board game (rectangle)
+  &.-board2 {
+    grid-template-columns: repeat(12, 0fr);
+    grid-template-rows: repeat(8, 0fr);
+  }
+  
+  .cell-container {    
+    position: relative;
+
+    .stats-container.-cell {
+      display: none;
+    }
+    
+    .stats-container.-unit {
+      .substats-container {
+        display: none;
+      }
+    }
+    
+    
+    &:hover {
+      .stats-container.-cell {
+        display: flex;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+      }
+      
+      .stats-container.-unit {
+        .substats-container {
+          position: absolute;
+          width: fit-content;
+          display: flex;
+          z-index: 999;
+          transform: translate(-55px, 0);        
+        }
+      }
+    }
+  }
+}

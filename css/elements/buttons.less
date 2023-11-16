@@ -1,0 +1,35 @@
+.option, 
+.endround:not(:disabled), option {
+	cursor: pointer;
+}
+
+.option {
+	width: 40px;
+	height: 40px;
+	appearance: none;
+	border: 0;
+	border-radius: 100%;
+	padding-top: 4px;
+
+	+ .option {
+		margin-left: .5em;
+	}
+}
+
+.endround {
+	max-width: @xxs;
+  height: 60px;
+	appearance: none;
+	padding: 1em 2em;
+	border: 3px solid hsl(0, 3%, 27%);
+	font-weight: bold;
+	letter-spacing: 1.25em;	
+
+	&:disabled {
+		opacity: 0.5;
+	}
+
+	&:hover:not(:disabled) {
+		border-color: @white;
+	}
+}

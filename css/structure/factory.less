@@ -1,0 +1,24 @@
+.factory-container {
+  width: 100%;
+  max-width: @s;
+  display: none;
+  gap: 1em;
+  position: fixed;
+  top: 2em;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: hsl(0, 3%, 27%);
+  z-index: 999;
+  padding: 2em;
+  
+  .factoryunit-container {
+    .nameandprice-container {
+      width: 75%;
+    }
+    
+    button {
+      max-width: 120px;
+    }
+  }
+}

@@ -1,0 +1,46 @@
+.unit-container {
+  width: inherit;
+  height: inherit;
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 999;
+  
+  &.-highlighted {
+    width: 135px;
+    height: 135px;
+    // border: 3px dotted darkgrey;
+    
+    &.-outofresidualmovecapacity {
+      border: 0;
+      opacity: 0.75;
+    }
+  }
+  
+  &.-infantry {
+    &.-one {
+      background-image: url('../assets/units/cat-1.png');
+      
+      &.-artillery {
+        background-image: url('../assets/units/cat-1-artillery.png');
+      }
+    }
+    
+    &.-two {
+      background-image: url('../assets/units/cat-2.png');
+      
+      &.-artillery {
+        background-image: url('../assets/units/cat-2-artillery.png');
+      }
+    }
+  }
+  
+  &.-jeep {
+    &.-one {
+      background-image: url('../assets/units/cat-1-jeep.png');
+    }
+    &.-two {
+      background-image: url('../assets/units/cat-2-jeep.png');
+    }
+  }
+}

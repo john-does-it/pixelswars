@@ -1,0 +1,68 @@
+@keyframes fadeIn {
+  from {
+    opacity: .1;
+  }
+  
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+  }
+  to {
+    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+  }
+}
+
+@keyframes waterAnimation {
+  0% {
+    background-size: 100%;
+  }
+  50% {
+    background-size: 102.5%;
+  }
+  100% {
+    background-size: 100%;
+  }
+}
+
+@keyframes waterAnimationBefore {
+  0% {
+    background-position-y: 10%;
+    background-position-x: 10%;
+    opacity: .1;
+  }
+  50% {
+    background-position-y: 20%;
+    background-position-x: 50%;
+    opacity: .5;
+  }
+  100% {
+    background-position-y: 10%;
+    background-position-x: 10%;
+    opacity: .1;
+  }
+}
+
+@keyframes addMoneyToBalance
+{
+  0% {
+    opacity: .1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-25px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+}
+
+.glow {
+  animation: glow 1s ease-in-out 3 alternate;
+}

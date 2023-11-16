@@ -1,0 +1,268 @@
+.cell-container {
+  height: 125px;
+  width: 125px;
+  background-size: cover;
+
+  &.-building.-city.-active::after {
+    content: '+ 200$';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    color: @green;
+    font-weight: bold;
+    animation: addMoneyToBalance 5s forwards;
+  }
+
+  &.-building.-ongrass.-roadbottom {
+    background-image: url('../assets/cells/cell-building-on-grass-road-bottom.png');
+    
+    &.-halfcaptured {
+      background-image: url('../assets/cells/cell-building-on-grass-road-bottom-half-captured.png');
+
+      &.-capturedby1 {
+        background-image: url('../assets/cells/cell-building-on-grass-road-bottom-half-captured-captured-by-1.png');
+      }
+
+      &.-capturedby2 {
+        background-image: url('../assets/cells/cell-building-on-grass-road-bottom-half-captured-captured-by-2.png');
+      }
+    }
+
+    &.-capturedby1 {
+      background-image: url('../assets/cells/cell-building-on-grass-road-bottom-captured-by-1.png');
+    }
+
+    &.-capturedby2 {
+      background-image: url('../assets/cells/cell-building-on-grass-road-bottom-captured-by-2.png');
+    }
+  }
+  
+  &.-building.-factory.-ongrass {
+    background-image: url('../assets/cells/cell-building-factory-on-grass.png');
+
+    &.-halfcaptured {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-half-captured.png');
+      
+      &.-capturedby1 {
+        background-image: url('../assets/cells/cell-building-factory-on-grass-half-captured-captured-by-1.png');
+      }
+  
+      &.-capturedby2 {
+        background-image: url('../assets/cells/cell-building-factory-on-grass-half-captured-captured-by-2.png');
+      }
+    }
+
+    &.-capturedby1 {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-captured-by-1.png');
+    }
+
+    &.-capturedby2 {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-captured-by-2.png');
+    }
+  }
+
+  &.-building.-factory.-ongrass.-roadbottom {
+    background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom.png');
+
+    &.-halfcaptured {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom-half-captured.png');
+      
+      &.-capturedby1 {
+        background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom-half-captured-captured-by-1.png');
+      }
+  
+      &.-capturedby2 {
+        background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom-half-captured-captured-by-2.png');
+      }
+    }
+
+    &.-capturedby1 {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom-captured-by-1.png');
+    }
+
+    &.-capturedby2 {
+      background-image: url('../assets/cells/cell-building-factory-on-grass-road-bottom-captured-by-2.png');
+    }
+  }
+
+  &.-building.-ongrass.-hospital.-roadbottom {
+    background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom.png');
+    
+    &.-halfcaptured {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured.png');
+
+      &.-capturedby1 {
+        background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured-captured-by-1.png');
+      }
+
+      &.-capturedby2 {
+        background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured-captured-by-2.png');
+      }
+    }
+
+    &.-capturedby1 {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom-captured-by-1.png');
+    }
+
+    &.-capturedby2 {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-bottom-captured-by-2.png');
+    }
+  }
+
+  
+  &.-building.-ongrass.-hospital.-roadright {
+    background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right.png');
+    
+    &.-halfcaptured {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right-half-captured.png');
+
+      &.-capturedby1 {
+        background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right-half-captured-captured-by-1.png');
+      }
+
+      &.-capturedby2 {
+        background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right-half-captured-captured-by-2.png');
+      }
+    }
+
+    &.-capturedby1 {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right-captured-by-1.png');
+    }
+
+    &.-capturedby2 {
+      background-image: url('../assets/cells/cell-building-hospital-on-grass-road-right-captured-by-2.png');
+    }
+  }
+
+  &.-crater.-onroad.-ongrass {
+    background-image: url('../assets/cells/cell-crater-on-road-on-grass.png');
+  }
+
+  &.-grass {
+    background-image: url('../assets/cells/cell-grass.png');
+  }
+  
+  &.-moutain {
+    &.-ongrass {
+      background-image: url('../assets/cells/cell-moutain-on-grass.png');
+    }
+    &.-ongrass.-variant {
+      background-image: url('../assets/cells/cell-moutain-on-grass-variant.png');
+    }
+  }
+  
+  &.-ruins {
+    &.-ongrass {
+      background-image: url('../assets/cells/cell-ruins-on-grass.png');
+    }
+  }
+  
+  &.-bush {
+    &.-ongrass {
+      background-image: url('../assets/cells/cell-bush-on-grass.png');
+      
+      &.-variant {
+        background-image: url('../assets/cells/cell-bush-on-grass-variant.png');
+      }
+    }
+  }
+  
+  &.-road {
+    &.-v {
+      background-image: url('../assets/cells/cell-road-v.png');
+    }
+    &.-h {
+      background-image: url('../assets/cells/cell-road-h.png');
+    }
+    &.-angle.-bottom.-left {
+      background-image: url('../assets/cells/cell-road-angle-bottom-left.png');
+    }
+    &.-angle.-bottom.-left.-tobuilding {
+      background-image: url('../assets/cells/cell-road-angle-bottom-left-to-building.png');
+    }
+    &.-anglejunction {
+      background-image: url('../assets/cells/cell-road-angle-junction.png');
+    }
+    &.-tobuildingtop {
+      background-image: url('../assets/cells/cell-road-to-building-top.png');
+    }
+  }
+  
+  &.-sand {
+    &.-ongrass.-top {
+      background-image: url('../assets/cells/cell-sand-on-grass-top.png');
+    }
+    &.-ongrass.-bottom {
+      background-image: url('../assets/cells/cell-sand-on-grass-bottom.png');
+    }
+    &.-ongrass.-right {
+      background-image: url('../assets/cells/cell-sand-on-grass-right.png');
+    }
+    &.-ongrass.-corner.-top.-right {
+      background-image: url('../assets/cells/cell-sand-on-grass-corner-top-right.png');
+    }
+  }
+
+  &.-water {
+    background-image: url('../assets/cells/cell-water.png');
+    opacity: 1;
+    animation: waterAnimation 5s linear infinite;
+
+    &::before {
+      content: '';
+      display: block;
+      width: inherit;
+      height: inherit;
+      background-image: url('../assets/cells/cell-water-no-dash-stroke.png');
+      animation: waterAnimationBefore 10s linear infinite;
+    }
+  }
+  
+  &.-inrange {
+    &::before {
+      position: absolute;
+      display: flex;
+      content: '';
+      width: 125px;
+      height: 125px;
+      background-color: @transparentblack;
+      z-index: 0;
+    }
+    
+    .unit-container {
+      position: relative;
+      z-index: 1;
+
+      &.-inrange::before {
+        position: absolute;
+        display: flex;
+        content: '';
+        width: 50px;
+        height: 50px;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        background-image: url(../assets/icons/icon-crosshair.png);
+        background-size: contain;
+        z-index: 20;
+      }
+    }
+  }
+  
+  &.-reachable {
+    &::before {
+      position: absolute;
+      display: flex;
+      content: '';
+      width: 125px;
+      height: 125px;
+      background-color: @transparentblue;
+      z-index: 0;
+    }
+  }
+}

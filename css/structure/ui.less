@@ -1,0 +1,26 @@
+.ui-wrapper {
+  width: 100%;
+  min-height: 60px;
+  
+  > * { 
+    margin-bottom: 1em;
+  }
+}
+
+.expandable-container {
+  min-height: auto;
+  height: fit-content;
+
+  *:not(h2) {
+    display: none;
+  }
+  
+  &:hover * {
+    display: flex;
+  }
+}
+
+.options-container {
+  margin-bottom: 1em;
+}
+
