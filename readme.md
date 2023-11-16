@@ -1,6 +1,6 @@
 # Cat Wars
 
-Version: 23.10.05.140814
+Version: 23.11.16.153459
 
 Current state of the game: prototype including most of the core mechanics of the game but still missing some key features and a better UI.
 
@@ -15,10 +15,6 @@ Cat Wars is a free turn by turn game playable on any pc directly in the browser 
 Players control various military units, such as infantry, tanks, aircraft, and artillery, each with distinct strengths and weaknesses. The game takes place on grid-based maps, where players strategically move their units across the terrain to engage enemy forces and capture key objectives.
 
 Cat Wars mechanics encourage strategic thinking, adaptability, and long-term planning. Players must consider unit positioning, terrain effects, in game economy and the overall battlefield situation to outwit their opponents and achieve victory.
-
-![Alt text](screenshot-04092023125810.png)
-![Alt text](screenshot-10052023165807.png)
-
 
 ## Key game mechanics
 
@@ -38,7 +34,7 @@ See: https://github.com/users/jonathanschoonbroodt/projects/2/views/1
 
 ## MVP Scope 
 
-1 playable map, with core mechanic for deplacement, fight, capture and building units, few units and landscapes availables and the capacity to capture building and create some units inside factories.
+2 playable maps, with core mechanic for deplacement, fight, capture and building units, few units and landscapes availables and the capacity to capture building and create some units inside factories.
 
 ## How does it work?
 
