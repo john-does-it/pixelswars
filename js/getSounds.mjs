@@ -43,12 +43,12 @@ export function getSoundDelay (unit) {
 
 playSoundButton.addEventListener('click', function () {
   if (sounds.cinematicMetal.paused) {
-    const playSymbol = '&#x23f8;'
+    const playSymbol = '🔈'
     playSoundButton.innerHTML = `${playSymbol}`
     sounds.cinematicMetal.volume = 0.125
     sounds.cinematicMetal.play()
   } else {
-    const pauseSymbol = '&#x23f5;'
+    const pauseSymbol = '🔇'
     playSoundButton.innerHTML = `${pauseSymbol}`
     sounds.cinematicMetal.pause()
   }
