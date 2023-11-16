@@ -711,9 +711,19 @@ option {
   -webkit-transform: translate(-55px, 0);
           transform: translate(-55px, 0);
 }
+.index-container .boardpreview-container {
+  gap: 2em;
+  margin-top: 2em;
+}
 .index-container .logo {
-  max-width: 960px;
   width: 100%;
+  max-width: 960px;
+}
+.index-container a:hover {
+  scale: 1.025;
+}
+.index-container .boardpreview {
+  max-height: 320px;
 }
 .moneyandplayer-container {
   width: 100%;
