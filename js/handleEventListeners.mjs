@@ -26,10 +26,13 @@ export function removeEventListenerToUnits () {
 }
 
 export function addEventListenerToEnemyUnitsInRange (enemyUnitsInRange) {
-  enemyUnitsInRange.forEach(enemyUnit => {
-    enemyUnit.addEventListener('click', handleFight)
-    enemyUnit.classList.add('-inrange')
-  })
+  console.log(globalVariables.selectedUnit.dataset.residual_attack_capacity)
+  if (Number(globalVariables.selectedUnit.dataset.residual_attack_capacity) !== 0) {
+    enemyUnitsInRange.forEach(enemyUnit => {
+      enemyUnit.addEventListener('click', handleFight)
+      enemyUnit.classList.add('-inrange')
+    })
+  }
 }
 
 export function removeIsInRangeFromUnits () {

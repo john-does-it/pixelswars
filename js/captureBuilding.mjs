@@ -2,7 +2,7 @@ import globalVariables from './globalVariables.mjs'
 import { sounds } from './getSounds.mjs'
 import { getBuildingData, getUnitData, getLandscapeData } from './getDatas.mjs'
 import { preventCancelMove } from './handleNavigation.mjs'
-import { logToConsoleContainer } from './uiFeedback.mjs'
+import { logToConsoleContainer, logToUIFeedbackContainer } from './uiFeedback.mjs'
 
 export function captureBuilding () {
   globalVariables.buildingDatas = getBuildingData(globalVariables.selectedUnit)
@@ -21,6 +21,8 @@ export function captureBuilding () {
     }
 
     logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
+
+    logToUIFeedbackContainer('<span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
 
     document.addEventListener('keypress', startCapture)
 

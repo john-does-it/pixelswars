@@ -768,6 +768,18 @@ option {
 .expandable-container:hover * {
   display: flex;
 }
+.uifeedback-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  border-radius: 8px;
+}
+.uifeedback-container p {
+  position: relative;
+  padding: 0 1em;
+  -webkit-animation: UIFeedbackContainer 5s forwards ease-in;
+          animation: UIFeedbackContainer 5s forwards ease-in;
+}
 .options-container {
   margin-bottom: 1em;
 }
@@ -785,6 +797,24 @@ option {
   }
   to {
     opacity: 1;
+  }
+}
+@-webkit-keyframes UIFeedbackContainer {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.01;
+    display: none;
+  }
+}
+@keyframes UIFeedbackContainer {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.01;
+    display: none;
   }
 }
 @-webkit-keyframes glow {

@@ -1,6 +1,6 @@
 import globalVariables from './globalVariables.mjs'
 import { addEventListenerToUnits, removeEventListenerToUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
-import { logToConsoleContainer, highlightSelectedUnit, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightsOnUnits, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
+import { logToConsoleContainer, logToUIFeedbackContainer, highlightSelectedUnit, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightsOnUnits, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
 import { getUnitData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { arrowNav } from './handleNavigation.mjs'
 import { endRoundButton } from './getButtons.mjs'
@@ -12,6 +12,8 @@ export function selectUnit (event) {
   const clickedCell = event.target
 
   if (isUnitIsSelectable(clickedCell)) {
+    logToUIFeedbackContainer('<span class="_color -green">Use the <span class="_text -bold">Arrows</span> to move</span> the unit. Then <span class="_color -green">Press <span class="_text -bold">Enter</span> to validate</span> the move or <span class="_color -green">Press <span class="_text -bold">Escape</span> to cancel.')
+
     endRoundButton.setAttribute('disabled', 'disabled')
 
     globalVariables.unitSelected = true

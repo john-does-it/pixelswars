@@ -1,6 +1,6 @@
 import globalVariables from './globalVariables.mjs'
 import { cells } from './unitsAndCells.mjs'
-import { logToConsoleContainer } from './uiFeedback.mjs'
+import { logToConsoleContainer, logToUIFeedbackContainer } from './uiFeedback.mjs'
 import { removeIsInRangeFromUnits, addEventListenerToEnemyUnitsInRange } from './handleEventListeners.mjs'
 import { getUnitData, getLandscapeData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { preventCancelMove } from './handleNavigation.mjs'
@@ -209,8 +209,9 @@ export function getEnemyUnitsInRange (adjacentCells) {
     .flatMap(cellContainer => Array.from(cellContainer.querySelectorAll('.unit-container')))
     .filter(unitContainer => Number(unitContainer.dataset.player) !== globalVariables.currentPlayer)
 
-  if (enemyUnitsInRange.length !== 0) {
+  if (enemyUnitsInRange.length !== 0 && globalVariables.selectedUnitResidualAttackCapacity !== 0) {
     addEventListenerToEnemyUnitsInRange(enemyUnitsInRange)
+    logToUIFeedbackContainer(`${enemyUnitsInRange.length} enemy units in range. <span class="_color -green">Click on an enemy unit</span> to start a fight.`)
     logToConsoleContainer(`${enemyUnitsInRange.length} enemy units in range. <span class="_color -green">Click on an enemy unit</span> to start a fight.`)
   }
 }

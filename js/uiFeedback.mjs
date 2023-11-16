@@ -12,6 +12,7 @@ export const currentMoneyPlayerOneUIContainer = document.getElementById('current
 export const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
 export const currentRoundUIContainer = document.getElementById('current-round')
 export const consoleContainer = document.getElementById('console-container')
+export const UIFeedbackContainer = document.getElementById('uifeedback-container')
 
 const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
 
@@ -20,6 +21,13 @@ export function logToConsoleContainer (message) {
   newMessage.innerHTML = message
   consoleContainer.appendChild(newMessage)
   consoleContainer.scrollTop = consoleContainer.scrollHeight
+}
+
+export function logToUIFeedbackContainer (message) {
+  const newMessage = document.createElement('p')
+  newMessage.innerHTML = message
+  UIFeedbackContainer.appendChild(newMessage)
+  UIFeedbackContainer.classList.add('_color', '-white', '-bglightblack')
 }
 
 export function updateMoneyUI () {
