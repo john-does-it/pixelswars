@@ -19,7 +19,7 @@ export function endRound () {
   updateMoneyUI()
   updateCurrentPlayerUI()
   sounds.nextRound.load()
-  sounds.nextRound.volume = 0.25
+  sounds.nextRound.volume = 0.125
   sounds.nextRound.play()
 }
 
