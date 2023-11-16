@@ -25,32 +25,28 @@ function isMoveIsValid (selectedUnitResidualMovementRange, costOfMovement, cellI
         if ((cellIndex + 1) % numberOfCols !== 0) {
           return true
         } else {
-          const errorMessage = 'Can\'t move to the right. Movement unauthorized. Out of grid.'
-          logToConsoleContainer(errorMessage)
+          logToConsoleContainer('<span class="_color -red">Can\'t move to the right. Movement unauthorized. Out of grid.</span>')
           return false
         }
       case 'ArrowLeft':
         if (cellIndex % numberOfCols !== 0) {
           return true
         } else {
-          const errorMessage = 'Can\'t move to the left. Movement unauthorized. Out of grid.'
-          logToConsoleContainer(errorMessage)
+          logToConsoleContainer('<span class="_color -red">Can\'t move to the left. Movement unauthorized. Out of grid.</span>')
           return false
         }
       case 'ArrowUp':
         if (cellIndex - numberOfCols >= 0) {
           return true
         } else {
-          const errorMessage = 'Can\'t move to the top. Movement unauthorized. Out of grid.'
-          logToConsoleContainer(errorMessage)
+          logToConsoleContainer('<span class="_color -red">Can\'t move to the top. Movement unauthorized. Out of grid.</span>')
           return false
         }
       case 'ArrowDown':
         if (cellIndex + numberOfCols <= numberOfCols * numberOfRows) {
           return true
         } else {
-          const errorMessage = 'Can\'t move to the bottom. Movement unauthorized. Out of grid.'
-          logToConsoleContainer(errorMessage)
+          logToConsoleContainer('<span class="_color -red">Can\'t move to the bottom. Movement unauthorized. Out of grid.</span>')
           return false
         }
     }
@@ -76,7 +72,7 @@ function isNextCellContainsUnit () {
   const isCellContainUnitContainer = landscapeDataForNextCell.querySelector('.unit-container') !== null
 
   if (isCellContainUnitContainer) {
-    logToConsoleContainer('Can\'t move to that cell. The cell already contain one unit.')
+    logToConsoleContainer('<span class="_color -red">Can\'t move to that cell. The cell already contain one unit.</span>')
     return true
   } else {
     return false
@@ -88,7 +84,7 @@ function hasEnoughMovementCapacity () {
   globalVariables.costOfMovement = Number(landscapeDataForNextCell.dataset.cost_of_movement)
 
   if (globalVariables.selectedUnitResidualMovementRange < globalVariables.costOfMovement) {
-    logToConsoleContainer('Can\'t move to that cell. Cost of movement is superior to the unit residual movement capacity.')
+    logToConsoleContainer('<span class="_color -red">Can\'t move to that cell. Cost of movement is superior to the unit residual movement capacity.</span>')
     return false
   } else {
     return true

@@ -26,8 +26,6 @@ export async function handleFight (event) {
     const attackerLandscapeDefenseBonus = Number(getLandscapeData(globalVariables.selectedUnit).landscapeDefenseBonus)
     const attackerCellIndex = getLandscapeIndexOfUnit(globalVariables.selectedUnit)
 
-    console.log('attacker cell index is' + attackerCellIndex)
-
     const defenderUnit = event.currentTarget
     const defenderData = getUnitData(defenderUnit)
     const defenderCellIndex = getLandscapeIndexOfUnit(defenderUnit)

@@ -7,7 +7,19 @@ import { logToConsoleContainer } from './uiFeedback.mjs'
 export function captureBuilding () {
   globalVariables.buildingDatas = getBuildingData(globalVariables.selectedUnit)
 
-  if (getUnitData(globalVariables.selectedUnit).unitName.includes('infantry') && getLandscapeData(globalVariables.selectedUnit).landscapeType === 'building' && Number(globalVariables.buildingDatas.buildingPlayerAppartenance) !== getUnitData(globalVariables.selectedUnit).unitPlayer) {
+  if (getUnitData(globalVariables.selectedUnit).unitName.includes('infantry') && getLandscapeData(globalVariables.selectedUnit).landscapeType === 'building') {
+    if (globalVariables.selectedUnit.dataset.capture_capacity === 0) {
+      logToConsoleContainer('Unit hasn\'t the capture capacity.required')
+
+      return
+    }
+
+    if (Number(globalVariables.buildingDatas.buildingCapturePoint) === 20 && Number(globalVariables.buildingDatas.buildingPlayerAppartenance) === getUnitData(globalVariables.selectedUnit).unitPlayer) {
+      logToConsoleContainer('You already own this building.')
+
+      return
+    }
+
     logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
 
     document.addEventListener('keypress', startCapture)
@@ -18,8 +30,7 @@ export function captureBuilding () {
         preventCancelMove(globalVariables.selectedUnit)
         const updatedCapturePoints = Number(globalVariables.buildingDatas.buildingCapturePoint) - 10
         globalVariables.buildingDatas.building.setAttribute('data-capture_points', updatedCapturePoints)
-        if (updatedCapturePoints <= 10) {
-          sounds.jumpCapture.volume = 1
+        if (updatedCapturePoints === 10) {
           sounds.jumpCapture.play()
           globalVariables.buildingDatas.building.classList.add('-halfcaptured')
         }
@@ -28,7 +39,8 @@ export function captureBuilding () {
           sounds.trumpetFanfare.play()
           globalVariables.buildingDatas.building.classList.remove('-capturedby1', '-capturedby2', '-halfcaptured')
           globalVariables.buildingDatas.building.classList.add('-capturedby' + globalVariables.currentPlayer)
-          globalVariables.buildingDatas.building.setAttribute('data-player', globalVariables.currentPlayer, 'data-capture_points', 20)
+          globalVariables.buildingDatas.building.setAttribute('data-player', globalVariables.currentPlayer)
+          globalVariables.buildingDatas.building.setAttribute('data-capture_points', 20)
         }
         globalVariables.selectedUnit.setAttribute('data-capture_capacity', 0)
       }
