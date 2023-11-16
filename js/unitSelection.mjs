@@ -12,7 +12,7 @@ export function selectUnit (event) {
   const clickedCell = event.target
 
   if (isUnitIsSelectable(clickedCell)) {
-    logToUIFeedbackContainer('<span class="_color -green">Use the <span class="_text -bold">Arrows</span> to move</span> the unit. Then <span class="_color -green">Press <span class="_text -bold">Enter</span> to validate</span> the move or <span class="_color -green">Press <span class="_text -bold">Escape</span> to cancel.')
+    logToUIFeedbackContainer('<span class="_color -green">Use the <span class="_text -bold">Arrows</span> to move</span> the unit. Then <span class="_color -green">Press <span class="_text -bold">Enter</span> to validate</span> the move or <span class="_color -green">press <span class="_text -bold">Escape</span> to cancel.')
 
     endRoundButton.setAttribute('disabled', 'disabled')
 

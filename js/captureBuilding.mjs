@@ -20,7 +20,7 @@ export function captureBuilding () {
       return
     }
 
-    logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
+    logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
 
     logToUIFeedbackContainer('<span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
 

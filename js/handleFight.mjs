@@ -96,11 +96,12 @@ function fightResult (unit, residualHealth) {
 
 function createExplosion (cell) {
   const imgElement = document.createElement('img')
+  sounds.bomb.volume = 0.5
+  sounds.bomb.play()
   imgElement.src = 'assets/gifs/explosion.gif'
   imgElement.classList.add('explosion')
   cell.appendChild(imgElement)
-  sounds.bomb.volume = 0.5
-  sounds.bomb.play()
+
   setInterval(() => {
     imgElement.remove()
   }, 500)
