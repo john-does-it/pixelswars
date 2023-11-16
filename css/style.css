@@ -711,27 +711,9 @@ option {
   -webkit-transform: translate(-55px, 0);
           transform: translate(-55px, 0);
 }
-.ui-wrapper {
+.index-container .logo {
+  max-width: 960px;
   width: 100%;
-  min-height: 60px;
-}
-.ui-wrapper > * {
-  margin-bottom: 1em;
-}
-.expandable-container {
-  min-height: auto;
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
-  height: fit-content;
-}
-.expandable-container *:not(h2) {
-  display: none;
-}
-.expandable-container:hover * {
-  display: flex;
-}
-.options-container {
-  margin-bottom: 1em;
 }
 .moneyandplayer-container {
   width: 100%;
@@ -756,6 +738,28 @@ option {
 }
 .moneyandplayer-container .player-container img.active {
   display: flex;
+}
+.ui-wrapper {
+  width: 100%;
+  min-height: 60px;
+}
+.ui-wrapper > * {
+  margin-bottom: 1em;
+}
+.expandable-container {
+  min-height: auto;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.expandable-container *:not(h2) {
+  display: none;
+}
+.expandable-container:hover * {
+  display: flex;
+}
+.options-container {
+  margin-bottom: 1em;
 }
 @-webkit-keyframes fadeIn {
   from {
