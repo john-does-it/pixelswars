@@ -14,7 +14,6 @@ export function getUnitData (unit) {
     const unitAttackCapacity = Number(unit.dataset.attack_capacity)
     const unitResidualAttackCapacity = Number(unit.dataset.residual_attack_capacity)
     const unitPlayer = Number(unit.dataset.player)
-
     const unitDatas = { unitName, unitMovementRange, unitDefense, unitHealth, unitAttackDamage, unitAttackRange, unitExclusionAttackRange, unitResidualMovementCapacity, unitAttackCapacity, unitResidualAttackCapacity, unitPlayer }
     return unitDatas
   }

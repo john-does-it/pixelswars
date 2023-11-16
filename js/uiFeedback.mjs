@@ -154,7 +154,7 @@ export function resetResidualCaptureCapacityOnUnits () {
   })
 }
 
-export function toggleActiveBuilding (building) {
+export function highlightMoneyMakeFromCity (building) {
   building.classList.add('-active')
   setTimeout(() => {
     building.classList.remove('-active')

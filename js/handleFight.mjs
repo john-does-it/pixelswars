@@ -211,8 +211,6 @@ export function getEnemyUnitsInRange (adjacentCells) {
     .flatMap(cellContainer => Array.from(cellContainer.querySelectorAll('.unit-container')))
     .filter(unitContainer => Number(unitContainer.dataset.player) !== globalVariables.currentPlayer)
 
-  console.log(enemyUnitsInRange)
-
   if (enemyUnitsInRange.length !== 0) {
     addEventListenerToEnemyUnitsInRange(enemyUnitsInRange)
     logToConsoleContainer(`${enemyUnitsInRange.length} enemy units in range. <span class="_color -green">Click on an enemy unit</span> to start a fight.`)

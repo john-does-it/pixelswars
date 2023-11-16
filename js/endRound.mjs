@@ -2,7 +2,7 @@ import globalVariables from './globalVariables.mjs'
 import { buildings } from './unitsAndCells.mjs'
 import { unselectFactory } from './factories.mjs'
 import { unselectUnit } from './unitSelection.mjs'
-import { resetResidualMoveCapacityOnUnits, resetResidualAttackCapacityOnUnits, resetResidualCaptureCapacityOnUnits, updateMoneyUI, updateCurrentPlayerUI, toggleActiveBuilding } from './uiFeedback.mjs'
+import { resetResidualMoveCapacityOnUnits, resetResidualAttackCapacityOnUnits, resetResidualCaptureCapacityOnUnits, updateMoneyUI, updateCurrentPlayerUI, highlightMoneyMakeFromCity } from './uiFeedback.mjs'
 import { healthUnitOnHospital } from './healthUnitsOnHospitals.mjs'
 import { sounds } from './getSounds.mjs'
 
@@ -40,11 +40,11 @@ function distributeMoney () {
       if (building.dataset.player === '1' && globalVariables.currentPlayer === 2) {
         globalVariables.playerOneMoney = globalVariables.playerOneMoney + 200
         sounds.cashMachine.play()
-        toggleActiveBuilding(building)
+        highlightMoneyMakeFromCity(building)
       } else if (building.dataset.player === '2' && globalVariables.currentPlayer === 1) {
         globalVariables.playerTwoMoney = globalVariables.playerTwoMoney + 200
         sounds.cashMachine.play()
-        toggleActiveBuilding(building)
+        highlightMoneyMakeFromCity(building)
       }
     }
   })
