@@ -10,13 +10,11 @@ export function captureBuilding () {
   if (getUnitData(globalVariables.selectedUnit).unitName.includes('infantry') && getLandscapeData(globalVariables.selectedUnit).landscapeType === 'building') {
     if (globalVariables.selectedUnit.dataset.capture_capacity === 0) {
       logToConsoleContainer('Unit hasn\'t the capture capacity.required')
-
       return
     }
 
     if (Number(globalVariables.buildingDatas.buildingCapturePoint) === 20 && Number(globalVariables.buildingDatas.buildingPlayerAppartenance) === getUnitData(globalVariables.selectedUnit).unitPlayer) {
       logToConsoleContainer('You already own this building.')
-
       return
     }
 

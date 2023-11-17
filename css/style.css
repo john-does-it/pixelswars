@@ -616,7 +616,6 @@ option {
 .console-container {
   width: 100%;
   height: 100%;
-  height: 60px;
   overflow: auto;
   position: relative;
   padding: 2em;
@@ -771,14 +770,15 @@ option {
 .uifeedback-container {
   position: fixed;
   bottom: 20px;
-  left: 20px;
+  right: 20px;
   border-radius: 8px;
+  z-index: 999;
 }
 .uifeedback-container p {
   position: relative;
   padding: 0 1em;
-  -webkit-animation: UIFeedbackContainer 5s forwards ease-in;
-          animation: UIFeedbackContainer 5s forwards ease-in;
+  -webkit-animation: UIFeedbackContainer 10s forwards ease-in;
+          animation: UIFeedbackContainer 10s forwards ease-in;
 }
 .options-container {
   margin-bottom: 1em;
