@@ -1,5 +1,5 @@
 import globalVariables from './globalVariables.mjs'
-import { addEventListenerToUnits, removeEventListenerToUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
+import { addEventListenerSelectUnitToUnits, removeEventListenerSelectUnitToUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
 import { logToConsoleContainer, logToUIFeedbackContainer, highlightSelectedUnit, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightsOnUnits, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
 import { getUnitData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { arrowNav } from './handleNavigation.mjs'
@@ -44,7 +44,7 @@ export function selectUnit (event) {
     highlightSelectedUnit(globalVariables.selectedUnit)
     highlightCurrentPlayerAttackRange(globalVariables.selectedUnitCellIndex, globalVariables.selectedUnitAttackRange, selectedunitExclusionAttackRange)
     highlightReachableCells()
-    removeEventListenerToUnits()
+    removeEventListenerSelectUnitToUnits()
     logToConsoleContainer(`${capitalize(globalVariables.selectedUnitName)} is currently selected. <span class="_color -green">Use the <span class="_text -bold">arrows</span> to move the unit</span> then <span class="_color -green">press <span class="_text -bold">Enter</span> to validate the move</span> or <span class="_color -green"><span class="_text -bold">Escape</span> to cancel</span>.`)
     captureBuilding()
 
@@ -75,7 +75,7 @@ export function unselectUnit () {
     removeHighlightRangeOnUnits()
     endRoundButton.removeAttribute('disabled')
     document.removeEventListener('keydown', arrowNav)
-    addEventListenerToUnits()
+    addEventListenerSelectUnitToUnits()
     removeIsInRangeFromUnits()
   } else {
     logToConsoleContainer('<span class="_color -red">You can\'t unselect a unit while a fight is on going.</span>')

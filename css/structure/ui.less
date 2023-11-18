@@ -1,23 +1,7 @@
-.ui-wrapper {
+.board-container {
   width: 100%;
-  min-height: 60px;
-  
-  > * { 
-    margin-bottom: 1em;
-  }
-}
-
-.expandable-container {
-  min-height: auto;
-  height: fit-content;
-
-  *:not(h2) {
-    display: none;
-  }
-  
-  &:hover * {
-    display: flex;
-  }
+  max-width: 100%;
+  min-width: fit-content;
 }
 
 .uifeedback-container {
@@ -34,7 +18,119 @@
   }
 }
 
+.dialog-container {
+  margin-top: 1em;
+  z-index: 999;
+  border: 1px solid @ultralightblack;
+
+  .buttons-container {
+    gap: 1em;
+  }
+}
+
+.factory-container {
+  width: 100%;
+  max-width: @s;
+  display: none;
+  gap: 1em;
+  position: fixed;
+  top: 2em;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: hsl(0, 3%, 27%);
+  z-index: 999;
+  padding: 2em;
+  
+  .factoryunit-container {
+    .nameandprice-container {
+      width: 75%;
+    }
+    
+    button {
+      max-width: 120px;
+    }
+  }
+}
+
+.board-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: fit-content;
+}
+
+.moneyandplayer-container {
+  width: 100%;
+  padding: 2em;
+  
+  .moneyandendround-container {
+    margin-top: .5em;
+  }
+
+  .money-container {
+    width: 100%;
+  }
+
+  .round-container {
+    width: 100%;
+  }
+
+  .player-container {
+    gap: .5em;
+  
+    img {
+      width: 30px;
+      height: 30px;
+      display: none;
+  
+      &.active {
+        display: flex;
+      }
+    }
+  }
+}
+
+
 .options-container {
   margin-bottom: 1em;
+}
+
+.console-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  padding: 2em;
+  margin-top: 1em;
+  z-index: 1;
+  font-size: 2em;
+  font-family: 'VT323', monospace;
+  display: none;
+
+  &.active {
+    display: flex;
+    flex-flow: column;
+  }
+
+  // custom scrollbar for webkit compatible navigators
+  &::-webkit-scrollbar {
+    width: .125em; // v scrollbar
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    width: inherit;
+    background: @green;
+    
+    &:active,
+    &:hover {
+      background: darkred;
+    }
+  }
+  
+  p {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    color: @white;
+  }
 }
 

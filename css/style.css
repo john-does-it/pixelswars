@@ -606,67 +606,6 @@ option {
 .stats-container .stat.-defense::before {
   background-image: url('../assets/icons/icon-defense.png');
 }
-.board-container {
-  width: 100%;
-  max-width: 100%;
-  min-width: -webkit-fit-content;
-  min-width: -moz-fit-content;
-  min-width: fit-content;
-}
-.console-container {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  padding: 2em;
-  margin-top: 1em;
-  z-index: 1;
-  font-size: 2em;
-  font-family: 'VT323', monospace;
-  display: none;
-}
-.console-container.active {
-  display: flex;
-  flex-flow: column;
-}
-.console-container::-webkit-scrollbar {
-  width: 0.125em;
-}
-.console-container::-webkit-scrollbar-thumb {
-  width: inherit;
-  background: hsl(120, 100%, 50%);
-}
-.console-container::-webkit-scrollbar-thumb:active,
-.console-container::-webkit-scrollbar-thumb:hover {
-  background: darkred;
-}
-.console-container p {
-  -webkit-margin-before: 0;
-          margin-block-start: 0;
-  -webkit-margin-after: 0;
-          margin-block-end: 0;
-  color: hsl(0, 0%, 95%);
-}
-.factory-container {
-  width: 100%;
-  max-width: 640px;
-  display: none;
-  gap: 1em;
-  position: fixed;
-  top: 2em;
-  left: 0;
-  right: 0;
-  margin: auto;
-  background-color: hsl(0, 3%, 27%);
-  z-index: 999;
-  padding: 2em;
-}
-.factory-container .factoryunit-container .nameandprice-container {
-  width: 75%;
-}
-.factory-container .factoryunit-container button {
-  max-width: 120px;
-}
 .grid-container {
   max-width: 100%;
   display: grid;
@@ -727,6 +666,61 @@ option {
 .index-container .boardpreview {
   max-height: 320px;
 }
+.board-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+}
+.uifeedback-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 8px;
+  z-index: 999;
+}
+.uifeedback-container p {
+  position: relative;
+  padding: 0 1em;
+  -webkit-animation: UIFeedbackContainer 10s forwards ease-in;
+          animation: UIFeedbackContainer 10s forwards ease-in;
+}
+.dialog-container {
+  margin-top: 1em;
+  z-index: 999;
+  border: 1px solid hsl(240, 2%, 41%);
+}
+.dialog-container .buttons-container {
+  gap: 1em;
+}
+.factory-container {
+  width: 100%;
+  max-width: 640px;
+  display: none;
+  gap: 1em;
+  position: fixed;
+  top: 2em;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: hsl(0, 3%, 27%);
+  z-index: 999;
+  padding: 2em;
+}
+.factory-container .factoryunit-container .nameandprice-container {
+  width: 75%;
+}
+.factory-container .factoryunit-container button {
+  max-width: 120px;
+}
+.board-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+}
 .moneyandplayer-container {
   width: 100%;
   padding: 2em;
@@ -751,40 +745,42 @@ option {
 .moneyandplayer-container .player-container img.active {
   display: flex;
 }
-.ui-wrapper {
-  width: 100%;
-  min-height: 60px;
-}
-.ui-wrapper > * {
-  margin-bottom: 1em;
-}
-.expandable-container {
-  min-height: auto;
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
-  height: fit-content;
-}
-.expandable-container *:not(h2) {
-  display: none;
-}
-.expandable-container:hover * {
-  display: flex;
-}
-.uifeedback-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  border-radius: 8px;
-  z-index: 999;
-}
-.uifeedback-container p {
-  position: relative;
-  padding: 0 1em;
-  -webkit-animation: UIFeedbackContainer 10s forwards ease-in;
-          animation: UIFeedbackContainer 10s forwards ease-in;
-}
 .options-container {
   margin-bottom: 1em;
+}
+.console-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  padding: 2em;
+  margin-top: 1em;
+  z-index: 1;
+  font-size: 2em;
+  font-family: 'VT323', monospace;
+  display: none;
+}
+.console-container.active {
+  display: flex;
+  flex-flow: column;
+}
+.console-container::-webkit-scrollbar {
+  width: 0.125em;
+}
+.console-container::-webkit-scrollbar-thumb {
+  width: inherit;
+  background: hsl(120, 100%, 50%);
+}
+.console-container::-webkit-scrollbar-thumb:active,
+.console-container::-webkit-scrollbar-thumb:hover {
+  background: darkred;
+}
+.console-container p {
+  -webkit-margin-before: 0;
+          margin-block-start: 0;
+  -webkit-margin-after: 0;
+          margin-block-end: 0;
+  color: hsl(0, 0%, 95%);
 }
 @-webkit-keyframes fadeIn {
   from {
@@ -1179,4 +1175,7 @@ option {
 }
 ._text.-italic {
   font-style: italic;
+}
+._text.-underlined {
+  text-decoration: underline;
 }

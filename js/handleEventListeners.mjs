@@ -7,25 +7,25 @@ import { endRoundButton, showConsoleButton } from './getButtons.mjs'
 import { endRound } from './endRound.mjs'
 import { selectFactory } from './factories.mjs'
 
-export function addEventListenerToUnits () {
+export function addEventListenerSelectUnitToUnits () {
   const units = document.querySelectorAll('.unit-container')
 
   units.forEach(unit => unit.addEventListener('click', selectUnit))
 }
-addEventListenerToUnits()
+addEventListenerSelectUnitToUnits()
 
 export function addEventListenerToFactories () {
   factories.forEach(factory => factory.addEventListener('click', selectFactory))
 }
 addEventListenerToFactories()
 
-export function removeEventListenerToUnits () {
+export function removeEventListenerSelectUnitToUnits () {
   const units = document.querySelectorAll('.unit-container')
 
   units.forEach(unit => unit.removeEventListener('click', selectUnit))
 }
 
-export function addEventListenerToEnemyUnitsInRange (enemyUnitsInRange) {
+export function addEventListenerHandleFightToEnemyUnitsInRange (enemyUnitsInRange) {
   console.log(globalVariables.selectedUnit.dataset.residual_attack_capacity)
   if (Number(globalVariables.selectedUnit.dataset.residual_attack_capacity) !== 0) {
     enemyUnitsInRange.forEach(enemyUnit => {
@@ -45,6 +45,12 @@ export function removeIsInRangeFromUnits () {
 
 export function removeHandleFightEventListenersOnUnit (unit) {
   unit.removeEventListener('click', handleFight)
+}
+
+export function removeHandleFightEventListenersOnUnits () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => unit.removeEventListener('click', handleFight))
 }
 
 function addEventListenerToEndRoundButton () {

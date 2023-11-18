@@ -13,6 +13,8 @@ export const currentMoneyPlayerTwoUIContainer = document.getElementById('current
 export const currentRoundUIContainer = document.getElementById('current-round')
 export const consoleContainer = document.getElementById('console-container')
 export const UIFeedbackContainer = document.getElementById('uifeedback-container')
+export const dialogContainer = document.getElementById('dialog-container')
+export const dialogContent = document.getElementById('dialog-content')
 
 const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
 
@@ -21,6 +23,16 @@ export function logToConsoleContainer (message) {
   newMessage.innerHTML = message
   consoleContainer.appendChild(newMessage)
   consoleContainer.scrollTop = consoleContainer.scrollHeight
+}
+
+export function toggleYouWinDialogContainer () {
+  dialogContainer.show()
+}
+
+export function youWinMessageInDialogContainer (winner) {
+  const newMessage = document.createElement('p')
+  newMessage.innerText = winner + ', congratulation you win! 😼'
+  dialogContent.appendChild(newMessage)
 }
 
 export function logToUIFeedbackContainer (message) {

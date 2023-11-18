@@ -1,7 +1,7 @@
 import globalVariables from './globalVariables.mjs'
 import { cells } from './unitsAndCells.mjs'
-import { logToConsoleContainer, logToUIFeedbackContainer } from './uiFeedback.mjs'
-import { removeIsInRangeFromUnits, addEventListenerToEnemyUnitsInRange } from './handleEventListeners.mjs'
+import { logToConsoleContainer, logToUIFeedbackContainer, toggleYouWinDialogContainer, youWinMessageInDialogContainer } from './uiFeedback.mjs'
+import { removeIsInRangeFromUnits, addEventListenerHandleFightToEnemyUnitsInRange, removeHandleFightEventListenersOnUnits } from './handleEventListeners.mjs'
 import { getUnitData, getLandscapeData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { preventCancelMove } from './handleNavigation.mjs'
 import { playBattleSound, getSoundDelay, sounds } from './getSounds.mjs'
@@ -56,6 +56,7 @@ export async function handleFight (event) {
 
   globalVariables.isFighting = false
   unselectUnit()
+  removeHandleFightEventListenersOnUnits()
 }
 
 function fight (damage, defense, defenderHealth, health, unit, landscapeDefenseBonus) {
@@ -122,10 +123,14 @@ function checkIfLost () {
   })
 
   if (numberOfPlayerOneUnits === 0) {
+    toggleYouWinDialogContainer()
+    youWinMessageInDialogContainer('Player two')
     logToConsoleContainer('<span class="_color -red">Player one, you have lost.</span>')
   }
 
   if (numberOfPlayerTwoUnits === 0) {
+    toggleYouWinDialogContainer()
+    youWinMessageInDialogContainer('Player one')
     logToConsoleContainer('<span class="_color -red">Player two, you have lost.</span>')
   }
 }
@@ -211,7 +216,7 @@ export function getEnemyUnitsInRange (adjacentCells) {
     .filter(unitContainer => Number(unitContainer.dataset.player) !== globalVariables.currentPlayer)
 
   if (enemyUnitsInRange.length !== 0 && globalVariables.selectedUnitResidualAttackCapacity !== 0) {
-    addEventListenerToEnemyUnitsInRange(enemyUnitsInRange)
+    addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
     logToUIFeedbackContainer(`${enemyUnitsInRange.length} enemy units in range. <span class="_color -green">Click on an enemy unit</span> to start a fight.`)
     logToConsoleContainer(`${enemyUnitsInRange.length} enemy units in range. <span class="_color -green">Click on an enemy unit</span> to start a fight.`)
   }
