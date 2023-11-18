@@ -1,5 +1,5 @@
 import globalVariables from './globalVariables.mjs'
-import { addEventListenerSelectUnitToUnits, removeEventListenerSelectUnitToUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
+import { addEventListenerSelectUnitToUnits, removeEventListenerSelectUnitToUnits, removeHandleFightEventListenersOnUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
 import { logToConsoleContainer, logToUIFeedbackContainer, highlightSelectedUnit, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightsOnUnits, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
 import { getUnitData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { arrowNav } from './handleNavigation.mjs'
@@ -77,6 +77,7 @@ export function unselectUnit () {
     document.removeEventListener('keydown', arrowNav)
     addEventListenerSelectUnitToUnits()
     removeIsInRangeFromUnits()
+    removeHandleFightEventListenersOnUnits()
   } else {
     logToConsoleContainer('<span class="_color -red">You can\'t unselect a unit while a fight is on going.</span>')
   }
