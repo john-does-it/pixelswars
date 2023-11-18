@@ -163,6 +163,7 @@ body {
           animation-duration: 1s;
   height: 100%;
   min-height: 100vh;
+  background-image: url('../assets/background-military.png');
 }
 a {
   text-decoration: none;
@@ -611,7 +612,6 @@ option {
   min-width: -webkit-fit-content;
   min-width: -moz-fit-content;
   min-width: fit-content;
-  background-image: url('../assets/background-military.png');
 }
 .console-container {
   width: 100%;
@@ -713,6 +713,9 @@ option {
 .index-container .boardpreview-container {
   gap: 2em;
   margin-top: 2em;
+}
+.index-container .boardpreview-container a {
+  gap: 1em;
 }
 .index-container .logo {
   width: 100%;
