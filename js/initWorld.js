@@ -9,24 +9,9 @@ function initWorld () {
       defense: 0
     },
     {
-      selector: '.-crater',
-      cost: 10,
-      defense: 0
-    },
-    {
       selector: '.-moutain',
       cost: 5,
-      defense: 40
-    },
-    {
-      selector: '.-ruins.-ongrass',
-      cost: 4,
-      defense: 30
-    },
-    {
-      selector: '.-sand',
-      cost: 3,
-      defense: 0
+      defense: 50
     },
     {
       selector: '.-water',
@@ -44,9 +29,9 @@ function initWorld () {
       defense: 0
     },
     {
-      selector: '.-bush.-ongrass',
+      selector: '.-forest',
       cost: 3,
-      defense: 10
+      defense: 30
     }
   ]
 

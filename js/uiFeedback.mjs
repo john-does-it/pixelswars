@@ -142,8 +142,8 @@ export function resetResidualMoveCapacityOnUnits () {
 
   updatedUnits.forEach(unit => {
     unit.setAttribute('data-residual_move_capacity', unit.dataset.movement_range)
-    const movementCapacityContainer = unit.querySelector('.-movementrange')
-    movementCapacityContainer.innerHTML = unit.dataset.movement_range
+    // const movementCapacityContainer = unit.querySelector('.-movementrange')
+    // movementCapacityContainer.innerHTML = unit.dataset.movement_range
   })
 }
 
@@ -152,16 +152,16 @@ export function resetResidualAttackCapacityOnUnits () {
 
   updatedUnits.forEach(unit => {
     unit.setAttribute('data-residual_attack_capacity', unit.dataset.attack_capacity)
-    const attackCapacityContainer = unit.querySelector('.-attackcapacity')
-    attackCapacityContainer.innerHTML = unit.dataset.attack_capacity
+    // const attackCapacityContainer = unit.querySelector('.-attackcapacity')
+    // attackCapacityContainer.innerHTML = unit.dataset.attack_capacity
     removeHandleFightEventListenersOnUnit(unit)
   })
 }
 
 export function updateUnitResidualMoveCapacity () {
   globalVariables.selectedUnit.setAttribute('data-residual_move_capacity', Number(globalVariables.selectedUnitResidualMovementRange))
-  const movementCapacityContainer = globalVariables.selectedUnit.querySelector('.-movementrange')
-  movementCapacityContainer.innerHTML = globalVariables.selectedUnitResidualMovementRange
+  // const movementCapacityContainer = globalVariables.selectedUnit.querySelector('.-movementrange')
+  // movementCapacityContainer.innerHTML = globalVariables.selectedUnitResidualMovementRange
 }
 
 export function resetResidualCaptureCapacityOnUnits () {

@@ -10,15 +10,14 @@ export function captureBuilding () {
   if (getUnitData(globalVariables.selectedUnit).unitName.includes('infantry') && getLandscapeData(globalVariables.selectedUnit).landscapeType === 'building') {
     if (globalVariables.selectedUnit.dataset.capture_capacity === 0) {
       logToConsoleContainer('Unit hasn\'t the capture capacity.required')
-      return
-    }
-    if (Number(globalVariables.buildingDatas.buildingCapturePoint) === 20 && Number(globalVariables.buildingDatas.buildingPlayerAppartenance) === getUnitData(globalVariables.selectedUnit).unitPlayer) {
+    } else if (Number(globalVariables.buildingDatas.buildingCapturePoint) === 20 && Number(globalVariables.buildingDatas.buildingPlayerAppartenance) === getUnitData(globalVariables.selectedUnit).unitPlayer) {
       logToConsoleContainer('You already own this building.')
-      return
+    } else {
+      // add condition to check if the unit has still capture capacity, if not dont log below message in console
+      logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
+      logToUIFeedbackContainer('<span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
+      document.addEventListener('keypress', startCaptureBuilding)
     }
-    logToConsoleContainer('This building can be captured by your unit. <span class="_color -green">press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
-    logToUIFeedbackContainer('<span class="_color -green">Press <span class="_text -bold">Spacebar</span> to capture</span> the building.')
-    document.addEventListener('keypress', startCaptureBuilding)
   }
 }
 

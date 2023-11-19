@@ -69,8 +69,8 @@ function fight (damage, defense, defenderHealth, health, unit, landscapeDefenseB
 function fightResult (unit, residualHealth) {
   if (unit) {
     unit.setAttribute('data-health', residualHealth)
-    const targetHealthContainer = unit.querySelector('.-health')
-    targetHealthContainer.innerHTML = residualHealth
+    // const targetHealthContainer = unit.querySelector('.-health')
+    // targetHealthContainer.innerHTML = residualHealth
     const landscapeIndex = getLandscapeData(unit).landscapeIndex
 
     if (residualHealth <= 0) {
@@ -139,8 +139,8 @@ checkIfLost()
 function updateSelectedUnitAttackCapacity (selectedUnit) {
   globalVariables.selectedUnitResidualAttackCapacity--
   selectedUnit.setAttribute('data-residual_attack_capacity', globalVariables.selectedUnitResidualAttackCapacity)
-  const attackCapacityContainer = selectedUnit.querySelector('.-attackcapacity')
-  attackCapacityContainer.innerHTML = globalVariables.selectedUnitResidualAttackCapacity
+  // const attackCapacityContainer = selectedUnit.querySelector('.-attackcapacity')
+  // attackCapacityContainer.innerHTML = globalVariables.selectedUnitResidualAttackCapacity
 }
 
 export function returnAdjacentCells (unitCellIndex, unitAttackRange) {
