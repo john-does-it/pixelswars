@@ -64,74 +64,172 @@ function initWorld () {
   // logToConsoleContainer('...Map initialised...')
 }
 initWorld()
-selectUnit()
+
+function getGridDimensions () {
+  const style = getComputedStyle(document.getElementById('grid'))
+
+  const rows = style.getPropertyValue('grid-template-rows').trim().split(' ').length
+  const cols = style.getPropertyValue('grid-template-columns').trim().split(' ').length
+
+  return { rows, cols }
+}
+getGridDimensions()
+
+const numberOfCols = getGridDimensions().cols
+const numberOfRows = getGridDimensions().rows
 
 const currentPlayer = 1
-let selectedUnit
+let selectedUnit = null
+let isSelectedUnit = false
 
+// Function to select a unit
 function selectUnit () {
+  unselectUnit() // Unselect any previously selected unit
   const playableUnits = document.querySelectorAll('.unit-container')
-
   playableUnits.forEach(element => {
     element.addEventListener('click', function (event) {
       const tryToSelectUnit = element
 
-      if (element.classList.contains('unit-container') && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
-        console.log('current player SUCCESS')
-      } else {
-        return
+      console.log(element.parentElement.dataset.index)
+
+      if (!isSelectedUnit && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
+        selectedUnit = tryToSelectUnit
+        isSelectedUnit = true
       }
-
-      selectedUnit = tryToSelectUnit
-      console.log('selectedUnit', selectedUnit)
-
-      moveUnit(event, selectedUnit)
     })
   })
 }
 
-function moveUnit (selectUnit) {
-  function keyboardBind (event) {
-    // Define the event handler function
-    const initialIndex = Number(selectedUnit.parentElement.dataset.index)
+// Function to unselect a unit
+function unselectUnit () {
+  if (isSelectedUnit) {
+    isSelectedUnit = false
+    selectedUnit = null
+  }
+}
 
-    if (event.key === ' ') {
-      console.log('want to capture')
-    }
-    if (event.key === 'ArrowLeft') {
-      console.log('want to move left')
-      // + add  next cell doesnt contain a unit + replace 8 by number of
-      if (initialIndex % 8 !== 0) {
-        console.log('not out of grid')
-        cells.forEach(cell => {
-          if (Number(cell.dataset.index) === initialIndex - 1) {
-            console.log('success', cell, cell.children)
-            cell.appendChild(selectedUnit)
-          }
-        })
-      } else {
-        console.log('out of grid')
-      }
-    }
-    if (event.key === 'ArrowRight') {
-      console.log('want to move right')
-    }
-    if (event.key === 'ArrowUp') {
-      console.log('want to move up')
-    }
-    if (event.key === 'ArrowDown') {
-      console.log('want to move down')
-    }
-    if (event.key === 'Escape') {
-      window.removeEventListener('keydown', keyboardBind, true)
+// Single event listener for keyboard actions
+window.addEventListener('keydown', (event) => {
+  if (isSelectedUnit) {
+    keyboardBindWhileSelectedUnit(event, selectedUnit)
+  }
+})
+
+function keyboardBindWhileSelectedUnit (event, selectedUnit) {
+  const updatedIndex = Number(selectedUnit.parentElement.dataset.index)
+
+  let unitMoveCapacity
+
+  if (Number(selectedUnit.dataset.movement_range) === Number(selectedUnit.dataset.residual_move_capacity)) {
+    unitMoveCapacity = Number(selectedUnit.dataset.movement_range)
+  } else {
+    unitMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
+  }
+
+  // capture building
+  if (event.key === ' ') {
+    console.log('want to capture')
+    if (selectedUnit.classList.contains('-infantry')) {
+      console.log('is infantry')
     }
   }
 
-  window.addEventListener('keydown', keyboardBind, true)
+  // move left
+  if (event.key === 'ArrowLeft') {
+    console.log('want to move left')
+
+    cells.forEach(cell => {
+      const childrenArray = Array.from(cell.children)
+      const containsUnitContainer = childrenArray.some(child => child.classList.contains('unit-container'))
+      const costOfMovement = Number(cell.dataset.cost_of_movement)
+
+      // for the corresponding "next" cell if not out of grid, not already containing a unit and enough move capacity to reach the next cell
+      if ((updatedIndex) % numberOfCols !== 0 && Number(cell.dataset.index) === updatedIndex - 1 && !containsUnitContainer && costOfMovement <= unitMoveCapacity) {
+        console.log('Movement is valid.')
+        updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement)
+        cell.appendChild(selectedUnit)
+      }
+    })
+  }
+
+  // move right
+  if (event.key === 'ArrowRight') {
+    console.log('want to move right')
+
+    cells.forEach(cell => {
+      const childrenArray = Array.from(cell.children)
+      const containsUnitContainer = childrenArray.some(child => child.classList.contains('unit-container'))
+      const costOfMovement = Number(cell.dataset.cost_of_movement)
+
+      // for the corresponding "next" cell if not out of grid, not already containing a unit and enough move capacity to reach the next cell
+      if (Number(cell.dataset.index) === updatedIndex + 1 && (updatedIndex + 1) % numberOfCols !== 0 && !containsUnitContainer && costOfMovement <= unitMoveCapacity) {
+        console.log('Movement is valid.')
+        updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement)
+        cell.appendChild(selectedUnit)
+      }
+    })
+  }
+
+  // move up
+  if (event.key === 'ArrowUp') {
+    console.log('want to move up')
+
+    cells.forEach(cell => {
+      const childrenArray = Array.from(cell.children)
+      const containsUnitContainer = childrenArray.some(child => child.classList.contains('unit-container'))
+      const costOfMovement = Number(cell.dataset.cost_of_movement)
+
+      // for the corresponding "next" cell if not out of grid, not already containing a unit and enough move capacity to reach the next cell
+      if (Number(cell.dataset.index) === updatedIndex - numberOfRows && updatedIndex - numberOfCols >= 0 && !containsUnitContainer && costOfMovement <= unitMoveCapacity) {
+        console.log('Movement is valid.')
+        updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement)
+        cell.appendChild(selectedUnit)
+      }
+    })
+  }
+
+  // move down
+  if (event.key === 'ArrowDown') {
+    console.log('want to move down')
+
+    cells.forEach(cell => {
+      const childrenArray = Array.from(cell.children)
+      const containsUnitContainer = childrenArray.some(child => child.classList.contains('unit-container'))
+      const costOfMovement = Number(cell.dataset.cost_of_movement)
+
+      // for the corresponding "next" cell if not out of grid, not already containing a unit and enough move capacity to reach the next cell
+      if (Number(cell.dataset.index) === updatedIndex + numberOfRows && updatedIndex + numberOfCols <= numberOfCols * numberOfRows && !containsUnitContainer && costOfMovement <= unitMoveCapacity) {
+        console.log('Movement is valid.')
+        updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement)
+        cell.appendChild(selectedUnit)
+      }
+    })
+  }
+
+  // valid move
+  if (event.key === 'Enter') {
+    cells.forEach(cell => {
+      const costOfMovement = Number(cell.dataset.cost_of_movement)
+      // for the corresponding "next" cell if not out of grid, not already containing a unit and enough move capacity to reach the next cell
+      if (Number(cell.dataset.index) === updatedIndex) {
+        updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement)
+        unselectUnit()
+      }
+    })
+  }
+
+  // cancel move
+  if (event.key === 'Escape') {
+    unselectUnit()
+    // what was the initial index of the unit before any move, append the cell to the parent container and reset the residual move capacity of the unit
+  }
 }
 
-console.log(selectedUnit)
-// select a unit
-// want to move it
-// // check if out of grid, if next potential cell contain a unit and if residual want to move cap is enough, if yes move
-// handle fight if enemyinrange
+function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
+  const residualMoveCapacity = unitMoveCapacity - costOfMovement
+  selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
+}
+
+// Initial function calls
+initWorld()
+selectUnit()
