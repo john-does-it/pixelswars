@@ -18,7 +18,6 @@ export function endRound () {
   healthUnitOnHospital()
   updateMoneyUI()
   updateCurrentPlayerUI()
-  sounds.nextRound.load()
   sounds.nextRound.volume = 0.125
   sounds.nextRound.play()
 }

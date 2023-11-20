@@ -2,10 +2,11 @@ import { playSoundButton } from './getButtons.mjs'
 
 export const sounds = {
   cinematicMetal: document.getElementById('cinematic-metal'),
-  shortMeow: document.getElementById('short-meow'),
-  shortMeow2: document.getElementById('short-meow-2'),
-  shortMeow3: document.getElementById('short-meow-3'),
+  infantry: document.getElementById('infantry'),
+  infantry2: document.getElementById('infantry-2'),
+  infantry3: document.getElementById('infantry-3'),
   jeepEngine: document.getElementById('jeep-engine'),
+  artilleryEngine: document.getElementById('artillery-engine'),
   gunBattle: document.getElementById('gun-battle'),
   trumpetFanfare: document.getElementById('trumpet-fanfare'),
   bomb: document.getElementById('bomb'),
@@ -20,7 +21,6 @@ export const sounds = {
 
 export function playBattleSound (unit) {
   if (unit.dataset.type === 'infantry' || unit.dataset.type === 'jeep') {
-    sounds.gunBattle.load()
     sounds.gunBattle.volume = 0.25
     sounds.gunBattle.play()
   }

@@ -38,8 +38,8 @@ export function youWinMessageInDialogContainer (winner) {
 export function logToUIFeedbackContainer (message) {
   const newMessage = document.createElement('p')
   newMessage.innerHTML = message
-  UIFeedbackContainer.appendChild(newMessage)
-  UIFeedbackContainer.classList.add('_color', '-white', '-bglightblack')
+  // UIFeedbackContainer.appendChild(newMessage)
+  // UIFeedbackContainer.classList.add('_color', '-white', '-bglightblack')
 }
 
 export function updateMoneyUI () {
@@ -63,22 +63,6 @@ export function updateCurrentPlayerUI () {
   }, 3000)
 }
 
-export function highlightSelectedUnit (unit) {
-  unit.classList.add('-highlighted')
-}
-
-export function removeHighlightsOnUnits () {
-  const updatedUnits = document.querySelectorAll('.unit-container')
-
-  updatedUnits.forEach(unit => {
-    if (unit.classList.contains('-highlighted')) {
-      unit.classList.remove('-highlighted')
-    }
-    if (unit.classList.contains('-outofresidualmovecapacity')) {
-      unit.classList.remove('-outofresidualmovecapacity')
-    }
-  })
-}
 
 export function highlightReachableCells () {
   if ((globalVariables.selectedUnitCellIndex + 1) % numberOfCols !== 0) {

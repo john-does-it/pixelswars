@@ -2,69 +2,37 @@
   width: fit-content;
   pointer-events: none; // needed to prevent bug when selecting unit using selectUnit() function
   margin: .25em;
-
-  &.-cell {
-    gap: .25em;
-    display: none;
-  }
-      
-  &.-unit .stat::before {
-    margin-right: .25em;
-  }
-
-  .stat {
-    z-index: 999;
-
-    &::before {
-      content: "";
-      width: 25px;
-      height: 25px;
-      background-size: cover;
-      display: inline-block;
-      background-repeat: no-repeat;
-    }
-    
-    &.-costofmovement::before {
-      background-image: url('../assets/icons/icon-movement-range.png');
-    }
-
-    &.-bonusofdefense::before {
-      background-image: url('../assets/icons/icon-defense.png');
-    }
-
-    &.-player {
-      &.-one::before {
-        background-image: url('../assets/icons/icon-player-one.png');
-      }
-
-      &.-two::before {
-        background-image: url('../assets/icons/icon-player-two.png');
-      }
-    }
-    
-    &.-health::before {
-      background-image: url('../assets/icons/icon-health.png');
-    }
-    
-    &.-movementrange::before {
-      background-image: url('../assets/icons/icon-movement-range.png');
-    }
-    
-    &.-attackdamage::before {
-      background-image: url('../assets/icons/icon-attack-damage.png');
-    }
-    
-    &.-attackrange::before {
-      background-image: url('../assets/icons/icon-attack-range.png');
-    }
-
-    &.-attackcapacity::before {
-      background-image: url('../assets/icons/icon-attack-capacity.png');
-    }
-    
-    &.-defense::before {
-      background-image: url('../assets/icons/icon-defense.png');
-    }
-  }
+  user-select: none;
 }
 
+.stat {
+  z-index: 100;
+  user-select: none;
+
+  &::before {
+    content: "";
+    width: 25px;
+    height: 25px;
+    background-size: cover;
+    display: inline-block;
+    background-repeat: no-repeat;
+  }
+  
+  &.-movementrange::before,
+  &.-costofmovement::before  {
+    background-image: url('../assets/icons/icon-movement-range.png');
+  }
+
+  &.-bonusofdefense::before, 
+  &.-defense::before {
+    background-image: url('../assets/icons/icon-defense.png');
+  }
+
+  &.-health::before {
+    background-image: url('../assets/icons/icon-health.png');
+  }
+
+  &.-attackrange::before {
+    background-image: url('../assets/icons/icon-attack-range.png');
+  }
+}

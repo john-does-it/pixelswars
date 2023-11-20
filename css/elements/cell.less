@@ -1,16 +1,28 @@
 .cell-container {
-  height: 125px;
-  width: 125px;
+  width: 128px;
+  height: 128px;
   background-size: cover;
+
+  .stats-container {
+    display: none;
+  }
+
+  &:hover {
+    .stats-container {
+      display: flex;
+      position: absolute;
+      top: 0;
+    }
+  }
 
   // highlights
   &.-inrange {
     &::before {
+      width: inherit;
+      height: inherit;
       position: absolute;
       display: flex;
       content: '';
-      width: 125px;
-      height: 125px;
       background-color: @transparentblack;
       z-index: 0;
     }
@@ -39,11 +51,11 @@
   
   &.-reachable {
     &::before {
+      width: inherit;
+      height: inherit;
       position: absolute;
       display: flex;
       content: '';
-      width: 125px;
-      height: 125px;
       background-color: @transparentblue;
       z-index: 0;
     }
@@ -158,42 +170,44 @@
       }
     }
 
-    &.-city.-ongrass {
-      background-image: url('../assets/cells/cell-city-on-grass.png');
-  
-      &.-capturedby1 {
-        background-image: url('../assets/cells/cell-city-on-grass-captured-by-1.png');
+    &.-city {
+      // add money upper city to give player some feedback
+      &.-active::after {
+        content: '+200$';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        color: @white;
+        font-weight: bold;
+        animation: addMoneyToBalance 5s forwards;
       }
 
-      &.-capturedby2 {
-        background-image: url('../assets/cells/cell-city-on-grass-captured-by-2.png');
-      }
-  
-      &.-halfcaptured {
-        background-image: url('../assets/cells/cell-city-on-grass-halfcaptured.png');
-
+      &.-ongrass {
+        background-image: url('../assets/cells/cell-city-on-grass.png');
+    
         &.-capturedby1 {
-          background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
+          background-image: url('../assets/cells/cell-city-on-grass-captured-by-1.png');
         }
   
         &.-capturedby2 {
-          background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
+          background-image: url('../assets/cells/cell-city-on-grass-captured-by-2.png');
+        }
+    
+        &.-halfcaptured {
+          background-image: url('../assets/cells/cell-city-on-grass-halfcaptured.png');
+  
+          &.-capturedby1 {
+            background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
+          }
+    
+          &.-capturedby2 {
+            background-image: url('../assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
+          }
         }
       }
-    }
-  }
-
-  // add money upper city to give player some feedback
-  &.-city.-active::after {
-    content: '+ 200$';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    color: @green;
-    font-weight: bold;
-    animation: addMoneyToBalance 5s forwards;
+    } 
   }
 }

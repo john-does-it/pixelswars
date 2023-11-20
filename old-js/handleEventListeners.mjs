@@ -55,7 +55,7 @@ export function removeHandleFightEventListenersOnUnits () {
 
 function addEventListenerToEndRoundButton () {
   endRoundButton.addEventListener('click', function () {
-    if (globalVariables.unitSelected) {
+    if (globalVariables.isUnitSelected) {
       logToConsoleContainer('A unit is currently selected. Please cancel (escape) or valid the selected unit\'s movement (enter) before ending the round.')
       endRoundButton.blur()
     } else {

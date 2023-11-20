@@ -1,6 +1,6 @@
 import globalVariables from './globalVariables.mjs'
 import { addEventListenerSelectUnitToUnits, removeEventListenerSelectUnitToUnits, removeHandleFightEventListenersOnUnits, removeIsInRangeFromUnits } from './handleEventListeners.mjs'
-import { logToConsoleContainer, logToUIFeedbackContainer, highlightSelectedUnit, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightsOnUnits, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
+import { logToConsoleContainer, logToUIFeedbackContainer, highlightCurrentPlayerAttackRange, highlightReachableCells, removeHighlightRangeOnUnits } from './uiFeedback.mjs'
 import { getUnitData, getLandscapeIndexOfUnit } from './getDatas.mjs'
 import { arrowNav } from './handleNavigation.mjs'
 import { endRoundButton } from './getButtons.mjs'
@@ -19,11 +19,10 @@ export function selectUnit (event) {
     globalVariables.unitSelected = true
     globalVariables.selectedUnit = clickedCell
     const selectedUnitDataPipe = getUnitData(globalVariables.selectedUnit)
-    const shortMeowVariants = [sounds.shortMeow, sounds.shortMeow2, sounds.shortMeow3]
+    const shortInfantryVariants = [sounds.infantry, sounds.infantry2, sounds.infantry3]
 
     if (globalVariables.selectedUnit.classList.contains('-infantry')) {
-      const randomVariant = shortMeowVariants[Math.floor(Math.random() * shortMeowVariants.length)]
-      randomVariant.load()
+      const randomVariant = shortInfantryVariants[Math.floor(Math.random() * shortInfantryVariants.length)]
       randomVariant.volume = 0.25
       randomVariant.play()
     }
@@ -31,6 +30,11 @@ export function selectUnit (event) {
     if (globalVariables.selectedUnit.classList.contains('-jeep')) {
       sounds.jeepEngine.volume = 0.2
       sounds.jeepEngine.play()
+    }
+
+    if (globalVariables.selectedUnit.classList.contains('-artillery')) {
+      sounds.artilleryEngine.volume = 0.2
+      sounds.artilleryEngine.play()
     }
 
     globalVariables.selectedUnitName = selectedUnitDataPipe.unitName
@@ -41,7 +45,6 @@ export function selectUnit (event) {
     globalVariables.selectedUnitCellIndex = getLandscapeIndexOfUnit(globalVariables.selectedUnit)
     globalVariables.initialUnitCellIndex = globalVariables.selectedUnitCellIndex
 
-    highlightSelectedUnit(globalVariables.selectedUnit)
     highlightCurrentPlayerAttackRange(globalVariables.selectedUnitCellIndex, globalVariables.selectedUnitAttackRange, selectedunitExclusionAttackRange)
     highlightReachableCells()
     removeEventListenerSelectUnitToUnits()
@@ -71,7 +74,6 @@ export function unselectUnit () {
   if (globalVariables.isFighting === false) {
     globalVariables.unitSelected = false
     globalVariables.selectedUnit = null
-    removeHighlightsOnUnits()
     removeHighlightRangeOnUnits()
     endRoundButton.removeAttribute('disabled')
     document.removeEventListener('keydown', arrowNav)

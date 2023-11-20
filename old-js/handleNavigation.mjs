@@ -134,8 +134,6 @@ function handleValidMove (selectedUnit) {
   removeHighlightRangeOnUnits()
   highlightCurrentPlayerAttackRange(globalVariables.selectedUnitCellIndex, globalVariables.selectedUnitAttackRange, globalVariables.selectedUnitResidualMovementRange)
   highlightReachableCells()
-  captureBuilding()
-  // sounds.wooshMovement.load()
   sounds.wooshMovement.volume = 0.125
   sounds.wooshMovement.play()
 }

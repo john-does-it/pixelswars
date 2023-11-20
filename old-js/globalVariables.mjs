@@ -2,7 +2,7 @@ const globalVariables = {
   currentPlayer: 1,
   round: 1 || Number(),
   selectedUnit: null,
-  unitSelected: false,
+  isisUnitSelected: false,
   cellIndex: null || Number(),
   nextCell: null || Number(),
   nextCellContainer: null,

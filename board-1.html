@@ -4,42 +4,13 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=.3">
-  <title>Catwars, a strategy board game playable in the browser</title>
+  <title>Pixelwar, a strategy board game playable in the browser</title>
   <meta name="description" content="Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest! A free turn by turn strategy game.">
   <meta name="author" content="John Does it">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <!-- preload images for captured building to avoid "black cell" before showing the asset when capturing a building -->
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-half-captured.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-road-bottom-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-road-bottom-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-road-bottom-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-road-bottom-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-factory-on-grass-road-bottom-half-captured.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-bottom-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-bottom-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-bottom-half-captured.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-right-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-right-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-right-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-right-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-hospital-on-grass-road-right-half-captured.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-bottom-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-bottom-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-bottom-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-bottom-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-bottom-half-captured.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-right-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-right-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-right-half-captured-captured-by-1.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-right-half-captured-captured-by-2.png">
-  <link rel="preload" as="image" href="./assets/cells/cell-building-on-grass-road-right-half-captured.png">  
 </head>
 <body>
   <!-- audio -->
@@ -67,16 +38,20 @@
     <source src="assets/mp3/jeep-engine.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-  <audio id="short-meow">
-    <source src="assets/mp3/short-meow.mp3" type="audio/mpeg">
+  <audio id="artillery-engine">
+    <source src="assets/mp3/artillery-engine.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-  <audio id="short-meow-2">
-    <source src="assets/mp3/short-meow-2.mp3" type="audio/mpeg">
+  <audio id="infantry">
+    <source src="assets/mp3/infantry.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-  <audio id="short-meow-3">
-    <source src="assets/mp3/short-meow-3.mp3" type="audio/mpeg">
+  <audio id="infantry-2">
+    <source src="assets/mp3/infantry-2.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="infantry-3">
+    <source src="assets/mp3/infantry-3.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
   <audio id="gun-battle">
@@ -103,10 +78,6 @@
     <source src="assets/mp3/cash-machine.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>  
-  <!-- ui feedback container -->
-  <div class="uifeedback-container" id="uifeedback-container">
-    <!-- ui feedback message -->
-  </div>
   <!-- you win / you loose dialog modal flex properties defined in stylesheet -->
   <dialog class="dialog-container _color -white -bglightblack" id="dialog-container" close>
     <!-- message -->
@@ -146,91 +117,53 @@
       <button data-type="jeep" data-cost="600">Buy</button>
     </div>
   </div>
-  <div class="board-container _flex -column -wrap -aligncenter">
-    <div class="moneyandplayer-container _color -bgblack">
-      <div class="round-container _flex -wrap -justifyspacebetween -alignstart">
-        <span class="player-container _flex -aligncenter _text -l -uppercase _color -white" id="current-player-ui">
-        <img class="active" src="./assets/icons/icon-player-one.png">
-        <img src="./assets/icons/icon-player-two.png">
-        Player
-        <span id="current-player">1</span>
-        </span>
-        <div class="endround-container _flex -wrap -justifyend">
-          <button class="endround _color -white -bgblack _text -uppercase -bold" type="button" id="end-round" title="End the current round">End round</button>
-        </div>
-        <span class="_text -l -uppercase _color -white" id="current-round-ui">
-        Round 
-        <span id="current-round">1</span>
-        </span>
-      </div>
-      <!-- money -->
-      <div class="money-container _flex -justifyspacebetween">
-        <span class="_text -s -uppercase _color -green">
-        Player 1: 
-        <span id="current-money-player-one">0</span> $
-        </span>
-        <span class="_text -s -uppercase _color -green">
-        Player 2: 
-        <span id="current-money-player-two">0</span> $
-        </span>
-      </div>
+  <div class="moneyandplayer-container _color -bgblack">
+    <div class="round-container _flex -wrap -justifyspacebetween -alignstart">
+      <span class="player-container _flex -aligncenter _text -l -uppercase _color -white" id="current-player-ui">
+      <img class="active" src="./assets/icons/icon-player-one.png">
+      <img src="./assets/icons/icon-player-two.png">
+      Player
+      <span id="current-player">1</span>
+      </span>
+      <span class="_text -l -uppercase _color -white" id="current-round-ui">
+      Round 
+      <span id="current-round">1</span>
+      </span>
     </div>
+    <!-- money -->
+    <div class="money-container _flex -justifyspacebetween">
+      <span class="_text -s -uppercase _color -green">
+      Player 1: 
+      <span id="current-money-player-one">0</span> $
+      </span>
+      <span class="_text -s -uppercase _color -green">
+      Player 2: 
+      <span id="current-money-player-two">0</span> $
+      </span>
+    </div>
+  </div>
+  <div class="board-container _flex -column -wrap -aligncenter">
     <!-- board of the game (grid) -->
     <div class="grid-container -board1" id="grid">
       <div class="cell-container -grass">
-        <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery"data-cost="800" data-sound_delay="5000">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">1</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">2</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">90</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">3</span>
-              <span class="stat -defense _flex -aligncenter _color -white">0</span>
-            </div>
-          </div> -->
+        <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="40" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery"data-cost="800" data-sound_delay="5000">
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
+          <span class="stat -movementrange _flex -justifycenter -alignend _color -white">2</span>
         </div>
       </div>
       <div class="cell-container -grass">
         <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300" data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">5</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">40</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">30</span>
-            </div>
-          </div>  -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">5</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">40</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">30</span>
-            </div>
-          </div> -->
-        </div>
+        <!-- <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500">
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
+        </div> -->
       </div>
       <div class="cell-container -grass">
         <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">8</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">50</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">50</span>
-            </div>
-          </div> -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
       <div class="cell-container -moutain -ongrass"></div>
@@ -291,71 +224,41 @@
       <div class="cell-container -moutain -ongrass -variant"></div>
       <div class="cell-container -grass">
         <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">8</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">50</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">50</span>
-            </div>
-          </div> -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
       <div class="cell-container -road -corner -top">
         <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">5</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">40</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">30</span>
-            </div>
-          </div> -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
       <div class="cell-container -road -h">
         <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">2</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">5</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">40</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">1</span>
-              <span class="stat -defense _flex -aligncenter _color -white">30</span>
-            </div>
-          </div> -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
       <div class="cell-container -road -h">
         <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000">
-          <!-- <div class="stats-container -unit _flex -column -gap -half _text -s -bold -center">
-            <span class="stat -health _flex -aligncenter _color -white">100</span>
-            <span class="stat -attackcapacity _flex -aligncenter _color -white">1</span>
-            <span class="stat -movementrange _flex -aligncenter _color -white">2</span>
-            <div class="substats-container _flex  -column -gap -half">
-              <span class="stat -attackdamage _flex -aligncenter _color -white">90</span>
-              <span class="stat -attackrange _flex -aligncenter _color -white">3</span>
-              <span class="stat -defense _flex -aligncenter _color -white">0</span>
-            </div>
-          </div> -->
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
     </div>
+  </div>
+  <div class="_flex -justifyspacebetween" style="width: 100%; padding-bottom: 2em; padding-left: 2em; padding-right: 2em;">
     <!-- options -->
     <div class="options-container _flex -row -wrap">
       <button class="option _text -s _color -white -bglightblack _flex -justifycenter -aligncenter" type="button" id="handle-sound" title="Play / Stop music">🔇</button>
       <button class="option _text -s _color -white -bglightblack _flex -justifycenter -aligncenter" type="button" id="handle-console" title="Show / hide console">&#x5F;</button>
       <!-- <button class="option _text -s _color -white -bglightblack _flex -justifycenter -aligncenter" type="button" id="handle-timer" title="Set / unset maximum time per round">&#x23F3;</button> -->
     </div>
-    <!-- flex properties defined in stylesheet -->
-    <div class="console-container _text -s _color -bgblack" id="console-container">
-      <!-- console -->
+    <!-- endround -->
+    <div class="endround-container _flex -wrap -justifyend">
+      <button class="endround _color -white -bgblack _text -uppercase -bold" type="button" id="end-round" title="End the current round">End round</button>
     </div>
+  </div>
+  <!-- flex properties defined in stylesheet -->
+  <div class="console-container _text -s _color -bgblack" id="console-container">
+    <!-- console -->
   </div>
   <script src="js/initWorld.js" type="module"></script>
 </body>

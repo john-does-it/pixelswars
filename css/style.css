@@ -163,7 +163,6 @@ body {
           animation-duration: 1s;
   height: 100%;
   min-height: 100vh;
-  background-image: url('../assets/background-military.png');
 }
 a {
   text-decoration: none;
@@ -303,16 +302,24 @@ option {
   border-color: hsl(0, 0%, 95%);
 }
 .cell-container {
-  height: 125px;
-  width: 125px;
+  width: 128px;
+  height: 128px;
   background-size: cover;
 }
+.cell-container .stats-container {
+  display: none;
+}
+.cell-container:hover .stats-container {
+  display: flex;
+  position: absolute;
+  top: 0;
+}
 .cell-container.-inrange::before {
+  width: inherit;
+  height: inherit;
   position: absolute;
   display: flex;
   content: '';
-  width: 125px;
-  height: 125px;
   background-color: hsla(0, 0%, 10%, 0.25);
   z-index: 0;
 }
@@ -336,11 +343,11 @@ option {
   z-index: 20;
 }
 .cell-container.-reachable::before {
+  width: inherit;
+  height: inherit;
   position: absolute;
   display: flex;
   content: '';
-  width: 125px;
-  height: 125px;
   background-color: hsla(210, 100%, 45%, 0.5);
   z-index: 0;
 }
@@ -413,6 +420,19 @@ option {
 .cell-container.-building.-hospital.-ongrass.-halfcaptured.-capturedby2 {
   background-image: url('../assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
 }
+.cell-container.-building.-city.-active::after {
+  content: '+200$';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  color: hsl(0, 0%, 95%);
+  font-weight: bold;
+  -webkit-animation: addMoneyToBalance 5s forwards;
+          animation: addMoneyToBalance 5s forwards;
+}
 .cell-container.-building.-city.-ongrass {
   background-image: url('../assets/cells/cell-city-on-grass.png');
 }
@@ -429,39 +449,19 @@ option {
   background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
 }
 .cell-container.-building.-city.-ongrass.-halfcaptured.-capturedby2 {
-  background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
-}
-.cell-container.-city.-active::after {
-  content: '+ 200$';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  color: hsl(103, 49%, 59%);
-  font-weight: bold;
-  -webkit-animation: addMoneyToBalance 5s forwards;
-          animation: addMoneyToBalance 5s forwards;
+  background-image: url('../assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
 }
 .explosion {
   width: inherit;
   height: inherit;
 }
 .unit-container {
-  width: inherit;
-  height: inherit;
+  width: 100%;
+  height: 100%;
   background-size: contain;
   background-repeat: no-repeat;
   cursor: pointer;
   z-index: 999;
-}
-.unit-container.-highlighted {
-  scale: 1.0125;
-}
-.unit-container.-highlighted.-outofresidualmovecapacity {
-  border: 0;
-  opacity: 0.75;
 }
 .unit-container.-infantry.-one {
   background-image: url('../assets/units/infantry-1.png');
@@ -487,18 +487,19 @@ option {
   width: fit-content;
   pointer-events: none;
   margin: 0.25em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
-.stats-container.-cell {
-  gap: 0.25em;
-  display: none;
+.stat {
+  z-index: 100;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
-.stats-container.-unit .stat::before {
-  margin-right: 0.25em;
-}
-.stats-container .stat {
-  z-index: 999;
-}
-.stats-container .stat::before {
+.stat::before {
   content: "";
   width: 25px;
   height: 25px;
@@ -506,35 +507,19 @@ option {
   display: inline-block;
   background-repeat: no-repeat;
 }
-.stats-container .stat.-costofmovement::before {
+.stat.-movementrange::before,
+.stat.-costofmovement::before {
   background-image: url('../assets/icons/icon-movement-range.png');
 }
-.stats-container .stat.-bonusofdefense::before {
+.stat.-bonusofdefense::before,
+.stat.-defense::before {
   background-image: url('../assets/icons/icon-defense.png');
 }
-.stats-container .stat.-player.-one::before {
-  background-image: url('../assets/icons/icon-player-one.png');
-}
-.stats-container .stat.-player.-two::before {
-  background-image: url('../assets/icons/icon-player-two.png');
-}
-.stats-container .stat.-health::before {
+.stat.-health::before {
   background-image: url('../assets/icons/icon-health.png');
 }
-.stats-container .stat.-movementrange::before {
-  background-image: url('../assets/icons/icon-movement-range.png');
-}
-.stats-container .stat.-attackdamage::before {
-  background-image: url('../assets/icons/icon-attack-damage.png');
-}
-.stats-container .stat.-attackrange::before {
+.stat.-attackrange::before {
   background-image: url('../assets/icons/icon-attack-range.png');
-}
-.stats-container .stat.-attackcapacity::before {
-  background-image: url('../assets/icons/icon-attack-capacity.png');
-}
-.stats-container .stat.-defense::before {
-  background-image: url('../assets/icons/icon-defense.png');
 }
 .grid-container {
   max-width: 100%;
@@ -556,28 +541,9 @@ option {
 }
 .grid-container .cell-container {
   position: relative;
-}
-.grid-container .cell-container .stats-container.-cell {
-  display: none;
-}
-.grid-container .cell-container .stats-container.-unit .substats-container {
-  display: none;
-}
-.grid-container .cell-container:hover .stats-container.-cell {
   display: flex;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-.grid-container .cell-container:hover .stats-container.-unit .substats-container {
-  position: absolute;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  display: flex;
-  z-index: 999;
-  -webkit-transform: translate(-55px, 0);
-          transform: translate(-55px, 0);
+  justify-content: center;
+  align-items: center;
 }
 .index-container .boardpreview-container {
   gap: 2em;
@@ -602,18 +568,6 @@ option {
   min-width: -webkit-fit-content;
   min-width: -moz-fit-content;
   min-width: fit-content;
-}
-.uifeedback-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-}
-.uifeedback-container p {
-  position: relative;
-  padding: 0 1em;
-  -webkit-animation: UIFeedbackContainer 10s forwards ease-in;
-          animation: UIFeedbackContainer 10s forwards ease-in;
 }
 .dialog-container {
   margin-top: 1em;
