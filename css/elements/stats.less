@@ -1,14 +1,6 @@
-.stats-container {
-  width: fit-content;
-  pointer-events: none; // needed to prevent bug when selecting unit using selectUnit() function
-  margin: .25em;
-  user-select: none;
-}
-
 .stat {
   z-index: 100;
   user-select: none;
-
   &::before {
     content: "";
     width: 25px;
@@ -22,17 +14,17 @@
   &.-costofmovement::before  {
     background-image: url('../assets/icons/icon-movement-range.png');
   }
-
   &.-bonusofdefense::before, 
   &.-defense::before {
     background-image: url('../assets/icons/icon-defense.png');
   }
-
   &.-health::before {
     background-image: url('../assets/icons/icon-health.png');
   }
-
   &.-attackrange::before {
     background-image: url('../assets/icons/icon-attack-range.png');
+  }
+  &.-attackcapacity::before {
+    background-image: url('../assets/icons/icon-attack-capacity.png');
   }
 }

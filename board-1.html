@@ -145,12 +145,7 @@
   <div class="board-container _flex -column -wrap -aligncenter">
     <!-- board of the game (grid) -->
     <div class="grid-container -board1" id="grid">
-      <div class="cell-container -grass">
-        <!-- <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="40" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery"data-cost="800" data-sound_delay="5000">
-          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
-          <span class="stat -movementrange _flex -justifycenter -alignend _color -white">2</span>
-        </div> -->
-      </div>
+      <div class="cell-container -grass"></div>
       <div class="cell-container -grass">
         <!-- <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300" data-sound_delay="500">
           <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
@@ -164,13 +159,20 @@
       <div class="cell-container -grass">
         <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
           <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
-        </div>
+          <span class="stat -movementrange _flex -justifycenter -alignend _color -white">8</span>
+          <span class="stat -attackcapacity _flex -justifycenter -alignend _color -white">2</span>
+       </div>
       </div>
       <div class="cell-container -moutain -ongrass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -water -grass -right"></div>
-      <div class="cell-container -building -factory -ongrass" data-type="building" data-building-type="factory" data-capture_points="20" data-player="0"></div>
+      <div class="cell-container -building -factory -ongrass" data-type="building" data-building-type="factory" data-capture_points="20" data-player="0">
+        <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="40" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery"data-cost="800" data-sound_delay="5000">
+          <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
+          <span class="stat -movementrange _flex -justifycenter -alignend _color -white">2</span>
+        </div>
+      </div>
       <div class="cell-container -building -hospital -ongrass"  data-type="building" data-building-type="hospital" data-capture_points="20" data-player="0"></div>
       <div class="cell-container -building -city -ongrass" data-type="building" data-building-type="city" data-capture_points="20" data-player="0"></div>
       <div class="cell-container -grass"></div>
@@ -180,16 +182,18 @@
       <div class="cell-container -water -grass -right -bottom"></div>
       <div class="cell-container -road -h"></div>
       <div class="cell-container -road -h"></div>
-      <div class="cell-container -road -h"></div>
       <div class="cell-container -road -h">
+
+      </div>
+      <div class="cell-container -road -h"></div>
+      <div class="cell-container -road -corner -bottom"></div>
+      <div class="cell-container -grass"></div>
+      <div class="cell-container -grass"></div>
+      <div class="cell-container -grass">
         <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
           <span class="stat -health _flex -justifycenter -alignend _color -white">100</span>
         </div>
       </div>
-      <div class="cell-container -road -corner -bottom"></div>
-      <div class="cell-container -grass"></div>
-      <div class="cell-container -grass"></div>
-      <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
@@ -264,6 +268,6 @@
   <div class="console-container _text -s _color -bgblack" id="console-container">
     <!-- console -->
   </div>
-  <script src="js/initWorld.js" type="module"></script>
+  <script src="js/playground.js"></script>
 </body>
 </html>

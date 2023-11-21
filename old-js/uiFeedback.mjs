@@ -63,7 +63,6 @@ export function updateCurrentPlayerUI () {
   }, 3000)
 }
 
-
 export function highlightReachableCells () {
   if ((globalVariables.selectedUnitCellIndex + 1) % numberOfCols !== 0) {
     const rightCell = cells[globalVariables.selectedUnitCellIndex + 1]

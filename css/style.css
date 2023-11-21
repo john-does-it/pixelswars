@@ -455,43 +455,6 @@ option {
   width: inherit;
   height: inherit;
 }
-.unit-container {
-  width: 100%;
-  height: 100%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  z-index: 999;
-}
-.unit-container.-infantry.-one {
-  background-image: url('../assets/units/infantry-1.png');
-}
-.unit-container.-infantry.-two {
-  background-image: url('../assets/units/infantry-2.png');
-}
-.unit-container.-jeep.-one {
-  background-image: url('../assets/units/jeep-1.png');
-}
-.unit-container.-jeep.-two {
-  background-image: url('../assets/units/jeep-2.png');
-}
-.unit-container.-artillery.-one {
-  background-image: url('../assets/units/artillery-1.png');
-}
-.unit-container.-artillery.-two {
-  background-image: url('../assets/units/artillery-2.png');
-}
-.stats-container {
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  pointer-events: none;
-  margin: 0.25em;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-}
 .stat {
   z-index: 100;
   -webkit-user-select: none;
@@ -520,6 +483,39 @@ option {
 }
 .stat.-attackrange::before {
   background-image: url('../assets/icons/icon-attack-range.png');
+}
+.stat.-attackcapacity::before {
+  background-image: url('../assets/icons/icon-attack-capacity.png');
+}
+.unit-container {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 999;
+}
+.unit-container.-infantry.-one {
+  background-image: url('../assets/units/infantry-1.png');
+}
+.unit-container.-infantry.-two {
+  background-image: url('../assets/units/infantry-2.png');
+}
+.unit-container.-jeep.-one {
+  background-image: url('../assets/units/jeep-1.png');
+}
+.unit-container.-jeep.-two {
+  background-image: url('../assets/units/jeep-2.png');
+}
+.unit-container.-artillery.-one {
+  background-image: url('../assets/units/artillery-1.png');
+}
+.unit-container.-artillery.-two {
+  background-image: url('../assets/units/artillery-2.png');
+}
+.unit-container.-selected {
+  -webkit-transform: scale(1.0125);
+          transform: scale(1.0125);
 }
 .grid-container {
   max-width: 100%;
