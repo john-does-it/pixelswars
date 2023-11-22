@@ -4,6 +4,21 @@
   min-width: fit-content;
 }
 
+.stats-container {
+  max-width: 300px;
+
+  @media(min-width: @xs) {
+    max-width: fit-content;
+  }
+}
+
+.grid-container {
+  max-width: 95vw;
+  overflow-x: auto;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
 .dialog-container {
   margin-top: 1em;
   z-index: 999;
@@ -45,10 +60,21 @@
   min-width: fit-content;
 }
 
+.endround-container {
+  max-width: 100%;
+  width: @xxs;
+  margin-bottom: 2em;
+
+  .endround {
+    width: 100%;
+  }
+}
+
 .moneyandplayer-container {
   width: 100%;
-  padding: 2em;
-  padding-bottom: 0;
+  max-width: @xs;
+  margin: auto;
+  padding: 1em 2em 0;
   
   .moneyandendround-container {
     margin-top: .5em;
@@ -76,7 +102,6 @@
     }
   }
 }
-
 
 .options-container {
   margin-bottom: 1em;

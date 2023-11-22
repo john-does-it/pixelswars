@@ -162,7 +162,6 @@ body {
   -webkit-animation-duration: 1s;
           animation-duration: 1s;
   height: 100%;
-  min-height: 100vh;
 }
 a {
   text-decoration: none;
@@ -290,10 +289,8 @@ option {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  padding: 1em 2em;
   border: 3px solid hsl(0, 3%, 27%);
   font-weight: bold;
-  letter-spacing: 1.25em;
 }
 .endround:disabled {
   opacity: 0.5;
@@ -302,9 +299,27 @@ option {
   border-color: hsl(0, 0%, 95%);
 }
 .cell-container {
-  width: 128px;
-  height: 128px;
+  width: 32px;
+  height: 32px;
   background-size: cover;
+}
+@media (min-width: 480px) {
+  .cell-container {
+    width: 48px;
+    height: 48px;
+  }
+}
+@media (min-width: 640px) {
+  .cell-container {
+    width: 56px;
+    height: 56px;
+  }
+}
+@media (min-width: 960px) {
+  .cell-container {
+    width: 80px;
+    height: 80px;
+  }
 }
 .cell-container .stats-container {
   display: none;
@@ -456,7 +471,9 @@ option {
   height: inherit;
 }
 .stats-container {
-  height: 40px;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -464,7 +481,7 @@ option {
   border-radius: 40px;
   z-index: 999;
   gap: 0.5em;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
   z-index: 100;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -534,8 +551,6 @@ option {
   grid-row-gap: 0px;
   box-shadow: #1e1e1e73 20px 12px 20px 20px;
   z-index: 1;
-  margin-top: 2em;
-  margin-bottom: 2em;
 }
 .grid-container.-board1 {
   grid-template-columns: repeat(8, 0fr);
@@ -575,6 +590,22 @@ option {
   min-width: -moz-fit-content;
   min-width: fit-content;
 }
+.stats-container {
+  max-width: 300px;
+}
+@media (min-width: 480px) {
+  .stats-container {
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: fit-content;
+  }
+}
+.grid-container {
+  max-width: 95vw;
+  overflow-x: auto;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
 .dialog-container {
   margin-top: 1em;
   z-index: 999;
@@ -610,10 +641,19 @@ option {
   min-width: -moz-fit-content;
   min-width: fit-content;
 }
+.endround-container {
+  max-width: 100%;
+  width: 320px;
+  margin-bottom: 2em;
+}
+.endround-container .endround {
+  width: 100%;
+}
 .moneyandplayer-container {
   width: 100%;
-  padding: 2em;
-  padding-bottom: 0;
+  max-width: 480px;
+  margin: auto;
+  padding: 1em 2em 0;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;

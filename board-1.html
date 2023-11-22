@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=.3">
-  <title>Pixelwar, a strategy board game playable in the browser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Tiny Pixel War, a strategy board game playable in the browser</title>
   <meta name="description" content="Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest! A free turn by turn strategy game.">
   <meta name="author" content="John Does it">
   <link rel="stylesheet" href="css/style.css">
@@ -12,8 +12,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
-<body>
+<body id="body">
   <!-- audio -->
+  <audio id="player-one">
+    <source src="assets/mp3/player-one.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
   <audio id="woosh-movement">
     <source src="assets/mp3/woosh-movement.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
@@ -120,14 +124,13 @@
   <div class="moneyandplayer-container _color -bgblack">
     <div class="round-container _flex -wrap -justifyspacebetween -alignstart">
       <span class="player-container _flex -aligncenter _text -l -uppercase _color -white" id="current-player-ui">
-      <img class="active" src="./assets/icons/icon-player-one.png">
-      <img src="./assets/icons/icon-player-two.png">
-      Player
-      <span id="current-player">1</span>
-      </span>
-      <span class="_text -l -uppercase _color -white" id="current-round-ui">
-      Round 
-      <span id="current-round">1</span>
+        Player
+        <img class="active" src="./assets/icons/icon-player-one.png">
+        <img src="./assets/icons/icon-player-two.png">
+        </span>
+        <span class="_text -l -uppercase _color -white" id="current-round-ui">
+        Round 
+        <span id="current-round">1</span>
       </span>
     </div>
     <!-- money -->
@@ -142,7 +145,7 @@
       </span>
     </div>
   </div>
-  <div class="stats-container _color -white -bglightblack _flex -justifycenter -aligncenter" id="stats-container">
+  <div class="stats-container _color -white -bglightblack _flex -wrap -justifycenter -aligncenter" id="stats-container">
     <!-- stats -->
     Stats
   </div>
@@ -236,8 +239,8 @@
       </div>
     </div>
   </div>
-  <div class="_flex -wrap -justifycenter" style="width: 100%; padding-bottom: 2em; padding-left: 2em; padding-right: 2em; gap: 2em; margin: auto;">
-    <div class="endround-container _flex -wrap -justifyend">
+  <div class="_flex -wrap -justifycenter" style="width: 100%; padding-bottom: 4em; padding-left: 2em; padding-right: 2em; gap: 2em; margin: auto;">
+    <div class="endround-container _flex -wrap -justifycenter _margin -auto">
       <button class="endround _color -white -bgblack _text -uppercase -bold" type="button" id="end-round" title="End the current round">End round</button>
     </div>
   </div>

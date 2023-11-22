@@ -1,4 +1,5 @@
 const cells = document.querySelectorAll('.cell-container')
+const endRoundButton = document.getElementById('end-round')
 
 function initWorld () {
   const landscapes = [
@@ -47,7 +48,6 @@ function initWorld () {
     })
   })
 }
-initWorld()
 
 function getGridDimensions () {
   const style = getComputedStyle(document.getElementById('grid'))
@@ -66,13 +66,56 @@ function isCellContainUnit (cell) {
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-const currentPlayer = 1
+let currentPlayer = 1
+let currentRound = 1
 let selectedUnit = null
 let isSelectedUnit = false
+
+let originalIndex
+let originalMoveCapacity
+
+endRoundButton.addEventListener('click', endRound)
+
+function endRound () {
+  currentRound++
+  determinePlayer()
+  updateCurrentPlayerUI()
+  resetUnitsResidualMoveCapacity()
+
+  function determinePlayer () {
+    if (currentRound === 1 || currentRound % 2 === 1) {
+      currentPlayer = 1
+    }
+    if (currentRound % 2 !== 1) {
+      currentPlayer = 2
+    }
+  }
+
+  function updateCurrentPlayerUI () {
+    const currentPlayerUI = document.getElementById('current-player-ui')
+    const currentRoundContainer = document.getElementById('current-round')
+    // const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
+    // const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
+    const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
+
+    currentRoundContainer.classList.add('glow')
+    currentRoundContainer.innerText = currentRound
+
+    for (let i = 0; i < currentPlayerMiniatures.length; i++) {
+      currentPlayerMiniatures[i].classList.toggle('active')
+    }
+
+    setTimeout(() => {
+      currentPlayerUI.classList.remove('glow')
+      currentRoundContainer.classList.remove('glow')
+    }, 3000)
+  }
+}
 
 function selectUnit () {
   unselectUnit() // Unselect any previously selected unit
   const playableUnits = document.querySelectorAll('.unit-container')
+
   playableUnits.forEach(element => {
     element.addEventListener('click', function (event) {
       const tryToSelectUnit = element
@@ -80,6 +123,8 @@ function selectUnit () {
       if (!isSelectedUnit && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
         selectedUnit = tryToSelectUnit
         isSelectedUnit = true
+        originalIndex = Number(element.parentElement.dataset.index)
+        originalMoveCapacity = selectedUnit.dataset.residual_move_capacity
         highlightReachableCells(Number(element.parentElement.dataset.index))
       }
     })
@@ -90,6 +135,8 @@ function unselectUnit () {
   if (isSelectedUnit) {
     selectedUnit = null
     isSelectedUnit = false
+    removeReachableFromCells()
+    removeInRangeFromCells()
   }
 }
 
@@ -123,11 +170,9 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
   if (event.key === 'ArrowLeft') {
     console.log('press ArrowLeft')
     const leftCell = cells[updatedIndex - 1]
-    console.log(leftCell, leftCell.dataset.cost_of_movement, unitMoveCapacity, updatedIndex)
 
-    if (updatedIndex % numberOfCols !== 0 && unitMoveCapacity >= leftCell.dataset.cost_of_movement && !isCellContainUnit(leftCell)) {
+    if (leftCell && updatedIndex % numberOfCols !== 0 && unitMoveCapacity >= leftCell.dataset.cost_of_movement && !isCellContainUnit(leftCell)) {
       updateUnitResidualMoveCapacity(unitMoveCapacity, leftCell.dataset.cost_of_movement)
-
       removeReachableFromCells()
       removeInRangeFromCells()
       highlightReachableCells(updatedIndex - 1)
@@ -138,39 +183,57 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
   // move right
   if (event.key === 'ArrowRight') {
     console.log('press ArrowRight')
-    if (updatedIndex + 1 % numberOfCols !== 0) {
-      const rightCell = cells[updatedIndex + 1]
+    const rightCell = cells[updatedIndex + 1]
 
-      if ((updatedIndex + 1) % numberOfCols && unitMoveCapacity >= rightCell.dataset.cost_of_movement && !isCellContainUnit(rightCell)) {
-        updateUnitResidualMoveCapacity(unitMoveCapacity, rightCell.dataset.cost_of_movement)
-
-        removeReachableFromCells()
-        removeInRangeFromCells()
-        rightCell.appendChild(selectedUnit)
-        highlightReachableCells(updatedIndex + 1)
-      }
+    if (rightCell && (updatedIndex + 1) % numberOfCols !== 0 && unitMoveCapacity >= rightCell.dataset.cost_of_movement && !isCellContainUnit(rightCell)) {
+      updateUnitResidualMoveCapacity(unitMoveCapacity, rightCell.dataset.cost_of_movement)
+      removeReachableFromCells()
+      removeInRangeFromCells()
+      highlightReachableCells(updatedIndex + 1)
+      rightCell.appendChild(selectedUnit)
     }
   }
 
   // move up
   if (event.key === 'ArrowUp') {
     console.log('press ArrowUp')
+    const topCell = cells[updatedIndex - numberOfCols]
+
+    if (topCell && updatedIndex - numberOfCols >= 0 && unitMoveCapacity >= topCell.dataset.cost_of_movement && !isCellContainUnit(topCell)) {
+      updateUnitResidualMoveCapacity(unitMoveCapacity, topCell.dataset.cost_of_movement)
+      removeReachableFromCells()
+      removeInRangeFromCells()
+      topCell.appendChild(selectedUnit)
+      highlightReachableCells(updatedIndex - numberOfCols)
+    }
   }
 
   // move down
   if (event.key === 'ArrowDown') {
     console.log('press ArrowDown')
+    const bottomCell = cells[updatedIndex + numberOfCols]
+
+    if (bottomCell && updatedIndex + numberOfCols <= numberOfCols * numberOfRows && unitMoveCapacity >= bottomCell.dataset.cost_of_movement && !isCellContainUnit(bottomCell)) {
+      updateUnitResidualMoveCapacity(unitMoveCapacity, bottomCell.dataset.cost_of_movement)
+      removeReachableFromCells()
+      removeInRangeFromCells()
+      bottomCell.appendChild(selectedUnit)
+      highlightReachableCells(updatedIndex + numberOfCols)
+    }
   }
   // valid move
   if (event.key === 'Enter') {
     console.log('press Enter')
+    unselectUnit()
   }
 
   // cancel move
   if (event.key === 'Escape') {
     console.log('press Escape')
+    const originalCell = cells[originalIndex]
+    originalCell.appendChild(selectedUnit)
+    resetUnitResidualMoveCapacity(originalMoveCapacity)
     unselectUnit()
-    // reset to what was the initial index of the unit before any move, append the cell to the parent container and reset the residual move capacity of the unit
   }
 }
 
@@ -179,59 +242,18 @@ function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
 }
 
-function statPreview () {
-  const statsContainer = document.getElementById('stats-container')
-
-  function addHoverListeners () {
-    cells.forEach(cell => {
-      cell.addEventListener('mouseenter', (event) => { showCellsStats(cell, event) })
-    })
-  }
-
-  window.addEventListener('load', addHoverListeners) // Pass function reference
-
-  function getBackgroundImage (element) {
-    const style = window.getComputedStyle(element, null).getPropertyValue('background-image')
-    return style.replace(/url\((['"])?(.*?)\1\)/gi, '$2')
-  }
-
-  function showCellsStats (cell, event) {
-    console.log(cell)
-    let statsHTML = ''
-
-    for (const child of cell.children) {
-      if (child.classList.contains('unit-container')) {
-        console.log(child)
-
-        let unitBackground = getBackgroundImage(child)
-        unitBackground = unitBackground.replace('.png', '-fit.png')
-
-        statsHTML += `
-        <span class="miniature" style="background-image: url('${unitBackground}'); background-size: cover; width: 25px; height: 25px; display: block;"></span>` +
-        '<span class="stat -health _flex -justifycenter -aligncenter">' +
-        child.dataset.health + '</span>' +
-        '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
-        child.dataset.attack_capacity + '</span>' +
-        '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
-        child.dataset.attack_range + '</span>' +
-        '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
-        child.dataset.attack_damage + '</span>' +
-        '<span class="stat -defense _flex -justifycenter -aligncenter">' +
-        child.dataset.defense + '</span>' +
-        '<span class="stat -movement _flex -justifycenter -aligncenter">' +
-        child.dataset.residual_move_capacity +
-         '</span>'
-      }
-    }
-
-    const cellBackground = getBackgroundImage(cell)
-
-    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}'); background-size: contain; width: 25px; height: 25px; display: block;"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
-
-    statsContainer.innerHTML = statsHTML
-  }
+function resetUnitResidualMoveCapacity (originalMoveCapacity) {
+  const residualMoveCapacity = originalMoveCapacity
+  selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
 }
-statPreview()
+
+function resetUnitsResidualMoveCapacity () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => {
+    unit.setAttribute('data-residual_move_capacity', unit.dataset.movement_range)
+  })
+}
 
 function highlightReachableCells (cellIndex) {
   const unitMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
@@ -270,7 +292,6 @@ function highlightUnitAttackRange (cellIndex, selectedUnit) {
     const adjacentCell = document.querySelector(`.cell-container[data-index="${cell}"]`)
     adjacentCell.classList.add('-inrange')
   })
-  // getEnemyUnitsInRange(adjacentCells)
 }
 
 function removeReachableFromCells () {
@@ -284,6 +305,57 @@ function removeInRangeFromCells () {
     element.classList.remove('-inrange')
   })
 }
+
+function statPreview () {
+  const statsContainer = document.getElementById('stats-container')
+
+  function addHoverListeners () {
+    cells.forEach(cell => {
+      cell.addEventListener('mouseenter', (event) => { showCellsStats(cell, event) })
+    })
+  }
+
+  window.addEventListener('load', addHoverListeners) // Pass function reference
+
+  function getBackgroundImage (element) {
+    const style = window.getComputedStyle(element, null).getPropertyValue('background-image')
+    return style.replace(/url\((['"])?(.*?)\1\)/gi, '$2')
+  }
+
+  function showCellsStats (cell, event) {
+    let statsHTML = ''
+
+    for (const child of cell.children) {
+      if (child.classList.contains('unit-container')) {
+        let unitBackground = getBackgroundImage(child)
+        unitBackground = unitBackground.replace('.png', '-fit.png')
+
+        statsHTML += `
+        <span class="miniature" style="background-image: url('${unitBackground}');background-size: contain;background-repeat: no-repeat;width: 25px;height: 25px;display: block;"></span>` +
+        '<span class="stat -health _flex -justifycenter -aligncenter">' +
+        child.dataset.health + '</span>' +
+        '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_capacity + '</span>' +
+        '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_range + '</span>' +
+        '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+        child.dataset.residual_move_capacity +
+         '</span>' +
+        '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_damage + '</span>' +
+        '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+        child.dataset.defense + '</span>'
+      }
+    }
+
+    const cellBackground = getBackgroundImage(cell)
+
+    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}'); background-size: contain; width: 25px; height: 25px; display: block;"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
+
+    statsContainer.innerHTML = statsHTML
+  }
+}
+statPreview()
 
 function returnAdjacentCells (cellIndex, attackRange) {
   const adjacentCells = []
@@ -342,5 +414,5 @@ function returnAdjacentCells (cellIndex, attackRange) {
   return adjacentCells
 }
 
-// Initial function calls
+initWorld()
 selectUnit()
