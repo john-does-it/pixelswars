@@ -113,7 +113,7 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
 
   // capture building
   if (event.key === ' ') {
-    console.log('want to capture')
+    console.log('press Space')
     if (selectedUnit.classList.contains('-infantry')) {
       console.log('is infantry')
     }
@@ -121,27 +121,27 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
 
   // move left
   if (event.key === 'ArrowLeft') {
-    console.log('want to move left')
+    console.log('press ArrowLeft')
     const leftCell = cells[updatedIndex - 1]
+    console.log(leftCell, leftCell.dataset.cost_of_movement, unitMoveCapacity, updatedIndex)
 
-    if (updatedIndex % numberOfCols !== 0 && leftCell.dataset.cost_of_movement <= unitMoveCapacity && !isCellContainUnit(leftCell)) {
+    if (updatedIndex % numberOfCols !== 0 && unitMoveCapacity >= leftCell.dataset.cost_of_movement && !isCellContainUnit(leftCell)) {
       updateUnitResidualMoveCapacity(unitMoveCapacity, leftCell.dataset.cost_of_movement)
 
       removeReachableFromCells()
       removeInRangeFromCells()
-      leftCell.appendChild(selectedUnit)
       highlightReachableCells(updatedIndex - 1)
+      leftCell.appendChild(selectedUnit)
     }
   }
 
   // move right
   if (event.key === 'ArrowRight') {
-    console.log('want to move right')
-
+    console.log('press ArrowRight')
     if (updatedIndex + 1 % numberOfCols !== 0) {
       const rightCell = cells[updatedIndex + 1]
 
-      if ((updatedIndex + 1) % numberOfCols && rightCell.dataset.cost_of_movement <= unitMoveCapacity && !isCellContainUnit(rightCell)) {
+      if ((updatedIndex + 1) % numberOfCols && unitMoveCapacity >= rightCell.dataset.cost_of_movement && !isCellContainUnit(rightCell)) {
         updateUnitResidualMoveCapacity(unitMoveCapacity, rightCell.dataset.cost_of_movement)
 
         removeReachableFromCells()
@@ -154,20 +154,21 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
 
   // move up
   if (event.key === 'ArrowUp') {
-    console.log('want to move up')
+    console.log('press ArrowUp')
   }
 
   // move down
   if (event.key === 'ArrowDown') {
-    console.log('want to move down')
+    console.log('press ArrowDown')
   }
   // valid move
   if (event.key === 'Enter') {
-    console.log('want to valid move')
+    console.log('press Enter')
   }
 
   // cancel move
   if (event.key === 'Escape') {
+    console.log('press Escape')
     unselectUnit()
     // reset to what was the initial index of the unit before any move, append the cell to the parent container and reset the residual move capacity of the unit
   }
@@ -178,24 +179,49 @@ function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
 }
 
+function statPreview () {
+  const statsContainer = document.getElementById('stats-container')
+  const units = document.querySelectorAll('.-unit-container')
+
+  function addHoverListeners (event) {
+    cells.forEach(cell => {
+      cell.addEventListener('mouseenter', (event) => { showStats(cell, event) })
+    })
+  }
+
+  window.addEventListener('load', (event) => { addHoverListeners(event) }) // Pass function reference
+
+  function showStats (cell, event) {
+    console.log('Show stats', cell, event)
+    statsContainer.innerText = 'CELL - ' + 'DEF' + cell.dataset.cost_of_movement + ' - ' + 'ATT' + cell.dataset.defense_bonus
+    console.log(cell.dataset.cost_of_movement, cell.dataset.defense_bonus)
+  }
+}
+statPreview()
+
 function highlightReachableCells (cellIndex) {
-  console.log(cellIndex % numberOfCols, selectedUnit.dataset.residual_move_capacity, cells[cellIndex - 1].dataset.cost_of_movement, cells[cellIndex - 1])
-  if (cellIndex % numberOfCols !== 0 && selectedUnit.dataset.residual_move_capacity > cells[cellIndex - 1].dataset.cost_of_movement) {
+  const unitMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
+
+  // Highlight left cell if it's within the grid and reachable
+  if (cellIndex % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex - 1].dataset.cost_of_movement)) {
     const leftCell = cells[cellIndex - 1]
     leftCell.classList.add('-reachable')
   }
 
-  if ((cellIndex + 1) % numberOfCols !== 0 && selectedUnit.dataset.residual_move_capacity > cells[cellIndex + 1].dataset.cost_of_movement) {
+  // Highlight right cell if it's within the grid and reachable
+  if ((cellIndex + 1) % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex + 1].dataset.cost_of_movement)) {
     const rightCell = cells[cellIndex + 1]
     rightCell.classList.add('-reachable')
   }
 
-  if (cellIndex - numberOfCols >= 0) {
+  // Highlight top cell if it's within the grid and reachable
+  if (cellIndex - numberOfCols >= 0 && unitMoveCapacity >= Number(cells[cellIndex - numberOfCols].dataset.cost_of_movement)) {
     const topCell = cells[cellIndex - numberOfCols]
     topCell.classList.add('-reachable')
   }
 
-  if (cellIndex + numberOfCols <= numberOfCols * numberOfRows) {
+  // Highlight bottom cell if it's within the grid and reachable
+  if (cellIndex + numberOfCols < numberOfCols * numberOfRows && unitMoveCapacity >= Number(cells[cellIndex + numberOfCols].dataset.cost_of_movement)) {
     const bottomCell = cells[cellIndex + numberOfCols]
     bottomCell.classList.add('-reachable')
   }
