@@ -42,8 +42,8 @@
     <source src="assets/mp3/jeep-engine.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
-  <audio id="artillery-engine">
-    <source src="assets/mp3/artillery-engine.mp3" type="audio/mpeg">
+  <audio id="artillery">
+    <source src="assets/mp3/artillery.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
   <audio id="infantry">
@@ -122,13 +122,13 @@
     </div>
   </div>
   <div class="moneyandplayer-container _color -bgblack">
-    <div class="round-container _flex -wrap -justifyspacebetween -alignstart">
-      <span class="player-container _flex -aligncenter _text -l -uppercase _color -white" id="current-player-ui">
+    <div class="moneyandplayer-subcontainer _flex -wrap -justifyspacebetween -alignstart">
+      <span class="player-container _flex -aligncenter _text -m -uppercase _color -white -bglightblack" id="current-player-ui">
         Player
         <img class="active" src="./assets/icons/icon-player-one.png">
         <img src="./assets/icons/icon-player-two.png">
         </span>
-        <span class="_text -l -uppercase _color -white" id="current-round-ui">
+        <span class="round-container _flex -aligncenter  _text -m -uppercase _color -white -bglightblack" id="current-round-ui">
         Round 
         <span id="current-round">1</span>
       </span>
@@ -162,10 +162,11 @@
         <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500" title="HEA: 100, AMM: 2, MR: 8, ATT: 50, DEF: 50">
-       </div>
+        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
       </div>
-      <div class="cell-container -moutain -ongrass"></div>
+      <div class="cell-container -moutain -ongrass">
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500"></div>
+      </div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -water -grass -right"></div>
@@ -174,7 +175,9 @@
       </div>
       <div class="cell-container -building -hospital -ongrass"  data-type="building" data-building-type="hospital" data-capture_points="20" data-player="0"></div>
       <div class="cell-container -building -city -ongrass" data-type="building" data-building-type="city" data-capture_points="20" data-player="0"></div>
-      <div class="cell-container -grass"></div>
+      <div class="cell-container -grass">
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="300"  data-sound_delay="500"></div>
+      </div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass "></div>
       <div class="cell-container -grass"></div>

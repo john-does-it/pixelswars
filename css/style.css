@@ -329,7 +329,7 @@ option {
   position: absolute;
   top: 0;
 }
-.cell-container.-inrange::before {
+.cell-container.-attackable::before {
   width: inherit;
   height: inherit;
   position: absolute;
@@ -338,16 +338,16 @@ option {
   background-color: hsla(0, 0%, 10%, 0.25);
   z-index: 0;
 }
-.cell-container.-inrange .unit-container {
+.cell-container.-attackable .unit-container {
   position: relative;
   z-index: 1;
 }
-.cell-container.-inrange .unit-container.-inrange::before {
+.cell-container.-attackable .unit-container.-inrange::before {
   position: absolute;
   display: flex;
   content: '';
-  width: 50px;
-  height: 50px;
+  width: 50%;
+  height: 50%;
   top: 0;
   bottom: 0;
   left: 0;
@@ -471,12 +471,6 @@ option {
   height: inherit;
 }
 .stats-container {
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
-  height: fit-content;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
   padding: 0.5em 1em;
   border-radius: 40px;
   z-index: 999;
@@ -592,6 +586,28 @@ option {
 }
 .stats-container {
   max-width: 300px;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+@media (min-width: 960px) {
+  .stats-container {
+    bottom: 10px;
+    left: 10px;
+    right: auto;
+  }
+}
+@media (min-width: 480px) {
+  .stats-container {
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: fit-content;
+  }
 }
 @media (min-width: 480px) {
   .stats-container {
@@ -658,22 +674,33 @@ option {
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;
 }
+.moneyandplayer-container .moneyandplayer-subcontainer {
+  row-gap: 0.5em;
+  margin-bottom: 0.5em;
+}
 .moneyandplayer-container .money-container {
   width: 100%;
 }
-.moneyandplayer-container .round-container {
-  width: 100%;
-}
+.moneyandplayer-container .round-container,
 .moneyandplayer-container .player-container {
-  gap: 0.5em;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 30px;
+  border-radius: 40px;
+  gap: 0.25em;
+  padding-left: 0.5em;
 }
 .moneyandplayer-container .player-container img {
-  width: 30px;
-  height: 30px;
+  width: inherit;
+  height: inherit;
   display: none;
 }
 .moneyandplayer-container .player-container img.active {
   display: flex;
+}
+.moneyandplayer-container .round-container {
+  padding-right: 0.5em;
 }
 .options-container {
   margin-bottom: 1em;

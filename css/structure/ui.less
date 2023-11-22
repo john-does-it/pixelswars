@@ -6,6 +6,22 @@
 
 .stats-container {
   max-width: 300px;
+  height: fit-content;
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  @media(min-width: @m) {
+    bottom: 10px;
+    left: 10px;
+    right: auto;
+  }
+
+  @media(min-width: @xs) {
+    max-width: fit-content;
+  }
 
   @media(min-width: @xs) {
     max-width: fit-content;
@@ -80,26 +96,38 @@
     margin-top: .5em;
   }
 
+  .moneyandplayer-subcontainer {
+    row-gap: .5em;
+    margin-bottom: .5em;
+  }
+
   .money-container {
     width: 100%;
   }
 
-  .round-container {
-    width: 100%;
+  .round-container, 
+  .player-container {
+    width: fit-content;
+    height: 30px;
+    border-radius: 40px;
+    gap: .25em;
+    padding-left: .5em;
   }
 
   .player-container {
-    gap: .5em;
-  
     img {
-      width: 30px;
-      height: 30px;
+      width: inherit;
+      height: inherit;
       display: none;
   
       &.active {
         display: flex;
       }
     }
+  }
+
+  .round-container {
+    padding-right: .5em;
   }
 }
 

@@ -1,6 +1,60 @@
 const cells = document.querySelectorAll('.cell-container')
 const endRoundButton = document.getElementById('end-round')
 
+const sounds = {
+  cinematicMetal: document.getElementById('cinematic-metal'),
+  infantry: document.getElementById('infantry'),
+  infantry2: document.getElementById('infantry-2'),
+  infantry3: document.getElementById('infantry-3'),
+  jeepEngine: document.getElementById('jeep-engine'),
+  artillery: document.getElementById('artillery'),
+  gunBattle: document.getElementById('gun-battle'),
+  trumpetFanfare: document.getElementById('trumpet-fanfare'),
+  bomb: document.getElementById('bomb'),
+  missileLaunch: document.getElementById('missile-launch'),
+  jumpCapture: document.getElementById('jump-capture'),
+  wooshMovement: document.getElementById('woosh-movement'),
+  militaryMarch: document.getElementById('military-march'),
+  mechanicBuilding: document.getElementById('mechanic-building'),
+  nextRound: document.getElementById('next-round'),
+  cashMachine: document.getElementById('cash-machine')
+}
+
+const infantrySounds = [sounds.infantry, sounds.infantry2, sounds.infantry3]
+
+Object.values(sounds).forEach(sound => {
+  if (sound && sound.load) {
+    sound.load()
+  }
+})
+
+function playSound (sound) {
+  if (sound) {
+    sound.pause()
+    sound.currentTime = 0
+    sound.play()
+  }
+}
+
+function playSelectSound (unitType) {
+  let randomInfantrySound
+
+  switch (unitType) {
+    case 'infantry':
+      randomInfantrySound = infantrySounds[Math.floor(Math.random() * infantrySounds.length)]
+      playSound(randomInfantrySound)
+      break
+    case 'jeep':
+      playSound(sounds.jeepEngine)
+      break
+    case 'artillery':
+      playSound(sounds.artillery)
+      break
+    default:
+      break
+  }
+}
+
 function initWorld () {
   const landscapes = [
     {
@@ -81,6 +135,11 @@ function endRound () {
   determinePlayer()
   updateCurrentPlayerUI()
   resetUnitsResidualMoveCapacity()
+  playSound(sounds.nextRound)
+
+  if (selectedUnit) {
+    unselectUnit()
+  }
 
   function determinePlayer () {
     if (currentRound === 1 || currentRound % 2 === 1) {
@@ -94,8 +153,6 @@ function endRound () {
   function updateCurrentPlayerUI () {
     const currentPlayerUI = document.getElementById('current-player-ui')
     const currentRoundContainer = document.getElementById('current-round')
-    // const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
-    // const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
     const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
 
     currentRoundContainer.classList.add('glow')
@@ -125,9 +182,39 @@ function selectUnit () {
         isSelectedUnit = true
         originalIndex = Number(element.parentElement.dataset.index)
         originalMoveCapacity = selectedUnit.dataset.residual_move_capacity
-        highlightReachableCells(Number(element.parentElement.dataset.index))
+        highlightReachableCells(originalIndex)
+        removeInRangeFromUnits()
+        addInRangeToEnemyUnits(originalIndex)
+        playSelectSound(selectedUnit.dataset.type)
       }
     })
+  })
+}
+
+// this doesnt work as expected as the class isnt removed when i select another unit
+function removeInRangeFromUnits () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => {
+    unit.classList.remove('-inrange')
+  })
+}
+
+function addInRangeToEnemyUnits (index) {
+  const units = document.querySelectorAll('unit-container')
+
+  units.forEach(unit => {
+    unit.classList.remove('-inrange')
+  })
+
+  const adjacentCells = returnAdjacentCells(index, Number(selectedUnit.dataset.attack_range))
+
+  const enemyUnits = getEnemyUnitsInRange(adjacentCells)
+
+  console.log(enemyUnits)
+
+  enemyUnits.forEach(enemyUnit => {
+    enemyUnit.classList.add('-inrange')
   })
 }
 
@@ -136,7 +223,7 @@ function unselectUnit () {
     selectedUnit = null
     isSelectedUnit = false
     removeReachableFromCells()
-    removeInRangeFromCells()
+    removeAttackableFromCells()
   }
 }
 
@@ -166,59 +253,80 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     }
   }
 
+  // TO DO: let user choose between azerty or qwerty keyboard then bind key depending on current keyboardMode (if azerty qsdz else wsad)
   // move left
-  if (event.key === 'ArrowLeft') {
+  if (event.key === 'ArrowLeft' || event.key === 'q') {
     console.log('press ArrowLeft')
     const leftCell = cells[updatedIndex - 1]
+    const adjacentCells = returnAdjacentCells(Number(updatedIndex - 1), selectedUnit.dataset.attack_range)
+    getEnemyUnitsInRange(adjacentCells)
 
     if (leftCell && updatedIndex % numberOfCols !== 0 && unitMoveCapacity >= leftCell.dataset.cost_of_movement && !isCellContainUnit(leftCell)) {
+      addInRangeToEnemyUnits(updatedIndex - 1)
       updateUnitResidualMoveCapacity(unitMoveCapacity, leftCell.dataset.cost_of_movement)
       removeReachableFromCells()
-      removeInRangeFromCells()
+      removeAttackableFromCells()
       highlightReachableCells(updatedIndex - 1)
+      removeInRangeFromUnits()
+      addInRangeToEnemyUnits(updatedIndex - 1)
       leftCell.appendChild(selectedUnit)
     }
   }
 
   // move right
-  if (event.key === 'ArrowRight') {
+  if (event.key === 'ArrowRight' || event.key === 'd') {
     console.log('press ArrowRight')
     const rightCell = cells[updatedIndex + 1]
+    const adjacentCells = returnAdjacentCells(Number(updatedIndex + 1), selectedUnit.dataset.attack_range)
+    getEnemyUnitsInRange(adjacentCells)
 
     if (rightCell && (updatedIndex + 1) % numberOfCols !== 0 && unitMoveCapacity >= rightCell.dataset.cost_of_movement && !isCellContainUnit(rightCell)) {
+      addInRangeToEnemyUnits(updatedIndex + 1)
       updateUnitResidualMoveCapacity(unitMoveCapacity, rightCell.dataset.cost_of_movement)
       removeReachableFromCells()
-      removeInRangeFromCells()
+      removeAttackableFromCells()
       highlightReachableCells(updatedIndex + 1)
+      removeInRangeFromUnits()
+      addInRangeToEnemyUnits(updatedIndex + 1)
       rightCell.appendChild(selectedUnit)
     }
   }
 
   // move up
-  if (event.key === 'ArrowUp') {
+  if (event.key === 'ArrowUp' || event.key === 'z') {
     console.log('press ArrowUp')
     const topCell = cells[updatedIndex - numberOfCols]
+    const adjacentCells = returnAdjacentCells(Number(updatedIndex - numberOfCols), selectedUnit.dataset.attack_range)
+    getEnemyUnitsInRange(adjacentCells)
 
     if (topCell && updatedIndex - numberOfCols >= 0 && unitMoveCapacity >= topCell.dataset.cost_of_movement && !isCellContainUnit(topCell)) {
+      addInRangeToEnemyUnits(updatedIndex - numberOfCols)
       updateUnitResidualMoveCapacity(unitMoveCapacity, topCell.dataset.cost_of_movement)
       removeReachableFromCells()
-      removeInRangeFromCells()
-      topCell.appendChild(selectedUnit)
+      removeAttackableFromCells()
       highlightReachableCells(updatedIndex - numberOfCols)
+      removeInRangeFromUnits()
+      addInRangeToEnemyUnits(updatedIndex - numberOfCols)
+      topCell.appendChild(selectedUnit)
     }
   }
 
   // move down
-  if (event.key === 'ArrowDown') {
+  if (event.key === 'ArrowDown' || event.key === 's') {
     console.log('press ArrowDown')
     const bottomCell = cells[updatedIndex + numberOfCols]
+    const adjacentCells = returnAdjacentCells(Number(updatedIndex + numberOfCols), selectedUnit.dataset.attack_range)
+    getEnemyUnitsInRange(adjacentCells)
 
     if (bottomCell && updatedIndex + numberOfCols <= numberOfCols * numberOfRows && unitMoveCapacity >= bottomCell.dataset.cost_of_movement && !isCellContainUnit(bottomCell)) {
+      addInRangeToEnemyUnits(updatedIndex + numberOfCols)
       updateUnitResidualMoveCapacity(unitMoveCapacity, bottomCell.dataset.cost_of_movement)
       removeReachableFromCells()
-      removeInRangeFromCells()
-      bottomCell.appendChild(selectedUnit)
+      removeAttackableFromCells()
       highlightReachableCells(updatedIndex + numberOfCols)
+      removeInRangeFromUnits()
+      addInRangeToEnemyUnits(updatedIndex + numberOfCols)
+      bottomCell.appendChild(selectedUnit)
     }
   }
   // valid move
@@ -290,7 +398,7 @@ function highlightUnitAttackRange (cellIndex, selectedUnit) {
 
   adjacentCells.forEach(cell => {
     const adjacentCell = document.querySelector(`.cell-container[data-index="${cell}"]`)
-    adjacentCell.classList.add('-inrange')
+    adjacentCell.classList.add('-attackable')
   })
 }
 
@@ -300,9 +408,9 @@ function removeReachableFromCells () {
   })
 }
 
-function removeInRangeFromCells () {
+function removeAttackableFromCells () {
   cells.forEach(element => {
-    element.classList.remove('-inrange')
+    element.classList.remove('-attackable')
   })
 }
 
@@ -411,7 +519,25 @@ function returnAdjacentCells (cellIndex, attackRange) {
     }
   }
 
+  console.log(adjacentCells)
   return adjacentCells
+}
+
+// adjacentCells return a object like [34, 36, 27, 43, 26, 28, 42, 44]
+function getEnemyUnitsInRange (adjacentCells) {
+  const cells = document.querySelectorAll('.cell-container')
+  const enemyUnitsInRange = []
+
+  adjacentCells.forEach(adjacentCellIndex => {
+    const cell = cells[adjacentCellIndex]
+    const unitContainer = cell.querySelector('.unit-container')
+
+    if (unitContainer && Number(unitContainer.dataset.player) !== currentPlayer) {
+      enemyUnitsInRange.push(unitContainer)
+    }
+  })
+
+  return enemyUnitsInRange
 }
 
 initWorld()
