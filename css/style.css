@@ -455,14 +455,23 @@ option {
   width: inherit;
   height: inherit;
 }
-.stat {
+.stats-container {
+  height: 40px;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  padding: 0.5em 1em;
+  border-radius: 40px;
+  z-index: 999;
+  gap: 0.5em;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   z-index: 100;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
 }
-.stat::before {
+.stats-container .stat::before {
   content: "";
   width: 25px;
   height: 25px;
@@ -470,22 +479,23 @@ option {
   display: inline-block;
   background-repeat: no-repeat;
 }
-.stat.-movementrange::before,
-.stat.-costofmovement::before {
-  background-image: url('../assets/icons/icon-movement-range.png');
+.stats-container .stat.-movement::before {
+  background-image: url('../assets/icons/icon-movement.png');
 }
-.stat.-bonusofdefense::before,
-.stat.-defense::before {
+.stats-container .stat.-defense::before {
   background-image: url('../assets/icons/icon-defense.png');
 }
-.stat.-health::before {
+.stats-container .stat.-health::before {
   background-image: url('../assets/icons/icon-health.png');
 }
-.stat.-attackrange::before {
+.stats-container .stat.-attackrange::before {
   background-image: url('../assets/icons/icon-attack-range.png');
 }
-.stat.-attackcapacity::before {
+.stats-container .stat.-attackcapacity::before {
   background-image: url('../assets/icons/icon-attack-capacity.png');
+}
+.stats-container .stat.-attackdamage::before {
+  background-image: url('../assets/icons/icon-attack-damage.png');
 }
 .unit-container {
   width: 100%;
@@ -603,6 +613,7 @@ option {
 .moneyandplayer-container {
   width: 100%;
   padding: 2em;
+  padding-bottom: 0;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;

@@ -181,20 +181,54 @@ function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
 
 function statPreview () {
   const statsContainer = document.getElementById('stats-container')
-  const units = document.querySelectorAll('.-unit-container')
 
-  function addHoverListeners (event) {
+  function addHoverListeners () {
     cells.forEach(cell => {
-      cell.addEventListener('mouseenter', (event) => { showStats(cell, event) })
+      cell.addEventListener('mouseenter', (event) => { showCellsStats(cell, event) })
     })
   }
 
-  window.addEventListener('load', (event) => { addHoverListeners(event) }) // Pass function reference
+  window.addEventListener('load', addHoverListeners) // Pass function reference
 
-  function showStats (cell, event) {
-    console.log('Show stats', cell, event)
-    statsContainer.innerText = 'CELL - ' + 'DEF' + cell.dataset.cost_of_movement + ' - ' + 'ATT' + cell.dataset.defense_bonus
-    console.log(cell.dataset.cost_of_movement, cell.dataset.defense_bonus)
+  function getBackgroundImage (element) {
+    const style = window.getComputedStyle(element, null).getPropertyValue('background-image')
+    return style.replace(/url\((['"])?(.*?)\1\)/gi, '$2')
+  }
+
+  function showCellsStats (cell, event) {
+    console.log(cell)
+    let statsHTML = ''
+
+    for (const child of cell.children) {
+      if (child.classList.contains('unit-container')) {
+        console.log(child)
+
+        let unitBackground = getBackgroundImage(child)
+        unitBackground = unitBackground.replace('.png', '-fit.png')
+
+        statsHTML += `
+        <span class="miniature" style="background-image: url('${unitBackground}'); background-size: cover; width: 25px; height: 25px; display: block;"></span>` +
+        '<span class="stat -health _flex -justifycenter -aligncenter">' +
+        child.dataset.health + '</span>' +
+        '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_capacity + '</span>' +
+        '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_range + '</span>' +
+        '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
+        child.dataset.attack_damage + '</span>' +
+        '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+        child.dataset.defense + '</span>' +
+        '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+        child.dataset.residual_move_capacity +
+         '</span>'
+      }
+    }
+
+    const cellBackground = getBackgroundImage(cell)
+
+    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}'); background-size: contain; width: 25px; height: 25px; display: block;"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
+
+    statsContainer.innerHTML = statsHTML
   }
 }
 statPreview()
