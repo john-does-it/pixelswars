@@ -55,6 +55,23 @@ function playSelectSound (unitType) {
   }
 }
 
+function playFightSound (unitType) {
+
+  switch (unitType) {
+    case 'infantry':
+      playSound(sounds.gunBattle)
+      break
+    case 'jeep':
+      playSound(sounds.gunBattle)
+      break
+    case 'artillery':
+      playSound(sounds.missileLaunch)
+      break
+    default:
+      break
+  }
+}
+
 function initWorld () {
   const landscapes = [
     {
@@ -220,9 +237,13 @@ function handleFight (event) {
   isFighting = true
 
   if (selectedUnit.dataset.residual_attack_capacity > 0) {
+    playFightSound(selectedUnit.dataset.name)
+    // delay based on selectedUnit.dataset.sound_delay
+    // then inflict damage
     console.log('ATT', selectedUnit.dataset.attack_damage, 'DEF', selectedUnit.dataset.defense, 'HEA', selectedUnit.dataset.health)
     const damage = (((selectedUnit.dataset.attack_damage * (selectedUnit.dataset.health / 100)) * 1.5) - Number(event.target.dataset.defense)) - (getLandscapeData(event.target).landscapeDefenseBonus / 2)
     console.log('damage', damage)
+    event.target.setAttribute('data-health', event.target.dataset.health - damage)
   }
 
   isFighting = false
