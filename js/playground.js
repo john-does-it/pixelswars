@@ -213,10 +213,11 @@ function removeHandleFightEventListeners () {
 }
 
 function handleFight (event) {
-  if (isFighting) {
+  if (selectedUnit === null || isFighting) {
     return
   }
 
+  console.log(selectedUnit)
   isFighting = true
 
   if (selectedUnit.dataset.residual_attack_capacity > 0) {
