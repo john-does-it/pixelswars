@@ -113,10 +113,6 @@ function getGridDimensions () {
 }
 getGridDimensions()
 
-function isCellContainUnit (cell) {
-  return cell.querySelector('.unit-container') !== null
-}
-
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
@@ -124,6 +120,7 @@ let currentPlayer = 1
 let currentRound = 1
 let selectedUnit = null
 let isSelectedUnit = false
+let isFighting = false
 
 let originalIndex
 let originalMoveCapacity
@@ -171,24 +168,64 @@ function endRound () {
 
 function selectUnit () {
   unselectUnit() // Unselect any previously selected unit
+
   const playableUnits = document.querySelectorAll('.unit-container')
 
   playableUnits.forEach(element => {
-    element.addEventListener('click', function (event) {
-      const tryToSelectUnit = element
-
-      if (!isSelectedUnit && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
-        selectedUnit = tryToSelectUnit
-        isSelectedUnit = true
-        originalIndex = Number(element.parentElement.dataset.index)
-        originalMoveCapacity = selectedUnit.dataset.residual_move_capacity
-        highlightReachableCells(originalIndex)
-        removeInRangeFromUnits()
-        addInRangeToEnemyUnits(originalIndex)
-        playSelectSound(selectedUnit.dataset.type)
-      }
-    })
+    element.addEventListener('click', unitClickHandler)
   })
+
+  function unitClickHandler (event) {
+    const tryToSelectUnit = event.currentTarget
+
+    if (!isSelectedUnit && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
+      selectedUnit = tryToSelectUnit
+      isSelectedUnit = true
+      originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
+      originalMoveCapacity = selectedUnit.dataset.residual_move_capacity
+      highlightReachableCells(originalIndex)
+      removeInRangeFromUnits()
+      addInRangeToEnemyUnits(originalIndex)
+      const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
+      enemyUnitsInRange.forEach(enemyUnit => {
+        enemyUnit.addEventListener('click', handleFight)
+      })
+      playSelectSound(selectedUnit.dataset.type)
+    }
+  }
+}
+
+function getLandscapeData (unit) {
+  const landscape = unit.parentElement
+  const landscapeIndex = landscape.dataset.index
+  const lansdcapeCostOfMovement = landscape.dataset.cost_of_movement
+  const landscapeDefenseBonus = landscape.dataset.defense_bonus
+  const landscapeType = landscape.dataset.type
+  const landscapeDatas = { landscapeIndex, lansdcapeCostOfMovement, landscapeDefenseBonus, landscapeType }
+  return landscapeDatas
+}
+
+function removeHandleFightEventListeners () {
+  const enemyUnitsInRange = document.querySelectorAll('.-inrange')
+  enemyUnitsInRange.forEach(enemyUnit => {
+    enemyUnit.removeEventListener('click', handleFight)
+  })
+}
+
+function handleFight (event) {
+  if (isFighting) {
+    return
+  }
+
+  isFighting = true
+
+  if (selectedUnit.dataset.residual_attack_capacity > 0) {
+    console.log('ATT', selectedUnit.dataset.attack_damage, 'DEF', selectedUnit.dataset.defense, 'HEA', selectedUnit.dataset.health)
+    const damage = (((selectedUnit.dataset.attack_damage * (selectedUnit.dataset.health / 100)) * 1.5) - Number(event.target.dataset.defense)) - (getLandscapeData(event.target).landscapeDefenseBonus / 2)
+    console.log('damage', damage)
+  }
+
+  isFighting = false
 }
 
 // this doesnt work as expected as the class isnt removed when i select another unit
@@ -211,11 +248,11 @@ function addInRangeToEnemyUnits (index) {
 
   const enemyUnits = getEnemyUnitsInRange(adjacentCells)
 
-  console.log(enemyUnits)
-
   enemyUnits.forEach(enemyUnit => {
     enemyUnit.classList.add('-inrange')
   })
+
+  return enemyUnits
 }
 
 function unselectUnit () {
@@ -224,6 +261,7 @@ function unselectUnit () {
     isSelectedUnit = false
     removeReachableFromCells()
     removeAttackableFromCells()
+    removeHandleFightEventListeners()
   }
 }
 
@@ -252,8 +290,7 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       console.log('is infantry')
     }
   }
-
-  // TO DO: let user choose between azerty or qwerty keyboard then bind key depending on current keyboardMode (if azerty qsdz else wsad)
+  /* TO DO: let user choose between azerty or qwerty keyboard then bind key depending on current keyboardMode (if azerty qsdz else wsad) */
   // move left
   if (event.key === 'ArrowLeft' || event.key === 'q') {
     console.log('press ArrowLeft')
@@ -269,6 +306,10 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       highlightReachableCells(updatedIndex - 1)
       removeInRangeFromUnits()
       addInRangeToEnemyUnits(updatedIndex - 1)
+      const enemyUnitsInRange = addInRangeToEnemyUnits(updatedIndex - 1)
+      enemyUnitsInRange.forEach(enemyUnit => {
+        enemyUnit.addEventListener('click', (event) => handleFight(event))
+      })
       leftCell.appendChild(selectedUnit)
     }
   }
@@ -288,6 +329,10 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       highlightReachableCells(updatedIndex + 1)
       removeInRangeFromUnits()
       addInRangeToEnemyUnits(updatedIndex + 1)
+      const enemyUnitsInRange = addInRangeToEnemyUnits(updatedIndex + 1)
+      enemyUnitsInRange.forEach(enemyUnit => {
+        enemyUnit.addEventListener('click', (event) => handleFight(event))
+      })
       rightCell.appendChild(selectedUnit)
     }
   }
@@ -307,6 +352,10 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       highlightReachableCells(updatedIndex - numberOfCols)
       removeInRangeFromUnits()
       addInRangeToEnemyUnits(updatedIndex - numberOfCols)
+      const enemyUnitsInRange = addInRangeToEnemyUnits(updatedIndex - numberOfCols)
+      enemyUnitsInRange.forEach(enemyUnit => {
+        enemyUnit.addEventListener('click', (event) => handleFight(event))
+      })
       topCell.appendChild(selectedUnit)
     }
   }
@@ -326,9 +375,14 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       highlightReachableCells(updatedIndex + numberOfCols)
       removeInRangeFromUnits()
       addInRangeToEnemyUnits(updatedIndex + numberOfCols)
+      const enemyUnitsInRange = addInRangeToEnemyUnits(updatedIndex + numberOfCols)
+      enemyUnitsInRange.forEach(enemyUnit => {
+        enemyUnit.addEventListener('click', (event) => handleFight(event))
+      })
       bottomCell.appendChild(selectedUnit)
     }
   }
+
   // valid move
   if (event.key === 'Enter') {
     console.log('press Enter')
@@ -538,6 +592,10 @@ function getEnemyUnitsInRange (adjacentCells) {
   })
 
   return enemyUnitsInRange
+}
+
+function isCellContainUnit (cell) {
+  return cell.querySelector('.unit-container') !== null
 }
 
 initWorld()
