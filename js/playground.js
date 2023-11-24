@@ -1,5 +1,6 @@
 const cells = document.querySelectorAll('.cell-container')
 const endRoundButton = document.getElementById('end-round')
+const uiFeedbackContainer = document.getElementById('uifeedback-container')
 
 const sounds = {
   cinematicMetal: document.getElementById('cinematic-metal'),
@@ -56,7 +57,6 @@ function playSelectSound (unitType) {
 }
 
 function playFightSound (unitType) {
-
   switch (unitType) {
     case 'infantry':
       playSound(sounds.gunBattle)
@@ -244,6 +244,7 @@ function handleFight (event) {
     const damage = (((selectedUnit.dataset.attack_damage * (selectedUnit.dataset.health / 100)) * 1.5) - Number(event.target.dataset.defense)) - (getLandscapeData(event.target).landscapeDefenseBonus / 2)
     console.log('damage', damage)
     event.target.setAttribute('data-health', event.target.dataset.health - damage)
+    uiFeedbackContainer.innerText = 'The enemy unit has now ' + event.target.dataset.health + ' HP'
   }
 
   isFighting = false
