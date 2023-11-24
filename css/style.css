@@ -577,6 +577,16 @@ option {
 .index-container .boardpreview {
   max-height: 320px;
 }
+.uifeedback-container {
+  width: 100%;
+  padding: 0.5em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 999;
+}
 .board-container {
   width: 100%;
   max-width: 100%;
@@ -669,7 +679,7 @@ option {
   width: 100%;
   max-width: 480px;
   margin: auto;
-  padding: 1em 2em 0;
+  padding: 8em 2em 0;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;
@@ -687,7 +697,6 @@ option {
   width: -moz-fit-content;
   width: fit-content;
   height: 30px;
-  border-radius: 40px;
   gap: 0.25em;
   padding-left: 0.5em;
 }
