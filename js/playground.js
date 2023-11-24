@@ -56,7 +56,6 @@ function playSelectSound (unitType) {
 }
 
 function playFightSound (unitType) {
-
   switch (unitType) {
     case 'infantry':
       playSound(sounds.gunBattle)
@@ -223,9 +222,9 @@ function getLandscapeData (unit) {
 }
 
 function removeHandleFightEventListeners () {
-  const enemyUnitsInRange = document.querySelectorAll('.-inrange')
-  enemyUnitsInRange.forEach(enemyUnit => {
-    enemyUnit.removeEventListener('click', handleFight)
+  const units = document.querySelectorAll('.unit-container')
+  units.forEach(unit => {
+    unit.removeEventListener('click', handleFight)
   })
 }
 
@@ -249,21 +248,17 @@ function handleFight (event) {
   isFighting = false
 }
 
-// this doesnt work as expected as the class isnt removed when i select another unit
 function removeInRangeFromUnits () {
   const units = document.querySelectorAll('.unit-container')
-
+  console.log(units)
   units.forEach(unit => {
     unit.classList.remove('-inrange')
   })
+  console.log(units)
 }
 
 function addInRangeToEnemyUnits (index) {
-  const units = document.querySelectorAll('unit-container')
-
-  units.forEach(unit => {
-    unit.classList.remove('-inrange')
-  })
+  removeInRangeFromUnits()
 
   const adjacentCells = returnAdjacentCells(index, Number(selectedUnit.dataset.attack_range))
 
@@ -282,6 +277,7 @@ function unselectUnit () {
     isSelectedUnit = false
     removeReachableFromCells()
     removeAttackableFromCells()
+    removeInRangeFromUnits()
     removeHandleFightEventListeners()
   }
 }
