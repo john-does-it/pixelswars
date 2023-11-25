@@ -34,7 +34,38 @@
     }
   }
 
+  &.-tank {
+    &.-one {
+      background-image: url('../assets/units/tank-1.png');
+    }
+    &.-two {
+      background-image: url('../assets/units/tank-2.png');
+    }
+  }
+
   &.-selected {
     transform: scale(1.0125);
+  }
+  
+  &.-outofammo::before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background-size: cover;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-image: url('../assets/icons/icon-attack-capacity.png');
+    animation: outOf 2.5s infinite alternate;
+  }
+
+  &.-outofmovement::after {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background-size: cover;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-image: url('../assets/icons/icon-movement.png');
+    animation: outOf 2.75s infinite alternate;
   }
 }

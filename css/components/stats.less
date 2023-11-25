@@ -6,15 +6,26 @@
   text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
   z-index: 100;
   user-select: none;
-
+  font-size: 10px;
+  
+  @media (min-width: @m) {
+    font-size: 16px;
+  }
+  
   .stat {
     &::before {
       content: "";
-      width: 25px;
-      height: 25px;
+      width: 15px;
+      height: 15px;
       background-size: cover;
       display: inline-block;
       background-repeat: no-repeat;
+      
+      
+      @media (min-width: @m) {
+        width: 25px;
+        height: 25px;
+      }
     }
     
     &.-movement::before  {
@@ -34,7 +45,7 @@
     }
     &.-attackdamage::before {
       background-image: url('../assets/icons/icon-attack-damage.png');
-    }
+    } 
   }
 }
 

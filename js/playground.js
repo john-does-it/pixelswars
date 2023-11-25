@@ -2,6 +2,8 @@
 const cells = document.querySelectorAll('.cell-container')
 const endRoundButton = document.getElementById('end-round')
 const uiFeedbackContainer = document.getElementById('uifeedback-container')
+const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
+const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
@@ -12,6 +14,8 @@ let isSelectedUnit = false
 let isFighting = false
 let originalIndex
 let originalMoveCapacity
+let playerOneMoney = 0
+let playerTwoMoney = 0
 
 function initWorld () {
   const landscapes = [
@@ -160,8 +164,15 @@ function getLandscapeData (unit) {
   const landscapeDefenseBonus = landscape.dataset.defense_bonus
   const landscapeType = landscape.dataset.type
   const landscapeDatas = { landscapeIndex, lansdcapeCostOfMovement, landscapeDefenseBonus, landscapeType }
-  console.log(landscapeDatas)
   return landscapeDatas
+}
+
+function getBuildingData (unit) {
+  const building = unit.parentElement
+  const buildingCapturePoint = building.dataset.capture_points
+  const buildingPlayerAppartenance = building.dataset.player
+  const buildingDatas = { building, buildingCapturePoint, buildingPlayerAppartenance }
+  return buildingDatas
 }
 
 // Game Mechanics and Logic
@@ -238,15 +249,16 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
 
   function handleSpacePress (selectedUnit) {
     console.log('press Space')
-    if (selectedUnit.classList.contains('-infantry')) {
-      console.log('is infantry')
-    }
+    captureBuilding()
   }
 
   function handleCancelMove () {
     const originalCell = cells[originalIndex]
     originalCell.appendChild(selectedUnit)
     resetUnitResidualMoveCapacity(originalMoveCapacity)
+    if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
+      selectedUnit.classList.remove('-outofmovement')
+    }
     unselectUnit()
   }
 }
@@ -299,6 +311,9 @@ function updateCellsAndUnitsState (index) {
   removeReachableFromCells()
   removeAttackableFromCells()
   highlightReachableCells(index)
+  if (highlightReachableCells(index).length === 0) {
+    selectedUnit.classList.add('-outofmovement')
+  }
   removeInRangeFromUnits()
   const enemyUnitsInRange = addInRangeToEnemyUnits(index)
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
@@ -307,6 +322,10 @@ function updateCellsAndUnitsState (index) {
 function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
   const residualMoveCapacity = unitMoveCapacity - costOfMovement
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
+
+  // if (residualMoveCapacity === 0) {
+  //   selectedUnit.classList.add('-outofmovement')
+  // }
 }
 
 function resetUnitResidualMoveCapacity (originalMoveCapacity) {
@@ -322,6 +341,16 @@ function resetUnitsResidualMoveCapacity () {
   })
 }
 
+function resetResidualCaptureCapacityOnUnits () {
+  const updatedUnits = document.querySelectorAll('.unit-container')
+
+  updatedUnits.forEach(unit => {
+    if (unit.dataset.capture_capacity === '0') {
+      unit.setAttribute('data-capture_capacity', 1)
+    }
+  })
+}
+
 function resetUnitsResidualAttackCapacity () {
   const units = document.querySelectorAll('.unit-container')
 
@@ -333,31 +362,39 @@ function resetUnitsResidualAttackCapacity () {
 function highlightReachableCells (cellIndex) {
   const unitMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
 
+  const reachableCells = []
+
   // Highlight left cell if it's within the grid and reachable
   if (cellIndex % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex - 1].dataset.cost_of_movement)) {
     const leftCell = cells[cellIndex - 1]
     leftCell.classList.add('-reachable')
+    reachableCells.push(leftCell)
   }
 
   // Highlight right cell if it's within the grid and reachable
   if ((cellIndex + 1) % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex + 1].dataset.cost_of_movement)) {
     const rightCell = cells[cellIndex + 1]
     rightCell.classList.add('-reachable')
+    reachableCells.push(rightCell)
   }
 
   // Highlight top cell if it's within the grid and reachable
   if (cellIndex - numberOfCols >= 0 && unitMoveCapacity >= Number(cells[cellIndex - numberOfCols].dataset.cost_of_movement)) {
     const topCell = cells[cellIndex - numberOfCols]
     topCell.classList.add('-reachable')
+    reachableCells.push(topCell)
   }
 
   // Highlight bottom cell if it's within the grid and reachable
   if (cellIndex + numberOfCols < numberOfCols * numberOfRows && unitMoveCapacity >= Number(cells[cellIndex + numberOfCols].dataset.cost_of_movement)) {
     const bottomCell = cells[cellIndex + numberOfCols]
     bottomCell.classList.add('-reachable')
+    reachableCells.push(bottomCell)
   }
 
   highlightUnitAttackRange(cellIndex, selectedUnit)
+
+  return reachableCells
 }
 
 function highlightUnitAttackRange (cellIndex, selectedUnit) {
@@ -389,6 +426,22 @@ function removeInRangeFromUnits () {
   })
 }
 
+function removeOutOfAmmoFromUnits () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => {
+    unit.classList.remove('-outofammo')
+  })
+}
+
+function removeOutOfMovementFromUnits () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => {
+    unit.classList.remove('-outofmovement')
+  })
+}
+
 function addInRangeToEnemyUnits (index) {
   removeInRangeFromUnits()
 
@@ -406,7 +459,7 @@ function addInRangeToEnemyUnits (index) {
     if (!uiFeedbackContainer.querySelector('.inrangemessage')) {
       const messageElement = document.createElement('p')
       messageElement.classList.add('inrangemessage')
-      messageElement.innerHTML = counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
+      messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
 
       // Append the new paragraph element to the uiFeedbackContainer
       uiFeedbackContainer.appendChild(messageElement)
@@ -419,7 +472,7 @@ function addInRangeToEnemyUnits (index) {
       inRangeMessage.remove()
       const messageElement = document.createElement('p')
       messageElement.classList.add('inrangemessage')
-      messageElement.innerHTML = counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
+      messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
 
       // Append the new paragraph element to the uiFeedbackContainer
       uiFeedbackContainer.appendChild(messageElement)
@@ -437,61 +490,121 @@ function addInRangeToEnemyUnits (index) {
 }
 
 function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderHealth, defenderLandscapeDefenseBonus) {
-  const damage = (attackerDamage - ((defenderDefense + defenderLandscapeDefenseBonus) / 100) + ((attackerDamage * (attackerHealth / 200))))
+  const damage = (attackerDamage - (((defenderDefense + defenderLandscapeDefenseBonus) - 10) / 100) + ((attackerDamage * (attackerHealth / 400))))
   return damage
 }
 
 function handleFight (event) {
-  console.log(event.target)
-
   if (selectedUnit === null || isFighting) {
     return
   }
+
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     playSound(sounds.emptyGunShot)
     uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
     return
   }
 
+  originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex) // prevent move cancellation
   isFighting = true
   playFightSound(selectedUnit.dataset.name)
 
   // New damage calculation
   const damage = calculateDamage(selectedUnit.dataset.attack_damage, selectedUnit.dataset.health, event.target.dataset.defense, event.target.dataset.health, getLandscapeData(event.target).landscapeDefenseBonus)
-  console.log(damage)
   event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
-  uiFeedbackContainer.innerHTML = '💥 ' + Math.round(damage) + ' damages inflicted to the enemy unit.'
-  // Update UI for enemy health
-  if (event.target.dataset.health > 0 && returnAdjacentCells(getLandscapeData(event.target).landscapeIndex, event.target.dataset.attack_range)) {
-    const returnDamage = calculateDamage(event.target.dataset.attack_damage, event.target.dataset.health, selectedUnit.dataset.defense, selectedUnit.dataset.health, getLandscapeData(selectedUnit).landscapeDefenseBonus)
-    selectedUnit.setAttribute('data-health', Math.round(selectedUnit.dataset.health - returnDamage))
-    uiFeedbackContainer.innerHTML += ' Enemy unit has ripost and inflict you ' + Math.round(returnDamage) + ' damages in return.'
+  uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
+
+  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
+    selectedUnit.classList.add('-outofammo')
   }
 
-  if (event.target.dataset.health <= 0) {
+  // Calculate the array of adjacent cells for the enemy unit
+  const enemyAttackRangeCells = returnAdjacentCells(
+    Number(getLandscapeData(event.target).landscapeIndex),
+    Number(event.target.dataset.attack_range)
+  )
+
+  // Check if selectedUnit is within the enemy's attack range
+  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
+    const returnDamage = calculateDamage(event.target.dataset.attack_damage, event.target.dataset.health, selectedUnit.dataset.defense, selectedUnit.dataset.health, getLandscapeData(selectedUnit).landscapeDefenseBonus)
+    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+    uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+  }
+
+  if (Number(event.target.dataset.health) <= 0) {
     uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
     event.target.remove()
     addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
   }
 
   // If selected unit is dead
-  if (selectedUnit.dataset.health <= 0) {
+  if (Number(selectedUnit.dataset.health) <= 0) {
     const previouslySelectedUnit = selectedUnit
     previouslySelectedUnit.remove()
     unselectUnit()
+    isFighting = false
+
+    return
   }
 
+  const healthStatPreview = document.getElementById('statpreview-health')
+  healthStatPreview.innerHTML = Number(event.target.dataset.health)
+  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
+
   isFighting = false
+}
+
+let buildingDatas
+
+function captureBuilding () {
+  buildingDatas = getBuildingData(selectedUnit)
+
+  if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
+    if (Number(selectedUnit.dataset.capture_capacity) === 0) {
+      console.log('Unit hasn\'t the capture capacity.required')
+    } else if (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player)) {
+      console.log('You already own this building.')
+    } else {
+      document.addEventListener('keypress', startCaptureBuilding)
+    }
+  }
+}
+
+function startCaptureBuilding (event) {
+  if (event.code === 'Space' && selectedUnit.dataset.capture_capacity > 0) {
+    event.preventDefault()
+    originalIndex = getLandscapeData(selectedUnit).index
+    const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
+    buildingDatas.building.setAttribute('data-capture_points', updatedCapturePoints)
+    if (updatedCapturePoints === 10) {
+      playSound(sounds.jumpCapture)
+      buildingDatas.building.classList.add('-halfcaptured')
+    }
+    if (updatedCapturePoints === 0) {
+      playSound(sounds.trumpetFanfare)
+      buildingDatas.building.classList.remove('-capturedby1', '-capturedby2', '-halfcaptured')
+      buildingDatas.building.classList.add('-capturedby' + currentPlayer)
+      buildingDatas.building.setAttribute('data-player', currentPlayer)
+      buildingDatas.building.setAttribute('data-capture_points', 20)
+    }
+    selectedUnit.setAttribute('data-capture_capacity', 0)
+  }
+
+  document.removeEventListener('keypress', startCaptureBuilding)
 }
 
 function endRound () {
   currentRound++
   unselectUnit()
+  distributeMoney()
   determinePlayer()
   updateCurrentPlayerUI()
   resetUnitsResidualMoveCapacity()
   resetUnitsResidualAttackCapacity()
+  resetResidualCaptureCapacityOnUnits()
+  removeOutOfAmmoFromUnits()
+  removeOutOfMovementFromUnits()
   playSound(sounds.nextRound)
 
   function determinePlayer () {
@@ -520,6 +633,37 @@ function endRound () {
       currentRoundContainer.classList.remove('glow')
     }, 3000)
   }
+
+  function distributeMoney () {
+    const buildings = document.querySelectorAll('.-building')
+
+    buildings.forEach(building => {
+      if (building.classList.contains('-city') && building.dataset.player !== '0') {
+        if (building.dataset.player === '1' && currentPlayer === 2) {
+          playerOneMoney = playerOneMoney + 200
+          sounds.cashMachine.play()
+          highlightMoneyMakeFromCity(building)
+        } else if (building.dataset.player === '2' && currentPlayer === 1) {
+          playerTwoMoney = playerTwoMoney + 200
+          sounds.cashMachine.play()
+          highlightMoneyMakeFromCity(building)
+        }
+      }
+
+      function highlightMoneyMakeFromCity (building) {
+        building.classList.add('-active')
+        setTimeout(() => {
+          building.classList.remove('-active')
+        }, 5000)
+      }
+
+      function updateMoneyUI () {
+        currentMoneyPlayerOneUIContainer.innerText = playerOneMoney
+        currentMoneyPlayerTwoUIContainer.innerText = playerTwoMoney
+      }
+      updateMoneyUI()
+    })
+  }
 }
 
 // Sound Management
@@ -529,9 +673,11 @@ const sounds = {
   infantry2: document.getElementById('infantry-2'),
   infantry3: document.getElementById('infantry-3'),
   jeepEngine: document.getElementById('jeep-engine'),
-  artillery: document.getElementById('artillery'),
+  tankEngine: document.getElementById('tank-engine'),
+  artilleryTouret: document.getElementById('artillery-touret'),
   gunBattle: document.getElementById('gun-battle'),
   emptyGunShot: document.getElementById('empty-gun-shot'),
+  tankShot: document.getElementById('tank-shot'),
   trumpetFanfare: document.getElementById('trumpet-fanfare'),
   bomb: document.getElementById('bomb'),
   missileLaunch: document.getElementById('missile-launch'),
@@ -571,7 +717,10 @@ function playSelectSound (unitType) {
       playSound(sounds.jeepEngine)
       break
     case 'artillery':
-      playSound(sounds.artillery)
+      playSound(sounds.artilleryTouret)
+      break
+    case 'tank':
+      playSound(sounds.tankEngine)
       break
     default:
       break
@@ -588,6 +737,9 @@ function playFightSound (unitType) {
       break
     case 'artillery':
       playSound(sounds.missileLaunch)
+      break
+    case 'tank':
+      playSound(sounds.tankShot)
       break
     default:
       break
@@ -655,12 +807,9 @@ window.addEventListener('keydown', (event) => {
 })
 
 function addEventListenerHandleFightToEnemyUnitsInRange (enemyUnitsInRange) {
+  // If an existing event listener is present, remove it
+  removeHandleFightEventListeners()
   enemyUnitsInRange.forEach(enemyUnit => {
-    // If an existing event listener is present, remove it
-    if (enemyUnit.fightEventListener) {
-      enemyUnit.removeEventListener('click', enemyUnit.fightEventListener)
-    }
-
     // Attach a new event listener
     enemyUnit.fightEventListener = (event) => handleFight(event)
     enemyUnit.addEventListener('click', enemyUnit.fightEventListener)

@@ -444,7 +444,7 @@ option {
   display: flex;
   justify-content: center;
   color: hsl(0, 0%, 95%);
-  font-weight: bold;
+  font-weight: 100;
   -webkit-animation: addMoneyToBalance 5s forwards;
           animation: addMoneyToBalance 5s forwards;
 }
@@ -469,44 +469,6 @@ option {
 .explosion {
   width: inherit;
   height: inherit;
-}
-.stats-container {
-  padding: 0.5em 1em;
-  border-radius: 40px;
-  z-index: 999;
-  gap: 0.5em;
-  text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
-  z-index: 100;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-}
-.stats-container .stat::before {
-  content: "";
-  width: 25px;
-  height: 25px;
-  background-size: cover;
-  display: inline-block;
-  background-repeat: no-repeat;
-}
-.stats-container .stat.-movement::before {
-  background-image: url('../assets/icons/icon-movement.png');
-}
-.stats-container .stat.-defense::before {
-  background-image: url('../assets/icons/icon-defense.png');
-}
-.stats-container .stat.-health::before {
-  background-image: url('../assets/icons/icon-health.png');
-}
-.stats-container .stat.-attackrange::before {
-  background-image: url('../assets/icons/icon-attack-range.png');
-}
-.stats-container .stat.-attackcapacity::before {
-  background-image: url('../assets/icons/icon-attack-capacity.png');
-}
-.stats-container .stat.-attackdamage::before {
-  background-image: url('../assets/icons/icon-attack-damage.png');
 }
 .unit-container {
   width: 100%;
@@ -534,9 +496,87 @@ option {
 .unit-container.-artillery.-two {
   background-image: url('../assets/units/artillery-2.png');
 }
+.unit-container.-tank.-one {
+  background-image: url('../assets/units/tank-1.png');
+}
+.unit-container.-tank.-two {
+  background-image: url('../assets/units/tank-2.png');
+}
 .unit-container.-selected {
   -webkit-transform: scale(1.0125);
           transform: scale(1.0125);
+}
+.unit-container.-outofammo::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  background-size: cover;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-image: url('../assets/icons/icon-attack-capacity.png');
+  -webkit-animation: outOf 2.5s infinite alternate;
+          animation: outOf 2.5s infinite alternate;
+}
+.unit-container.-outofmovement::after {
+  content: "";
+  width: 15px;
+  height: 15px;
+  background-size: cover;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-image: url('../assets/icons/icon-movement.png');
+  -webkit-animation: outOf 2.75s infinite alternate;
+          animation: outOf 2.75s infinite alternate;
+}
+.stats-container {
+  padding: 0.5em 1em;
+  border-radius: 40px;
+  z-index: 999;
+  gap: 0.5em;
+  text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
+  z-index: 100;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  font-size: 10px;
+}
+@media (min-width: 960px) {
+  .stats-container {
+    font-size: 16px;
+  }
+}
+.stats-container .stat::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  background-size: cover;
+  display: inline-block;
+  background-repeat: no-repeat;
+}
+@media (min-width: 960px) {
+  .stats-container .stat::before {
+    width: 25px;
+    height: 25px;
+  }
+}
+.stats-container .stat.-movement::before {
+  background-image: url('../assets/icons/icon-movement.png');
+}
+.stats-container .stat.-defense::before {
+  background-image: url('../assets/icons/icon-defense.png');
+}
+.stats-container .stat.-health::before {
+  background-image: url('../assets/icons/icon-health.png');
+}
+.stats-container .stat.-attackrange::before {
+  background-image: url('../assets/icons/icon-attack-range.png');
+}
+.stats-container .stat.-attackcapacity::before {
+  background-image: url('../assets/icons/icon-attack-capacity.png');
+}
+.stats-container .stat.-attackdamage::before {
+  background-image: url('../assets/icons/icon-attack-damage.png');
 }
 .grid-container {
   max-width: 100%;
@@ -579,13 +619,15 @@ option {
 }
 .uifeedback-container {
   width: 100%;
+  height: 140px;
   padding: 0.5em;
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
   margin: auto;
   z-index: 999;
+  font-size: 12px;
 }
 .board-container {
   width: 100%;
@@ -595,7 +637,9 @@ option {
   min-width: fit-content;
 }
 .stats-container {
-  max-width: 300px;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
@@ -679,7 +723,7 @@ option {
   width: 100%;
   max-width: 480px;
   margin: auto;
-  padding: 8em 2em 0;
+  padding: 2em 0 0;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;
@@ -710,9 +754,6 @@ option {
 }
 .moneyandplayer-container .round-container {
   padding-right: 0.5em;
-}
-.options-container {
-  margin-bottom: 1em;
 }
 .console-container {
   width: 100%;
@@ -747,6 +788,22 @@ option {
   -webkit-margin-after: 0;
           margin-block-end: 0;
   color: hsl(0, 0%, 95%);
+}
+@-webkit-keyframes outOf {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes outOf {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @-webkit-keyframes fadeIn {
   from {

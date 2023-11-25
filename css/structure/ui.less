@@ -1,12 +1,14 @@
 .uifeedback-container {
   width: 100%;
+  height: 140px;
   padding: .5em;
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
   margin: auto;
   z-index: 999;
+  font-size: 12px;
 }
 
 .board-container {
@@ -16,7 +18,7 @@
 }
 
 .stats-container {
-  max-width: 300px;
+  max-width: fit-content;
   height: fit-content;
   position: fixed;
   bottom: 10px;
@@ -101,7 +103,7 @@
   width: 100%;
   max-width: @xs;
   margin: auto;
-  padding: 8em 2em 0;
+  padding: 2em 0 0;
   
   .moneyandendround-container {
     margin-top: .5em;
@@ -139,10 +141,6 @@
   .round-container {
     padding-right: .5em;
   }
-}
-
-.options-container {
-  margin-bottom: 1em;
 }
 
 .console-container {
