@@ -4,6 +4,7 @@ const endRoundButton = document.getElementById('end-round')
 const uiFeedbackContainer = document.getElementById('uifeedback-container')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
+
 let currentPlayer = 1
 let currentRound = 1
 let selectedUnit = null
@@ -159,6 +160,7 @@ function getLandscapeData (unit) {
   const landscapeDefenseBonus = landscape.dataset.defense_bonus
   const landscapeType = landscape.dataset.type
   const landscapeDatas = { landscapeIndex, lansdcapeCostOfMovement, landscapeDefenseBonus, landscapeType }
+  console.log(landscapeDatas)
   return landscapeDatas
 }
 
@@ -253,7 +255,6 @@ function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, directi
   const targetCell = cells[targetIndex]
   const adjacentCells = returnAdjacentCells(targetIndex, selectedUnit.dataset.attack_range)
   getEnemyUnitsInRange(adjacentCells)
-  console.log(targetCell, targetIndex)
 
   if (isValidMove(targetCell, targetIndex, moveCapacity, direction)) {
     processUnitMove(targetIndex, moveCapacity, selectedUnit, targetCell)
@@ -435,11 +436,17 @@ function addInRangeToEnemyUnits (index) {
   return enemyUnits
 }
 
+function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderHealth, defenderLandscapeDefenseBonus) {
+  const damage = (attackerDamage - ((defenderDefense + defenderLandscapeDefenseBonus) / 100) + ((attackerDamage * (attackerHealth / 200))))
+  return damage
+}
+
 function handleFight (event) {
+  console.log(event.target)
+
   if (selectedUnit === null || isFighting) {
     return
   }
-
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     playSound(sounds.emptyGunShot)
     uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
@@ -447,37 +454,32 @@ function handleFight (event) {
   }
 
   isFighting = true
+  playFightSound(selectedUnit.dataset.name)
 
-  // preventcancelmove
+  // New damage calculation
+  const damage = calculateDamage(selectedUnit.dataset.attack_damage, selectedUnit.dataset.health, event.target.dataset.defense, event.target.dataset.health, getLandscapeData(event.target).landscapeDefenseBonus)
+  console.log(damage)
+  event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
+  selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
+  uiFeedbackContainer.innerHTML = '💥 ' + Math.round(damage) + ' damages inflicted to the enemy unit.'
+  // Update UI for enemy health
+  if (event.target.dataset.health > 0 && returnAdjacentCells(getLandscapeData(event.target).landscapeIndex, event.target.dataset.attack_range)) {
+    const returnDamage = calculateDamage(event.target.dataset.attack_damage, event.target.dataset.health, selectedUnit.dataset.defense, selectedUnit.dataset.health, getLandscapeData(selectedUnit).landscapeDefenseBonus)
+    selectedUnit.setAttribute('data-health', Math.round(selectedUnit.dataset.health - returnDamage))
+    uiFeedbackContainer.innerHTML += ' Enemy unit has ripost and inflict you ' + Math.round(returnDamage) + ' damages in return.'
+  }
 
-  if (selectedUnit.dataset.residual_attack_capacity > 0) {
-    playFightSound(selectedUnit.dataset.name)
-    let damage = (Number(selectedUnit.dataset.attack_damage) * (Number(selectedUnit.dataset.health) / 50)) / 1.5
-    damage = damage - (Number(event.target.dataset.defense)) / 10 - (Number((getLandscapeData(event.target).landscapeDefenseBonus)) / 10)
-    event.target.setAttribute('data-health', Math.round(event.target.dataset.health - damage))
-    selectedUnit.setAttribute('data-residual_attack_capacity', selectedUnit.dataset.residual_attack_capacity - 1)
-    document.getElementById('statpreview-health').innerText = event.target.dataset.health
+  if (event.target.dataset.health <= 0) {
+    uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
+    event.target.remove()
+    addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
+  }
 
-    // if enemy unit is not dead, then fightback
-    if (event.target.dataset.health > 0) {
-      uiFeedbackContainer.innerHTML = '<p>💥 The enemy unit has now ' + '<span class="_color -red">' + event.target.dataset.health + ' HP' + '</span><p>'
-      let fightBackDamage = (Number(event.target.dataset.attack_damage) * Number((event.target.dataset.health / 50))) / 1.25
-      fightBackDamage = fightBackDamage - (Number(event.target.dataset.defense)) / 10 - (Number((getLandscapeData(event.target).landscapeDefenseBonus)) / 10)
-      selectedUnit.setAttribute('data-health', Math.round(selectedUnit.dataset.health - fightBackDamage))
-    } else {
-      uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
-      event.target.remove()
-    }
-
-    // if selectedUnit is dead
-    if (selectedUnit.dataset.health < 0) {
-      const previouslySelectedUnit = selectedUnit
-      previouslySelectedUnit.remove()
-      updateEventListenersPostKill()
-      unselectUnit()
-    } else {
-      addInRangeToEnemyUnits(Number((getLandscapeData(selectedUnit).landscapeIndex)))
-    }
+  // If selected unit is dead
+  if (selectedUnit.dataset.health <= 0) {
+    const previouslySelectedUnit = selectedUnit
+    previouslySelectedUnit.remove()
+    unselectUnit()
   }
 
   isFighting = false
@@ -673,25 +675,5 @@ function removeHandleFightEventListeners () {
       unit.removeEventListener('click', unit.fightEventListener)
       unit.fightEventListener = null // Clear the reference
     }
-  })
-}
-
-function updateEventListenersPostKill () {
-  const units = document.querySelectorAll('.unit-container')
-
-  units.forEach(unit => {
-    // Remove any existing fight event listeners
-    if (unit.fightEventListener) {
-      unit.removeEventListener('click', unit.fightEventListener)
-      unit.fightEventListener = null
-    }
-
-    // Recalculate enemy units in range for this unit
-    const cellIndex = Number(unit.parentElement.dataset.index)
-    const enemyUnitsInRange = getEnemyUnitsInRange(returnAdjacentCells(cellIndex, unit.dataset.attack_range))
-
-    // Reapply event listeners
-    addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
-    addInRangeToEnemyUnits(enemyUnitsInRange)
   })
 }
