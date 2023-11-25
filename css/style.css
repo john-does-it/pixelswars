@@ -530,7 +530,6 @@ option {
 }
 .stats-container {
   padding: 0.5em 1em;
-  border-radius: 40px;
   z-index: 999;
   gap: 0.5em;
   text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
