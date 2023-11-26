@@ -696,8 +696,9 @@ function createAndAddUnit (unitHTML) {
   const toReplaceBy = newUnitElement.querySelector('.unit-container')
   newUnitElement.replaceWith(toReplaceBy)
 
-  const updatedNewUnitElement = factory.querySelector('.unit-container')
-  updatedNewUnitElement.addEventListener('click', selectUnit)
+  selectUnit() // update units adding new units
+  // const updatedNewUnitElement = factory.querySelector('.unit-container')
+  // updatedNewUnitElement.addEventListener('click', selectUnit)
 }
 
 function captureBuilding () {
