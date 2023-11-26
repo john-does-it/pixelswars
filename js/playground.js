@@ -4,8 +4,62 @@ const endRoundButton = document.getElementById('end-round')
 const uiFeedbackContainer = document.getElementById('uifeedback-container')
 const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
 const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
+const factoryContainer = document.getElementById('factory-container')
+const factoriesButtons = factoryContainer.querySelectorAll('button')
+const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
+
+const unitsHTML = {
+  infantryUnitPlayerOne:
+  `
+  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-sound_delay="500">
+
+  </div>
+  `,
+  infantryUnitPlayerTwo:
+  `
+  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div>
+
+  </div>
+  `,
+  jeepUnitPlayerOne:
+  `
+  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep data-cost="600" data-sound_delay="500">
+
+  </div>
+  `,
+  jeepUnitPlayerTwo:
+  `
+  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
+
+  </div>
+  `,
+  artilleryPlayerOne:
+  `
+  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
+
+  </div>
+  `,
+  artilleryPlayerTwo:
+  `
+  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000">
+
+  </div>
+  `,
+  tankPlayerOne:
+  `
+  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+
+  </div>
+  `,
+  tankPlayerTwo:
+  `
+  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+
+  </div>
+  `
+}
 
 let currentPlayer = 1
 let currentRound = 1
@@ -16,6 +70,8 @@ let originalIndex
 let originalMoveCapacity
 let playerOneMoney = 0
 let playerTwoMoney = 0
+let buildingDatas
+let factory
 
 function initWorld () {
   const landscapes = [
@@ -244,6 +300,7 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     case 'Escape':
       console.log('press Escape')
       handleCancelMove()
+      unselectUnit()
       break
   }
 
@@ -259,7 +316,6 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
       selectedUnit.classList.remove('-outofmovement')
     }
-    unselectUnit()
   }
 }
 
@@ -489,8 +545,11 @@ function addInRangeToEnemyUnits (index) {
   return enemyUnits
 }
 
-function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderHealth, defenderLandscapeDefenseBonus) {
-  const damage = (attackerDamage - (((defenderDefense + defenderLandscapeDefenseBonus) - 10) / 100) + ((attackerDamage * (attackerHealth / 400))))
+function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
+  console.log(defenderDefense, defenderLandscapeDefenseBonus)
+  const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
+  const healthFactor = (1 / 100) * attackerHealth
+  const damage = (attackerDamage - totalDefenseBonus) * healthFactor
   return damage
 }
 
@@ -510,7 +569,7 @@ function handleFight (event) {
   playFightSound(selectedUnit.dataset.name)
 
   // New damage calculation
-  const damage = calculateDamage(selectedUnit.dataset.attack_damage, selectedUnit.dataset.health, event.target.dataset.defense, event.target.dataset.health, getLandscapeData(event.target).landscapeDefenseBonus)
+  const damage = calculateDamage(Number(selectedUnit.dataset.attack_damage), Number(selectedUnit.dataset.health), Number(event.target.dataset.defense), Number(getLandscapeData(event.target).landscapeDefenseBonus))
   event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
   uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
@@ -527,7 +586,7 @@ function handleFight (event) {
 
   // Check if selectedUnit is within the enemy's attack range
   if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-    const returnDamage = calculateDamage(event.target.dataset.attack_damage, event.target.dataset.health, selectedUnit.dataset.defense, selectedUnit.dataset.health, getLandscapeData(selectedUnit).landscapeDefenseBonus)
+    const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
     selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
     uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
   }
@@ -555,7 +614,91 @@ function handleFight (event) {
   isFighting = false
 }
 
-let buildingDatas
+function unselectFactory () {
+  factory = null
+  factoryContainer.classList.remove('_flex')
+  factoryContainer.classList.remove('-column')
+}
+
+function selectFactory (event) {
+  // if a unit isn't on the factory, allow player to buy a unit
+  if (Number(event.target.dataset.player) === currentPlayer && event.target.classList.contains('-factory')) {
+    factory = event.target
+    console.log(factory, typeof factory)
+    factoryContainer.classList.toggle('_flex')
+    factoryContainer.classList.toggle('-column')
+    factoriesButtons.forEach(button => button.addEventListener('click', buyUnit))
+  }
+}
+
+function buyUnit (event) {
+  if (!Array.from(factory.children).some(child => child.classList.contains('unit-container'))) {
+    const unitType = event.target.dataset.type
+    const unitCost = Number(event.target.dataset.cost)
+    const currentPlayerMoney = (currentPlayer === 1) ? playerOneMoney : playerTwoMoney
+
+    if (unitCost > currentPlayerMoney) {
+      // logToConsoleContainer('<span class="_color -red">You can\'t afford that unit.</span>')
+      return
+    }
+
+    if (unitType === 'infantry') {
+      sounds.militaryMarch.play()
+    }
+
+    if (unitType === 'jeep' || unitType === 'tank') {
+      sounds.mechanicBuilding.play()
+    }
+
+    const unitMapping = {
+      infantry: {
+        1: unitsHTML.infantryUnitPlayerOne,
+        2: unitsHTML.infantryUnitPlayerTwo
+      },
+      jeep: {
+        1: unitsHTML.jeepUnitPlayerOne,
+        2: unitsHTML.jeepUnitPlayerTwo
+      },
+      artillery: {
+        1: unitsHTML.artilleryPlayerOne,
+        2: unitsHTML.artilleryPlayerTwo
+      },
+      tank: {
+        1: unitsHTML.tankPlayerOne,
+        2: unitsHTML.tankPlayerTwo
+      }
+    }
+
+    if (unitMapping[unitType]) {
+      const newUnitHTML = unitMapping[unitType][currentPlayer]
+      createAndAddUnit(newUnitHTML)
+
+      if (currentPlayer === 1) {
+        playerOneMoney -= unitCost
+      } else {
+        playerTwoMoney -= unitCost
+      }
+      updateMoneyUI()
+    }
+    factoryContainer.classList.toggle('_flex')
+    factoryContainer.classList.toggle('-column')
+  } else {
+    // logToConsoleContainer('<span class="_color -red">You can\'t create a new unit if there is already a unit on the factory</span>')
+    unselectFactory()
+  }
+}
+
+function createAndAddUnit (unitHTML) {
+  const newUnitElement = document.createElement('div')
+  newUnitElement.innerHTML = unitHTML
+
+  factory.appendChild(newUnitElement)
+  const toReplaceBy = newUnitElement.querySelector('.unit-container')
+  newUnitElement.replaceWith(toReplaceBy)
+
+  const updatedNewUnitElement = factory.querySelector('.unit-container')
+  updatedNewUnitElement.addEventListener('click', selectUnit)
+}
 
 function captureBuilding () {
   buildingDatas = getBuildingData(selectedUnit)
@@ -600,12 +743,14 @@ function endRound () {
   distributeMoney()
   determinePlayer()
   updateCurrentPlayerUI()
+  updateMoneyUI()
   resetUnitsResidualMoveCapacity()
   resetUnitsResidualAttackCapacity()
   resetResidualCaptureCapacityOnUnits()
   removeOutOfAmmoFromUnits()
   removeOutOfMovementFromUnits()
   playSound(sounds.nextRound)
+  unselectFactory()
 
   function determinePlayer () {
     if (currentRound === 1 || currentRound % 2 === 1) {
@@ -656,15 +801,15 @@ function endRound () {
           building.classList.remove('-active')
         }, 5000)
       }
-
-      function updateMoneyUI () {
-        currentMoneyPlayerOneUIContainer.innerText = playerOneMoney
-        currentMoneyPlayerTwoUIContainer.innerText = playerTwoMoney
-      }
-      updateMoneyUI()
     })
   }
 }
+
+function updateMoneyUI () {
+  currentMoneyPlayerOneUIContainer.innerText = playerOneMoney
+  currentMoneyPlayerTwoUIContainer.innerText = playerTwoMoney
+}
+updateMoneyUI()
 
 // Sound Management
 const sounds = {
@@ -826,3 +971,8 @@ function removeHandleFightEventListeners () {
     }
   })
 }
+
+function addEventListenerToFactories () {
+  factories.forEach(factory => factory.addEventListener('click', selectFactory))
+}
+addEventListenerToFactories()
