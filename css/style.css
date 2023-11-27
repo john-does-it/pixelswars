@@ -285,7 +285,7 @@ option {
 }
 .endround {
   max-width: 320px;
-  height: 60px;
+  height: 40px;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -532,13 +532,14 @@ option {
   padding: 0.5em 1em;
   z-index: 999;
   gap: 0.5em;
-  text-shadow: -1px -1px 0 #3F2631, 1px -1px 0 #3F2631, -1px 1px 0 #3F2631, 1px 1px 0 #3F2631;
-  z-index: 100;
+  text-shadow: -1px -1px 0 hsl(334, 25%, 20%), 1px -1px 0 hsl(334, 25%, 20%), -1px 1px 0 hsl(334, 25%, 20%), 1px 1px 0 hsl(334, 25%, 20%);
+  border: 2px solid hsl(334, 25%, 20%);
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
   font-size: 10px;
+  z-index: 100;
 }
 @media (min-width: 960px) {
   .stats-container {
@@ -618,7 +619,7 @@ option {
 }
 .uifeedback-container {
   width: 100%;
-  height: 140px;
+  height: 75px;
   padding: 0.5em;
   position: relative;
   top: 0;
@@ -626,7 +627,13 @@ option {
   right: 0;
   margin: auto;
   z-index: 999;
-  font-size: 12px;
+  font-size: clamp(8px, 3vw, 1em);
+}
+.uifeedback-container p {
+  -webkit-margin-before: 0;
+          margin-block-start: 0;
+  -webkit-margin-after: 0;
+          margin-block-end: 0;
 }
 .board-container {
   width: 100%;
@@ -733,6 +740,7 @@ option {
 }
 .moneyandplayer-container .money-container {
   width: 100%;
+  padding: 0 1em;
 }
 .moneyandplayer-container .round-container,
 .moneyandplayer-container .player-container {
@@ -742,6 +750,7 @@ option {
   height: 30px;
   gap: 0.25em;
   padding-left: 0.5em;
+  border: 2px solid hsl(334, 25%, 20%);
 }
 .moneyandplayer-container .player-container img {
   width: inherit;

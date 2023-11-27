@@ -13,50 +13,50 @@ const numberOfRows = getGridDimensions().rows
 const unitsHTML = {
   infantryUnitPlayerOne:
   `
-  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-sound_delay="500">
-
+  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-sound_delay="500">
+  
   </div>
   `,
   infantryUnitPlayerTwo:
   `
-  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div>
-
+  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div>
+  
   </div>
   `,
   jeepUnitPlayerOne:
   `
-  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep data-cost="600" data-sound_delay="500">
-
+  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep data-cost="600" data-sound_delay="500">
+  
   </div>
   `,
   jeepUnitPlayerTwo:
   `
-  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="100" data-type="jeep" data-cost="600" data-sound_delay="500">
-
+  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep" data-cost="600" data-sound_delay="500">
+  
   </div>
   `,
   artilleryPlayerOne:
   `
-  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
-
+  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
+  
   </div>
   `,
   artilleryPlayerTwo:
   `
-  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000">
-
+  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="800" data-sound_delay="5000">
+  
   </div>
   `,
   tankPlayerOne:
   `
-  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
-
+  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+  
   </div>
   `,
   tankPlayerTwo:
   `
-  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
-
+  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+  
   </div>
   `
 }
@@ -72,6 +72,7 @@ let playerOneMoney = 0
 let playerTwoMoney = 0
 let buildingDatas
 let factory
+let allowPlayMusic = false
 
 function initWorld () {
   const landscapes = [
@@ -203,10 +204,12 @@ function getEnemyUnitsInRange (adjacentCells) {
 
   adjacentCells.forEach(adjacentCellIndex => {
     const cell = cells[adjacentCellIndex]
-    const unitContainer = cell.querySelector('.unit-container')
+    if (cell) {
+      const unitContainer = cell.querySelector('.unit-container')
 
-    if (unitContainer && Number(unitContainer.dataset.player) !== currentPlayer) {
-      enemyUnitsInRange.push(unitContainer)
+      if (unitContainer && Number(unitContainer.dataset.player) !== currentPlayer) {
+        enemyUnitsInRange.push(unitContainer)
+      }
     }
   })
 
@@ -244,19 +247,26 @@ function selectUnit () {
   function unitClickHandler (event) {
     const tryToSelectUnit = event.currentTarget
 
-    if (!isSelectedUnit && Number(tryToSelectUnit.dataset.player) === currentPlayer) {
-      uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or espace to cancel.</p>'
-      selectedUnit = tryToSelectUnit
-      playSelectSound(selectedUnit.dataset.type)
-      isSelectedUnit = true
-      originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
-      originalMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
-      highlightReachableCells(originalIndex)
-      removeInRangeFromUnits()
-      addInRangeToEnemyUnits(originalIndex)
-      const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
-      addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
+    if (Number(tryToSelectUnit.dataset.player) !== currentPlayer) {
+      return
     }
+
+    // Now handling the specific case where the selected unit is not the currently selected one.
+    if (tryToSelectUnit !== selectedUnit) {
+      unselectUnit()
+    }
+
+    uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
+    selectedUnit = tryToSelectUnit
+    playSelectSound(selectedUnit.dataset.type)
+    isSelectedUnit = true
+    originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
+    originalMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
+    highlightReachableCells(originalIndex)
+    removeInRangeFromUnits()
+    addInRangeToEnemyUnits(originalIndex)
+    const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
+    addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
   }
 }
 
@@ -585,15 +595,14 @@ function handleFight (event) {
 
   if (Number(event.target.dataset.health) <= 0) {
     uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
-    handleDeathOfUnit(event.target, Number(getLandscapeData(event.target).landscapeIndex))
+    handleDeathOfUnit(event.target, Number(getLandscapeData(event.target).landscapeIndex), selectedUnit)
     addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
   }
 
   // If selected unit is dead
   if (Number(selectedUnit.dataset.health) <= 0) {
     const previouslySelectedUnit = selectedUnit
-    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex))
-    // previouslySelectedUnit.remove()
+    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
     unselectUnit()
     isFighting = false
 
@@ -607,13 +616,13 @@ function handleFight (event) {
   isFighting = false
 }
 
-function handleDeathOfUnit (unit, cellIndex) {
+function handleDeathOfUnit (unit, cellIndex, enemyUnit) {
   setTimeout(() => {
     unit.remove()
     const cell = cells[cellIndex]
     createExplosion(cell)
     // checkIfLost()
-  }, Number(unit.dataset.sound_delay))
+  }, Number(enemyUnit.dataset.sound_delay))
 }
 
 function createExplosion (cell) {
@@ -761,6 +770,29 @@ function startCaptureBuilding (event) {
   document.removeEventListener('keypress', startCaptureBuilding)
 }
 
+function healthUnitOnHospital () {
+  const units = document.querySelectorAll('.unit-container')
+
+  units.forEach(unit => {
+    const hospitalParent = unit.parentElement
+
+    if (hospitalParent && hospitalParent.classList.contains('-hospital') && unit.getAttribute('data-player') === hospitalParent.getAttribute('data-player')) {
+      let currentHealth = unit.dataset.health
+
+      if (currentHealth < 75) {
+        currentHealth = Number(currentHealth) + 25
+        unit.setAttribute('data-health', currentHealth)
+      }
+      // else if (currentHealth >= 75 && currentHealth < 100) {
+      //   currentHealth = 100
+      //   unit.setAttribute('data-health', currentHealth)
+      //   const healthCapacityContainer = unit.querySelector('.-health')
+      //   healthCapacityContainer.innerHTML = currentHealth
+      // }
+    }
+  })
+}
+
 function endRound () {
   currentRound++
   unselectUnit()
@@ -771,62 +803,75 @@ function endRound () {
   resetUnitsResidualMoveCapacity()
   resetUnitsResidualAttackCapacity()
   resetResidualCaptureCapacityOnUnits()
+  healthUnitOnHospital()
   removeOutOfAmmoFromUnits()
   removeOutOfMovementFromUnits()
   playSound(sounds.nextRound)
   unselectFactory()
+}
 
-  function determinePlayer () {
-    if (currentRound === 1 || currentRound % 2 === 1) {
-      currentPlayer = 1
-    }
-    if (currentRound % 2 !== 1) {
-      currentPlayer = 2
+function determinePlayer () {
+  if (currentRound === 1 || currentRound % 2 === 1) {
+    currentPlayer = 1
+
+    if (allowPlayMusic === true) {
+      sounds.playerOneMusic.load()
+      sounds.playerOneMusic.play()
+      sounds.playerTwoMusic.pause()
     }
   }
+  if (currentRound % 2 !== 1) {
+    currentPlayer = 2
 
-  function updateCurrentPlayerUI () {
-    const currentPlayerUI = document.getElementById('current-player-ui')
-    const currentRoundContainer = document.getElementById('current-round')
-    const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
-
-    currentRoundContainer.classList.add('glow')
-    currentRoundContainer.innerText = currentRound
-
-    for (let i = 0; i < currentPlayerMiniatures.length; i++) {
-      currentPlayerMiniatures[i].classList.toggle('active')
+    if (allowPlayMusic === true) {
+      sounds.playerTwoMusic.load()
+      sounds.playerTwoMusic.play()
+      sounds.playerOneMusic.pause()
     }
+  }
+}
 
-    setTimeout(() => {
-      currentPlayerUI.classList.remove('glow')
-      currentRoundContainer.classList.remove('glow')
-    }, 3000)
+function updateCurrentPlayerUI () {
+  const currentPlayerUI = document.getElementById('current-player-ui')
+  const currentRoundContainer = document.getElementById('current-round')
+  const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
+
+  currentRoundContainer.classList.add('glow')
+  currentRoundContainer.innerText = currentRound
+
+  for (let i = 0; i < currentPlayerMiniatures.length; i++) {
+    currentPlayerMiniatures[i].classList.toggle('active')
   }
 
-  function distributeMoney () {
-    const buildings = document.querySelectorAll('.-building')
+  setTimeout(() => {
+    currentPlayerUI.classList.remove('glow')
+    currentRoundContainer.classList.remove('glow')
+  }, 3000)
+}
 
-    buildings.forEach(building => {
-      if (building.classList.contains('-city') && building.dataset.player !== '0') {
-        if (building.dataset.player === '1' && currentPlayer === 2) {
-          playerOneMoney = playerOneMoney + 200
-          sounds.cashMachine.play()
-          highlightMoneyMakeFromCity(building)
-        } else if (building.dataset.player === '2' && currentPlayer === 1) {
-          playerTwoMoney = playerTwoMoney + 200
-          sounds.cashMachine.play()
-          highlightMoneyMakeFromCity(building)
-        }
+function distributeMoney () {
+  const buildings = document.querySelectorAll('.-building')
+
+  buildings.forEach(building => {
+    if (building.classList.contains('-city') && building.dataset.player !== '0') {
+      if (building.dataset.player === '1' && currentPlayer === 2) {
+        playerOneMoney = playerOneMoney + 200
+        sounds.cashMachine.play()
+        highlightMoneyMakeFromCity(building)
+      } else if (building.dataset.player === '2' && currentPlayer === 1) {
+        playerTwoMoney = playerTwoMoney + 200
+        sounds.cashMachine.play()
+        highlightMoneyMakeFromCity(building)
       }
+    }
 
-      function highlightMoneyMakeFromCity (building) {
-        building.classList.add('-active')
-        setTimeout(() => {
-          building.classList.remove('-active')
-        }, 5000)
-      }
-    })
-  }
+    function highlightMoneyMakeFromCity (building) {
+      building.classList.add('-active')
+      setTimeout(() => {
+        building.classList.remove('-active')
+      }, 5000)
+    }
+  })
 }
 
 function updateMoneyUI () {
@@ -855,7 +900,9 @@ const sounds = {
   militaryMarch: document.getElementById('military-march'),
   mechanicBuilding: document.getElementById('mechanic-building'),
   nextRound: document.getElementById('next-round'),
-  cashMachine: document.getElementById('cash-machine')
+  cashMachine: document.getElementById('cash-machine'),
+  playerOneMusic: document.getElementById('player-one-music'),
+  playerTwoMusic: document.getElementById('player-two-music')
 }
 
 const infantrySounds = [sounds.infantry, sounds.infantry2, sounds.infantry3]
@@ -915,6 +962,28 @@ function playFightSound (unitType) {
   }
 }
 
+function playMusic () {
+  if (allowPlayMusic === false) {
+    allowPlayMusic = true
+
+    if (currentPlayer === 1) {
+      sounds.playerOneMusic.load()
+      sounds.playerOneMusic.play()
+      sounds.playerTwoMusic.pause()
+    }
+
+    if (currentPlayer === 2) {
+      sounds.playerTwoMusic.load()
+      sounds.playerTwoMusic.play()
+      sounds.playerOneMusic.pause()
+    }
+  } else {
+    allowPlayMusic = false
+    sounds.playerOneMusic.pause()
+    sounds.playerTwoMusic.pause()
+  }
+}
+
 // UI Management
 function statPreview () {
   const statsContainer = document.getElementById('stats-container')
@@ -941,20 +1010,20 @@ function statPreview () {
         unitBackground = unitBackground.replace('.png', '-fit.png')
 
         statsHTML += `
-        <span class="miniature" style="background-image: url('${unitBackground}');background-size: contain;background-repeat: no-repeat;width: 25px;height: 25px;display: block;"></span>` +
-        '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
-        child.dataset.health + '</span>' +
-        '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
-        child.dataset.residual_attack_capacity + '</span>' +
-        '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
-        child.dataset.attack_range + '</span>' +
-        '<span class="stat -movement _flex -justifycenter -aligncenter">' +
-        child.dataset.residual_move_capacity +
-        '</span>' +
-        '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
-        child.dataset.attack_damage + '</span>' +
-        '<span class="stat -defense _flex -justifycenter -aligncenter">' +
-        child.dataset.defense + '</span>'
+          <span class="miniature" style="background-image: url('${unitBackground}');background-size: contain;background-repeat: no-repeat;width: 25px;height: 25px;display: block;"></span>` +
+          '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
+          child.dataset.health + '</span>' +
+          '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
+          child.dataset.residual_attack_capacity + '</span>' +
+          '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
+          child.dataset.attack_range + '</span>' +
+          '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+          child.dataset.residual_move_capacity +
+          '</span>' +
+          '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
+          child.dataset.attack_damage + '</span>' +
+          '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+          child.dataset.defense + '</span>'
       }
     }
 

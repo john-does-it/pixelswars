@@ -14,8 +14,12 @@
 </head>
 <body id="body">
   <!-- audio -->
-  <audio id="player-one">
-    <source src="assets/mp3/player-one.mp3" type="audio/mpeg">
+  <audio id="player-one-music">
+    <source src="assets/mp3/player-one-music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="player-two-music">
+    <source src="assets/mp3/player-two-music.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
   <audio id="woosh-movement">
@@ -182,30 +186,30 @@
         </div> -->
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
+        <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="140" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
+        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
       </div>
       <div class="cell-container -moutain -ongrass">
-        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -water -grass -right"></div>
       <div class="cell-container -building -factory -ongrass" data-type="building" data-building-type="factory" data-capture_points="20" data-player="0">
-        <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="100" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
+        <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
       </div>
       <div class="cell-container -building -hospital -ongrass"  data-type="building" data-building-type="hospital" data-capture_points="20" data-player="0"></div>
       <div class="cell-container -building -city -ongrass" data-type="building" data-building-type="city" data-capture_points="20" data-player="0"></div>
       <div class="cell-container -grass">
-        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+        <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass">
-        <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
+        <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -water -grass -right -bottom"></div>
@@ -217,7 +221,7 @@
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass">
-        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="120" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
+        <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
       </div>
       <div class="cell-container -grass"></div>
       <div class="cell-container -grass"></div>
@@ -256,22 +260,22 @@
       <div class="cell-container -grass"></div>
       <div class="cell-container -moutain -ongrass -variant"></div>
       <div class="cell-container -grass">
-        <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="120" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
+        <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
       </div>
       <div class="cell-container -road -corner -top">
-        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -road -h">
-        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
+        <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200"  data-sound_delay="500"></div>
       </div>
       <div class="cell-container -road -h">
-        <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="100" data-type="artillery" data-cost="1200" data-sound_delay="5000"></div>
+        <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="1200" data-sound_delay="5000"></div>
       </div>
     </div>
   </div>
   <div class="_flex -wrap -justifyspacebetween -aligncenter" style="width: 100%;padding-bottom: 4em;padding-left: 2em;padding-right: 2em;gap: 2em;margin: auto;">
     <div class="options-container _flex">
-      <button id="toggle-ui-feedback">1</button>
+      <button id="toggle-ui-feedback" onclick="playMusic()">1</button>
       <button>2</button>
       <button>3</button>
     </div>
