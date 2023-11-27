@@ -545,14 +545,6 @@ function addInRangeToEnemyUnits (index) {
   return enemyUnits
 }
 
-function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
-  console.log(defenderDefense, defenderLandscapeDefenseBonus)
-  const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
-  const healthFactor = (1 / 100) * attackerHealth
-  const damage = (attackerDamage - totalDefenseBonus) * healthFactor
-  return damage
-}
-
 function handleFight (event) {
   if (selectedUnit === null || isFighting) {
     return
@@ -593,14 +585,15 @@ function handleFight (event) {
 
   if (Number(event.target.dataset.health) <= 0) {
     uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
-    event.target.remove()
+    handleDeathOfUnit(event.target, Number(getLandscapeData(event.target).landscapeIndex))
     addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
   }
 
   // If selected unit is dead
   if (Number(selectedUnit.dataset.health) <= 0) {
     const previouslySelectedUnit = selectedUnit
-    previouslySelectedUnit.remove()
+    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex))
+    // previouslySelectedUnit.remove()
     unselectUnit()
     isFighting = false
 
@@ -612,6 +605,36 @@ function handleFight (event) {
   updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
 
   isFighting = false
+}
+
+function handleDeathOfUnit (unit, cellIndex) {
+  setTimeout(() => {
+    unit.remove()
+    const cell = cells[cellIndex]
+    createExplosion(cell)
+    // checkIfLost()
+  }, Number(unit.dataset.sound_delay))
+}
+
+function createExplosion (cell) {
+  const imgElement = document.createElement('img')
+  sounds.bomb.volume = 0.5
+  sounds.bomb.play()
+  imgElement.src = 'assets/gifs/explosion.gif'
+  imgElement.classList.add('explosion')
+  cell.appendChild(imgElement)
+
+  setInterval(() => {
+    imgElement.remove()
+  }, 500)
+}
+
+function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
+  console.log(defenderDefense, defenderLandscapeDefenseBonus)
+  const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
+  const healthFactor = (1 / 100) * attackerHealth
+  const damage = (attackerDamage - totalDefenseBonus) * healthFactor
+  return damage
 }
 
 function unselectFactory () {
