@@ -594,8 +594,9 @@ function handleFight (event) {
   }
 
   if (Number(event.target.dataset.health) <= 0) {
+    const previouslyTargetedUnit = event.target
+    handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
     uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
-    handleDeathOfUnit(event.target, Number(getLandscapeData(event.target).landscapeIndex), selectedUnit)
     addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
   }
 
@@ -618,11 +619,11 @@ function handleFight (event) {
 
 function handleDeathOfUnit (unit, cellIndex, enemyUnit) {
   setTimeout(() => {
-    unit.remove()
     const cell = cells[cellIndex]
     createExplosion(cell)
     // checkIfLost()
   }, Number(enemyUnit.dataset.sound_delay))
+  unit.remove()
 }
 
 function createExplosion (cell) {
@@ -633,13 +634,12 @@ function createExplosion (cell) {
   imgElement.classList.add('explosion')
   cell.appendChild(imgElement)
 
-  setInterval(() => {
+  setTimeout(() => {
     imgElement.remove()
   }, 500)
 }
 
 function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
-  console.log(defenderDefense, defenderLandscapeDefenseBonus)
   const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
   const healthFactor = (1 / 100) * attackerHealth
   const damage = (attackerDamage - totalDefenseBonus) * healthFactor
