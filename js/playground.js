@@ -563,68 +563,84 @@ function handleFight (event) {
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
   uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
 
-  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-    selectedUnit.classList.add('-outofammo')
-  }
+  // if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
+  //   selectedUnit.classList.add('-outofammo')
+  // }
 
-  // Calculate the array of adjacent cells for the enemy unit
-  const enemyAttackRangeCells = returnAdjacentCells(
-    Number(getLandscapeData(event.target).landscapeIndex),
-    Number(event.target.dataset.attack_range)
-  )
+  // // If enemy unit is dead
+  // if (Number(EventTarget.dataset.health) <= 0) {
+  //   const previouslyTargetedUnit = event.target
+  //   handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
+  //   unselectUnit()
+  //   isFighting = false
+  //   return
+  // }
 
-  // Check if selectedUnit is within the enemy's attack range and not dead then ripost
-  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-    setTimeout(() => {
-      playFightSound(event.target.dataset.name)
-      const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
-      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
-      uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-      // checkIfLost()
-    }, Number(selectedUnit.dataset.sound_delay))
-  }
+  // // Calculate the array of adjacent cells for the enemy unit
+  // const enemyAttackRangeCells = returnAdjacentCells(
+  //   Number(getLandscapeData(event.target).landscapeIndex),
+  //   Number(event.target.dataset.attack_range)
+  // )
 
-  const healthStatPreview = document.getElementById('statpreview-health')
-  healthStatPreview.innerHTML = Number(event.target.dataset.health)
-  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
+  // // Check if selectedUnit is within the enemy's attack range and not dead then ripost
+  // if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
+  //   playFightSound(event.target.dataset.name)
+  //   const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
+  //   selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+  //   uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+  //   // checkIfLost()
+  // }
+
+  // // If selected unit is dead
+  // if (Number(selectedUnit.dataset.health) <= 0) {
+  //   const previouslySelectedUnit = selectedUnit
+  //   handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
+  //   unselectUnit()
+  //   isFighting = false
+  //   return
+  // }
+
+  // const healthStatPreview = document.getElementById('statpreview-health')
+  // healthStatPreview.innerHTML = Number(event.target.dataset.health)
+  // updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
 
   isFighting = false
 }
 
-function handleDeathOfUnit (unit, cellIndex, killingUnit) {
-  const cell = cells[cellIndex]
+// function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+//   const cell = cells[cellIndex]
 
-  // enemy unit has died
-  if (killingUnit === selectedUnit) {
-    setTimeout(() => {
-      createExplosion(cell)
-      unit.remove()
-      // checkIfLost()
-    }, Number(killingUnit.dataset.sound_delay))
-  }
+//   // enemy unit has died
+//   if (killingUnit === selectedUnit) {
+//     setTimeout(() => {
+//       createExplosion(cell)
+//       unit.remove()
+//       // checkIfLost()
+//     }, Number(killingUnit.dataset.sound_delay))
+//   }
 
-  // player unit has died on ripost
-  if (killingUnit !== selectedUnit) {
-    setTimeout(() => {
-      createExplosion(cell)
-      unit.remove()
-      // checkIfLost()
-    }, Number(unit.dataset.sound_delay) + Number(killingUnit.dataset.sound_delay))
-  }
-}
+//   // player unit has died on ripost
+//   if (killingUnit !== selectedUnit) {
+//     setTimeout(() => {
+//       createExplosion(cell)
+//       unit.remove()
+//       // checkIfLost()
+//     }, Number(unit.dataset.sound_delay) + Number(killingUnit.dataset.sound_delay))
+//   }
+// }
 
-function createExplosion (cell) {
-  const imgElement = document.createElement('img')
-  sounds.bomb.volume = 0.5
-  sounds.bomb.play()
-  imgElement.src = 'assets/gifs/explosion.gif'
-  imgElement.classList.add('explosion')
-  cell.appendChild(imgElement)
+// function createExplosion (cell) {
+//   const imgElement = document.createElement('img')
+//   sounds.bomb.volume = 0.5
+//   sounds.bomb.play()
+//   imgElement.src = 'assets/gifs/explosion.gif'
+//   imgElement.classList.add('explosion')
+//   cell.appendChild(imgElement)
 
-  setTimeout(() => {
-    imgElement.remove()
-  }, 500)
-}
+//   setTimeout(() => {
+//     imgElement.remove()
+//   }, 500)
+// }
 
 function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
   const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
