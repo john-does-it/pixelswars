@@ -12,6 +12,19 @@
     font-size: 16px;
   }
   
+  .miniature {
+    width: 15px;
+    height: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: block;
+
+    @media (min-width: @m) {
+      width: 25px;
+      height: 25px;
+    }
+  }
+  
   .stat {
     &::before {
       content: "";

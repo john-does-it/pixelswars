@@ -6,6 +6,8 @@ const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-
 const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
+const togglePlayerMusicButton = document.getElementById('toggle-player-music')
+const toggleUIFeedbackButton = document.getElementById('toggle-ui-feedback')
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
@@ -13,51 +15,35 @@ const numberOfRows = getGridDimensions().rows
 const unitsHTML = {
   infantryUnitPlayerOne:
   `
-  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-sound_delay="500">
-  
-  </div>
+  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-sound_delay="500"></div>
   `,
   infantryUnitPlayerTwo:
   `
-  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-maxhealth="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div>
-  
-  </div>
+  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div></div>
   `,
   jeepUnitPlayerOne:
   `
-  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep data-cost="600" data-sound_delay="500">
-  
-  </div>
+  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep data-cost="600" data-sound_delay="500"></div>
   `,
   jeepUnitPlayerTwo:
   `
-  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-maxhealth="125" data-type="jeep" data-cost="600" data-sound_delay="500">
-  
-  </div>
+  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
   `,
   artilleryPlayerOne:
   `
-  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="800" data-sound_delay="5000"> </div>
-  
-  </div>
+  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="5000"> </div></div>
   `,
   artilleryPlayerTwo:
   `
-  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="120" data-maxhealth="120" data-type="artillery" data-cost="800" data-sound_delay="5000">
-  
-  </div>
+  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="5000"></div>
   `,
   tankPlayerOne:
   `
-  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
-  
-  </div>
+  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div></div>
   `,
   tankPlayerTwo:
   `
-  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-maxhealth="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div>
-  
-  </div>
+  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div></div>
   `
 }
 
@@ -241,33 +227,34 @@ function selectUnit () {
   const playableUnits = document.querySelectorAll('.unit-container')
 
   playableUnits.forEach(element => {
+    // element.removeEventListener('click', unitClickHandler)
     element.addEventListener('click', unitClickHandler)
   })
+}
 
-  function unitClickHandler (event) {
-    const tryToSelectUnit = event.currentTarget
+function unitClickHandler (event) {
+  const tryToSelectUnit = event.currentTarget
 
-    if (Number(tryToSelectUnit.dataset.player) !== currentPlayer) {
-      return
-    }
-
-    // Now handling the specific case where the selected unit is not the currently selected one.
-    if (tryToSelectUnit !== selectedUnit) {
-      unselectUnit()
-    }
-
-    uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
-    selectedUnit = tryToSelectUnit
-    playSelectSound(selectedUnit.dataset.type)
-    isSelectedUnit = true
-    originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
-    originalMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
-    highlightReachableCells(originalIndex)
-    removeInRangeFromUnits()
-    addInRangeToEnemyUnits(originalIndex)
-    const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
-    addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
+  if (Number(tryToSelectUnit.dataset.player) !== currentPlayer) {
+    return
   }
+
+  // Now handling the specific case where the selected unit is not the currently selected one.
+  if (tryToSelectUnit !== selectedUnit) {
+    unselectUnit()
+  }
+
+  uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
+  selectedUnit = tryToSelectUnit
+  playSelectSound(selectedUnit.dataset.type)
+  isSelectedUnit = true
+  originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
+  originalMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
+  highlightReachableCells(originalIndex)
+  removeInRangeFromUnits()
+  addInRangeToEnemyUnits(originalIndex)
+  const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
+  addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
 }
 
 function unselectUnit () {
@@ -586,28 +573,15 @@ function handleFight (event) {
     Number(event.target.dataset.attack_range)
   )
 
-  // Check if selectedUnit is within the enemy's attack range
+  // Check if selectedUnit is within the enemy's attack range and not dead then ripost
   if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-    const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
-    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
-    uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-  }
-
-  if (Number(event.target.dataset.health) <= 0) {
-    const previouslyTargetedUnit = event.target
-    handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-    uiFeedbackContainer.innerHTML = '<p>☠️ Enemy destroyed!</p>'
-    addInRangeToEnemyUnits(Number(getLandscapeData(selectedUnit).landscapeIndex))
-  }
-
-  // If selected unit is dead
-  if (Number(selectedUnit.dataset.health) <= 0) {
-    const previouslySelectedUnit = selectedUnit
-    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
-    unselectUnit()
-    isFighting = false
-
-    return
+    setTimeout(() => {
+      playFightSound(event.target.dataset.name)
+      const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
+      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+      uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+      // checkIfLost()
+    }, Number(selectedUnit.dataset.sound_delay))
   }
 
   const healthStatPreview = document.getElementById('statpreview-health')
@@ -617,13 +591,26 @@ function handleFight (event) {
   isFighting = false
 }
 
-function handleDeathOfUnit (unit, cellIndex, enemyUnit) {
-  setTimeout(() => {
-    const cell = cells[cellIndex]
-    createExplosion(cell)
-    // checkIfLost()
-  }, Number(enemyUnit.dataset.sound_delay))
-  unit.remove()
+function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+  const cell = cells[cellIndex]
+
+  // enemy unit has died
+  if (killingUnit === selectedUnit) {
+    setTimeout(() => {
+      createExplosion(cell)
+      unit.remove()
+      // checkIfLost()
+    }, Number(killingUnit.dataset.sound_delay))
+  }
+
+  // player unit has died on ripost
+  if (killingUnit !== selectedUnit) {
+    setTimeout(() => {
+      createExplosion(cell)
+      unit.remove()
+      // checkIfLost()
+    }, Number(unit.dataset.sound_delay) + Number(killingUnit.dataset.sound_delay))
+  }
 }
 
 function createExplosion (cell) {
@@ -729,8 +716,6 @@ function createAndAddUnit (unitHTML) {
   newUnitElement.replaceWith(toReplaceBy)
 
   selectUnit() // update units adding new units
-  // const updatedNewUnitElement = factory.querySelector('.unit-container')
-  // updatedNewUnitElement.addEventListener('click', selectUnit)
 }
 
 function captureBuilding () {
@@ -776,19 +761,16 @@ function healthUnitOnHospital () {
   units.forEach(unit => {
     const hospitalParent = unit.parentElement
 
-    if (hospitalParent && hospitalParent.classList.contains('-hospital') && unit.getAttribute('data-player') === hospitalParent.getAttribute('data-player')) {
-      let currentHealth = unit.dataset.health
+    if (hospitalParent && hospitalParent.classList.contains('-hospital') && unit.getAttribute('data-player') === hospitalParent.getAttribute('data-player') && Number(hospitalParent.dataset.player) === currentPlayer) {
+      let currentHealth
 
-      if (currentHealth < 75) {
-        currentHealth = Number(currentHealth) + 25
+      if (unit.dataset.health < Number(unit.dataset.max_health) - 25) {
+        currentHealth = Number(unit.dataset.health) + 25
+        unit.setAttribute('data-health', currentHealth)
+      } else if (unit.dataset.health >= Number(unit.dataset.max_health) - 25) {
+        currentHealth = Number(unit.dataset.max_health)
         unit.setAttribute('data-health', currentHealth)
       }
-      // else if (currentHealth >= 75 && currentHealth < 100) {
-      //   currentHealth = 100
-      //   unit.setAttribute('data-health', currentHealth)
-      //   const healthCapacityContainer = unit.querySelector('.-health')
-      //   healthCapacityContainer.innerHTML = currentHealth
-      // }
     }
   })
 }
@@ -813,21 +795,12 @@ function endRound () {
 function determinePlayer () {
   if (currentRound === 1 || currentRound % 2 === 1) {
     currentPlayer = 1
-
-    if (allowPlayMusic === true) {
-      sounds.playerOneMusic.load()
-      sounds.playerOneMusic.play()
-      sounds.playerTwoMusic.pause()
-    }
-  }
-  if (currentRound % 2 !== 1) {
+  } else if (currentRound % 2 !== 1) {
     currentPlayer = 2
+  }
 
-    if (allowPlayMusic === true) {
-      sounds.playerTwoMusic.load()
-      sounds.playerTwoMusic.play()
-      sounds.playerOneMusic.pause()
-    }
+  if (allowPlayMusic) {
+    controlMusicForCurrentPlayer()
   }
 }
 
@@ -963,25 +936,37 @@ function playFightSound (unitType) {
 }
 
 function playMusic () {
-  if (allowPlayMusic === false) {
-    allowPlayMusic = true
+  allowPlayMusic = !allowPlayMusic // Toggle music play state
 
-    if (currentPlayer === 1) {
-      sounds.playerOneMusic.load()
-      sounds.playerOneMusic.play()
-      sounds.playerTwoMusic.pause()
-    }
-
-    if (currentPlayer === 2) {
-      sounds.playerTwoMusic.load()
-      sounds.playerTwoMusic.play()
-      sounds.playerOneMusic.pause()
-    }
-  } else {
-    allowPlayMusic = false
+  if (allowPlayMusic) {
+    // Set volume and pause both tracks to reset their state
+    sounds.playerOneMusic.volume = 0.25
+    sounds.playerTwoMusic.volume = 0.25
     sounds.playerOneMusic.pause()
     sounds.playerTwoMusic.pause()
+
+    // Play music for the current player
+    const currentMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
+    currentMusic.load()
+    currentMusic.play()
+    togglePlayerMusicButton.innerText = '🔇'
+  } else {
+    // Pause both music tracks
+    sounds.playerOneMusic.pause()
+    sounds.playerTwoMusic.pause()
+    togglePlayerMusicButton.innerText = '🔊'
   }
+}
+
+function controlMusicForCurrentPlayer () {
+  // Load and play music for the current player, pause for the other
+  const playerMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
+  const otherMusic = currentPlayer === 1 ? sounds.playerTwoMusic : sounds.playerOneMusic
+
+  playerMusic.volume = 0.125
+  playerMusic.load()
+  playerMusic.play()
+  otherMusic.pause()
 }
 
 // UI Management
@@ -1010,7 +995,7 @@ function statPreview () {
         unitBackground = unitBackground.replace('.png', '-fit.png')
 
         statsHTML += `
-          <span class="miniature" style="background-image: url('${unitBackground}');background-size: contain;background-repeat: no-repeat;width: 25px;height: 25px;display: block;"></span>` +
+          <span class="miniature" style="background-image: url('${unitBackground}');"></span>` +
           '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
           child.dataset.health + '</span>' +
           '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
@@ -1029,9 +1014,18 @@ function statPreview () {
 
     const cellBackground = getBackgroundImage(cell)
 
-    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}'); background-size: contain; width: 25px; height: 25px; display: block;"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
+    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}');"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
 
     statsContainer.innerHTML = statsHTML
+  }
+}
+
+function toggleUIFeedback () {
+  uiFeedbackContainer.classList.toggle('-hidden')
+  if (uiFeedbackContainer.classList.contains('-hidden')) {
+    toggleUIFeedbackButton.innerText = '💁'
+  } else {
+    toggleUIFeedbackButton.innerText = '🙅'
   }
 }
 

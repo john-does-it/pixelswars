@@ -265,37 +265,38 @@ progress {
 input:disabled {
   cursor: not-allowed;
 }
-.option,
-.endround:not(:disabled),
-option {
+.button {
+  border: 2px solid hsl(334, 25%, 20%);
+}
+.button.-option:not(:disabled),
+.button.-endround:not(:disabled) {
   cursor: pointer;
 }
-.option {
+.button.-option {
   width: 40px;
   height: 40px;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  border: 0;
   border-radius: 100%;
   padding-top: 4px;
 }
-.option + .option {
+.button.-option + button.-option {
   margin-left: 0.5em;
 }
-.endround {
+.button.-endround {
   max-width: 320px;
   height: 40px;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  border: 3px solid hsl(0, 3%, 27%);
+  border: 4px solid hsl(334, 25%, 20%);
   font-weight: bold;
 }
-.endround:disabled {
+.button.-endround:disabled {
   opacity: 0.5;
 }
-.endround:hover:not(:disabled) {
+.button.-endround:hover:not(:disabled) {
   border-color: hsl(0, 0%, 95%);
 }
 .cell-container {
@@ -473,7 +474,8 @@ option {
 .unit-container {
   width: 100%;
   height: 100%;
-  background-size: contain;
+  background-size: 90%;
+  background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
   z-index: 999;
@@ -544,6 +546,19 @@ option {
 @media (min-width: 960px) {
   .stats-container {
     font-size: 16px;
+  }
+}
+.stats-container .miniature {
+  width: 15px;
+  height: 15px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: block;
+}
+@media (min-width: 960px) {
+  .stats-container .miniature {
+    width: 25px;
+    height: 25px;
   }
 }
 .stats-container .stat::before {
@@ -635,6 +650,47 @@ option {
   -webkit-margin-after: 0;
           margin-block-end: 0;
 }
+.uifeedback-container.-hidden {
+  display: none;
+}
+.moneyandplayer-container {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 2em 0 0;
+}
+.moneyandplayer-container .moneyandendround-container {
+  margin-top: 0.5em;
+}
+.moneyandplayer-container .moneyandplayer-subcontainer {
+  row-gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+.moneyandplayer-container .money-container {
+  width: 100%;
+  padding: 0 1em;
+}
+.moneyandplayer-container .round-container,
+.moneyandplayer-container .player-container {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 30px;
+  gap: 0.25em;
+  padding-left: 0.5em;
+  border: 2px solid hsl(334, 25%, 20%);
+}
+.moneyandplayer-container .player-container img {
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+  display: none;
+}
+.moneyandplayer-container .player-container img.active {
+  display: flex;
+}
+.moneyandplayer-container .round-container {
+  padding-right: 0.5em;
+}
 .board-container {
   width: 100%;
   max-width: 100%;
@@ -681,6 +737,7 @@ option {
   overflow-x: auto;
   margin-top: 2em;
   margin-bottom: 2em;
+  border: 4px solid hsl(334, 25%, 20%);
 }
 .dialog-container {
   margin-top: 1em;
@@ -717,6 +774,25 @@ option {
   min-width: -moz-fit-content;
   min-width: fit-content;
 }
+.optionsandendround-container {
+  width: 100%;
+  max-width: 640px;
+  padding-bottom: 6em;
+  padding-left: 2em;
+  padding-right: 2em;
+  -webkit-column-gap: 2em;
+     -moz-column-gap: 2em;
+          column-gap: 2em;
+  row-gap: 2em;
+  margin: auto;
+}
+@media (min-width: 960px) {
+  .optionsandendround-container {
+    -webkit-column-gap: 18em;
+       -moz-column-gap: 18em;
+            column-gap: 18em;
+  }
+}
 .endround-container {
   max-width: 100%;
   width: 320px;
@@ -724,44 +800,6 @@ option {
 }
 .endround-container .endround {
   width: 100%;
-}
-.moneyandplayer-container {
-  width: 100%;
-  max-width: 480px;
-  margin: auto;
-  padding: 2em 0 0;
-}
-.moneyandplayer-container .moneyandendround-container {
-  margin-top: 0.5em;
-}
-.moneyandplayer-container .moneyandplayer-subcontainer {
-  row-gap: 0.5em;
-  margin-bottom: 0.5em;
-}
-.moneyandplayer-container .money-container {
-  width: 100%;
-  padding: 0 1em;
-}
-.moneyandplayer-container .round-container,
-.moneyandplayer-container .player-container {
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  height: 30px;
-  gap: 0.25em;
-  padding-left: 0.5em;
-  border: 2px solid hsl(334, 25%, 20%);
-}
-.moneyandplayer-container .player-container img {
-  width: inherit;
-  height: inherit;
-  display: none;
-}
-.moneyandplayer-container .player-container img.active {
-  display: flex;
-}
-.moneyandplayer-container .round-container {
-  padding-right: 0.5em;
 }
 .console-container {
   width: 100%;

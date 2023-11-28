@@ -14,6 +14,56 @@
     margin-block-start: 0;
     margin-block-end: 0;
   }
+
+  &.-hidden {
+    display: none;
+  }
+}
+
+.moneyandplayer-container {
+  width: 100%;
+  max-width: @xs;
+  margin: auto;
+  padding: 2em 0 0;
+  
+  .moneyandendround-container {
+    margin-top: .5em;
+  }
+
+  .moneyandplayer-subcontainer {
+    row-gap: .5em;
+    margin-bottom: .5em;
+  }
+
+  .money-container {
+    width: 100%;
+    padding: 0 1em;
+  }
+
+  .round-container, 
+  .player-container {
+    width: fit-content;
+    height: 30px;
+    gap: .25em;
+    padding-left: .5em;
+    border: 2px solid @darkbrown;
+  }
+
+  .player-container {
+    img {
+      width: calc(100% - 1px);
+      height: calc(100% - 1px);
+      display: none;
+  
+      &.active {
+        display: flex;
+      }
+    }
+  }
+
+  .round-container {
+    padding-right: .5em;
+  }
 }
 
 .board-container {
@@ -51,6 +101,7 @@
   overflow-x: auto;
   margin-top: 2em;
   margin-bottom: 2em;
+  border: 4px solid @darkbrown;
 }
 
 .dialog-container {
@@ -94,6 +145,21 @@
   min-width: fit-content;
 }
 
+.optionsandendround-container {
+  width: 100%;
+  max-width: @s;
+  padding-bottom: 6em;  
+  padding-left: 2em;
+  padding-right: 2em;
+  column-gap: 2em;
+  row-gap: 2em;
+  margin: auto;
+
+  @media(min-width: @m) {
+    column-gap: 18em;
+  }
+}
+
 .endround-container {
   max-width: 100%;
   width: @xxs;
@@ -101,52 +167,6 @@
 
   .endround {
     width: 100%;
-  }
-}
-
-.moneyandplayer-container {
-  width: 100%;
-  max-width: @xs;
-  margin: auto;
-  padding: 2em 0 0;
-  
-  .moneyandendround-container {
-    margin-top: .5em;
-  }
-
-  .moneyandplayer-subcontainer {
-    row-gap: .5em;
-    margin-bottom: .5em;
-  }
-
-  .money-container {
-    width: 100%;
-    padding: 0 1em;
-  }
-
-  .round-container, 
-  .player-container {
-    width: fit-content;
-    height: 30px;
-    gap: .25em;
-    padding-left: .5em;
-    border: 2px solid @darkbrown;
-  }
-
-  .player-container {
-    img {
-      width: inherit;
-      height: inherit;
-      display: none;
-  
-      &.active {
-        display: flex;
-      }
-    }
-  }
-
-  .round-container {
-    padding-right: .5em;
   }
 }
 

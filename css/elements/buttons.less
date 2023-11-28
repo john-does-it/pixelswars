@@ -1,33 +1,38 @@
-.option, 
-.endround:not(:disabled), option {
-	cursor: pointer;
-}
+.button {
+	border: 2px solid @darkbrown;
 
-.option {
-	width: 40px;
-	height: 40px;
-	appearance: none;
-	border: 0;
-	border-radius: 100%;
-	padding-top: 4px;
-
-	+ .option {
-		margin-left: .5em;
+	&.-option:not(:disabled), 
+	&.-endround:not(:disabled) {
+		cursor: pointer;
+	}
+	
+	&.-option {
+		width: 40px;
+		height: 40px;
+		appearance: none;
+		border-radius: 100%;
+		padding-top: 4px;
+		
+		+ button.-option {
+			margin-left: .5em;
+		}
+	}
+	
+	&.-endround {
+		max-width: @xxs;
+		height: 40px;
+		appearance: none;
+		border: 4px solid @darkbrown;
+		font-weight: bold;
+		
+		&:disabled {
+			opacity: 0.5;
+		}
+		
+		&:hover:not(:disabled) {
+			border-color: @white;
+		}
 	}
 }
 
-.endround {
-	max-width: @xxs;
-  height: 40px;
-	appearance: none;
-	border: 3px solid hsl(0, 3%, 27%);
-	font-weight: bold;
 
-	&:disabled {
-		opacity: 0.5;
-	}
-
-	&:hover:not(:disabled) {
-		border-color: @white;
-	}
-}
