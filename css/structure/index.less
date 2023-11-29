@@ -2,11 +2,6 @@
   section {
     padding: 1em;
     margin-bottom: 4em;
-
-    h3 {
-      margin-block-start: 0;
-      margin-block-end: 0;
-    }
   }
 
   .boardpreview-container {
@@ -34,16 +29,22 @@
   .description-container {
     max-width: @xs;
 
+    h3 {
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+
     img {
       max-width: 160px;
     }
 
     &.-landscape {
       margin-bottom: 1em;
-      column-gap: 1em;
+      gap: 1em;
 
-      h3 {
-        margin-top: 1em;
+      img {
+        max-width: 120px;
+        padding: .5em;
       }
     }
 

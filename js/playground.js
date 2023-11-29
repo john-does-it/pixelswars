@@ -1026,7 +1026,6 @@ function updateUnitStatus (unit, statusType, add) {
       statusElement.classList.add(`${statusType}`)
       unit.appendChild(statusElement)
     }
-    // Apply any additional styles or attributes to statusElement
   } else {
     if (statusElement) {
       statusElement.remove()
