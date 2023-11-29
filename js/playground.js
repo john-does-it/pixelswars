@@ -570,28 +570,33 @@ function handleFight (event) {
     Number(event.target.dataset.attack_range)
   )
 
+  // delay the ripost using selectedUnit.dataset.sound_delay
   // Check if selectedUnit is within the enemy's attack range and not dead then ripost
-  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-    playFightSound(event.target.dataset.name)
-    const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
-    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
-    uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-    // checkIfLost()
-  }
+  // delay the riposte using selectedUnit.dataset.sound_delay
+  const riposteDelay = Number(selectedUnit.dataset.sound_delay)
+
+  setTimeout(() => {
+    if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
+      playFightSound(event.target.dataset.name)
+      const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
+      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+      uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+      // checkIfLost();
+
+      // If selected unit is dead
+      if (Number(selectedUnit.dataset.health) <= 0) {
+        const previouslySelectedUnit = selectedUnit
+        handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
+        unselectUnit()
+        isFighting = false
+      }
+    }
+  }, riposteDelay)
 
   // If enemy unit is dead
   if (Number(event.target.dataset.health) <= 0) {
     const previouslyTargetedUnit = event.target
     handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-    unselectUnit()
-    isFighting = false
-    return
-  }
-
-  // If selected unit is dead
-  if (Number(selectedUnit.dataset.health) <= 0) {
-    const previouslySelectedUnit = selectedUnit
-    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
     unselectUnit()
     isFighting = false
     return
@@ -607,8 +612,13 @@ function handleFight (event) {
 function handleDeathOfUnit (unit, cellIndex, killingUnit) {
   console.log(unit, cellIndex, killingUnit)
   const cell = cells[cellIndex]
-  createExplosion(cell)
-  unit.remove()
+
+  const deathDelay = Number(killingUnit.dataset.sound_delay)
+
+  setTimeout(() => {
+    createExplosion(cell)
+    unit.remove()
+  }, deathDelay)
 }
 
 function createExplosion (cell) {
@@ -621,7 +631,7 @@ function createExplosion (cell) {
 
   setTimeout(() => {
     imgElement.remove()
-  }, 500)
+  }, 500) // Duration of the explosion GIF display
 }
 
 function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
