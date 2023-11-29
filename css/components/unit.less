@@ -47,26 +47,34 @@
   &.-selected {
     transform: scale(1.0125);
   }
-  
-  &.-outofammo::before {
-    content: "";
+
+  .status {
     width: 15px;
     height: 15px;
     background-size: cover;
-    display: inline-block;
     background-repeat: no-repeat;
+    
+    @media(min-width: @m) {
+      width: 25px;
+      height: 25px;
+    }
+  }
+  
+  .-outofammo {
     background-image: url('../assets/icons/icon-attack-capacity.png');
     animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of ammo */
   }
-
-  &.-outofmovement::after {
-    content: "";
-    width: 15px;
-    height: 15px;
-    background-size: cover;
-    display: inline-block;
-    background-repeat: no-repeat;
+  
+  .-outofmovement {
     background-image: url('../assets/icons/icon-movement.png');
-    animation: outOf 2.75s infinite alternate;
+    animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of movement */
+  }
+  
+  .-outofcapture {
+    background-image: url('../assets/icons/icon-capture-capacity.png');
+    animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of capture */
   }
 }

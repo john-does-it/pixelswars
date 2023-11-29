@@ -508,27 +508,35 @@ input:disabled {
   -webkit-transform: scale(1.0125);
           transform: scale(1.0125);
 }
-.unit-container.-outofammo::before {
-  content: "";
+.unit-container .status {
   width: 15px;
   height: 15px;
   background-size: cover;
-  display: inline-block;
   background-repeat: no-repeat;
+}
+@media (min-width: 960px) {
+  .unit-container .status {
+    width: 25px;
+    height: 25px;
+  }
+}
+.unit-container .-outofammo {
   background-image: url('../assets/icons/icon-attack-capacity.png');
   -webkit-animation: outOf 2.5s infinite alternate;
           animation: outOf 2.5s infinite alternate;
+  /* specific styles for out of ammo */
 }
-.unit-container.-outofmovement::after {
-  content: "";
-  width: 15px;
-  height: 15px;
-  background-size: cover;
-  display: inline-block;
-  background-repeat: no-repeat;
+.unit-container .-outofmovement {
   background-image: url('../assets/icons/icon-movement.png');
-  -webkit-animation: outOf 2.75s infinite alternate;
-          animation: outOf 2.75s infinite alternate;
+  -webkit-animation: outOf 2.5s infinite alternate;
+          animation: outOf 2.5s infinite alternate;
+  /* specific styles for out of movement */
+}
+.unit-container .-outofcapture {
+  background-image: url('../assets/icons/icon-capture-capacity.png');
+  -webkit-animation: outOf 2.5s infinite alternate;
+          animation: outOf 2.5s infinite alternate;
+  /* specific styles for out of capture */
 }
 .stats-container {
   padding: 0.5em 1em;

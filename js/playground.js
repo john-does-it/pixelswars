@@ -205,10 +205,10 @@ function getEnemyUnitsInRange (adjacentCells) {
 function getLandscapeData (unit) {
   const landscape = unit.parentElement
   const landscapeIndex = landscape.dataset.index
-  const lansdcapeCostOfMovement = landscape.dataset.cost_of_movement
+  const landcapeCostOfMovement = landscape.dataset.cost_of_movement
   const landscapeDefenseBonus = landscape.dataset.defense_bonus
   const landscapeType = landscape.dataset.type
-  const landscapeDatas = { landscapeIndex, lansdcapeCostOfMovement, landscapeDefenseBonus, landscapeType }
+  const landscapeDatas = { landscapeIndex, landcapeCostOfMovement, landscapeDefenseBonus, landscapeType }
   return landscapeDatas
 }
 
@@ -292,7 +292,9 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       break
     case 'Enter':
       console.log('press Enter')
-      unselectUnit()
+      if (isFighting === false) {
+        unselectUnit()
+      }
       break
     case 'Escape':
       console.log('press Escape')
@@ -312,7 +314,8 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     originalCell.appendChild(selectedUnit)
     resetUnitResidualMoveCapacity(originalMoveCapacity)
     if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
-      selectedUnit.classList.remove('-outofmovement')
+      // selectedUnit.classList.remove('-outofmovement')
+      updateUnitStatus(selectedUnit, '-outofmovement', false)
     }
   }
 }
@@ -366,7 +369,8 @@ function updateCellsAndUnitsState (index) {
   removeAttackableFromCells()
   highlightReachableCells(index)
   if (highlightReachableCells(index).length === 0) {
-    selectedUnit.classList.add('-outofmovement')
+    // selectedUnit.classList.add('-outofmovement')
+    updateUnitStatus(selectedUnit, '-outofmovement', true)
   }
   removeInRangeFromUnits()
   const enemyUnitsInRange = addInRangeToEnemyUnits(index)
@@ -476,21 +480,21 @@ function removeInRangeFromUnits () {
   })
 }
 
-function removeOutOfAmmoFromUnits () {
-  const units = document.querySelectorAll('.unit-container')
+// function removeOutOfAmmoFromUnits () {
+//   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
-    unit.classList.remove('-outofammo')
-  })
-}
+//   units.forEach(unit => {
+//     unit.classList.remove('-outofammo')
+//   })
+// }
 
-function removeOutOfMovementFromUnits () {
-  const units = document.querySelectorAll('.unit-container')
+// function removeOutOfMovementFromUnits () {
+//   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
-    unit.classList.remove('-outofmovement')
-  })
-}
+//   units.forEach(unit => {
+//     unit.classList.remove('-outofmovement')
+//   })
+// }
 
 function addInRangeToEnemyUnits (index) {
   removeInRangeFromUnits()
@@ -549,19 +553,34 @@ function handleFight (event) {
     return
   }
 
+  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
+
+  endRoundButton.disabled = true // Disable the "End Round" button
+
   originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex) // prevent move cancellation
 
   isFighting = true
   playFightSound(selectedUnit.dataset.name)
 
   // New damage calculation
-  const damage = calculateDamage(Number(selectedUnit.dataset.attack_damage), Number(selectedUnit.dataset.health), Number(event.target.dataset.defense), Number(getLandscapeData(event.target).landscapeDefenseBonus))
+  const damage = calculateDamage(
+    Number(selectedUnit.dataset.attack_damage),
+    Number(selectedUnit.dataset.health),
+    Number(event.target.dataset.defense),
+    Number(getLandscapeData(event.target).landscapeDefenseBonus)
+  )
   event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
+
+  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
+    removeInRangeFromUnits()
+  }
+
   uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-    selectedUnit.classList.add('-outofammo')
+    // selectedUnit.classList.add('-outofammo')
+    updateUnitStatus(selectedUnit, '-outofammo', true)
   }
 
   // Calculate the array of adjacent cells for the enemy unit
@@ -571,26 +590,34 @@ function handleFight (event) {
   )
 
   // delay the ripost using selectedUnit.dataset.sound_delay
-  // Check if selectedUnit is within the enemy's attack range and not dead then ripost
-  // delay the riposte using selectedUnit.dataset.sound_delay
   const riposteDelay = Number(selectedUnit.dataset.sound_delay)
 
   setTimeout(() => {
     if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
       playFightSound(event.target.dataset.name)
-      const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
-      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+      const returnDamage = calculateDamage(
+        Number(event.target.dataset.attack_damage),
+        Number(event.target.dataset.health),
+        Number(selectedUnit.dataset.defense),
+        Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
+      )
+      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
       uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-      // checkIfLost();
 
-      // If selected unit is dead
+      // If selected unit is dead after riposte
       if (Number(selectedUnit.dataset.health) <= 0) {
         const previouslySelectedUnit = selectedUnit
         handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
         unselectUnit()
         isFighting = false
+        endRoundButton.disabled = false // Re-enable the "End Round" button
+        return
       }
     }
+
+    // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
+    endRoundButton.disabled = false
+    isFighting = false
   }, riposteDelay)
 
   // If enemy unit is dead
@@ -599,17 +626,16 @@ function handleFight (event) {
     handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
     unselectUnit()
     isFighting = false
-    return
+    endRoundButton.disabled = false // Re-enable the "End Round" button
   }
-
-  const healthStatPreview = document.getElementById('statpreview-health')
-  healthStatPreview.innerHTML = Number(event.target.dataset.health)
-  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
-
-  isFighting = false
 }
 
 function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+  // Add a null check for the unit
+  if (!unit) {
+    console.error('handleDeathOfUnit called with null unit')
+    return
+  }
   console.log(unit, cellIndex, killingUnit)
   const cell = cells[cellIndex]
 
@@ -753,6 +779,8 @@ function startCaptureBuilding (event) {
       buildingDatas.building.setAttribute('data-capture_points', 20)
     }
     selectedUnit.setAttribute('data-capture_capacity', 0)
+    updateUnitStatus(selectedUnit, '-outofcapture', true)
+    // selectedUnit.classList.add('-outofcapture')
   }
 
   document.removeEventListener('keypress', startCaptureBuilding)
@@ -789,10 +817,19 @@ function endRound () {
   resetUnitsResidualAttackCapacity()
   resetResidualCaptureCapacityOnUnits()
   healthUnitOnHospital()
-  removeOutOfAmmoFromUnits()
-  removeOutOfMovementFromUnits()
+  resetUnitStatuses()
   playSound(sounds.nextRound)
   unselectFactory()
+}
+
+function resetUnitStatuses () {
+  const units = document.querySelectorAll('.unit-container')
+  units.forEach(unit => {
+    // Assuming these are the status types you want to reset
+    updateUnitStatus(unit, '-outofammo', false)
+    updateUnitStatus(unit, '-outofmovement', false)
+    updateUnitStatus(unit, '-outofcapture', false)
+  })
 }
 
 function determinePlayer () {
@@ -830,11 +867,11 @@ function distributeMoney () {
 
   buildings.forEach(building => {
     if (building.classList.contains('-city') && building.dataset.player !== '0') {
-      if (building.dataset.player === '1' && currentPlayer === 2) {
+      if (Number(building.dataset.player) === 1 && currentPlayer === 2) {
         playerOneMoney = playerOneMoney + 200
         sounds.cashMachine.play()
         highlightMoneyMakeFromCity(building)
-      } else if (building.dataset.player === '2' && currentPlayer === 1) {
+      } else if (Number(building.dataset.player) === 2 && currentPlayer === 1) {
         playerTwoMoney = playerTwoMoney + 200
         sounds.cashMachine.play()
         highlightMoneyMakeFromCity(building)
@@ -974,6 +1011,23 @@ function controlMusicForCurrentPlayer () {
 }
 
 // UI Management
+function updateUnitStatus (unit, statusType, add) {
+  let statusElement = unit.querySelector(`.${statusType}`)
+  if (add) {
+    if (!statusElement) {
+      statusElement = document.createElement('div')
+      statusElement.classList.add('status')
+      statusElement.classList.add(`${statusType}`)
+      unit.appendChild(statusElement)
+    }
+    // Apply any additional styles or attributes to statusElement
+  } else {
+    if (statusElement) {
+      statusElement.remove()
+    }
+  }
+}
+
 function statPreview () {
   const statsContainer = document.getElementById('stats-container')
 
