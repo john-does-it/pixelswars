@@ -755,7 +755,13 @@ function captureBuilding () {
   buildingDatas = getBuildingData(selectedUnit)
 
   if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
-    if (Number(selectedUnit.dataset.capture_capacity) !== 0 || (Number(buildingDatas.buildingCapturePoint) !== 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player))) {
+    if (Number(selectedUnit.dataset.capture_capacity) !== 0) {
+      console.log('can capture')
+      console.log(Number(buildingDatas.buildingCapturePoint), Number(buildingDatas.buildingPlayerAppartenance), Number(selectedUnit.dataset.player))
+    }
+    if (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player)) {
+      console.log('cant be capture')
+    } else {
       document.addEventListener('keypress', startCaptureBuilding)
     }
   }

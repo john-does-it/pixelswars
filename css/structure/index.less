@@ -1,7 +1,16 @@
 .index-container {
+  section {
+    padding: 1em;
+    margin-bottom: 4em;
+
+    h3 {
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+  }
+
   .boardpreview-container {
     gap: 2em;
-    margin-top: 2em;
 
     a {
       gap: 1em;
@@ -18,6 +27,33 @@
   }
   
   .boardpreview {
+    max-width: 100%;
     max-height: @xxs;
+  }
+
+  .description-container {
+    max-width: @xs;
+
+    img {
+      max-width: 160px;
+    }
+
+    &.-landscape {
+      margin-bottom: 1em;
+      column-gap: 1em;
+
+      h3 {
+        margin-top: 1em;
+      }
+    }
+
+    .description-subcontainer {
+      width: 100%;
+      max-width: @xxs;
+    }
+  } 
+
+  footer {
+    padding: 1em;
   }
 }

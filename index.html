@@ -13,36 +13,99 @@
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body class="index-container _flex -column -aligncenter">
-  <h1 class="_hide -always">Pixel's war</h1>
-  <!-- about -->
-  <p class="_color -white">
-    In it's current state, Pixel's War is a browser based game prototype inspired by Advance Wars written with basic web technologies: HTML / CSS and JS. 
-    The prototype allow you to play versus another player on the same computer. Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
-    Caution: the game isn't playable from a smartphone yet, but, who knows, maybe I will adapt it later!
-  </p>
-  <!-- play the game -->
-  <!-- tutorial (30s video) -->
-  <!-- <img class="logo" src="./assets/catwars-logo.png" alt="Catwars logo"> -->
-  <h2 class="_color -white">Choose your map</h2>
-  <ul class="boardpreview-container _flex -wrap -justifycenter -aligncenter">
-    <li>
-      <a class="_flex -column -justifycenter" href="board-1.html" title="Access to the squared map">
-        <img class="boardpreview" src="./assets/boards/board-squared.png" alt="Preview for squared board">
-        <span class="_color -white _text -center">Squared 64 tiles (8*8)</span>
-      </a>
-    </li>
-    <li>
-      <a class="_flex -column -justifycenter" href="board-2.html" title="Access to the rectangle map">
-        <img class="boardpreview" src="./assets/boards/board-rectangle.png" alt="Preview for rectangle board">
-        <span class="_color -white _text -center">[WIP] Rectangle 96 tiles (12*8)</span>
-      </a>
-    </li>
-  </ul>
-  <!-- units -->
+  <section>
+    <h1 class="_color -white _text -xl -center">Pixel's war</h1>
+    <p class="_color -white" style="max-width: 640px; padding: 1em;">
+      In it's current state, Pixel's War is a browser based game prototype inspired by Advance Wars written with basic web technologies: HTML / CSS and JS. 
+      The prototype allow you to play versus another player on the same computer. Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
+      Caution: the game isn't playable from a smartphone yet, but, who knows, maybe I will adapt it later!
+    </p>
+  </section>
+  <section>
+    <h2 class="_color -white _text -l -center">Give it a try!</h2>
+    <ul class="boardpreview-container _flex -wrap -justifycenter -aligncenter">
+      <li>
+        <a class="_flex -column -justifycenter" href="board-1.html" title="Access to the squared map">
+          <img class="boardpreview" src="./assets/boards/board-squared.png" alt="Preview for squared board">
+          <span class="_color -white _text -center">Squared 64 tiles (8*8)</span>
+        </a>
+      </li>
+      <li>
+        <a class="_flex -column -justifycenter" href="board-2.html" title="Access to the rectangle map">
+          <img class="boardpreview" src="./assets/boards/board-rectangle.png" alt="Preview for rectangle board">
+          <span class="_color -white _text -center">[WIP] Rectangle 96 tiles (12*8)</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2 class="_color -white _text -l -center">Units</h2>
+    <div class="description-container _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/units/infantry-1.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Infantery</h3>
+        <p class="_color -white _text -s">They are weak but they are cheap, so buy some meatboys and send them to the butcher. They are also the only unit that can capture building, so it's a vital unit for your economy!</p>
+      </div>
+    </div>
+    <div class="description-container _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/units/jeep-2.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Jeep</h3>
+        <p class="_color -white _text -s">Not really powerfull, but they cover long distance and they are relatively cheap. Ideal for harassing infantry and occupying strategic positions on the map.</p>
+      </div>
+    </div>
+    <div class="description-container _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/units/tank-1.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Tank</h3>
+        <p class="_color -white _text -s">Costly unit with a lot of fire power and a high defense bonus, making them hard to destroy! Nice, if you can afford them.</p>
+      </div>
+    </div>
+    <div class="description-container _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/units/artillery-2.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Artillery</h3>
+        <p class="_color -white _text -s">With a large attack range and a strong firepower, they are very usefull! Unfortunately, they're are coslty and they do not have good mobility capacity, too much logistic involve!</p>
+      </div>
+    </div>
+  </section>
+  <section>
+    <h2 class="_color -white _text -l -center">Landscape</h2>
+    <div class="description-container -landscape _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/cells/cell-grass.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Grass</h3>
+        <p class="_color -white _text -s">A good old grass. Don't give any cover and more costly than road. But, hey, sometimes, you doesn't have the choice!</p>
+      </div>
+    </div>
+    <div class="description-container -landscape _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/cells/cell-grass.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Grass</h3>
+        <p class="_color -white _text -s">A good old grass. Don't give any cover and more costly than road. But, hey, sometimes, you doesn't have the choice!</p>
+      </div>
+    </div>
+    <div class="description-container -landscape _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/cells/cell-grass.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Grass</h3>
+        <p class="_color -white _text -s">A good old grass. Don't give any cover and more costly than road. But, hey, sometimes, you doesn't have the choice!</p>
+      </div>
+    </div>
+    <div class="description-container -landscape _flex -wrap -aligncenter -justifycenter">
+      <img src="./assets/cells/cell-grass.png">
+      <div class="description-subcontainer _flex -column">
+        <h3 class="_color -white _text -m">Grass</h3>
+        <p class="_color -white _text -s">A good old grass. Don't give any cover and more costly than road. But, hey, sometimes, you doesn't have the choice!</p>
+      </div>
+    </div>
+  </section>
   <!-- landscape -->
   <!-- team -->
   <!-- faq -->
   <!-- support (link to patreon) -->
-  <p class="_color -white">Credits: Programming - John Does it | Graphic assets - Kenney | Sounds - Pixabay | Music - Monotlith</p>
+  <footer>
+    <p class="_color -white _text -center">Credits: Programming - <a class="_color -white _text -underlined" href="https://johndoesit.be" title="Go to John Does it website">John Does it</a> | Graphic assets - <a class="_color -white _text -underlined" href="https://www.kenney.nl" title="Go to Kenney website">Kenney</a> | Sounds - <a class="_color -white _text -underlined" href="https://pixabay.com/fr/sound-effects" title="Go to Pixabay website">Pixabay</a> | Music - <a class="_color -white _text -underlined" href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack" title="Go to Monolith website">Monolith</a> | QA - Gauthier Miessen</p>
+  </footer>
 </body>
 </html>
