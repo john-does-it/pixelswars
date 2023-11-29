@@ -307,6 +307,7 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
   }
 
   function handleCancelMove () {
+    console.log(originalIndex)
     const originalCell = cells[originalIndex]
     originalCell.appendChild(selectedUnit)
     resetUnitResidualMoveCapacity(originalMoveCapacity)
@@ -375,10 +376,6 @@ function updateCellsAndUnitsState (index) {
 function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
   const residualMoveCapacity = unitMoveCapacity - costOfMovement
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
-
-  // if (residualMoveCapacity === 0) {
-  //   selectedUnit.classList.add('-outofmovement')
-  // }
 }
 
 function resetUnitResidualMoveCapacity (originalMoveCapacity) {
@@ -520,7 +517,6 @@ function addInRangeToEnemyUnits (index) {
 
     // Check if an element with class 'loremipsum' already exists in uiFeedbackContainer
     if (uiFeedbackContainer.querySelector('.inrangemessage')) {
-      // Create a new paragraph element
       const inRangeMessage = uiFeedbackContainer.querySelector('.inrangemessage')
       inRangeMessage.remove()
       const messageElement = document.createElement('p')
@@ -554,6 +550,7 @@ function handleFight (event) {
   }
 
   originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex) // prevent move cancellation
+
   isFighting = true
   playFightSound(selectedUnit.dataset.name)
 
@@ -563,84 +560,69 @@ function handleFight (event) {
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
   uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
 
-  // if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-  //   selectedUnit.classList.add('-outofammo')
-  // }
+  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
+    selectedUnit.classList.add('-outofammo')
+  }
 
-  // // If enemy unit is dead
-  // if (Number(EventTarget.dataset.health) <= 0) {
-  //   const previouslyTargetedUnit = event.target
-  //   handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-  //   unselectUnit()
-  //   isFighting = false
-  //   return
-  // }
+  // Calculate the array of adjacent cells for the enemy unit
+  const enemyAttackRangeCells = returnAdjacentCells(
+    Number(getLandscapeData(event.target).landscapeIndex),
+    Number(event.target.dataset.attack_range)
+  )
 
-  // // Calculate the array of adjacent cells for the enemy unit
-  // const enemyAttackRangeCells = returnAdjacentCells(
-  //   Number(getLandscapeData(event.target).landscapeIndex),
-  //   Number(event.target.dataset.attack_range)
-  // )
+  // Check if selectedUnit is within the enemy's attack range and not dead then ripost
+  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
+    playFightSound(event.target.dataset.name)
+    const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
+    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
+    uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+    // checkIfLost()
+  }
 
-  // // Check if selectedUnit is within the enemy's attack range and not dead then ripost
-  // if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-  //   playFightSound(event.target.dataset.name)
-  //   const returnDamage = calculateDamage(Number(event.target.dataset.attack_damage), Number(event.target.dataset.health), Number(selectedUnit.dataset.defense), Number(getLandscapeData(selectedUnit).landscapeDefenseBonus))
-  //   selectedUnit.setAttribute('data-health', Math.max(0, Math.round(selectedUnit.dataset.health - returnDamage)))
-  //   uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-  //   // checkIfLost()
-  // }
+  // If enemy unit is dead
+  if (Number(event.target.dataset.health) <= 0) {
+    const previouslyTargetedUnit = event.target
+    handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
+    unselectUnit()
+    isFighting = false
+    return
+  }
 
-  // // If selected unit is dead
-  // if (Number(selectedUnit.dataset.health) <= 0) {
-  //   const previouslySelectedUnit = selectedUnit
-  //   handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
-  //   unselectUnit()
-  //   isFighting = false
-  //   return
-  // }
+  // If selected unit is dead
+  if (Number(selectedUnit.dataset.health) <= 0) {
+    const previouslySelectedUnit = selectedUnit
+    handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
+    unselectUnit()
+    isFighting = false
+    return
+  }
 
-  // const healthStatPreview = document.getElementById('statpreview-health')
-  // healthStatPreview.innerHTML = Number(event.target.dataset.health)
-  // updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
+  const healthStatPreview = document.getElementById('statpreview-health')
+  healthStatPreview.innerHTML = Number(event.target.dataset.health)
+  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
 
   isFighting = false
 }
 
-// function handleDeathOfUnit (unit, cellIndex, killingUnit) {
-//   const cell = cells[cellIndex]
+function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+  console.log(unit, cellIndex, killingUnit)
+  const cell = cells[cellIndex]
+  createExplosion(cell)
+  unit.remove()
+}
 
-//   // enemy unit has died
-//   if (killingUnit === selectedUnit) {
-//     setTimeout(() => {
-//       createExplosion(cell)
-//       unit.remove()
-//       // checkIfLost()
-//     }, Number(killingUnit.dataset.sound_delay))
-//   }
+function createExplosion (cell) {
+  const imgElement = document.createElement('img')
+  sounds.bomb.volume = 0.5
+  sounds.bomb.play()
+  imgElement.src = 'assets/gifs/explosion.gif'
+  imgElement.classList.add('explosion')
+  cell.appendChild(imgElement)
 
-//   // player unit has died on ripost
-//   if (killingUnit !== selectedUnit) {
-//     setTimeout(() => {
-//       createExplosion(cell)
-//       unit.remove()
-//       // checkIfLost()
-//     }, Number(unit.dataset.sound_delay) + Number(killingUnit.dataset.sound_delay))
-//   }
-// }
-
-// function createExplosion (cell) {
-//   const imgElement = document.createElement('img')
-//   sounds.bomb.volume = 0.5
-//   sounds.bomb.play()
-//   imgElement.src = 'assets/gifs/explosion.gif'
-//   imgElement.classList.add('explosion')
-//   cell.appendChild(imgElement)
-
-//   setTimeout(() => {
-//     imgElement.remove()
-//   }, 500)
-// }
+  setTimeout(() => {
+    imgElement.remove()
+  }, 500)
+}
 
 function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
   const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
@@ -659,7 +641,6 @@ function selectFactory (event) {
   // if a unit isn't on the factory, allow player to buy a unit
   if (Number(event.target.dataset.player) === currentPlayer && event.target.classList.contains('-factory')) {
     factory = event.target
-    console.log(factory, typeof factory)
     factoryContainer.classList.toggle('_flex')
     factoryContainer.classList.toggle('-column')
     factoriesButtons.forEach(button => button.addEventListener('click', buyUnit))
@@ -715,10 +696,10 @@ function buyUnit (event) {
       }
       updateMoneyUI()
     }
+
     factoryContainer.classList.toggle('_flex')
     factoryContainer.classList.toggle('-column')
   } else {
-    // logToConsoleContainer('<span class="_color -red">You can\'t create a new unit if there is already a unit on the factory</span>')
     unselectFactory()
   }
 }
@@ -738,11 +719,7 @@ function captureBuilding () {
   buildingDatas = getBuildingData(selectedUnit)
 
   if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
-    if (Number(selectedUnit.dataset.capture_capacity) === 0) {
-      console.log('Unit hasn\'t the capture capacity.required')
-    } else if (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player)) {
-      console.log('You already own this building.')
-    } else {
+    if (Number(selectedUnit.dataset.capture_capacity) !== 0 || (Number(buildingDatas.buildingCapturePoint) !== 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player))) {
       document.addEventListener('keypress', startCaptureBuilding)
     }
   }
@@ -751,7 +728,7 @@ function captureBuilding () {
 function startCaptureBuilding (event) {
   if (event.code === 'Space' && selectedUnit.dataset.capture_capacity > 0) {
     event.preventDefault()
-    originalIndex = getLandscapeData(selectedUnit).index
+    originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
     buildingDatas.building.setAttribute('data-capture_points', updatedCapturePoints)
     if (updatedCapturePoints === 10) {
@@ -780,10 +757,10 @@ function healthUnitOnHospital () {
     if (hospitalParent && hospitalParent.classList.contains('-hospital') && unit.getAttribute('data-player') === hospitalParent.getAttribute('data-player') && Number(hospitalParent.dataset.player) === currentPlayer) {
       let currentHealth
 
-      if (unit.dataset.health < Number(unit.dataset.max_health) - 25) {
+      if (Number(unit.dataset.health) < Number(unit.dataset.max_health) - 25) {
         currentHealth = Number(unit.dataset.health) + 25
         unit.setAttribute('data-health', currentHealth)
-      } else if (unit.dataset.health >= Number(unit.dataset.max_health) - 25) {
+      } else if (Number(unit.dataset.health) >= Number(unit.dataset.max_health) - 25) {
         currentHealth = Number(unit.dataset.max_health)
         unit.setAttribute('data-health', currentHealth)
       }
@@ -951,6 +928,7 @@ function playFightSound (unitType) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function playMusic () {
   allowPlayMusic = !allowPlayMusic // Toggle music play state
 
@@ -1036,6 +1014,7 @@ function statPreview () {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function toggleUIFeedback () {
   uiFeedbackContainer.classList.toggle('-hidden')
   if (uiFeedbackContainer.classList.contains('-hidden')) {
@@ -1047,8 +1026,9 @@ function toggleUIFeedback () {
 
 // Event Listeners and Handlers
 endRoundButton.addEventListener('click', endRound)
-// Single event listener for keyboard actions
+
 window.addEventListener('keydown', (event) => {
+  // Single event listener for keyboard actions
   if (isSelectedUnit) {
     keyboardBindWhileSelectedUnit(event, selectedUnit)
   }
