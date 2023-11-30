@@ -243,31 +243,26 @@ input:disabled {
   cursor: not-allowed;
 }
 .button {
-  border: 2px solid hsl(334, 25%, 20%);
-}
-.button.-option:not(:disabled),
-.button.-endround:not(:disabled) {
-  cursor: pointer;
-}
-.button.-option {
-  width: 40px;
-  height: 40px;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  border-radius: 100%;
-  padding-top: 4px;
+  border: 2px solid hsl(240, 2%, 41%);
 }
-.button.-option + button.-option {
-  margin-left: 0.5em;
+.button:not(:disabled) {
+  cursor: pointer;
+}
+.button.-option,
+.button.-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+}
+.button.-option {
+  padding-top: 4px;
 }
 .button.-endround {
   max-width: 320px;
   height: 40px;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  border: 4px solid hsl(334, 25%, 20%);
   font-weight: bold;
 }
 .button.-endround:disabled {
@@ -694,7 +689,7 @@ input:disabled {
   height: 30px;
   gap: 0.25em;
   padding-left: 0.5em;
-  border: 2px solid hsl(334, 25%, 20%);
+  border: 2px solid hsl(240, 2%, 41%);
 }
 .moneyandplayer-container .player-container img {
   width: calc(100% - 1px);
@@ -753,7 +748,7 @@ input:disabled {
   overflow-x: auto;
   margin-top: 2em;
   margin-bottom: 2em;
-  border: 4px solid hsl(334, 25%, 20%);
+  border: 4px solid hsl(240, 2%, 41%);
 }
 .dialog-container {
   margin-top: 1em;
@@ -773,15 +768,28 @@ input:disabled {
   left: 0;
   right: 0;
   margin: auto;
-  background-color: hsl(0, 3%, 27%);
-  z-index: 999;
   padding: 2em;
+  z-index: 999;
+  border: 4px solid hsl(240, 2%, 41%);
+}
+.factory-container .factoryunit-container h3 {
+  margin-top: 0;
 }
 .factory-container .factoryunit-container .nameandprice-container {
-  width: 75%;
+  width: 100%;
 }
-.factory-container .factoryunit-container button {
-  max-width: 120px;
+@media (min-width: 480px) {
+  .factory-container .factoryunit-container .nameandprice-container {
+    width: calc(100% - 120px - 1em);
+  }
+}
+.factory-container .factoryunit-container .button {
+  width: 100%;
+}
+@media (min-width: 480px) {
+  .factory-container .factoryunit-container .button {
+    max-width: 120px;
+  }
 }
 .board-container {
   width: 100%;

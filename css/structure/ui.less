@@ -9,12 +9,12 @@
   margin: auto;
   z-index: 999;
   font-size: clamp(8px, 3vw, 1em);
-
+  
   p {
     margin-block-start: 0;
     margin-block-end: 0;
   }
-
+  
   &.-hidden {
     display: none;
   }
@@ -29,38 +29,38 @@
   .moneyandendround-container {
     margin-top: .5em;
   }
-
+  
   .moneyandplayer-subcontainer {
     row-gap: .5em;
     margin-bottom: .5em;
   }
-
+  
   .money-container {
     width: 100%;
     padding: 0 1em;
   }
-
+  
   .round-container, 
   .player-container {
     width: fit-content;
     height: 30px;
     gap: .25em;
     padding-left: .5em;
-    border: 2px solid @darkbrown;
+    border: 2px solid @ultralightblack;
   }
-
+  
   .player-container {
     img {
       width: calc(100% - 1px);
       height: calc(100% - 1px);
       display: none;
-  
+      
       &.active {
         display: flex;
       }
     }
   }
-
+  
   .round-container {
     padding-right: .5em;
   }
@@ -80,17 +80,17 @@
   left: 0;
   right: 0;
   margin: auto;
-
+  
   @media(min-width: @m) {
     bottom: 10px;
     left: 10px;
     right: auto;
   }
-
+  
   @media(min-width: @xs) {
     max-width: fit-content;
   }
-
+  
   @media(min-width: @xs) {
     max-width: fit-content;
   }
@@ -101,14 +101,14 @@
   overflow-x: auto;
   margin-top: 2em;
   margin-bottom: 2em;
-  border: 4px solid @darkbrown;
+  border: 4px solid @ultralightblack;
 }
 
 .dialog-container {
   margin-top: 1em;
   z-index: 999;
   border: 1px solid @ultralightblack;
-
+  
   .buttons-container {
     gap: 1em;
   }
@@ -124,17 +124,29 @@
   left: 0;
   right: 0;
   margin: auto;
-  background-color: hsl(0, 3%, 27%);
-  z-index: 999;
   padding: 2em;
+  z-index: 999;
+  border: 4px solid @ultralightblack;
+  
+  h3 {
+    margin-top: 0;
+  }
   
   .factoryunit-container {
     .nameandprice-container {
-      width: 75%;
+      width: 100%;
+      
+      @media (min-width: @xs) {
+        width: calc(100% - 120px - 1em);
+      }
     }
     
-    button {
-      max-width: 120px;
+    .button { 
+      width: 100%;
+      
+      @media (min-width: @xs) {
+        max-width: 120px;
+      }
     }
   }
 }
@@ -154,7 +166,7 @@
   column-gap: 2em;
   row-gap: 2em;
   margin: auto;
-
+  
   @media(min-width: @m) {
     column-gap: 18em;
   }
@@ -164,7 +176,7 @@
   max-width: 100%;
   width: @xxs;
   margin-bottom: 2em;
-
+  
   .endround {
     width: 100%;
   }
@@ -181,12 +193,12 @@
   font-size: 2em;
   font-family: 'VT323', monospace;
   display: none;
-
+  
   &.active {
     display: flex;
     flex-flow: column;
   }
-
+  
   // custom scrollbar for webkit compatible navigators
   &::-webkit-scrollbar {
     width: .125em; // v scrollbar

@@ -1,13 +1,13 @@
 // Initialization and Configuration
 const cells = document.querySelectorAll('.cell-container')
 const endRoundButton = document.getElementById('end-round')
-const uiFeedbackContainer = document.getElementById('uifeedback-container')
+// const uiFeedbackContainer = document.getElementById('uifeedback-container')
 const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
 const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
-const toggleUIFeedbackButton = document.getElementById('toggle-ui-feedback')
+// const toggleUIFeedbackButton = document.getElementById('toggle-ui-feedback')
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
@@ -244,7 +244,7 @@ function unitClickHandler (event) {
     unselectUnit()
   }
 
-  uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
+  // uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
   selectedUnit = tryToSelectUnit
   playSelectSound(selectedUnit.dataset.type)
   isSelectedUnit = true
@@ -255,6 +255,7 @@ function unitClickHandler (event) {
   addInRangeToEnemyUnits(originalIndex)
   const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
+  attachCaptureBuildingEventListenerIfCapturable()
 }
 
 function unselectUnit () {
@@ -264,6 +265,22 @@ function unselectUnit () {
   removeAttackableFromCells()
   removeInRangeFromUnits()
   removeHandleFightEventListeners()
+  // uiFeedbackContainer.innerHTML = '<p>🖱️ You can select one of your unit by clicking on it.</p>'
+}
+
+function attachCaptureBuildingEventListenerIfCapturable () {
+  buildingDatas = getBuildingData(selectedUnit)
+
+  if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
+    if (Number(selectedUnit.dataset.capture_capacity) === 0 || (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player))) {
+      console.log('Cannot be captured')
+    } else if (Number(selectedUnit.dataset.capture_capacity) === 0 && Number(buildingDatas.buildingPlayerAppartenance) !== Number(selectedUnit.dataset.player)) {
+      // uiFeedbackContainer.innerHTML = '❌ You can\'t capture because your unit has exhausted her capture capacity.'
+    } else {
+      // uiFeedbackContainer.innerHTML = '🏢 This building be captured by pressing Space.'
+      document.addEventListener('keypress', startCaptureBuilding)
+    }
+  }
 }
 
 function keyboardBindWhileSelectedUnit (event, selectedUnit) {
@@ -272,23 +289,27 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
 
   switch (event.key) {
     case ' ':
-      handleSpacePress(selectedUnit)
+      captureBuilding()
       break
     case 'ArrowLeft':
     case 'q':
       handleDirectionalMove(updatedIndex - 1, unitMoveCapacity, selectedUnit, 'left')
+      attachCaptureBuildingEventListenerIfCapturable()
       break
     case 'ArrowRight':
     case 'd':
       handleDirectionalMove(updatedIndex + 1, unitMoveCapacity, selectedUnit, 'right')
+      attachCaptureBuildingEventListenerIfCapturable()
       break
     case 'ArrowUp':
     case 'z':
       handleDirectionalMove(updatedIndex - numberOfCols, unitMoveCapacity, selectedUnit, 'up')
+      attachCaptureBuildingEventListenerIfCapturable()
       break
     case 'ArrowDown':
     case 's':
       handleDirectionalMove(updatedIndex + numberOfCols, unitMoveCapacity, selectedUnit, 'down')
+      attachCaptureBuildingEventListenerIfCapturable()
       break
     case 'Enter':
       console.log('press Enter')
@@ -301,11 +322,6 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       handleCancelMove()
       unselectUnit()
       break
-  }
-
-  function handleSpacePress (selectedUnit) {
-    console.log('press Space')
-    captureBuilding()
   }
 
   function handleCancelMove () {
@@ -509,27 +525,23 @@ function addInRangeToEnemyUnits (index) {
       enemyUnit.classList.add('-inrange')
     })
 
-    // Check if an element with class 'loremipsum' already exists in uiFeedbackContainer
-    if (!uiFeedbackContainer.querySelector('.inrangemessage')) {
-      const messageElement = document.createElement('p')
-      messageElement.classList.add('inrangemessage')
-      messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
+    // if (!uiFeedbackContainer.querySelector('.inrangemessage')) {
+    //   const messageElement = document.createElement('p')
+    //   messageElement.classList.add('inrangemessage')
+    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
 
-      // Append the new paragraph element to the uiFeedbackContainer
-      uiFeedbackContainer.appendChild(messageElement)
-    }
+    //   uiFeedbackContainer.appendChild(messageElement)
+    // }
 
-    // Check if an element with class 'loremipsum' already exists in uiFeedbackContainer
-    if (uiFeedbackContainer.querySelector('.inrangemessage')) {
-      const inRangeMessage = uiFeedbackContainer.querySelector('.inrangemessage')
-      inRangeMessage.remove()
-      const messageElement = document.createElement('p')
-      messageElement.classList.add('inrangemessage')
-      messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
+    // if (uiFeedbackContainer.querySelector('.inrangemessage')) {
+    //   const inRangeMessage = uiFeedbackContainer.querySelector('.inrangemessage')
+    //   inRangeMessage.remove()
+    //   const messageElement = document.createElement('p')
+    //   messageElement.classList.add('inrangemessage')
+    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
 
-      // Append the new paragraph element to the uiFeedbackContainer
-      uiFeedbackContainer.appendChild(messageElement)
-    }
+    //   uiFeedbackContainer.appendChild(messageElement)
+    // }
 
     if (counter === 0) {
       const inRangeMessages = document.querySelectorAll('.inrangemessage')
@@ -549,7 +561,7 @@ function handleFight (event) {
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     playSound(sounds.emptyGunShot)
-    uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
+    // uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
     return
   }
 
@@ -569,6 +581,7 @@ function handleFight (event) {
     Number(event.target.dataset.defense),
     Number(getLandscapeData(event.target).landscapeDefenseBonus)
   )
+
   event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
 
@@ -576,10 +589,11 @@ function handleFight (event) {
     removeInRangeFromUnits()
   }
 
-  uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
+  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     updateUnitStatus(selectedUnit, '-outofammo', true)
+    // uiFeedbackContainer.innerHTML += '<p>❌ You are out of ammo</p>'
   }
 
   // Calculate the array of adjacent cells for the enemy unit
@@ -601,7 +615,7 @@ function handleFight (event) {
         Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
       )
       selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
-      uiFeedbackContainer.innerHTML += `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+      // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
 
       // If selected unit is dead after riposte
       if (Number(selectedUnit.dataset.health) <= 0) {
@@ -610,6 +624,7 @@ function handleFight (event) {
         unselectUnit()
         isFighting = false
         endRoundButton.disabled = false // Re-enable the "End Round" button
+        // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
         return
       }
     }
@@ -623,20 +638,18 @@ function handleFight (event) {
   if (Number(event.target.dataset.health) <= 0) {
     const previouslyTargetedUnit = event.target
     handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-    // unselectUnit()
     updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
     isFighting = false
     endRoundButton.disabled = false // Re-enable the "End Round" button
+    // uiFeedbackContainer.innerHTML = '<p>💀 Enemy unit is dead.</p>'
   }
 }
 
 function handleDeathOfUnit (unit, cellIndex, killingUnit) {
-  // Add a null check for the unit
   if (!unit) {
     console.error('handleDeathOfUnit called with null unit')
     return
   }
-  console.log(unit, cellIndex, killingUnit)
   const cell = cells[cellIndex]
 
   const deathDelay = Number(killingUnit.dataset.sound_delay)
@@ -752,23 +765,13 @@ function createAndAddUnit (unitHTML) {
 }
 
 function captureBuilding () {
-  buildingDatas = getBuildingData(selectedUnit)
-
-  if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
-    if (Number(selectedUnit.dataset.capture_capacity) !== 0) {
-      console.log('can capture')
-      console.log(Number(buildingDatas.buildingCapturePoint), Number(buildingDatas.buildingPlayerAppartenance), Number(selectedUnit.dataset.player))
-    }
-    if (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player)) {
-      console.log('cant be capture')
-    } else {
-      document.addEventListener('keypress', startCaptureBuilding)
-    }
-  }
+  document.addEventListener('keypress', startCaptureBuilding)
 }
 
 function startCaptureBuilding (event) {
-  if (event.code === 'Space' && selectedUnit.dataset.capture_capacity > 0) {
+  event.preventDefault()
+
+  if (selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
     event.preventDefault()
     originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
@@ -1083,15 +1086,14 @@ function statPreview () {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-function toggleUIFeedback () {
-  uiFeedbackContainer.classList.toggle('-hidden')
-  if (uiFeedbackContainer.classList.contains('-hidden')) {
-    toggleUIFeedbackButton.innerText = '💁'
-  } else {
-    toggleUIFeedbackButton.innerText = '🙅'
-  }
-}
+// function toggleUIFeedback () {
+//   uiFeedbackContainer.classList.toggle('-hidden')
+//   if (uiFeedbackContainer.classList.contains('-hidden')) {
+//     toggleUIFeedbackButton.innerText = '💁'
+//   } else {
+//     toggleUIFeedbackButton.innerText = '🙅'
+//   }
+// }
 
 // Event Listeners and Handlers
 endRoundButton.addEventListener('click', endRound)
