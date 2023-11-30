@@ -579,7 +579,6 @@ function handleFight (event) {
   uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-    // selectedUnit.classList.add('-outofammo')
     updateUnitStatus(selectedUnit, '-outofammo', true)
   }
 
@@ -624,7 +623,8 @@ function handleFight (event) {
   if (Number(event.target.dataset.health) <= 0) {
     const previouslyTargetedUnit = event.target
     handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-    unselectUnit()
+    // unselectUnit()
+    updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
     isFighting = false
     endRoundButton.disabled = false // Re-enable the "End Round" button
   }
