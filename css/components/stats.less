@@ -1,70 +1,64 @@
 .stats-container {
-  width: fit-content;
-  pointer-events: none; // needed to prevent bug when selecting unit using selectUnit() function
-  margin: .25em;
+  padding: .5em 1em;
+  z-index: 999;
+  gap: .5em;
+  text-shadow: -1px -1px 0 @darkbrown, 1px -1px 0 @darkbrown, -1px 1px 0 @darkbrown, 1px 1px 0 @darkbrown;
+  border: 2px solid @darkbrown;
+  user-select: none;
+  font-size: 10px;
+  z-index: 100;
 
-  &.-cell {
-    gap: .25em;
-    display: none;
+  @media (min-width: @m) {
+    font-size: 16px;
   }
-      
-  &.-unit .stat::before {
-    margin-right: .25em;
-  }
+  
+  .miniature {
+    width: 15px;
+    height: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: block;
 
-  .stat {
-    z-index: 999;
-
-    &::before {
-      content: "";
+    @media (min-width: @m) {
       width: 25px;
       height: 25px;
+    }
+  }
+  
+  .stat {
+    &::before {
+      content: "";
+      width: 15px;
+      height: 15px;
       background-size: cover;
       display: inline-block;
       background-repeat: no-repeat;
-    }
-    
-    &.-costofmovement::before {
-      background-image: url('../assets/icons/icon-movement-range.png');
-    }
-
-    &.-bonusofdefense::before {
-      background-image: url('../assets/icons/icon-defense.png');
-    }
-
-    &.-player {
-      &.-one::before {
-        background-image: url('../assets/icons/icon-player-one.png');
-      }
-
-      &.-two::before {
-        background-image: url('../assets/icons/icon-player-two.png');
+      
+      
+      @media (min-width: @m) {
+        width: 25px;
+        height: 25px;
       }
     }
     
-    &.-health::before {
-      background-image: url('../assets/icons/icon-health.png');
+    &.-movement::before  {
+      background-image: url('../assets/icons/icon-movement.png');
     }
-    
-    &.-movementrange::before {
-      background-image: url('../assets/icons/icon-movement-range.png');
-    }
-    
-    &.-attackdamage::before {
-      background-image: url('../assets/icons/icon-attack-damage.png');
-    }
-    
-    &.-attackrange::before {
-      background-image: url('../assets/icons/icon-attack-range.png');
-    }
-
-    &.-attackcapacity::before {
-      background-image: url('../assets/icons/icon-attack-capacity.png');
-    }
-    
     &.-defense::before {
       background-image: url('../assets/icons/icon-defense.png');
     }
+    &.-health::before {
+      background-image: url('../assets/icons/icon-health.png');
+    }
+    &.-attackrange::before {
+      background-image: url('../assets/icons/icon-attack-range.png');
+    }
+    &.-attackcapacity::before {
+      background-image: url('../assets/icons/icon-attack-capacity.png');
+    }
+    &.-attackdamage::before {
+      background-image: url('../assets/icons/icon-attack-damage.png');
+    } 
   }
 }
 

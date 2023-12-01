@@ -1,8 +1,8 @@
-# Cat Wars
+# Pixel's War
 
-Version: 23.11.16.153459
+Version: 23.11.29.161004
 
-Current state of the game: prototype including most of the core mechanics of the game but still missing some key features and a better UI.
+Current state of the game: prototype including most of the core mechanics of the game.
 
 Only playable on computer using a keyboard, you can't play on smartphone.
 
@@ -10,11 +10,11 @@ Only playable on computer using a keyboard, you can't play on smartphone.
 
 Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
 
-Cat Wars is a free turn by turn game playable on any pc directly in the browser and who's played by two person, on the same computer. Cat Wars features engaging game mechanic centered around commanding armies in grid-based battles. 
+Pixel's War is a free turn by turn game playable on any pc directly in the browser and who's played by two person, on the same computer. Pixel's War features engaging game mechanic centered around commanding armies in grid-based battles. 
 
 Players control various military units, such as infantry, tanks, aircraft, and artillery, each with distinct strengths and weaknesses. The game takes place on grid-based maps, where players strategically move their units across the terrain to engage enemy forces and capture key objectives.
 
-Cat Wars mechanics encourage strategic thinking, adaptability, and long-term planning. Players must consider unit positioning, terrain effects, in game economy and the overall battlefield situation to outwit their opponents and achieve victory.
+Pixel's War mechanics encourage strategic thinking, adaptability, and long-term planning. Players must consider unit positioning, terrain effects, in game economy and the overall battlefield situation to outwit their opponents and achieve victory.
 
 ## Key game mechanics
 
@@ -40,7 +40,7 @@ See: https://github.com/users/jonathanschoonbroodt/projects/2/views/1
 
 ### Global overview
 
-The Cat Wars prototype use only low level web technologies as:
+The Pixel's War prototype use only low level web technologies as:
 - HTML5 to handle display of grid, UI, unit and cell;
 - CSS3 (using LESS preprocessor) to style HTML element;
 - JavaScript to handle the logic behind the game.

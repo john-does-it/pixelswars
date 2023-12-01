@@ -1,46 +1,91 @@
 .unit-container {
-  width: inherit;
-  height: inherit;
-  background-size: contain;
+  width: 100%;
+  height: 100%;
+  background-size: 90%;
+  background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
   z-index: 999;
   
-  &.-highlighted {
-    width: 135px;
-    height: 135px;
-    // border: 3px dotted darkgrey;
-    
-    &.-outofresidualmovecapacity {
-      border: 0;
-      opacity: 0.75;
-    }
-  }
-  
   &.-infantry {
     &.-one {
-      background-image: url('../assets/units/cat-1.png');
-      
-      &.-artillery {
-        background-image: url('../assets/units/cat-1-artillery.png');
-      }
+      background-image: url('../assets/units/infantry-1.png');
     }
     
     &.-two {
-      background-image: url('../assets/units/cat-2.png');
-      
-      &.-artillery {
-        background-image: url('../assets/units/cat-2-artillery.png');
-      }
+      background-image: url('../assets/units/infantry-2.png');
     }
   }
   
   &.-jeep {
     &.-one {
-      background-image: url('../assets/units/cat-1-jeep.png');
+      background-image: url('../assets/units/jeep-1.png');
     }
     &.-two {
-      background-image: url('../assets/units/cat-2-jeep.png');
+      background-image: url('../assets/units/jeep-2.png');
     }
+  }
+
+  &.-artillery {
+    &.-one {
+      background-image: url('../assets/units/artillery-1.png');
+    }
+    &.-two {
+      background-image: url('../assets/units/artillery-2.png');
+    }
+  }
+
+  &.-tank {
+    &.-one {
+      background-image: url('../assets/units/tank-1.png');
+    }
+    &.-two {
+      background-image: url('../assets/units/tank-2.png');
+    }
+  }
+
+  &.-selected {
+    transform: scale(1.0125);
+  }
+
+  .health {
+    animation-name: pulse;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 2s; 
+  }
+  
+  .health,
+  .status {
+    width: 15%;
+    height: 15%;
+    
+    @media(min-width: @m) {
+      width: 25%;
+      height: 25%;
+    }
+  }
+
+  .status {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .-outofammo {
+    background-image: url('../assets/icons/icon-attack-capacity.png');
+    animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of ammo */
+  }
+  
+  .-outofmovement {
+    background-image: url('../assets/icons/icon-movement.png');
+    animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of movement */
+  }
+  
+  .-outofcapture {
+    background-image: url('../assets/icons/icon-capture-capacity.png');
+    animation: outOf 2.5s infinite alternate;
+    /* specific styles for out of capture */
   }
 }
