@@ -603,53 +603,7 @@ async function handleFight (event) {
     // uiFeedbackContainer.innerHTML += '<p>❌ You are out of ammo</p>'
   }
 
-  // Calculate the array of adjacent cells for the enemy unit
-  const enemyAttackRangeCells = returnAdjacentCells(
-    Number(getLandscapeData(event.target).landscapeIndex),
-    Number(event.target.dataset.attack_range)
-  )
-
-  // delay the ripost using selectedUnit.dataset.sound_delay
-  const riposteDelay = Number(selectedUnit.dataset.sound_delay)
-
-  async function handleFightBack () {
-    setTimeout(() => { console.log('test') }, riposteDelay)
-    // if enemy not dead and can ripost
-    if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-      playFightSound(event.target.dataset.name)
-      const returnDamage = calculateDamage(
-        Number(event.target.dataset.attack_damage),
-        Number(event.target.dataset.health),
-        Number(selectedUnit.dataset.defense),
-        Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
-      )
-      selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
-      updateHealthAnimation(selectedUnit)
-      // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
-      const healthStatPreview = document.getElementById('statpreview-health')
-
-      if (healthStatPreview) {
-        healthStatPreview.innerHTML = Number(event.target.dataset.health)
-      }
-
-      // If selected unit is dead after riposte
-      if (Number(selectedUnit.dataset.health) <= 0) {
-        const previouslySelectedUnit = selectedUnit
-        await handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
-        unselectUnit()
-        isFighting = false
-        endRoundButton.disabled = false // Re-enable the "End Round" button
-        checkIfLost()
-        // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
-        return
-      }
-    }
-
-    // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
-    endRoundButton.disabled = false
-    isFighting = false
-  }
-  handleFightBack()
+  handleFightBack(event)
 
   // If enemy unit is dead
   if (Number(event.target.dataset.health) <= 0) {
@@ -660,6 +614,56 @@ async function handleFight (event) {
     endRoundButton.disabled = false // Re-enable the "End Round" button
     checkIfLost()
     // uiFeedbackContainer.innerHTML = '<p>💀 Enemy unit is dead.</p>'
+  }
+}
+
+function handleFightBack (event) {
+  // Calculate the array of adjacent cells for the enemy unit
+  const enemyAttackRangeCells = returnAdjacentCells(
+    Number(getLandscapeData(event.target).landscapeIndex),
+    Number(event.target.dataset.attack_range)
+  )
+
+  // delay the ripost using selectedUnit.dataset.sound_delay
+  const riposteDelay = Number(selectedUnit.dataset.sound_delay)
+  console.log(riposteDelay)
+  // if enemy not dead and can ripost
+  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
+    setTimeout(() => {
+      playFightSound(event.target.dataset.name)
+    }, riposteDelay)
+    const returnDamage = calculateDamage(
+      Number(event.target.dataset.attack_damage),
+      Number(event.target.dataset.health),
+      Number(selectedUnit.dataset.defense),
+      Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
+    )
+    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
+    updateHealthAnimation(selectedUnit)
+    // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+    const healthStatPreview = document.getElementById('statpreview-health')
+
+    if (healthStatPreview) {
+      healthStatPreview.innerHTML = Number(event.target.dataset.health)
+    }
+  }
+  handleDeathOfSelectedUnit()
+
+  // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
+  endRoundButton.disabled = false
+  isFighting = false
+}
+
+async function handleDeathOfSelectedUnit () {
+  // If selected unit is dead after riposte
+  if (Number(selectedUnit.dataset.health) <= 0) {
+    const previouslySelectedUnit = selectedUnit
+    await handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
+    unselectUnit()
+    isFighting = false
+    endRoundButton.disabled = false // Re-enable the "End Round" button
+    checkIfLost()
+    // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
   }
 }
 
