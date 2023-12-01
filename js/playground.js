@@ -622,6 +622,8 @@ function handleFight (event) {
       selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
       updateHealthAnimation(selectedUnit)
       // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
+      const healthStatPreview = document.getElementById('statpreview-health')
+      healthStatPreview.innerHTML = Number(event.target.dataset.health)
 
       // If selected unit is dead after riposte
       if (Number(selectedUnit.dataset.health) <= 0) {
@@ -1005,12 +1007,12 @@ function playMusic () {
     const currentMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
     currentMusic.load()
     currentMusic.play()
-    togglePlayerMusicButton.innerText = '🔇'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-mute-sound.png">'
   } else {
     // Pause both music tracks
     sounds.playerOneMusic.pause()
     sounds.playerTwoMusic.pause()
-    togglePlayerMusicButton.innerText = '🔊'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-play-sound.png">'
   }
 }
 
