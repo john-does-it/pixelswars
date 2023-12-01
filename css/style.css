@@ -342,11 +342,23 @@ input:disabled {
 .cell-container.-grass {
   background-image: url('../assets/cells/cell-grass.png');
 }
+.cell-container.-grass.-variant {
+  background-image: url('../assets/cells/cell-grass-variant.png');
+}
+.cell-container.-grass.-variant2 {
+  background-image: url('../assets/cells/cell-grass-variant-2.png');
+}
+.cell-container.-grass.-variant3 {
+  background-image: url('../assets/cells/cell-grass-variant-3.png');
+}
 .cell-container.-moutain.-ongrass {
   background-image: url('../assets/cells/cell-moutain-on-grass.png');
 }
 .cell-container.-forest.-ongrass {
   background-image: url('../assets/cells/cell-forest-on-grass.png');
+}
+.cell-container.-forest.-ongrass.-variant {
+  background-image: url('../assets/cells/cell-forest-on-grass-variant.png');
 }
 .cell-container.-road.-v {
   background-image: url('../assets/cells/cell-road-v.png');
@@ -480,17 +492,31 @@ input:disabled {
   -webkit-transform: scale(1.0125);
           transform: scale(1.0125);
 }
+.unit-container .health {
+  -webkit-animation-name: pulse;
+          animation-name: pulse;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-duration: 2s;
+          animation-duration: 2s;
+}
+.unit-container .health,
 .unit-container .status {
-  width: 15px;
-  height: 15px;
-  background-size: cover;
-  background-repeat: no-repeat;
+  width: 15%;
+  height: 15%;
 }
 @media (min-width: 960px) {
+  .unit-container .health,
   .unit-container .status {
-    width: 25px;
-    height: 25px;
+    width: 25%;
+    height: 25%;
   }
+}
+.unit-container .status {
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .unit-container .-outofammo {
   background-image: url('../assets/icons/icon-attack-capacity.png');
@@ -665,10 +691,12 @@ input:disabled {
   display: none;
 }
 .moneyandplayer-container {
+  position: sticky;
   width: 100%;
-  max-width: 480px;
   margin: auto;
   padding: 2em 0 0;
+  top: 0;
+  z-index: 999;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;
@@ -772,7 +800,7 @@ input:disabled {
   z-index: 999;
   border: 4px solid hsl(240, 2%, 41%);
 }
-.factory-container .factoryunit-container h3 {
+.factory-container h3 {
   margin-top: 0;
 }
 .factory-container .factoryunit-container .nameandprice-container {
@@ -1018,6 +1046,40 @@ input:disabled {
 .glow {
   -webkit-animation: glow 1s ease-in-out 3 alternate;
           animation: glow 1s ease-in-out 3 alternate;
+}
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
 }
 ._unborder {
   border: none;

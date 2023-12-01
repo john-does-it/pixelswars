@@ -48,16 +48,27 @@
     transform: scale(1.0125);
   }
 
+  .health {
+    animation-name: pulse;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 2s; 
+  }
+  
+  .health,
   .status {
-    width: 15px;
-    height: 15px;
-    background-size: cover;
-    background-repeat: no-repeat;
+    width: 15%;
+    height: 15%;
     
     @media(min-width: @m) {
-      width: 25px;
-      height: 25px;
+      width: 25%;
+      height: 25%;
     }
+  }
+
+  .status {
+    background-size: cover;
+    background-repeat: no-repeat;
   }
   
   .-outofammo {

@@ -294,7 +294,9 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     case 'ArrowLeft':
     case 'q':
       handleDirectionalMove(updatedIndex - 1, unitMoveCapacity, selectedUnit, 'left')
-      attachCaptureBuildingEventListenerIfCapturable()
+      if (selectedUnit.classList.contains('-infantry')) {
+        attachCaptureBuildingEventListenerIfCapturable()
+      }
       break
     case 'ArrowRight':
     case 'd':
@@ -345,6 +347,7 @@ function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, directi
     processUnitMove(targetIndex, moveCapacity, selectedUnit, targetCell)
     const enemyUnitsInRange = addInRangeToEnemyUnits(targetIndex)
     addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
+    playSound(sounds.wooshMovement)
   }
 }
 
@@ -583,6 +586,7 @@ function handleFight (event) {
   )
 
   event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
+  updateHealthAnimation(event.target)
   selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
@@ -606,6 +610,7 @@ function handleFight (event) {
   const riposteDelay = Number(selectedUnit.dataset.sound_delay)
 
   setTimeout(() => {
+    // if enemy not dead and can ripost
     if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
       playFightSound(event.target.dataset.name)
       const returnDamage = calculateDamage(
@@ -615,6 +620,7 @@ function handleFight (event) {
         Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
       )
       selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
+      updateHealthAnimation(selectedUnit)
       // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
 
       // If selected unit is dead after riposte
@@ -771,7 +777,7 @@ function captureBuilding () {
 function startCaptureBuilding (event) {
   event.preventDefault()
 
-  if (selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
+  if (selectedUnit && selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
     event.preventDefault()
     originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
@@ -1034,6 +1040,28 @@ function updateUnitStatus (unit, statusType, add) {
       statusElement.remove()
     }
   }
+}
+
+function updateHealthAnimation (unit) {
+  const healthIcon = unit.querySelector('.health')
+
+  if (!healthIcon) {
+    return
+  }
+
+  const maxHealth = parseInt(unit.dataset.max_health, 10)
+  const currentHealth = parseInt(unit.dataset.health, 10)
+  let healthPercentage = (currentHealth / maxHealth) * 100
+
+  // Ensure a minimum of 10%
+  healthPercentage = Math.max(10, healthPercentage)
+
+  // Calculate animation duration inversely proportional to health percentage
+  // The lower the health, the faster the pulse
+  const animationDuration = (healthPercentage / 100) * 2 // Adjust the multiplier (0.5 here) to control the speed
+
+  // Update the animation duration
+  healthIcon.style.animationDuration = `${animationDuration}s`
 }
 
 function statPreview () {
