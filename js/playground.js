@@ -112,6 +112,7 @@ initWorld()
 getGridDimensions()
 selectUnit()
 statPreview()
+preloadImages()
 
 // Utility functions
 function getGridDimensions () {
@@ -1119,6 +1120,52 @@ function statPreview () {
 
     statsContainer.innerHTML = statsHTML
   }
+}
+
+function preloadImages () {
+  const imagePaths = [
+    'assets/cells/cell-city-on-grass-captured-by-1.png',
+    'assets/cells/cell-city-on-grass-captured-by-2.png',
+    'assets/cells/cell-city-on-grass-half-captured-by-1.png',
+    'assets/cells/cell-city-on-grass-half-captured-by-2.png',
+    'assets/cells/cell-city-on-grass-half-captured.png',
+    'assets/cells/cell-city-on-grass-halfcaptured-by-1.png',
+    'assets/cells/cell-city-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-city-on-grass-halfcaptured.png',
+    'assets/cells/cell-city-on-grass.png',
+    'assets/cells/cell-factory-on-grass-captured-by-1.png',
+    'assets/cells/cell-factory-on-grass-captured-by-2.png',
+    'assets/cells/cell-factory-on-grass-half-captured-by-1.png',
+    'assets/cells/cell-factory-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-factory-on-grass-halfcaptured.png',
+    'assets/cells/cell-factory-on-grass.png',
+    'assets/cells/cell-forest-on-grass-variant.png',
+    'assets/cells/cell-forest-on-grass.png',
+    'assets/cells/cell-grass-variant-2.png',
+    'assets/cells/cell-grass-variant-3.png',
+    'assets/cells/cell-grass-variant.png',
+    'assets/cells/cell-grass.png',
+    'assets/cells/cell-hospital-on-grass-captured-by-1.png',
+    'assets/cells/cell-hospital-on-grass-captured-by-2.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured.png',
+    'assets/cells/cell-hospital-on-grass.png',
+    'assets/cells/cell-moutain-on-grass.png',
+    'assets/cells/cell-road-corner-bottom.png',
+    'assets/cells/cell-road-corner-top.png',
+    'assets/cells/cell-road-end-top.png',
+    'assets/cells/cell-road-h.png',
+    'assets/cells/cell-road-v.png',
+    'assets/cells/cell-water-grass-on-right-and-bottom.png',
+    'assets/cells/cell-water-grass-on-right.png',
+    'assets/cells/cell-water.png'
+  ]
+
+  imagePaths.forEach(path => {
+    const img = new Image()
+    img.src = path
+  })
 }
 
 // function toggleUIFeedback () {
