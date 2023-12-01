@@ -230,7 +230,6 @@ function selectUnit () {
   const playableUnits = document.querySelectorAll('.unit-container')
 
   playableUnits.forEach(element => {
-    // element.removeEventListener('click', unitClickHandler)
     element.addEventListener('click', unitClickHandler)
   })
 }
@@ -330,7 +329,6 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
   }
 
   function handleCancelMove () {
-    console.log(originalIndex)
     const originalCell = cells[originalIndex]
     originalCell.appendChild(selectedUnit)
     resetUnitResidualMoveCapacity(originalMoveCapacity)
@@ -440,28 +438,24 @@ function highlightReachableCells (cellIndex) {
 
   const reachableCells = []
 
-  // Highlight left cell if it's within the grid and reachable
   if (cellIndex % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex - 1].dataset.cost_of_movement)) {
     const leftCell = cells[cellIndex - 1]
     leftCell.classList.add('-reachable')
     reachableCells.push(leftCell)
   }
 
-  // Highlight right cell if it's within the grid and reachable
   if ((cellIndex + 1) % numberOfCols !== 0 && unitMoveCapacity >= Number(cells[cellIndex + 1].dataset.cost_of_movement)) {
     const rightCell = cells[cellIndex + 1]
     rightCell.classList.add('-reachable')
     reachableCells.push(rightCell)
   }
 
-  // Highlight top cell if it's within the grid and reachable
   if (cellIndex - numberOfCols >= 0 && unitMoveCapacity >= Number(cells[cellIndex - numberOfCols].dataset.cost_of_movement)) {
     const topCell = cells[cellIndex - numberOfCols]
     topCell.classList.add('-reachable')
     reachableCells.push(topCell)
   }
 
-  // Highlight bottom cell if it's within the grid and reachable
   if (cellIndex + numberOfCols < numberOfCols * numberOfRows && unitMoveCapacity >= Number(cells[cellIndex + numberOfCols].dataset.cost_of_movement)) {
     const bottomCell = cells[cellIndex + numberOfCols]
     bottomCell.classList.add('-reachable')
@@ -626,7 +620,7 @@ function handleFightBack (event) {
 
   // delay the ripost using selectedUnit.dataset.sound_delay
   const riposteDelay = Number(selectedUnit.dataset.sound_delay)
-  console.log(riposteDelay)
+
   // if enemy not dead and can ripost
   if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
     setTimeout(() => {
