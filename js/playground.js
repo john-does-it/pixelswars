@@ -623,7 +623,10 @@ function handleFight (event) {
       updateHealthAnimation(selectedUnit)
       // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
       const healthStatPreview = document.getElementById('statpreview-health')
-      healthStatPreview.innerHTML = Number(event.target.dataset.health)
+
+      if (healthStatPreview) {
+        healthStatPreview.innerHTML = Number(event.target.dataset.health)
+      }
 
       // If selected unit is dead after riposte
       if (Number(selectedUnit.dataset.health) <= 0) {
@@ -815,9 +818,11 @@ function healthUnitOnHospital () {
       if (Number(unit.dataset.health) < Number(unit.dataset.max_health) - 25) {
         currentHealth = Number(unit.dataset.health) + 25
         unit.setAttribute('data-health', currentHealth)
+        updateHealthAnimation(unit)
       } else if (Number(unit.dataset.health) >= Number(unit.dataset.max_health) - 25) {
         currentHealth = Number(unit.dataset.max_health)
         unit.setAttribute('data-health', currentHealth)
+        updateHealthAnimation(unit)
       }
     }
   })
