@@ -4,6 +4,8 @@ const endRoundButton = document.getElementById('end-round')
 // const uiFeedbackContainer = document.getElementById('uifeedback-container')
 const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
 const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
+const dialogContainer = document.getElementById('dialog-container')
+const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
@@ -558,7 +560,7 @@ function addInRangeToEnemyUnits (index) {
   return enemyUnits
 }
 
-function handleFight (event) {
+async function handleFight (event) {
   if (selectedUnit === null || isFighting) {
     return
   }
@@ -610,7 +612,8 @@ function handleFight (event) {
   // delay the ripost using selectedUnit.dataset.sound_delay
   const riposteDelay = Number(selectedUnit.dataset.sound_delay)
 
-  setTimeout(() => {
+  async function handleFightBack () {
+    setTimeout(() => { console.log('test') }, riposteDelay)
     // if enemy not dead and can ripost
     if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
       playFightSound(event.target.dataset.name)
@@ -632,10 +635,11 @@ function handleFight (event) {
       // If selected unit is dead after riposte
       if (Number(selectedUnit.dataset.health) <= 0) {
         const previouslySelectedUnit = selectedUnit
-        handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
+        await handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
         unselectUnit()
         isFighting = false
         endRoundButton.disabled = false // Re-enable the "End Round" button
+        checkIfLost()
         // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
         return
       }
@@ -644,32 +648,58 @@ function handleFight (event) {
     // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
     endRoundButton.disabled = false
     isFighting = false
-  }, riposteDelay)
+  }
+  handleFightBack()
 
   // If enemy unit is dead
   if (Number(event.target.dataset.health) <= 0) {
     const previouslyTargetedUnit = event.target
-    handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
+    await handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
     updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
     isFighting = false
     endRoundButton.disabled = false // Re-enable the "End Round" button
+    checkIfLost()
     // uiFeedbackContainer.innerHTML = '<p>💀 Enemy unit is dead.</p>'
   }
 }
 
-function handleDeathOfUnit (unit, cellIndex, killingUnit) {
-  if (!unit) {
-    console.error('handleDeathOfUnit called with null unit')
-    return
+function checkIfLost () {
+  let numberOfPlayerOneUnits = 0
+  let numberOfPlayerTwoUnits = 0
+
+  const survivingUnits = document.querySelectorAll('.unit-container')
+
+  survivingUnits.forEach(unit => {
+    if (Number(unit.dataset.player) === 1) {
+      numberOfPlayerOneUnits++
+    }
+    if (Number(unit.dataset.player) === 2) {
+      numberOfPlayerTwoUnits++
+    }
+  })
+
+  if (numberOfPlayerOneUnits === 0) {
+    toggleYouWinDialogContainer()
+    youWinMessageInDialogContainer('Player two')
   }
-  const cell = cells[cellIndex]
 
-  const deathDelay = Number(killingUnit.dataset.sound_delay)
+  if (numberOfPlayerTwoUnits === 0) {
+    toggleYouWinDialogContainer()
+    youWinMessageInDialogContainer('Player one')
+  }
+}
 
-  setTimeout(() => {
-    createExplosion(cell)
-    unit.remove()
-  }, deathDelay)
+function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+  return new Promise((resolve) => {
+    const cell = cells[cellIndex]
+    const deathDelay = Number(killingUnit.dataset.sound_delay)
+
+    setTimeout(() => {
+      createExplosion(cell)
+      unit.remove()
+      resolve() // Resolve the promise after completing the unit removal
+    }, deathDelay)
+  })
 }
 
 function createExplosion (cell) {
@@ -1013,12 +1043,12 @@ function playMusic () {
     const currentMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
     currentMusic.load()
     currentMusic.play()
-    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-mute-sound.png">'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-play-sound.png">'
   } else {
     // Pause both music tracks
     sounds.playerOneMusic.pause()
     sounds.playerTwoMusic.pause()
-    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-play-sound.png">'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-mute-sound.png">'
   }
 }
 
@@ -1070,6 +1100,16 @@ function updateHealthAnimation (unit) {
 
   // Update the animation duration
   healthIcon.style.animationDuration = `${animationDuration}s`
+}
+
+function toggleYouWinDialogContainer () {
+  dialogContainer.show()
+}
+
+function youWinMessageInDialogContainer (winner) {
+  const newMessage = document.createElement('p')
+  newMessage.innerText = winner + ', congratulation you win!'
+  dialogContent.appendChild(newMessage)
 }
 
 function statPreview () {
