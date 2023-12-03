@@ -641,7 +641,10 @@ function handleFightBack (event) {
       healthStatPreview.innerHTML = Number(event.target.dataset.health)
     }
   }
-  handleDeathOfSelectedUnit()
+
+  if (Number(selectedUnit.dataset.health) <= 0) {
+    handleDeathOfSelectedUnit()
+  }
 
   // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
   endRoundButton.disabled = false
@@ -650,15 +653,12 @@ function handleFightBack (event) {
 
 async function handleDeathOfSelectedUnit () {
   // If selected unit is dead after riposte
-  if (Number(selectedUnit.dataset.health) <= 0) {
-    const previouslySelectedUnit = selectedUnit
-    await handleDeathOfUnit(previouslySelectedUnit, Number(getLandscapeData(previouslySelectedUnit).landscapeIndex), event.target)
-    unselectUnit()
-    isFighting = false
-    endRoundButton.disabled = false // Re-enable the "End Round" button
-    checkIfLost()
-    // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
-  }
+  handleDeathOfUnit(selectedUnit, Number(getLandscapeData(selectedUnit).landscapeIndex), event.target)
+  unselectUnit()
+  isFighting = false
+  endRoundButton.disabled = false // Re-enable the "End Round" button
+  checkIfLost()
+  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
 }
 
 function checkIfLost () {

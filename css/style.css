@@ -695,7 +695,7 @@ input:disabled {
   margin: auto;
   padding: 2em 0 0;
   top: 0;
-  z-index: 999;
+  z-index: 100;
 }
 .moneyandplayer-container .moneyandendround-container {
   margin-top: 0.5em;
