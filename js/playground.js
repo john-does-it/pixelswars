@@ -9,10 +9,29 @@ const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
+const smartphoneControls = document.getElementById('smartphone-controls')
 // const toggleUIFeedbackButton = document.getElementById('toggle-ui-feedback')
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
+
+console.log(navigator.userAgent, smartphoneControls)
+// if user agent not desktop and unit is selected, add -active class on smartphonecontrols-container
+
+const getDeviceType = () => {
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent)) {
+    console.log('should be a tablet')
+    return 'tablet'
+  }
+  if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(navigator.userAgent)
+  ) {
+    console.log('should be a mobile phone')
+    return 'mobile'
+  }
+  console.log('should be a PC')
+  return 'desktop'
+}
+getDeviceType()
 
 const unitsHTML = {
   infantryUnitPlayerOne:
@@ -246,10 +265,17 @@ function unitClickHandler (event) {
     unselectUnit()
   }
 
+  isSelectedUnit = true
+
+  // if smartphone show arrow to control the unit
+  if (getDeviceType !== 'desktop') {
+    smartphoneControls.classList.add('-active')
+  }
+
+  console.log(isSelectedUnit)
   // uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
   selectedUnit = tryToSelectUnit
   playSelectSound(selectedUnit.dataset.type)
-  isSelectedUnit = true
   originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
   originalMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
   highlightReachableCells(originalIndex)
@@ -263,6 +289,9 @@ function unitClickHandler (event) {
 function unselectUnit () {
   selectedUnit = null
   isSelectedUnit = false
+  if (getDeviceType !== 'desktop') {
+    smartphoneControls.classList.remove('-active')
+  }
   removeReachableFromCells()
   removeAttackableFromCells()
   removeInRangeFromUnits()
@@ -496,22 +525,6 @@ function removeInRangeFromUnits () {
   })
 }
 
-// function removeOutOfAmmoFromUnits () {
-//   const units = document.querySelectorAll('.unit-container')
-
-//   units.forEach(unit => {
-//     unit.classList.remove('-outofammo')
-//   })
-// }
-
-// function removeOutOfMovementFromUnits () {
-//   const units = document.querySelectorAll('.unit-container')
-
-//   units.forEach(unit => {
-//     unit.classList.remove('-outofmovement')
-//   })
-// }
-
 function addInRangeToEnemyUnits (index) {
   removeInRangeFromUnits()
 
@@ -524,24 +537,6 @@ function addInRangeToEnemyUnits (index) {
     enemyUnits.forEach(enemyUnit => {
       enemyUnit.classList.add('-inrange')
     })
-
-    // if (!uiFeedbackContainer.querySelector('.inrangemessage')) {
-    //   const messageElement = document.createElement('p')
-    //   messageElement.classList.add('inrangemessage')
-    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
-
-    //   uiFeedbackContainer.appendChild(messageElement)
-    // }
-
-    // if (uiFeedbackContainer.querySelector('.inrangemessage')) {
-    //   const inRangeMessage = uiFeedbackContainer.querySelector('.inrangemessage')
-    //   inRangeMessage.remove()
-    //   const messageElement = document.createElement('p')
-    //   messageElement.classList.add('inrangemessage')
-    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
-
-    //   uiFeedbackContainer.appendChild(messageElement)
-    // }
 
     if (counter === 0) {
       const inRangeMessages = document.querySelectorAll('.inrangemessage')
@@ -561,7 +556,6 @@ async function handleFight (event) {
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     playSound(sounds.emptyGunShot)
-    // uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
     return
   }
 
@@ -590,11 +584,8 @@ async function handleFight (event) {
     removeInRangeFromUnits()
   }
 
-  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
-
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     updateUnitStatus(selectedUnit, '-outofammo', true)
-    // uiFeedbackContainer.innerHTML += '<p>❌ You are out of ammo</p>'
   }
 
   handleFightBack(event)
@@ -607,7 +598,6 @@ async function handleFight (event) {
     isFighting = false
     endRoundButton.disabled = false // Re-enable the "End Round" button
     checkIfLost()
-    // uiFeedbackContainer.innerHTML = '<p>💀 Enemy unit is dead.</p>'
   }
 }
 
@@ -634,7 +624,6 @@ function handleFightBack (event) {
     )
     selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
     updateHealthAnimation(selectedUnit)
-    // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
     const healthStatPreview = document.getElementById('statpreview-health')
 
     if (healthStatPreview) {
@@ -652,13 +641,11 @@ function handleFightBack (event) {
 }
 
 async function handleDeathOfSelectedUnit () {
-  // If selected unit is dead after riposte
   handleDeathOfUnit(selectedUnit, Number(getLandscapeData(selectedUnit).landscapeIndex), event.target)
   unselectUnit()
   isFighting = false
   endRoundButton.disabled = false // Re-enable the "End Round" button
   checkIfLost()
-  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
 }
 
 function checkIfLost () {
@@ -1205,15 +1192,6 @@ function preloadImages () {
     img.src = path
   })
 }
-
-// function toggleUIFeedback () {
-//   uiFeedbackContainer.classList.toggle('-hidden')
-//   if (uiFeedbackContainer.classList.contains('-hidden')) {
-//     toggleUIFeedbackButton.innerText = '💁'
-//   } else {
-//     toggleUIFeedbackButton.innerText = '🙅'
-//   }
-// }
 
 // Event Listeners and Handlers
 endRoundButton.addEventListener('click', endRound)
