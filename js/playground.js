@@ -1,7 +1,6 @@
 // Initialization and Configuration
 const cells = document.querySelectorAll('.cell-container')
 const endRoundButton = document.getElementById('end-round')
-// const uiFeedbackContainer = document.getElementById('uifeedback-container')
 const currentMoneyPlayerOneUIContainer = document.getElementById('current-money-player-one')
 const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-player-two')
 const dialogContainer = document.getElementById('dialog-container')
@@ -9,7 +8,6 @@ const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
-// const toggleUIFeedbackButton = document.getElementById('toggle-ui-feedback')
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
@@ -117,6 +115,52 @@ statPreview()
 preloadImages()
 
 // Utility functions
+function preloadImages () {
+  const imagePaths = [
+    'assets/cells/cell-city-on-grass-captured-by-1.png',
+    'assets/cells/cell-city-on-grass-captured-by-2.png',
+    'assets/cells/cell-city-on-grass-half-captured-by-1.png',
+    'assets/cells/cell-city-on-grass-half-captured-by-2.png',
+    'assets/cells/cell-city-on-grass-half-captured.png',
+    'assets/cells/cell-city-on-grass-halfcaptured-by-1.png',
+    'assets/cells/cell-city-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-city-on-grass-halfcaptured.png',
+    'assets/cells/cell-city-on-grass.png',
+    'assets/cells/cell-factory-on-grass-captured-by-1.png',
+    'assets/cells/cell-factory-on-grass-captured-by-2.png',
+    'assets/cells/cell-factory-on-grass-half-captured-by-1.png',
+    'assets/cells/cell-factory-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-factory-on-grass-halfcaptured.png',
+    'assets/cells/cell-factory-on-grass.png',
+    'assets/cells/cell-forest-on-grass-variant.png',
+    'assets/cells/cell-forest-on-grass.png',
+    'assets/cells/cell-grass-variant-2.png',
+    'assets/cells/cell-grass-variant-3.png',
+    'assets/cells/cell-grass-variant.png',
+    'assets/cells/cell-grass.png',
+    'assets/cells/cell-hospital-on-grass-captured-by-1.png',
+    'assets/cells/cell-hospital-on-grass-captured-by-2.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png',
+    'assets/cells/cell-hospital-on-grass-halfcaptured.png',
+    'assets/cells/cell-hospital-on-grass.png',
+    'assets/cells/cell-moutain-on-grass.png',
+    'assets/cells/cell-road-corner-bottom.png',
+    'assets/cells/cell-road-corner-top.png',
+    'assets/cells/cell-road-end-top.png',
+    'assets/cells/cell-road-h.png',
+    'assets/cells/cell-road-v.png',
+    'assets/cells/cell-water-grass-on-right-and-bottom.png',
+    'assets/cells/cell-water-grass-on-right.png',
+    'assets/cells/cell-water.png'
+  ]
+
+  imagePaths.forEach(path => {
+    const img = new Image()
+    img.src = path
+  })
+}
+
 function getGridDimensions () {
   const style = getComputedStyle(document.getElementById('grid'))
 
@@ -246,7 +290,6 @@ function unitClickHandler (event) {
     unselectUnit()
   }
 
-  // uiFeedbackContainer.innerHTML = '<p>🪖 Unit selected, use arrows or ZQSD to move the unit. Press Enter to valid your move or escape to cancel.</p>'
   selectedUnit = tryToSelectUnit
   playSelectSound(selectedUnit.dataset.type)
   isSelectedUnit = true
@@ -267,7 +310,6 @@ function unselectUnit () {
   removeAttackableFromCells()
   removeInRangeFromUnits()
   removeHandleFightEventListeners()
-  // uiFeedbackContainer.innerHTML = '<p>🖱️ You can select one of your unit by clicking on it.</p>'
 }
 
 function attachCaptureBuildingEventListenerIfCapturable () {
@@ -277,9 +319,8 @@ function attachCaptureBuildingEventListenerIfCapturable () {
     if (Number(selectedUnit.dataset.capture_capacity) === 0 || (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player))) {
       console.log('Cannot be captured')
     } else if (Number(selectedUnit.dataset.capture_capacity) === 0 && Number(buildingDatas.buildingPlayerAppartenance) !== Number(selectedUnit.dataset.player)) {
-      // uiFeedbackContainer.innerHTML = '❌ You can\'t capture because your unit has exhausted her capture capacity.'
+      console.log('todo: give feedback')
     } else {
-      // uiFeedbackContainer.innerHTML = '🏢 This building be captured by pressing Space.'
       document.addEventListener('keypress', startCaptureBuilding)
     }
   }
@@ -316,13 +357,11 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       attachCaptureBuildingEventListenerIfCapturable()
       break
     case 'Enter':
-      console.log('press Enter')
       if (isFighting === false) {
         unselectUnit()
       }
       break
     case 'Escape':
-      console.log('press Escape')
       handleCancelMove()
       unselectUnit()
       break
@@ -333,7 +372,6 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
     originalCell.appendChild(selectedUnit)
     resetUnitResidualMoveCapacity(originalMoveCapacity)
     if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
-      // selectedUnit.classList.remove('-outofmovement')
       updateUnitStatus(selectedUnit, '-outofmovement', false)
     }
   }
@@ -389,7 +427,6 @@ function updateCellsAndUnitsState (index) {
   removeAttackableFromCells()
   highlightReachableCells(index)
   if (highlightReachableCells(index).length === 0) {
-    // selectedUnit.classList.add('-outofmovement')
     updateUnitStatus(selectedUnit, '-outofmovement', true)
   }
   removeInRangeFromUnits()
@@ -496,22 +533,6 @@ function removeInRangeFromUnits () {
   })
 }
 
-// function removeOutOfAmmoFromUnits () {
-//   const units = document.querySelectorAll('.unit-container')
-
-//   units.forEach(unit => {
-//     unit.classList.remove('-outofammo')
-//   })
-// }
-
-// function removeOutOfMovementFromUnits () {
-//   const units = document.querySelectorAll('.unit-container')
-
-//   units.forEach(unit => {
-//     unit.classList.remove('-outofmovement')
-//   })
-// }
-
 function addInRangeToEnemyUnits (index) {
   removeInRangeFromUnits()
 
@@ -524,24 +545,6 @@ function addInRangeToEnemyUnits (index) {
     enemyUnits.forEach(enemyUnit => {
       enemyUnit.classList.add('-inrange')
     })
-
-    // if (!uiFeedbackContainer.querySelector('.inrangemessage')) {
-    //   const messageElement = document.createElement('p')
-    //   messageElement.classList.add('inrangemessage')
-    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
-
-    //   uiFeedbackContainer.appendChild(messageElement)
-    // }
-
-    // if (uiFeedbackContainer.querySelector('.inrangemessage')) {
-    //   const inRangeMessage = uiFeedbackContainer.querySelector('.inrangemessage')
-    //   inRangeMessage.remove()
-    //   const messageElement = document.createElement('p')
-    //   messageElement.classList.add('inrangemessage')
-    //   messageElement.innerHTML = '🎯 ' + counter + ' enemy unit(s) in range, click on an enemy unit to attack.'
-
-    //   uiFeedbackContainer.appendChild(messageElement)
-    // }
 
     if (counter === 0) {
       const inRangeMessages = document.querySelectorAll('.inrangemessage')
@@ -561,7 +564,6 @@ async function handleFight (event) {
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     playSound(sounds.emptyGunShot)
-    // uiFeedbackContainer.innerHTML = '<p>❌ You are out of ammo</p>'
     return
   }
 
@@ -590,11 +592,8 @@ async function handleFight (event) {
     removeInRangeFromUnits()
   }
 
-  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit.</p>`
-
   if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
     updateUnitStatus(selectedUnit, '-outofammo', true)
-    // uiFeedbackContainer.innerHTML += '<p>❌ You are out of ammo</p>'
   }
 
   handleFightBack(event)
@@ -607,7 +606,6 @@ async function handleFight (event) {
     isFighting = false
     endRoundButton.disabled = false // Re-enable the "End Round" button
     checkIfLost()
-    // uiFeedbackContainer.innerHTML = '<p>💀 Enemy unit is dead.</p>'
   }
 }
 
@@ -634,7 +632,6 @@ function handleFightBack (event) {
     )
     selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
     updateHealthAnimation(selectedUnit)
-    // uiFeedbackContainer.innerHTML = `<p>🔄 Enemy unit has riposted and inflicted ${Math.round(returnDamage)} damage in return.</p>`
     const healthStatPreview = document.getElementById('statpreview-health')
 
     if (healthStatPreview) {
@@ -642,6 +639,7 @@ function handleFightBack (event) {
     }
   }
 
+  // If selected unit is dead after riposte
   if (Number(selectedUnit.dataset.health) <= 0) {
     handleDeathOfSelectedUnit()
   }
@@ -652,13 +650,9 @@ function handleFightBack (event) {
 }
 
 async function handleDeathOfSelectedUnit () {
-  // If selected unit is dead after riposte
   handleDeathOfUnit(selectedUnit, Number(getLandscapeData(selectedUnit).landscapeIndex), event.target)
   unselectUnit()
-  isFighting = false
-  endRoundButton.disabled = false // Re-enable the "End Round" button
   checkIfLost()
-  // uiFeedbackContainer.innerHTML = `<p>💥 ${Math.round(damage)} damages inflicted to the enemy unit. 💀 Your unit is dead from the ripost.</p>`
 }
 
 function checkIfLost () {
@@ -829,7 +823,6 @@ function startCaptureBuilding (event) {
     }
     selectedUnit.setAttribute('data-capture_capacity', 0)
     updateUnitStatus(selectedUnit, '-outofcapture', true)
-    // selectedUnit.classList.add('-outofcapture')
   }
 
   document.removeEventListener('keypress', startCaptureBuilding)
@@ -876,7 +869,6 @@ function endRound () {
 function resetUnitStatuses () {
   const units = document.querySelectorAll('.unit-container')
   units.forEach(unit => {
-    // Assuming these are the status types you want to reset
     updateUnitStatus(unit, '-outofammo', false)
     updateUnitStatus(unit, '-outofmovement', false)
     updateUnitStatus(unit, '-outofcapture', false)
@@ -1159,61 +1151,6 @@ function statPreview () {
     statsContainer.innerHTML = statsHTML
   }
 }
-
-function preloadImages () {
-  const imagePaths = [
-    'assets/cells/cell-city-on-grass-captured-by-1.png',
-    'assets/cells/cell-city-on-grass-captured-by-2.png',
-    'assets/cells/cell-city-on-grass-half-captured-by-1.png',
-    'assets/cells/cell-city-on-grass-half-captured-by-2.png',
-    'assets/cells/cell-city-on-grass-half-captured.png',
-    'assets/cells/cell-city-on-grass-halfcaptured-by-1.png',
-    'assets/cells/cell-city-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-city-on-grass-halfcaptured.png',
-    'assets/cells/cell-city-on-grass.png',
-    'assets/cells/cell-factory-on-grass-captured-by-1.png',
-    'assets/cells/cell-factory-on-grass-captured-by-2.png',
-    'assets/cells/cell-factory-on-grass-half-captured-by-1.png',
-    'assets/cells/cell-factory-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-factory-on-grass-halfcaptured.png',
-    'assets/cells/cell-factory-on-grass.png',
-    'assets/cells/cell-forest-on-grass-variant.png',
-    'assets/cells/cell-forest-on-grass.png',
-    'assets/cells/cell-grass-variant-2.png',
-    'assets/cells/cell-grass-variant-3.png',
-    'assets/cells/cell-grass-variant.png',
-    'assets/cells/cell-grass.png',
-    'assets/cells/cell-hospital-on-grass-captured-by-1.png',
-    'assets/cells/cell-hospital-on-grass-captured-by-2.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured.png',
-    'assets/cells/cell-hospital-on-grass.png',
-    'assets/cells/cell-moutain-on-grass.png',
-    'assets/cells/cell-road-corner-bottom.png',
-    'assets/cells/cell-road-corner-top.png',
-    'assets/cells/cell-road-end-top.png',
-    'assets/cells/cell-road-h.png',
-    'assets/cells/cell-road-v.png',
-    'assets/cells/cell-water-grass-on-right-and-bottom.png',
-    'assets/cells/cell-water-grass-on-right.png',
-    'assets/cells/cell-water.png'
-  ]
-
-  imagePaths.forEach(path => {
-    const img = new Image()
-    img.src = path
-  })
-}
-
-// function toggleUIFeedback () {
-//   uiFeedbackContainer.classList.toggle('-hidden')
-//   if (uiFeedbackContainer.classList.contains('-hidden')) {
-//     toggleUIFeedbackButton.innerText = '💁'
-//   } else {
-//     toggleUIFeedbackButton.innerText = '🙅'
-//   }
-// }
 
 // Event Listeners and Handlers
 endRoundButton.addEventListener('click', endRound)
