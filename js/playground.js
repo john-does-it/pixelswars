@@ -133,6 +133,7 @@ preloadImages()
 // Utility functions
 function preloadImages () {
   const imagePaths = [
+    'assets/gifs/explosion.gif',
     'assets/cells/cell-city-on-grass-captured-by-1.png',
     'assets/cells/cell-city-on-grass-captured-by-2.png',
     'assets/cells/cell-city-on-grass-half-captured-by-1.png',
@@ -1053,12 +1054,12 @@ function playMusic () {
     const currentMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
     currentMusic.load()
     currentMusic.play()
-    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-play-sound.png">'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-play-sound.png" alt="icon play / mute sound" width="16" height="16">'
   } else {
     // Pause both music tracks
     sounds.playerOneMusic.pause()
     sounds.playerTwoMusic.pause()
-    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-mute-sound.png">'
+    togglePlayerMusicButton.innerHTML = '<img src="./assets/icons/icon-mute-sound.png" alt="icon play / mute sound" width="16" height="16">'
   }
 }
 
@@ -1179,6 +1180,8 @@ function statPreview () {
 }
 
 // Event Listeners and Handlers
+togglePlayerMusicButton.addEventListener('click', playMusic)
+
 endRoundButton.addEventListener('click', endRound)
 
 window.addEventListener('keydown', (event) => {
