@@ -15,35 +15,51 @@ const numberOfRows = getGridDimensions().rows
 const unitsHTML = {
   infantryUnitPlayerOne:
   `
-  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="30" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-sound_delay="500"></div>
+  <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200"  data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>  
   `,
   infantryUnitPlayerTwo:
   `
-  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200" data-sound_delay="500"></div></div>
+  <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200"  data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>  
   `,
   jeepUnitPlayerOne:
   `
-  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep data-cost="600" data-sound_delay="500"></div>
+  <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>
   `,
   jeepUnitPlayerTwo:
   `
-  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="50" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500"></div>
+  <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>  
   `,
   artilleryPlayerOne:
   `
-  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="5000"> </div></div>
+  <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="2000">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>
   `,
   artilleryPlayerTwo:
   `
-  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="90" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="0" data-movement_range="2" data-residual_move_capacity="2" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="5000"></div>
+  <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="2000">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>
   `,
   tankPlayerOne:
   `
-  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div></div>
+  <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>
   `,
   tankPlayerTwo:
   `
-  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500"></div></div>
+  <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500">
+    <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+  </div>
   `
 }
 
@@ -788,8 +804,11 @@ function buyUnit (event) {
 }
 
 function createAndAddUnit (unitHTML) {
+  // Sanitize the HTML string with DOMPurify
+  const sanitizedUnitHTML = DOMPurify.sanitize(unitHTML)
+
   const newUnitElement = document.createElement('div')
-  newUnitElement.innerHTML = unitHTML
+  newUnitElement.innerHTML = sanitizedUnitHTML // Use the sanitized HTML
 
   factory.appendChild(newUnitElement)
   const toReplaceBy = newUnitElement.querySelector('.unit-container')
@@ -1127,28 +1146,33 @@ function statPreview () {
         unitBackground = unitBackground.replace('.png', '-fit.png')
 
         statsHTML += `
-          <span class="miniature" style="background-image: url('${unitBackground}');"></span>` +
-          '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
-          child.dataset.health + '</span>' +
-          '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
-          child.dataset.residual_attack_capacity + '</span>' +
-          '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
-          child.dataset.attack_range + '</span>' +
-          '<span class="stat -movement _flex -justifycenter -aligncenter">' +
-          child.dataset.residual_move_capacity +
-          '</span>' +
-          '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
-          child.dataset.attack_damage + '</span>' +
-          '<span class="stat -defense _flex -justifycenter -aligncenter">' +
-          child.dataset.defense + '</span>'
+                <span class="miniature" style="background-image: url('${unitBackground}');"></span>` +
+                '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
+                child.dataset.health + '</span>' +
+                '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
+                child.dataset.residual_attack_capacity + '</span>' +
+                '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
+                child.dataset.attack_range + '</span>' +
+                '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+                child.dataset.residual_move_capacity +
+                '</span>' +
+                '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
+                child.dataset.attack_damage + '</span>' +
+                '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+                child.dataset.defense + '</span>'
       }
     }
 
     const cellBackground = getBackgroundImage(cell)
 
-    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}');"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
+    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}');"></span>` +
+                '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+                cell.dataset.defense_bonus + '</span>' +
+                '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+                cell.dataset.cost_of_movement + '</span>'
 
-    statsContainer.innerHTML = statsHTML
+    // Sanitize and set the HTML content
+    statsContainer.innerHTML = DOMPurify.sanitize(statsHTML)
   }
 }
 
