@@ -805,6 +805,7 @@ function buyUnit (event) {
 
 function createAndAddUnit (unitHTML) {
   // Sanitize the HTML string with DOMPurify
+  // eslint-disable-next-line no-undef
   const sanitizedUnitHTML = DOMPurify.sanitize(unitHTML)
 
   const newUnitElement = document.createElement('div')
@@ -1172,6 +1173,7 @@ function statPreview () {
                 cell.dataset.cost_of_movement + '</span>'
 
     // Sanitize and set the HTML content
+    // eslint-disable-next-line no-undef
     statsContainer.innerHTML = DOMPurify.sanitize(statsHTML)
   }
 }
