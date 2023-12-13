@@ -164,8 +164,8 @@
     <div class="moneyandplayer-subcontainer _flex -wrap -justifyspacebetween -alignstart">
       <span class="player-container _flex -aligncenter _text -m -uppercase _color -white -bglightblack" id="current-player-ui">
         Player
-        <img class="active" src="./assets/icons/icon-player-one.png">
-        <img src="./assets/icons/icon-player-two.png">
+        <img class="active" src="./assets/icons/icon-player-one.png" alt="icon player one">
+        <img src="./assets/icons/icon-player-two.png" alt="icon player two">
         </span>
         <span class="round-container _flex -aligncenter  _text -m -uppercase _color -white -bglightblack" id="current-round-ui">
         Round 
@@ -301,16 +301,10 @@
   <div class="optionsandendround-container _flex -wrap -justifycenter -aligncenter">
     <div class="options-container _flex">
       <button class="button -option _color -bglightblack" id="toggle-player-music" onclick="playMusic()" title="Mute / Unmute player soundtrack">
-        <img src="./assets/icons/icon-mute-sound.png">
+        <img src="./assets/icons/icon-mute-sound.png" alt="icon play / mute sound" width="16" height="16">
       </button>
-      <!-- <button class="button -option _color -bglightblack" id="toggle-ui-feedback" onclick="toggleUIFeedback()" title="Show / Unshow UI Feedback">🙅</button> -->
-      <!-- <button class="button -option _color -bglightblack" id="toggle-keyboard-langage" onclick="toogleKeyboardLangage()" title="Switch between QWERTY or AZERTY">🥖</button> -->
     </div>
     <button class="button -endround _color -white -bglightblack _text -m -uppercase -bold" type="button" id="end-round" title="End the current round">End round</button>
-  </div>
-  <!-- flex properties defined in stylesheet -->
-  <div class="console-container _text -s _color -bgblack" id="console-container">
-    <!-- console -->
   </div>
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <script src="js/playground.js"></script>
