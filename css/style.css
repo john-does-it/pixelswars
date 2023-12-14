@@ -521,19 +521,16 @@ input:disabled {
   background-image: url('../assets/icons/icon-attack-capacity.png');
   -webkit-animation: outOf 2.5s infinite alternate;
           animation: outOf 2.5s infinite alternate;
-  /* specific styles for out of ammo */
 }
 .unit-container .-outofmovement {
   background-image: url('../assets/icons/icon-movement.png');
   -webkit-animation: outOf 2.5s infinite alternate;
           animation: outOf 2.5s infinite alternate;
-  /* specific styles for out of movement */
 }
 .unit-container .-outofcapture {
   background-image: url('../assets/icons/icon-capture-capacity.png');
   -webkit-animation: outOf 2.5s infinite alternate;
           animation: outOf 2.5s infinite alternate;
-  /* specific styles for out of capture */
 }
 .stats-container {
   padding: 0.5em 1em;
@@ -852,39 +849,34 @@ input:disabled {
 .endround-container .endround {
   width: 100%;
 }
-.console-container {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  padding: 2em;
-  margin-top: 1em;
-  z-index: 1;
-  font-size: 2em;
-  font-family: 'VT323', monospace;
+.smartphonecontrols-container {
+  width: 120px;
+  height: 120px;
+  position: sticky;
+  bottom: 60px;
+  right: 0;
+  left: 0;
+  z-index: 999;
+  border-radius: 100%;
+  margin-bottom: 2em;
   display: none;
 }
-.console-container.active {
+.smartphonecontrols-container.-active {
   display: flex;
-  flex-flow: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
-.console-container::-webkit-scrollbar {
-  width: 0.125em;
+.smartphonecontrols-container .leftandright-container,
+.smartphonecontrols-container .arrowup,
+.smartphonecontrols-container .arrowdown {
+  width: 100%;
 }
-.console-container::-webkit-scrollbar-thumb {
-  width: inherit;
-  background: hsl(103, 49%, 59%);
+.smartphonecontrols-container .arrowleft {
+  padding-left: 0.5em;
 }
-.console-container::-webkit-scrollbar-thumb:active,
-.console-container::-webkit-scrollbar-thumb:hover {
-  background: darkred;
-}
-.console-container p {
-  -webkit-margin-before: 0;
-          margin-block-start: 0;
-  -webkit-margin-after: 0;
-          margin-block-end: 0;
-  color: hsl(0, 0%, 95%);
+.smartphonecontrols-container .arrowright {
+  padding-right: 0.5em;
 }
 @-webkit-keyframes outOf {
   from {
@@ -951,6 +943,10 @@ input:disabled {
   to {
     text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
   }
+}
+.glow {
+  -webkit-animation: glow 1s ease-in-out 3 alternate;
+          animation: glow 1s ease-in-out 3 alternate;
 }
 @-webkit-keyframes waterAnimation {
   0% {
@@ -1041,10 +1037,6 @@ input:disabled {
     -webkit-transform: translateY(-25px);
             transform: translateY(-25px);
   }
-}
-.glow {
-  -webkit-animation: glow 1s ease-in-out 3 alternate;
-          animation: glow 1s ease-in-out 3 alternate;
 }
 @-webkit-keyframes pulse {
   0% {
