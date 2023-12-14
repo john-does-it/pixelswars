@@ -7,6 +7,16 @@
   <title>Pixel's War, a Strategy Board Game Playable in the Browser</title>
   <meta name="description" content="Be the best commander, lead your army to victory, and show your defeated friend who is the smartest! A free turn-by-turn strategy game.">
   <meta name="author" content="John Does It">
+  <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://jonathanschoonbroodt.github.io/apis https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' https://jonathanschoonbroodt.github.io;
+  connect-src 'self' https://jonathanschoonbroodt.github.io/apis;
+  font-src 'self' https://fonts.gstatic.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

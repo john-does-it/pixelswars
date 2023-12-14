@@ -7,6 +7,16 @@
   <title>Pixel's War - Player VS Player - Local Mode - The Squared Map</title>
   <meta name="description" content="Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest! A free turn by turn strategy game.">
   <meta name="author" content="John Does it">
+  <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://jonathanschoonbroodt.github.io/apis https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' https://jonathanschoonbroodt.github.io;
+  connect-src 'self' https://jonathanschoonbroodt.github.io/apis;
+  font-src 'self' https://fonts.gstatic.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,8 +164,8 @@
     <div class="moneyandplayer-subcontainer _flex -wrap -justifyspacebetween -alignstart">
       <span class="player-container _flex -aligncenter _text -m -uppercase _color -white -bglightblack" id="current-player-ui">
         Player
-        <img class="active" src="./assets/icons/icon-player-one.png">
-        <img src="./assets/icons/icon-player-two.png">
+        <img class="active" src="./assets/icons/icon-player-one.png" alt="icon player one">
+        <img src="./assets/icons/icon-player-two.png" alt="icon player two">
         </span>
         <span class="round-container _flex -aligncenter  _text -m -uppercase _color -white -bglightblack" id="current-round-ui">
         Round 
@@ -308,24 +318,13 @@
   </div>
   <div class="optionsandendround-container _flex -wrap -justifycenter -aligncenter">
     <div class="options-container _flex">
-      <button class="button -option _color -bglightblack" id="toggle-player-music" onclick="playMusic()" title="Mute / Unmute player soundtrack">
-        <img src="./assets/icons/icon-mute-sound.png">
+      <button class="button -option _color -bglightblack" id="toggle-player-music" itle="Mute / Unmute player soundtrack">
+        <img src="./assets/icons/icon-mute-sound.png" alt="icon play / mute sound" width="16" height="16">
       </button>
-      <!-- <button class="button -option _color -bglightblack" id="toggle-ui-feedback" onclick="toggleUIFeedback()" title="Show / Unshow UI Feedback">🙅</button> -->
-      <!-- <button class="button -option _color -bglightblack" id="toggle-keyboard-langage" onclick="toogleKeyboardLangage()" title="Switch between QWERTY or AZERTY">🥖</button> -->
     </div>
     <button class="button -endround _color -white -bglightblack _text -m -uppercase -bold" type="button" id="end-round" title="End the current round">End round</button>
   </div>
-  <!-- flex properties defined in stylesheet -->
-  <div class="console-container _text -s _color -bgblack" id="console-container">
-    <!-- console -->
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <script src="js/playground.js"></script>
-  <script>
-    // function toogleKeyboardLangage () {
-    //   console.log('test')
-    //   alert(`You have switch to type.keyboard`)
-    // }
-  </script>
 </body>
 </html>

@@ -1255,7 +1255,6 @@ function preloadImages () {
   })
 }
 
->>>>>>> smartphone-adaptation
 // Event Listeners and Handlers
 togglePlayerMusicButton.addEventListener('click', playMusic)
 
