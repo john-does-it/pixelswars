@@ -26,6 +26,8 @@ const getDeviceType = () => {
 }
 getDeviceType()
 
+const currentDevice = getDeviceType()
+
 const unitsHTML = {
   infantryUnitPlayerOne:
   `
@@ -342,6 +344,10 @@ function unitClickHandler (event) {
   const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
   attachCaptureBuildingEventListenerIfCapturable()
+  if (isSelectedUnit && currentDevice === 'smartphone') {
+    removeSmartMoveEventListeners()
+    smartphoneBindWhileSelectedUnit(selectedUnit)
+  }
 }
 
 function unselectUnit () {
@@ -412,14 +418,37 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       unselectUnit()
       break
   }
+}
 
-  function handleCancelMove () {
-    const originalCell = cells[originalIndex]
-    originalCell.appendChild(selectedUnit)
-    resetUnitResidualMoveCapacity(originalMoveCapacity)
-    if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
-      updateUnitStatus(selectedUnit, '-outofmovement', false)
-    }
+function smartphoneBindWhileSelectedUnit (selectedUnit) {
+  console.log('test')
+  // add click event listener on reachable cells
+  const reachableCells = document.querySelectorAll('.-reachable')
+  console.log(reachableCells)
+
+  reachableCells.forEach(reachableCell => {
+    reachableCell.addEventListener('click', smartMove)
+  })
+}
+
+function smartMove () {
+  console.log('test')
+}
+
+function removeSmartMoveEventListeners () {
+  const reachableCells = document.querySelectorAll('.-reachable')
+
+  reachableCells.forEach(reachableCell => {
+    reachableCell.removeEventListener('click', smartMove)
+  })
+}
+
+function handleCancelMove () {
+  const originalCell = cells[originalIndex]
+  originalCell.appendChild(selectedUnit)
+  resetUnitResidualMoveCapacity(originalMoveCapacity)
+  if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
+    updateUnitStatus(selectedUnit, '-outofmovement', false)
   }
 }
 
@@ -1215,7 +1244,7 @@ endRoundButton.addEventListener('click', endRound)
 
 window.addEventListener('keydown', (event) => {
   // Single event listener for keyboard actions
-  if (isSelectedUnit) {
+  if (isSelectedUnit && currentDevice === 'desktop') {
     keyboardBindWhileSelectedUnit(event, selectedUnit)
   }
 })
