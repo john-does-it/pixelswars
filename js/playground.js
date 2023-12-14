@@ -427,12 +427,16 @@ function smartphoneBindWhileSelectedUnit (selectedUnit) {
   console.log(reachableCells)
 
   reachableCells.forEach(reachableCell => {
-    reachableCell.addEventListener('click', smartMove)
+    reachableCell.addEventListener('click', (event) => smartMove(event))
   })
 }
 
-function smartMove () {
-  console.log('test')
+function smartMove (event) {
+  if (!event.target.contains(selectedUnit)) {
+    event.target.appendChild(selectedUnit)
+    updateCellsAndUnitsState(Number(selectedUnit.parentElement.dataset.index))
+    smartphoneBindWhileSelectedUnit(selectedUnit)
+  }
 }
 
 function removeSmartMoveEventListeners () {
