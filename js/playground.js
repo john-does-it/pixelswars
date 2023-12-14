@@ -13,19 +13,14 @@ const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-console.log(navigator.userAgent, smartphoneControls)
-// if user agent not desktop and unit is selected, add -active class on smartphonecontrols-container
+console.log(smartphoneControls)
 
 const getDeviceType = () => {
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent)) {
-    console.log('should be a tablet')
-    return 'tablet'
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent) || /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(navigator.userAgent)) {
+    console.log('should be a tablet or a smartphone')
+    return 'smartphone'
   }
-  if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(navigator.userAgent)
-  ) {
-    console.log('should be a mobile phone')
-    return 'mobile'
-  }
+
   console.log('should be a PC')
   return 'desktop'
 }
@@ -329,9 +324,11 @@ function unitClickHandler (event) {
   isSelectedUnit = true
 
   // if smartphone show arrow to control the unit
+  /*
   if (getDeviceType !== 'desktop') {
     smartphoneControls.classList.add('-active')
   }
+  */
 
   console.log(isSelectedUnit)
 
@@ -350,9 +347,11 @@ function unitClickHandler (event) {
 function unselectUnit () {
   selectedUnit = null
   isSelectedUnit = false
+  /*
   if (getDeviceType !== 'desktop') {
     smartphoneControls.classList.remove('-active')
   }
+  */
   removeReachableFromCells()
   removeAttackableFromCells()
   removeInRangeFromUnits()
@@ -1207,52 +1206,6 @@ function statPreview () {
     // eslint-disable-next-line no-undef
     statsContainer.innerHTML = DOMPurify.sanitize(statsHTML)
   }
-}
-
-function preloadImages () {
-  const imagePaths = [
-    'assets/cells/cell-city-on-grass-captured-by-1.png',
-    'assets/cells/cell-city-on-grass-captured-by-2.png',
-    'assets/cells/cell-city-on-grass-half-captured-by-1.png',
-    'assets/cells/cell-city-on-grass-half-captured-by-2.png',
-    'assets/cells/cell-city-on-grass-half-captured.png',
-    'assets/cells/cell-city-on-grass-halfcaptured-by-1.png',
-    'assets/cells/cell-city-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-city-on-grass-halfcaptured.png',
-    'assets/cells/cell-city-on-grass.png',
-    'assets/cells/cell-factory-on-grass-captured-by-1.png',
-    'assets/cells/cell-factory-on-grass-captured-by-2.png',
-    'assets/cells/cell-factory-on-grass-half-captured-by-1.png',
-    'assets/cells/cell-factory-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-factory-on-grass-halfcaptured.png',
-    'assets/cells/cell-factory-on-grass.png',
-    'assets/cells/cell-forest-on-grass-variant.png',
-    'assets/cells/cell-forest-on-grass.png',
-    'assets/cells/cell-grass-variant-2.png',
-    'assets/cells/cell-grass-variant-3.png',
-    'assets/cells/cell-grass-variant.png',
-    'assets/cells/cell-grass.png',
-    'assets/cells/cell-hospital-on-grass-captured-by-1.png',
-    'assets/cells/cell-hospital-on-grass-captured-by-2.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png',
-    'assets/cells/cell-hospital-on-grass-halfcaptured.png',
-    'assets/cells/cell-hospital-on-grass.png',
-    'assets/cells/cell-moutain-on-grass.png',
-    'assets/cells/cell-road-corner-bottom.png',
-    'assets/cells/cell-road-corner-top.png',
-    'assets/cells/cell-road-end-top.png',
-    'assets/cells/cell-road-h.png',
-    'assets/cells/cell-road-v.png',
-    'assets/cells/cell-water-grass-on-right-and-bottom.png',
-    'assets/cells/cell-water-grass-on-right.png',
-    'assets/cells/cell-water.png'
-  ]
-
-  imagePaths.forEach(path => {
-    const img = new Image()
-    img.src = path
-  })
 }
 
 // Event Listeners and Handlers
