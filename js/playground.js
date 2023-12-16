@@ -16,13 +16,7 @@ const numberOfRows = getGridDimensions().rows
 console.log(smartphoneControls)
 
 const getDeviceType = () => {
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent) || /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(navigator.userAgent)) {
-    console.log('should be a tablet or a smartphone')
-    return 'smartphone'
-  }
-
-  console.log('should be a PC')
-  return 'desktop'
+  return 'smartphone'
 }
 getDeviceType()
 
@@ -345,7 +339,7 @@ function unitClickHandler (event) {
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
   attachCaptureBuildingEventListenerIfCapturable()
   if (isSelectedUnit && currentDevice === 'smartphone') {
-    removeSmartMoveEventListeners()
+    // removeSmartMoveEventListeners()
     smartphoneBindWhileSelectedUnit(selectedUnit)
   }
 }
@@ -420,31 +414,33 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
   }
 }
 
+// store references to particular event listeners
+const eventListenersMap = new Map()
+
 function smartphoneBindWhileSelectedUnit (selectedUnit) {
-  console.log('test')
-  // add click event listener on reachable cells
   const reachableCells = document.querySelectorAll('.-reachable')
-  console.log(reachableCells)
+
+  eventListenersMap.forEach((listener, cell) => {
+    cell.removeEventListener('click', listener)
+  })
+  eventListenersMap.clear() // Clear the map after removing the listeners
 
   reachableCells.forEach(reachableCell => {
-    reachableCell.addEventListener('click', (event) => smartMove(event))
+    const listener = (event) => smartMove(event, selectedUnit)
+    reachableCell.addEventListener('click', listener)
+    eventListenersMap.set(reachableCell, listener)
   })
 }
 
-function smartMove (event) {
-  if (!event.target.contains(selectedUnit)) {
+function smartMove (event, selectedUnit) {
+  if (event.target.classList.contains('-reachable') && !event.target.querySelector('.unit-container')) {
     event.target.appendChild(selectedUnit)
+
     updateCellsAndUnitsState(Number(selectedUnit.parentElement.dataset.index))
     smartphoneBindWhileSelectedUnit(selectedUnit)
+  } else {
+    console.log('The cell already contains a unit or is not reachable.')
   }
-}
-
-function removeSmartMoveEventListeners () {
-  const reachableCells = document.querySelectorAll('.-reachable')
-
-  reachableCells.forEach(reachableCell => {
-    reachableCell.removeEventListener('click', smartMove)
-  })
 }
 
 function handleCancelMove () {
