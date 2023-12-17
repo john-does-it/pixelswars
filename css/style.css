@@ -271,27 +271,7 @@ input:disabled {
   border-color: hsl(0, 0%, 95%);
 }
 .cell-container {
-  width: 32px;
-  height: 32px;
   background-size: cover;
-}
-@media (min-width: 480px) {
-  .cell-container {
-    width: 48px;
-    height: 48px;
-  }
-}
-@media (min-width: 640px) {
-  .cell-container {
-    width: 56px;
-    height: 56px;
-  }
-}
-@media (min-width: 960px) {
-  .cell-container {
-    width: 80px;
-    height: 80px;
-  }
 }
 .cell-container .stats-container {
   display: none;

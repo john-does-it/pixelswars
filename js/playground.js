@@ -15,6 +15,37 @@ const numberOfRows = getGridDimensions().rows
 
 console.log(smartphoneControls)
 
+// Calculate the cell size
+function calculateCellSize () {
+  const gridAspectRatio = numberOfCols / numberOfRows
+  const windowAspectRatio = window.innerWidth / window.innerHeight
+
+  let cellSize
+
+  if (windowAspectRatio > gridAspectRatio) {
+    // Window is wider than the grid - use height to determine cell size
+    cellSize = window.innerHeight / (numberOfRows + 4)
+  } else {
+    // Window is taller than the grid - use width to determine cell size
+    cellSize = window.innerWidth / (numberOfCols + 1)
+  }
+
+  return cellSize
+}
+
+function adjustGridSize () {
+  const cellSize = calculateCellSize()
+
+  cells.forEach(cell => {
+    cell.style.width = `${cellSize}px`
+    cell.style.height = `${cellSize}px` // Keeping cells square
+  })
+}
+
+adjustGridSize() // Initial adjustment
+
+window.addEventListener('resize', adjustGridSize)
+
 const getDeviceType = () => {
   return 'smartphone'
 }
