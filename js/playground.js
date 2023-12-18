@@ -920,6 +920,7 @@ function captureBuilding () {
 
 function startCaptureBuilding (event) {
   event.preventDefault()
+
   if (selectedUnit && selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
     originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10

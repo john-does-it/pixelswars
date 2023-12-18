@@ -843,41 +843,6 @@ input:disabled {
 .smartphoneui-container.-active {
   display: flex;
 }
-/*
-.smartphonecontrols-container {
-  width: 120px; 
-  height: 120px; 
-  position: sticky;
-  bottom: 60px;
-  right: 0;
-  left: 0;
-  z-index: 999;
-  border-radius: 100%;
-  margin-bottom: 2em;
-  display: none;
-
-  &.-active {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .leftandright-container,
-  .arrowup, 
-  .arrowdown {
-    width: 100%;
-  }
-
-  .arrowleft {
-    padding-left: .5em;
-  }
-
-  .arrowright {
-    padding-right: .5em;
-  }
-} 
-*/
 @-webkit-keyframes outOf {
   from {
     opacity: 0;
