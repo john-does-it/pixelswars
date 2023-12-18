@@ -13,8 +13,6 @@ const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-console.log(smartphoneControls)
-
 // Calculate the cell size
 function calculateCellSize () {
   const gridAspectRatio = numberOfCols / numberOfRows
@@ -47,7 +45,13 @@ adjustGridSize() // Initial adjustment
 window.addEventListener('resize', adjustGridSize)
 
 const getDeviceType = () => {
-  return 'smartphone'
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    // true for mobile device
+    return 'smartphone'
+  } else {
+    // false for not mobile device
+    return 'desktop'
+  }
 }
 getDeviceType()
 
@@ -456,6 +460,8 @@ function smartphoneBindWhileSelectedUnit (selectedUnit) {
   })
   eventListenersMap.clear() // Clear the map after removing the listeners
 
+  attachCaptureBuildingEventListenerIfCapturable()
+
   reachableCells.forEach(reachableCell => {
     const listener = (event) => smartMove(event, selectedUnit)
     reachableCell.addEventListener('click', listener)
@@ -466,7 +472,9 @@ function smartphoneBindWhileSelectedUnit (selectedUnit) {
 function smartMove (event, selectedUnit) {
   if (event.target.classList.contains('-reachable') && !event.target.querySelector('.unit-container')) {
     event.target.appendChild(selectedUnit)
+    attachCaptureBuildingEventListenerIfCapturable()
 
+    updateUnitResidualMoveCapacity(selectedUnit.dataset.residual_move_capacity, event.target.dataset.cost_of_movement)
     updateCellsAndUnitsState(Number(selectedUnit.parentElement.dataset.index))
     smartphoneBindWhileSelectedUnit(selectedUnit)
   } else {
@@ -916,7 +924,6 @@ function startCaptureBuilding (event) {
   event.preventDefault()
 
   if (selectedUnit && selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
-    event.preventDefault()
     originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
     buildingDatas.building.setAttribute('data-capture_points', updatedCapturePoints)

@@ -428,7 +428,7 @@ input:disabled {
   background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
 }
 .cell-container.-building.-city.-ongrass.-halfcaptured.-capturedby2 {
-  background-image: url('../assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
+  background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
 }
 .explosion {
   width: inherit;
@@ -483,8 +483,8 @@ input:disabled {
 }
 .unit-container .health,
 .unit-container .status {
-  width: 15%;
-  height: 15%;
+  width: 15px;
+  height: 15px;
 }
 @media (min-width: 960px) {
   .unit-container .health,
