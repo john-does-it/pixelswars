@@ -2,6 +2,11 @@
 	appearance: none;
 	border: 2px solid @ultralightblack;
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
 	&:not(:disabled) {
 		cursor: pointer;
 	}

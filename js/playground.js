@@ -8,23 +8,56 @@ const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
-const smartphoneControls = document.getElementById('smartphone-controls')
+// const smartphoneControls = document.getElementById('smartphone-controls')
+const showSmartphoneUI = document.getElementById('smartphone-ui')
+const validMoveSmartphoneUI = document.getElementById('valid-move')
+const cancelMoveSmartphoneUI = document.getElementById('cancel-move')
+const captureBuildingSmartphoneUI = document.getElementById('capture-building')
+captureBuildingSmartphoneUI.disabled = true
+
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-console.log(smartphoneControls)
+// Calculate the cell size
+function calculateCellSize () {
+  const gridAspectRatio = numberOfCols / numberOfRows
+  const windowAspectRatio = window.innerWidth / window.innerHeight
 
-const getDeviceType = () => {
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent) || /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(navigator.userAgent)) {
-    console.log('should be a tablet or a smartphone')
-    return 'smartphone'
+  let cellSize
+
+  if (windowAspectRatio > gridAspectRatio) {
+    cellSize = window.innerHeight / (numberOfRows + 4)
+  } else {
+    cellSize = window.innerWidth / (numberOfCols + 1)
   }
 
-  console.log('should be a PC')
-  return 'desktop'
+  return cellSize
+}
+
+function adjustGridSize () {
+  const cellSize = calculateCellSize()
+
+  cells.forEach(cell => {
+    cell.style.width = `${cellSize}px`
+    cell.style.height = `${cellSize}px` // Keeping cells square
+  })
+}
+
+adjustGridSize() // Initial adjustment
+
+window.addEventListener('resize', adjustGridSize)
+
+const getDeviceType = () => {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    return 'smartphone'
+  } else {
+    return 'desktop'
+  }
 }
 getDeviceType()
+
+const currentDevice = getDeviceType()
 
 const unitsHTML = {
   infantryUnitPlayerOne:
@@ -322,16 +355,6 @@ function unitClickHandler (event) {
   }
 
   isSelectedUnit = true
-
-  // if smartphone show arrow to control the unit
-  /*
-  if (getDeviceType !== 'desktop') {
-    smartphoneControls.classList.add('-active')
-  }
-  */
-
-  console.log(isSelectedUnit)
-
   selectedUnit = tryToSelectUnit
   playSelectSound(selectedUnit.dataset.type)
   originalIndex = Number(tryToSelectUnit.parentElement.dataset.index)
@@ -342,16 +365,15 @@ function unitClickHandler (event) {
   const enemyUnitsInRange = addInRangeToEnemyUnits(originalIndex)
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
   attachCaptureBuildingEventListenerIfCapturable()
+  if (isSelectedUnit && currentDevice === 'smartphone') {
+    smartphoneBindWhileSelectedUnit(selectedUnit)
+  }
 }
 
 function unselectUnit () {
   selectedUnit = null
   isSelectedUnit = false
-  /*
-  if (getDeviceType !== 'desktop') {
-    smartphoneControls.classList.remove('-active')
-  }
-  */
+  showSmartphoneUI.classList.remove('-active')
   removeReachableFromCells()
   removeAttackableFromCells()
   removeInRangeFromUnits()
@@ -360,12 +382,17 @@ function unselectUnit () {
 
 function attachCaptureBuildingEventListenerIfCapturable () {
   buildingDatas = getBuildingData(selectedUnit)
+  captureBuildingSmartphoneUI.disabled = true
 
   if (selectedUnit.dataset.name.includes('infantry') && getLandscapeData(selectedUnit).landscapeType === 'building') {
+    if (currentDevice === 'smartphone') {
+      captureBuildingSmartphoneUI.disabled = false
+      captureBuildingSmartphoneUI.addEventListener('click', startCaptureBuilding)
+    }
     if (Number(selectedUnit.dataset.capture_capacity) === 0 || (Number(buildingDatas.buildingCapturePoint) === 20 && Number(buildingDatas.buildingPlayerAppartenance) === Number(selectedUnit.dataset.player))) {
-      console.log('Cannot be captured')
+      captureBuildingSmartphoneUI.disabled = true
     } else if (Number(selectedUnit.dataset.capture_capacity) === 0 && Number(buildingDatas.buildingPlayerAppartenance) !== Number(selectedUnit.dataset.player)) {
-      console.log('todo: give feedback')
+      captureBuildingSmartphoneUI.disabled = true
     } else {
       document.addEventListener('keypress', startCaptureBuilding)
     }
@@ -409,18 +436,57 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       break
     case 'Escape':
       handleCancelMove()
-      unselectUnit()
       break
   }
+}
 
-  function handleCancelMove () {
-    const originalCell = cells[originalIndex]
-    originalCell.appendChild(selectedUnit)
-    resetUnitResidualMoveCapacity(originalMoveCapacity)
-    if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
-      updateUnitStatus(selectedUnit, '-outofmovement', false)
-    }
+validMoveSmartphoneUI.addEventListener('click', unselectUnit)
+
+cancelMoveSmartphoneUI.addEventListener('click', handleCancelMove)
+
+// store references to particular event listeners
+const eventListenersMap = new Map()
+
+function smartphoneBindWhileSelectedUnit (selectedUnit) {
+  const reachableCells = document.querySelectorAll('.-reachable')
+
+  eventListenersMap.forEach((listener, cell) => {
+    cell.removeEventListener('click', listener)
+  })
+  eventListenersMap.clear() // Clear the map after removing the listeners
+
+  attachCaptureBuildingEventListenerIfCapturable()
+
+  // show cancelmove / validmove smartphone ui
+  showSmartphoneUI.classList.add('-active')
+
+  reachableCells.forEach(reachableCell => {
+    const listener = (event) => smartMove(event, selectedUnit)
+    reachableCell.addEventListener('click', listener)
+    eventListenersMap.set(reachableCell, listener)
+  })
+}
+
+function smartMove (event, selectedUnit) {
+  if (event.target.classList.contains('-reachable') && !event.target.querySelector('.unit-container')) {
+    event.target.appendChild(selectedUnit)
+    attachCaptureBuildingEventListenerIfCapturable()
+    updateUnitResidualMoveCapacity(selectedUnit.dataset.residual_move_capacity, event.target.dataset.cost_of_movement)
+    updateCellsAndUnitsState(Number(selectedUnit.parentElement.dataset.index))
+    smartphoneBindWhileSelectedUnit(selectedUnit)
+  } else {
+    console.log('The cell already contains a unit or is not reachable.')
   }
+}
+
+function handleCancelMove () {
+  const originalCell = cells[originalIndex]
+  originalCell.appendChild(selectedUnit)
+  resetUnitResidualMoveCapacity(originalMoveCapacity)
+  if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
+    updateUnitStatus(selectedUnit, '-outofmovement', false)
+  }
+  unselectUnit()
 }
 
 function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, direction) {
@@ -854,9 +920,7 @@ function captureBuilding () {
 
 function startCaptureBuilding (event) {
   event.preventDefault()
-
   if (selectedUnit && selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
-    event.preventDefault()
     originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex)
     const updatedCapturePoints = Number(buildingDatas.buildingCapturePoint) - 10
     buildingDatas.building.setAttribute('data-capture_points', updatedCapturePoints)
@@ -875,6 +939,7 @@ function startCaptureBuilding (event) {
     updateUnitStatus(selectedUnit, '-outofcapture', true)
   }
 
+  captureBuildingSmartphoneUI.disabled = true
   document.removeEventListener('keypress', startCaptureBuilding)
 }
 
@@ -1215,7 +1280,7 @@ endRoundButton.addEventListener('click', endRound)
 
 window.addEventListener('keydown', (event) => {
   // Single event listener for keyboard actions
-  if (isSelectedUnit) {
+  if (isSelectedUnit && currentDevice === 'desktop') {
     keyboardBindWhileSelectedUnit(event, selectedUnit)
   }
 })

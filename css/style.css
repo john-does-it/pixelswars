@@ -248,6 +248,10 @@ input:disabled {
           appearance: none;
   border: 2px solid hsl(240, 2%, 41%);
 }
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 .button:not(:disabled) {
   cursor: pointer;
 }
@@ -271,27 +275,7 @@ input:disabled {
   border-color: hsl(0, 0%, 95%);
 }
 .cell-container {
-  width: 32px;
-  height: 32px;
   background-size: cover;
-}
-@media (min-width: 480px) {
-  .cell-container {
-    width: 48px;
-    height: 48px;
-  }
-}
-@media (min-width: 640px) {
-  .cell-container {
-    width: 56px;
-    height: 56px;
-  }
-}
-@media (min-width: 960px) {
-  .cell-container {
-    width: 80px;
-    height: 80px;
-  }
 }
 .cell-container .stats-container {
   display: none;
@@ -448,7 +432,7 @@ input:disabled {
   background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
 }
 .cell-container.-building.-city.-ongrass.-halfcaptured.-capturedby2 {
-  background-image: url('../assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
+  background-image: url('../assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
 }
 .explosion {
   width: inherit;
@@ -503,8 +487,8 @@ input:disabled {
 }
 .unit-container .health,
 .unit-container .status {
-  width: 15%;
-  height: 15%;
+  width: 15px;
+  height: 15px;
 }
 @media (min-width: 960px) {
   .unit-container .health,
@@ -849,9 +833,20 @@ input:disabled {
 .endround-container .endround {
   width: 100%;
 }
+.smartphoneui-container {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2em;
+  gap: 1em;
+}
+.smartphoneui-container.-active {
+  display: flex;
+}
+/*
 .smartphonecontrols-container {
-  width: 120px;
-  height: 120px;
+  width: 120px; 
+  height: 120px; 
   position: sticky;
   bottom: 60px;
   right: 0;
@@ -860,24 +855,29 @@ input:disabled {
   border-radius: 100%;
   margin-bottom: 2em;
   display: none;
-}
-.smartphonecontrols-container.-active {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-.smartphonecontrols-container .leftandright-container,
-.smartphonecontrols-container .arrowup,
-.smartphonecontrols-container .arrowdown {
-  width: 100%;
-}
-.smartphonecontrols-container .arrowleft {
-  padding-left: 0.5em;
-}
-.smartphonecontrols-container .arrowright {
-  padding-right: 0.5em;
-}
+
+  &.-active {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .leftandright-container,
+  .arrowup, 
+  .arrowdown {
+    width: 100%;
+  }
+
+  .arrowleft {
+    padding-left: .5em;
+  }
+
+  .arrowright {
+    padding-right: .5em;
+  }
+} 
+*/
 @-webkit-keyframes outOf {
   from {
     opacity: 0;
