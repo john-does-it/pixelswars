@@ -248,6 +248,10 @@ input:disabled {
           appearance: none;
   border: 2px solid hsl(240, 2%, 41%);
 }
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 .button:not(:disabled) {
   cursor: pointer;
 }
