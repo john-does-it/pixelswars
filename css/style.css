@@ -829,9 +829,20 @@ input:disabled {
 .endround-container .endround {
   width: 100%;
 }
+.smartphoneui-container {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2em;
+  gap: 1em;
+}
+.smartphoneui-container.-active {
+  display: flex;
+}
+/*
 .smartphonecontrols-container {
-  width: 120px;
-  height: 120px;
+  width: 120px; 
+  height: 120px; 
   position: sticky;
   bottom: 60px;
   right: 0;
@@ -840,24 +851,29 @@ input:disabled {
   border-radius: 100%;
   margin-bottom: 2em;
   display: none;
-}
-.smartphonecontrols-container.-active {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-.smartphonecontrols-container .leftandright-container,
-.smartphonecontrols-container .arrowup,
-.smartphonecontrols-container .arrowdown {
-  width: 100%;
-}
-.smartphonecontrols-container .arrowleft {
-  padding-left: 0.5em;
-}
-.smartphonecontrols-container .arrowright {
-  padding-right: 0.5em;
-}
+
+  &.-active {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .leftandright-container,
+  .arrowup, 
+  .arrowdown {
+    width: 100%;
+  }
+
+  .arrowleft {
+    padding-left: .5em;
+  }
+
+  .arrowright {
+    padding-right: .5em;
+  }
+} 
+*/
 @-webkit-keyframes outOf {
   from {
     opacity: 0;

@@ -8,7 +8,10 @@ const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
 const factoriesButtons = factoryContainer.querySelectorAll('button')
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
-const smartphoneControls = document.getElementById('smartphone-controls')
+// const smartphoneControls = document.getElementById('smartphone-controls')
+const showSmartphoneUI = document.getElementById('smartphone-ui')
+const validMoveSmartphoneUI = document.getElementById('valid-move')
+const cancelMoveSmartphoneUI = document.getElementById('cancel-move')
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
@@ -21,10 +24,8 @@ function calculateCellSize () {
   let cellSize
 
   if (windowAspectRatio > gridAspectRatio) {
-    // Window is wider than the grid - use height to determine cell size
     cellSize = window.innerHeight / (numberOfRows + 4)
   } else {
-    // Window is taller than the grid - use width to determine cell size
     cellSize = window.innerWidth / (numberOfCols + 1)
   }
 
@@ -46,10 +47,8 @@ window.addEventListener('resize', adjustGridSize)
 
 const getDeviceType = () => {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    // true for mobile device
     return 'smartphone'
   } else {
-    // false for not mobile device
     return 'desktop'
   }
 }
@@ -374,7 +373,6 @@ function unitClickHandler (event) {
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
   attachCaptureBuildingEventListenerIfCapturable()
   if (isSelectedUnit && currentDevice === 'smartphone') {
-    // removeSmartMoveEventListeners()
     smartphoneBindWhileSelectedUnit(selectedUnit)
   }
 }
@@ -382,11 +380,7 @@ function unitClickHandler (event) {
 function unselectUnit () {
   selectedUnit = null
   isSelectedUnit = false
-  /*
-  if (getDeviceType !== 'desktop') {
-    smartphoneControls.classList.remove('-active')
-  }
-  */
+  showSmartphoneUI.classList.remove('-active')
   removeReachableFromCells()
   removeAttackableFromCells()
   removeInRangeFromUnits()
@@ -444,10 +438,13 @@ function keyboardBindWhileSelectedUnit (event, selectedUnit) {
       break
     case 'Escape':
       handleCancelMove()
-      unselectUnit()
       break
   }
 }
+
+validMoveSmartphoneUI.addEventListener('click', unselectUnit)
+
+cancelMoveSmartphoneUI.addEventListener('click', handleCancelMove)
 
 // store references to particular event listeners
 const eventListenersMap = new Map()
@@ -461,6 +458,9 @@ function smartphoneBindWhileSelectedUnit (selectedUnit) {
   eventListenersMap.clear() // Clear the map after removing the listeners
 
   attachCaptureBuildingEventListenerIfCapturable()
+
+  // show cancelmove / validmove smartphone ui
+  showSmartphoneUI.classList.add('-active')
 
   reachableCells.forEach(reachableCell => {
     const listener = (event) => smartMove(event, selectedUnit)
@@ -489,6 +489,7 @@ function handleCancelMove () {
   if (resetUnitResidualMoveCapacity(originalMoveCapacity) !== 0) {
     updateUnitStatus(selectedUnit, '-outofmovement', false)
   }
+  unselectUnit()
 }
 
 function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, direction) {
