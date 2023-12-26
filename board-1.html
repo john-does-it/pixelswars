@@ -21,6 +21,43 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <!-- preload images to avoid clipping  -->
+  <link rel="preload" href="assets/gifs/explosion.gif" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-half-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-forest-on-grass-variant.png" as="image">
+  <link rel="preload" href="assets/cells/cell-forest-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant-3.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-moutain-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-corner-bottom.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-corner-top.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-end-top.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-h.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-v.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water-grass-on-right-and-bottom.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water-grass-on-right.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water.png" as="image">
 </head>
 <body id="body">
   <!-- audio -->
@@ -160,8 +197,8 @@
         Player
         <img class="active" src="./assets/icons/icon-player-one.png" alt="icon player one">
         <img src="./assets/icons/icon-player-two.png" alt="icon player two">
-        </span>
-        <span class="round-container _flex -aligncenter  _text -m -uppercase _color -white -bglightblack" id="current-round-ui">
+      </span>
+      <span class="round-container _flex -aligncenter  _text -m -uppercase _color -white -bglightblack" id="current-round-ui">
         Round 
         <span id="current-round">1</span>
       </span>
@@ -169,17 +206,17 @@
     <!-- money -->
     <div class="money-container _flex -justifyspacebetween">
       <span class="_text -s -uppercase _color -green">
-      Player 1: 
-      <span id="current-money-player-one">0</span> $
+        Player 1: 
+        <span id="current-money-player-one">0</span> $
       </span>
       <span class="_text -s -uppercase _color -green">
-      Player 2: 
-      <span id="current-money-player-two">0</span> $
+        Player 2: 
+        <span id="current-money-player-two">0</span> $
       </span>
     </div>
   </div>
+  <!-- stats -->
   <div class="stats-container _color -white -bglightblack _flex -wrap -justifycenter -aligncenter" id="stats-container">
-    <!-- stats -->
     Stats
   </div>
   <div class="board-container _flex -column -wrap -aligncenter">
@@ -286,16 +323,18 @@
       </div>
       <div class="cell-container -road -h">
         <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="2000">
-           <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
+          <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
         </div>
       </div>
     </div>
   </div>
+  <!-- smartphone UI -->
   <div class="smartphoneui-container" id="smartphone-ui">
     <button class="button _color -white -bglightblack" id="capture-building">Capture building</button>
     <button class="button _color -white -bglightblack" id="cancel-move">Cancel move</button>
     <button class="button _color -white -bglightblack" id="valid-move">Valid move</button>
   </div>
+  <!-- options and end round -->
   <div class="optionsandendround-container _flex -wrap -justifycenter -aligncenter">
     <div class="options-container _flex">
       <button class="button -option _color -bglightblack" id="toggle-player-music" itle="Mute / Unmute player soundtrack">

@@ -21,6 +21,43 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <!-- preload images to avoid clipping  -->
+  <link rel="preload" href="assets/gifs/explosion.gif" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-half-captured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-city-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-half-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-factory-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-forest-on-grass-variant.png" as="image">
+  <link rel="preload" href="assets/cells/cell-forest-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant-3.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass-variant.png" as="image">
+  <link rel="preload" href="assets/cells/cell-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-captured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-captured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass-halfcaptured.png" as="image">
+  <link rel="preload" href="assets/cells/cell-hospital-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-moutain-on-grass.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-corner-bottom.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-corner-top.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-end-top.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-h.png" as="image">
+  <link rel="preload" href="assets/cells/cell-road-v.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water-grass-on-right-and-bottom.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water-grass-on-right.png" as="image">
+  <link rel="preload" href="assets/cells/cell-water.png" as="image">
 </head>
 <body id="body">
   <!-- audio -->
@@ -108,12 +145,6 @@
     <source src="assets/mp3/cash-machine.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>  
-  <!-- ui feedback -->
-  <!-- 
-  <div class="uifeedback-container _flex -column -justifycenter -aligncenter _color -white -bglightblack _text -center" id="uifeedback-container">
-    <p>🖱️ You can select one of your unit by clicking on it.</p>
-  </div> 
-  -->
   <!-- you win / you loose dialog modal flex properties defined in stylesheet -->
   <dialog class="dialog-container _color -white -bglightblack" id="dialog-container" close>
     <!-- message -->
