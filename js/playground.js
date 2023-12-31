@@ -17,7 +17,6 @@ const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-// Calculate the cell size
 function calculateCellSize () {
   const gridAspectRatio = numberOfCols / numberOfRows
   const windowAspectRatio = window.innerWidth / window.innerHeight
@@ -41,8 +40,7 @@ function adjustGridSize () {
     cell.style.height = `${cellSize}px` // Keeping cells square
   })
 }
-
-adjustGridSize() // Initial adjustment
+adjustGridSize()
 
 window.addEventListener('resize', adjustGridSize)
 
