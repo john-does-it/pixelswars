@@ -489,6 +489,10 @@ input:disabled {
 .unit-container .status {
   width: 15px;
   height: 15px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 @media (min-width: 960px) {
   .unit-container .health,
