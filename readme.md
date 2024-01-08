@@ -4,8 +4,6 @@ Version: 23.11.29.161004
 
 Current state of the game: prototype including most of the core mechanics of the game.
 
-Only playable on computer using a keyboard, you can't play on smartphone.
-
 ## Description
 
 Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
