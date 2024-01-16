@@ -76,20 +76,12 @@ This will compile the main.less file to a style.css file and add vendor prefixes
 #### LESS File Structure
 The project is organized into the following categories:
 
-Constants: These files include variables that define colors and sizes used throughout the project.
-
+Constants: These files include variables that define constants used throughout the project.
 Tools: These files include utility styles, such as a normalize file and a clearfix file.
-
-Selectors: These files include styles for various types of selectors, such as classes, IDs, and pseudo-classes.
-
-Elements: These files include styles for specific HTML elements, such as buttons, cell, and explosion.
-
-Components: These files include styles for reusable components, such as stats and unit.
-
-Structures: These files include styles for structural elements, such as the board, console, grid and UI.
-
-Layouts: These files include styles for specific page layouts, such as the homepage, contact page, and FAQ page.
-
+Selectors: These file provide overidding for some selector to make customisation easier and can be used to include styles for various types of selectors, such as classes, IDs, and pseudo-classes.
+Elements: These files include styles for specific HTML elements.
+Components: These files include styles for reusable component.
+Structures: These files include styles for structural elements, such as the footer and navbar.
 Helpers: These files include utility styles for things like animations, flexbox, text etc.
 
 Warning: examples below are generic and have not been adapted to this specific project. 
