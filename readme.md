@@ -43,8 +43,6 @@ The Pixel's War prototype use only low level web technologies as:
 - CSS3 (using LESS preprocessor) to style HTML element;
 - JavaScript to handle the logic behind the game.
 
-As it use modules to import and export datas to keep clean small files, running the game using LiveServer (or whatever) is required in localhost.
-
 ### LESS CSS
 
 Less (Leaner Style Sheets) is a CSS preprocessor that adds additional features to CSS such as variables, nested rules, and mixins. It allows developers to write clean, maintainable, and reusable code.
