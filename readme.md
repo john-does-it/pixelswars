@@ -28,7 +28,7 @@ Capture & Produce Mechanic: Players can capture cities, factories, and other str
 
 Project management: our current and future tasks are listed on the Github project below. The main difference between a upgrade and a feature is the scope. Each task receive a rough time estimation in h (hours), d (days), w (weeks), m (months).
 
-See: https://github.com/users/jonathanschoonbroodt/projects/2/views/1
+See: https://github.com/users/johndoesit/projects/2/views/1
 
 ## MVP Scope 
 
