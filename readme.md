@@ -8,11 +8,13 @@ Current state of the game: prototype including most of the core mechanics of the
 
 Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
 
-Pixel's War is a free turn by turn game playable on any pc directly in the browser and who's played by two person, on the same computer. Pixel's War features engaging game mechanic centered around commanding armies in grid-based battles. 
+Pixel's War is a free turn by turn game playable on any pc directly in the browser and who's played by two person, on the same computer. Pixel's War features engaging game mechanic centered around commanding armies in grid-based battles.
 
 Players control various military units, such as infantry, tanks, aircraft, and artillery, each with distinct strengths and weaknesses. The game takes place on grid-based maps, where players strategically move their units across the terrain to engage enemy forces and capture key objectives.
 
 Pixel's War mechanics encourage strategic thinking, adaptability, and long-term planning. Players must consider unit positioning, terrain effects, in game economy and the overall battlefield situation to outwit their opponents and achieve victory.
+
+![screenshot](/assets/screenshot.png)
 
 ## Key game mechanics
 
@@ -30,7 +32,7 @@ Project management: our current and future tasks are listed on the Github projec
 
 See: [https://github.com/users/johndoesit/projects/2/views/1](https://github.com/users/john-does-it/projects/2)
 
-## MVP Scope 
+## MVP Scope
 
 2 playable maps, with core mechanic for deplacement, fight, capture and building units, few units and landscapes availables and the capacity to capture building and create some units inside factories.
 
@@ -39,6 +41,7 @@ See: [https://github.com/users/johndoesit/projects/2/views/1](https://github.com
 ### Global overview
 
 The Pixel's War prototype use only low level web technologies as:
+
 - HTML5 to handle display of grid, UI, unit and cell;
 - CSS3 (using LESS preprocessor) to style HTML element;
 - JavaScript to handle the logic behind the game.
@@ -72,6 +75,7 @@ lessc main.less --autoprefix style.css
 This will compile the main.less file to a style.css file and add vendor prefixes to the generated CSS rules as needed to ensure compatibility with different browsers.
 
 #### LESS File Structure
+
 The project is organized into the following categories:
 
 Constants: These files include variables that define constants used throughout the project.
@@ -88,70 +92,77 @@ Structures: These files include styles for structural elements, such as the foot
 
 Helpers: These files include utility styles for things like animations, flexbox, text etc.
 
-Warning: examples below are generic and have not been adapted to this specific project. 
+Warning: examples below are generic and have not been adapted to this specific project.
 
 Constants are used to define common properties with the @constant: value; syntax.
+
 ```
 @xxs: 320px;
 ```
 
 Elements are the most common elements in the UI and are described with a single, meaningful word. They are defined using the .element { property: value; } syntax.
+
 ```
-.title { 
-  font-style: bold; 
+.title {
+  font-style: bold;
 }
 ```
 
 Variants of elements are described using a hyphen followed by a single word, nested inside the element's CSS selector with the &.-variant { property: value; } syntax.
+
 ```
-.title { 
-  font-size: 20px; 
-  font-style: bold; 
-  
-  &.-bigger { 
-    font-size: 24px; 
+.title {
+  font-size: 20px;
+  font-style: bold;
+
+  &.-bigger {
+    font-size: 24px;
   }
 }
 
 ```
 
 More complex UI parts, called components, are described with the .component-example { property: value; } syntax.
+
 ```
-.dialog-container { 
-  width: 100%; 
+.dialog-container {
+  width: 100%;
 }
 ```
 
 Variants of components are described in the same way as element variants, using the &.-variant { property: value; } syntax.
+
 ```
-.search-container { 
-  width: 200px; 
+.search-container {
+  width: 200px;
   cursor: pointer;
-  
-  &.-smaller { 
-    width: 120px; 
-  } 
+
+  &.-smaller {
+    width: 120px;
+  }
 }
 ```
 
 Nested components and elements are kept to a minimum to keep the nesting level low.
+
 ```
-.component-example { 
-  property: value; 
-  
-  .nested-component { 
-    property: value; 
-  } 
+.component-example {
+  property: value;
+
+  .nested-component {
+    property: value;
+  }
 }
 ```
 
-Helpers, indicated with the prefix "_", are used to simplify development by allowing the definition of common properties directly in the markup. They are defined using the _helpers { property: value; } syntax and may also have variants with the &.-variant { property: value; } syntax.
+Helpers, indicated with the prefix "\_", are used to simplify development by allowing the definition of common properties directly in the markup. They are defined using the \_helpers { property: value; } syntax and may also have variants with the &.-variant { property: value; } syntax.
+
 ```
-._helpers { 
-  property: value; 
-  
-  &.-variant { 
-    property: value; 
-  } 
+._helpers {
+  property: value;
+
+  &.-variant {
+    property: value;
+  }
 }
 ```
