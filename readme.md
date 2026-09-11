@@ -1,208 +1,141 @@
-# Pixel's War
+# Pixel’s War
 
-Version: 23.11.29.161004
+Local two-player strategy, built with **SvelteKit 2 and Svelte 5 runes**.
 
-Current state of the game: prototype including most of the core mechanics of the game.
+## Development
 
-## Description
+Node.js 22.14 or newer:
 
-Be the best commander, lead your army to the victory and show to your defeated friend who is the smartest!
-
-Pixel's War is a free turn by turn game playable on any pc directly in the browser and who's played by two person, on the same computer. Pixel's War features engaging game mechanic centered around commanding armies in grid-based battles.
-
-Players control various military units, such as infantry, tanks, aircraft, and artillery, each with distinct strengths and weaknesses. The game takes place on grid-based maps, where players strategically move their units across the terrain to engage enemy forces and capture key objectives.
-
-Pixel's War mechanics encourage strategic thinking, adaptability, and long-term planning. Players must consider unit positioning, terrain effects, in game economy and the overall battlefield situation to outwit their opponents and achieve victory.
-
-![screenshot](/assets/screenshot.png)
-
-## Key game mechanics
-
-Turn-Based Gameplay: Players take turns commanding their units, which allows for careful planning and consideration of various tactical options.
-
-Unit Variety: The game features a wide array of units, each with its own movement range, attack range, and abilities. Balancing unit deployment and composition is crucial for success.
-
-Terrain Effects: Different types of terrain affect unit movement, defense. Players need to factor in terrain advantages and disadvantages when positioning their units.
-
-Capture & Produce Mechanic: Players can capture cities, factories, and other structures to earn income, produce new units, and gain tactical advantages.
-
-## Combat rules
-
-Attack ranges are square and include diagonals. Artillery can fire at distances
-2–3: all eight immediately adjacent cells are excluded, including for retaliation.
-Other existing units retain their range of one cell.
-
-Damage multipliers (row = attacker, column = defender):
-
-| Attacker | Infantry | Jeep | Tank | Artillery |
-| --- | --- | --- | --- | --- |
-| Infantry | 1 | 0.5 | 0.5 | 1.5 |
-| Jeep | 1.5 | 1 | 0.5 | 1 |
-| Tank | 1.5 | 1.5 | 1 | 0.5 |
-| Artillery | 0.5 | 1 | 1.5 | 1 |
-
-Multipliers apply after the existing health and defense calculation. Final health
-is rounded to an integer and clamped to zero. A surviving defender retaliates only
-if its own range and target permissions allow it. Retaliation retains the existing
-rule of not consuming an attack point.
-
-`js/combat-rules.js` centralizes matchups. Unspecified matchups default to 1.
-A multiplier of 0 means an impossible attack: no targeting, shot or ammunition
-consumption. Tanks cannot attack `aircraft`, `plane` or `helicopter`, including
-during retaliation. These types are reserved for future units; no aircraft are
-added by this change. Additional flying types should be added to the category mapping.
-
-### Regression checks
-
-Factories show the active player's budget, highlight affordable units and show
-the missing amount for disabled purchases. Occupied factories cannot produce units.
-Open `http://localhost:8000/tests/factory-browser.html` to check production and
-budgets for both players. Add `?map=2` for a disposable factory on the rectangular
-map (which has no factory in its current layout), or `?mobile` for a narrow preview.
-
-Run `node --test tests/combat-rules.test.cjs` for the damage table and range boundaries.
-Serve the repository with `python -m http.server 8000`, then open
-`http://localhost:8000/tests/combat-browser.html` for actual game integration checks.
-Add `?map=2` to check the rectangular map. The checks modify only the disposable
-game frame, mute its audio, and display `ALL PASSED` on success.
-
-## Project board
-
-Project management: our current and future tasks are listed on the Github project below. The main difference between a upgrade and a feature is the scope. Each task receive a rough time estimation in h (hours), d (days), w (weeks), m (months).
-
-See: [https://github.com/users/johndoesit/projects/2/views/1](https://github.com/users/john-does-it/projects/2)
-
-## MVP Scope
-
-2 playable maps, with core mechanic for deplacement, fight, capture and building units, few units and landscapes availables and the capacity to capture building and create some units inside factories.
-
-## How does it work?
-
-### Global overview
-
-The Pixel's War prototype use only low level web technologies as:
-
-- HTML5 to handle display of grid, UI, unit and cell;
-- CSS3 (using LESS preprocessor) to style HTML element;
-- JavaScript to handle the logic behind the game.
-
-### LESS CSS
-
-Less (Leaner Style Sheets) is a CSS preprocessor that adds additional features to CSS such as variables, nested rules, and mixins. It allows developers to write clean, maintainable, and reusable code.
-
-First, you need to install LESS. To install LESS, you need to have already node.js installed. See https://lesscss.org.
-
-I also invite you to install Autoprefixer.
-
-To use Less, you can either compile your .less files to .css files using a build system or a tool like lessc, or you can use a browser plugin or a JavaScript runtime to interpret .less files in the browser.
-
-#### Compile LESS CSS
-
-To compile a Less file to CSS, you can use the following command:
-
-```
-lessc main.less style.css
+```sh
+npm ci
+npm run dev
 ```
 
-This will compile the main.less file to a style.css file in the same directory.
+Open the Vite address. Routes: `/` (map selection), `/play/1/` (8 × 8),
+`/play/2/` (12 × 8). Old board HTML URLs redirect to the new routes.
 
-You can also use the --autoprefix flag to automatically add vendor prefixes to your CSS rules (you need to install Autoprefixer first). For example:
-
-```
-lessc main.less --autoprefix style.css
-```
-
-This will compile the main.less file to a style.css file and add vendor prefixes to the generated CSS rules as needed to ensure compatibility with different browsers.
-
-#### LESS File Structure
-
-The project is organized into the following categories:
-
-Constants: These files include variables that define constants used throughout the project.
-
-Tools: These files include utility styles, such as a normalize file and a clearfix file.
-
-Selectors: These file provide overidding for some selector to make customisation easier and can be used to include styles for various types of selectors, such as classes, IDs, and pseudo-classes.
-
-Elements: These files include styles for specific HTML elements.
-
-Components: These files include styles for reusable component.
-
-Structures: These files include styles for structural elements, such as the footer and navbar.
-
-Helpers: These files include utility styles for things like animations, flexbox, text etc.
-
-Warning: examples below are generic and have not been adapted to this specific project.
-
-Constants are used to define common properties with the @constant: value; syntax.
-
-```
-@xxs: 320px;
+```sh
+npm run check
+npm run format:check
+npm test
+npm run build
+npm run preview
 ```
 
-Elements are the most common elements in the UI and are described with a single, meaningful word. They are defined using the .element { property: value; } syntax.
+The static production site is generated in `build/`. Serve it over HTTP;
+opening source HTML via file:// is no longer supported.
 
-```
-.title {
-  font-style: bold;
-}
-```
+### Browser tests
 
-Variants of elements are described using a hyphen followed by a single word, nested inside the element's CSS selector with the &.-variant { property: value; } syntax.
-
-```
-.title {
-  font-size: 20px;
-  font-style: bold;
-
-  &.-bigger {
-    font-size: 24px;
-  }
-}
-
+```sh
+npx playwright install chromium
+npm run build
+npm run test:e2e
 ```
 
-More complex UI parts, called components, are described with the .component-example { property: value; } syntax.
+Tests cover both maps, desktop/mobile layouts, movement and cancellation, turns,
+capture, income, purchases, occupied factories, combat, navigation and old URLs.
+To use installed Chrome instead, set `PW_CHANNEL=chrome`
+(PowerShell: `$env:PW_CHANNEL = 'chrome'`).
 
+## Architecture
+
+### Code style
+
+Use tabs, single quotes, no JavaScript semicolons and no trailing commas, as defined
+in `.prettierrc`. Keep Svelte blocks and container children on separate indented
+lines. Keep short text elements and attributes inline. Separate CSS rules with a
+blank line; nest descendants, `&` variants and relevant media queries under their
+own selector. Keep the `<script>`, markup and `<style>` sections distinct.
+
+Run `npm run format` before committing. CI checks these conventions with
+`npm run format:check`.
+
+- `src/routes/`: map selection, game routes and compatibility redirects.
+- `src/lib/components/`: Game, Board, Cell, Unit, GameHeader, StatsPanel,
+  Controls, FactoryModal, VictoryModal and a shared native-dialog component.
+- `src/lib/game/game.svelte.js`: creates a separate `$state` for each game.
+- `src/lib/game/model.js`: initial state and rule queries.
+- `src/lib/game/actions.js`: movement, capture, economy and turn actions.
+- `src/lib/game/controller.js`: input and asynchronous combat coordination.
+- `src/lib/game/combat-rules.js`: pure attack geometry and damage multipliers.
+- `src/lib/game/catalog.js`: unit definitions, prices and terrain rules.
+- `src/lib/data/`: original map layouts as JSON.
+- `assets/`: original art and sounds, retained without modification. The prepare,
+  predev and prebuild scripts copy them into ignored `static/assets/` for SvelteKit.
+- `static/css/sprites.css`: sprite mappings; layouts use scoped component CSS.
+- `tests/`: Node rule tests and Playwright browser tests.
+
+Components use `$props`, `$derived` and `$state`. Effects manage music and transient
+income notifications. State belongs to a component instance: server rendering
+and navigation never share another game's state. Pending combat work is
+cancelled on disposal. Audio is created on mount and stopped on navigation.
+
+The DOM renders state; it no longer stores it. There are no global game scripts,
+DOM queries, manual HTML insertion or MutationObservers.
+To add a unit, extend the catalog, supply sprites/sounds and add non-neutral
+matchups to combat-rules.js. The factory enumerates the catalog automatically.
+
+## Rules
+
+Click/tap a unit and adjacent blue cells to move, or use arrows / ZQSD.
+Enter confirms, Escape cancels, Space captures. On-screen controls provide
+the same actions on touch devices.
+
+Movement is orthogonal and pays the destination terrain cost. Attack ranges
+are square and include diagonals. Artillery attacks at distances 2–3, excluding
+all eight adjacent cells. Other current units attack at range 1.
+
+| Attacker  | Infantry | Jeep | Tank | Artillery |
+| --------- | -------- | ---- | ---- | --------- |
+| Infantry  | 1        | 0.5  | 0.5  | 1.5       |
+| Jeep      | 1.5      | 1    | 0.5  | 1         |
+| Tank      | 1.5      | 1.5  | 1    | 0.5       |
+| Artillery | 0.5      | 1    | 1.5  | 1         |
+
+Damage preserves the original health/100 scaling and terrain defense formula.
+Health is rounded and clamped to zero. A surviving defender retaliates if its
+own range and matchup allow it; retaliation does not consume an attack point.
+A zero multiplier forbids targeting. Tanks cannot target aircraft, planes or
+helicopters. Unspecified matchups remain neutral.
+
+Infantry removes 10 capture points per action from a 20-point building.
+Capture and combat commit a unit's position, so cancellation cannot undo a
+performed action. Cities pay 200$ to the incoming owner; hospitals heal that
+owner's units by up to 25, capped at maximum health. Factories require ownership,
+a free cell and sufficient funds. Turn changes reset capacities for all units,
+as in the prototype. Eliminating all opposing units wins the game.
+
+## GitHub Pages
+
+The root HTML pages are replaced by the generated SvelteKit site.
+Pages must publish the generated artifact, not the source branch.
+
+After merging:
+
+1. In Settings → Pages, select **GitHub Actions** as the source.
+2. Run the manual **Deploy GitHub Pages** workflow on the branch to publish.
+
+The workflow builds with `BASE_PATH=/pixelswars` for the repository URL.
+For a custom domain/root deployment, change that value to an empty string.
+To build for a repository path locally in PowerShell:
+
+```powershell
+$env:BASE_PATH = '/pixelswars'
+npm run build
+Remove-Item Env:BASE_PATH
 ```
-.dialog-container {
-  width: 100%;
-}
-```
 
-Variants of components are described in the same way as element variants, using the &.-variant { property: value; } syntax.
+A separate CI workflow checks components, rules, builds and desktop/mobile
+browser behavior. Deployment is manual; pushing this migration does not
+automatically deploy it.
 
-```
-.search-container {
-  width: 200px;
-  cursor: pointer;
+## Credits
 
-  &.-smaller {
-    width: 120px;
-  }
-}
-```
+Programming: [John Does it](https://johndoesit.be).
+Art: [Kenney](https://www.kenney.nl).
+Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
+Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
+QA: Gauthier Miessen.
 
-Nested components and elements are kept to a minimum to keep the nesting level low.
-
-```
-.component-example {
-  property: value;
-
-  .nested-component {
-    property: value;
-  }
-}
-```
-
-Helpers, indicated with the prefix "\_", are used to simplify development by allowing the definition of common properties directly in the markup. They are defined using the \_helpers { property: value; } syntax and may also have variants with the &.-variant { property: value; } syntax.
-
-```
-._helpers {
-  property: value;
-
-  &.-variant {
-    property: value;
-  }
-}
-```
+Feedback and contributions: hello@johndoesit.be.

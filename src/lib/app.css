@@ -1,0 +1,75 @@
+:root {
+	font-family: ui-monospace, 'Cascadia Code', monospace;
+	color: #eff3f5;
+	background: #171d22;
+	font-synthesis: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+button,
+.button {
+	font: inherit;
+	font-size: 14px;
+	color: inherit;
+	background: #34434e;
+	border: 1px solid #6e8392;
+	border-radius: 5px;
+	padding: 10px 14px;
+	cursor: pointer;
+	display: inline-block;
+}
+
+button:hover:not(:disabled),
+.button:hover {
+	background-color: #455d6e;
+}
+
+button:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+button.primary,
+.button.primary {
+	background: #f0d780;
+	color: #202a32;
+	border-color: #f0d780;
+	font-weight: bold;
+}
+
+:focus-visible {
+	outline: 3px solid #ffe985;
+	outline-offset: 3px;
+}
+
+.panel {
+	background: #202a32;
+	border: 1px solid #3a4b57;
+	border-radius: 8px;
+	padding: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}

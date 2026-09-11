@@ -1,0 +1,10 @@
+node_modules/
+.svelte-kit/
+build/
+.npm-cache/
+static/assets/
+static/favicon.png
+assets/
+test-results/
+playwright-report/
+package-lock.json
