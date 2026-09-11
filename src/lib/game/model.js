@@ -26,7 +26,8 @@ export function initialState(map) {
 		fighting: false,
 		winner: null,
 		explosion: null,
-		incomePlayer: null,
+		incomeCells: [],
+		capturedCells: [],
 		music: false
 	}
 }

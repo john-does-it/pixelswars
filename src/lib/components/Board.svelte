@@ -13,7 +13,7 @@
 <div class="board" role="group" aria-label={name} style:--cols={state.cols} style:--rows={state.rows}>
 	{#each state.cells as cell (cell.index)}
 		{@const unit = units.get(cell.index)}
-		<Cell {cell} {unit} selected={unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} target={selected?.attacks > 0 && canAttack(state, selected, unit)} explosion={state.explosion === cell.index} income={state.incomePlayer === cell.owner && cell.building === 'city'} onclick={() => game.clickCell(cell.index)} onpreview={() => (state.hoveredIndex = cell.index)} />
+		<Cell {cell} {unit} selected={unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} target={selected?.attacks > 0 && canAttack(state, selected, unit)} explosion={state.explosion === cell.index} income={state.incomeCells.includes(cell.index)} captured={state.capturedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (state.hoveredIndex = cell.index)} />
 	{/each}
 </div>
 

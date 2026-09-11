@@ -73,6 +73,28 @@ test('capture requires infantry on an enemy/neutral building; two turns transfer
 	assert.equal(canCapture(state), false)
 })
 
+test('capture feedback does not award income until the next owner turn', () => {
+	const state = fixture()
+	const unit = state.units[1]
+	unit.cell = 10
+	actions.endTurn(state)
+	actions.endTurn(state)
+	actions.select(state, unit.id)
+	actions.capture(state)
+	assert.deepEqual(state.capturedCells, [])
+	unit.capture = 1
+	actions.capture(state)
+	assert.deepEqual(state.capturedCells, [10])
+	assert.deepEqual(state.incomeCells, [])
+	assert.equal(state.money[1], 0)
+	actions.endTurn(state)
+	assert.deepEqual(state.capturedCells, [])
+	assert.equal(state.money[1], 0)
+	actions.endTurn(state)
+	assert.deepEqual(state.incomeCells, [10])
+	assert.equal(state.money[1], 200)
+})
+
 test('factories enforce budget, ownership and occupancy, including exact price', () => {
 	const state = fixture(),
 		cell = state.cells[8]

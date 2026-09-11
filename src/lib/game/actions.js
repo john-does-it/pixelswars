@@ -41,6 +41,7 @@ export function capture(state) {
 		cell = state.cells[unit.cell]
 	cell.capturePoints -= 10
 	if (cell.capturePoints <= 0) {
+		state.capturedCells.push(cell.index)
 		cell.owner = state.player
 		cell.capturePoints = 20
 	}
@@ -65,8 +66,9 @@ export function endTurn(state) {
 	state.factoryIndex = null
 	state.round++
 	state.player = state.round % 2 ? 1 : 2
-	state.incomePlayer = state.player
-	state.money[state.player] += state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).length * 200
+	state.capturedCells = []
+	state.incomeCells = state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).map((cell) => cell.index)
+	state.money[state.player] += state.incomeCells.length * 200
 	for (const unit of state.units) {
 		const type = unitTypes[unit.type],
 			cell = state.cells[unit.cell]
