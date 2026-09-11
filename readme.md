@@ -26,7 +26,41 @@ Terrain Effects: Different types of terrain affect unit movement, defense. Playe
 
 Capture & Produce Mechanic: Players can capture cities, factories, and other structures to earn income, produce new units, and gain tactical advantages.
 
-## Kanban
+## Combat rules
+
+Attack ranges are square and include diagonals. Artillery can fire at distances
+2–3: all eight immediately adjacent cells are excluded, including for retaliation.
+Other existing units retain their range of one cell.
+
+Damage multipliers (row = attacker, column = defender):
+
+| Attacker | Infantry | Jeep | Tank | Artillery |
+| --- | --- | --- | --- | --- |
+| Infantry | 1 | 0.5 | 0.5 | 1.5 |
+| Jeep | 1.5 | 1 | 0.5 | 1 |
+| Tank | 1.5 | 1.5 | 1 | 0.5 |
+| Artillery | 0.5 | 1 | 1.5 | 1 |
+
+Multipliers apply after the existing health and defense calculation. Final health
+is rounded to an integer and clamped to zero. A surviving defender retaliates only
+if its own range and target permissions allow it. Retaliation retains the existing
+rule of not consuming an attack point.
+
+`js/combat-rules.js` centralizes matchups. Unspecified matchups default to 1.
+A multiplier of 0 means an impossible attack: no targeting, shot or ammunition
+consumption. Tanks cannot attack `aircraft`, `plane` or `helicopter`, including
+during retaliation. These types are reserved for future units; no aircraft are
+added by this change. Additional flying types should be added to the category mapping.
+
+### Regression checks
+
+Run `node --test tests/combat-rules.test.cjs` for the damage table and range boundaries.
+Serve the repository with `python -m http.server 8000`, then open
+`http://localhost:8000/tests/combat-browser.html` for actual game integration checks.
+Add `?map=2` to check the rectangular map. The checks modify only the disposable
+game frame, mute its audio, and display `ALL PASSED` on success.
+
+## Project board
 
 Project management: our current and future tasks are listed on the Github project below. The main difference between a upgrade and a feature is the scope. Each task receive a rough time estimation in h (hours), d (days), w (weeks), m (months).
 

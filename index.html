@@ -91,9 +91,22 @@
       <img src="./assets/units/artillery-2.png">
       <div class="description-subcontainer _flex -column">
         <h3 class="_color -white _text -m">Artillery</h3>
-        <p class="_color -white _text -s">With a large attack range and strong firepower, they are a very useful unit! Unfortunately, they are costly and do not have good mobility capacity.</p>
+        <p class="_color -white _text -s">Artillery fires at targets 2–3 cells away, including diagonals. It cannot attack or retaliate against units in the eight adjacent cells. Strong against tanks, it needs protection from infantry.</p>
       </div>
     </div>
+  </section>
+  <section>
+    <h2 class="_color -white _text -l -center">Combat Matchups</h2>
+    <p class="_color -white">Rows are attackers; columns are targets. A bonus multiplies damage by 1.5, a penalty by 0.5. Terrain defense and the attacker's remaining health still affect damage.</p>
+    <table class="_color -white">
+      <thead><tr><th scope="col">Attacker</th><th scope="col">Infantry</th><th scope="col">Jeep</th><th scope="col">Tank</th><th scope="col">Artillery</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Infantry</th><td>×1</td><td>×0.5</td><td>×0.5</td><td>×1.5</td></tr>
+        <tr><th scope="row">Jeep</th><td>×1.5</td><td>×1</td><td>×0.5</td><td>×1</td></tr>
+        <tr><th scope="row">Tank</th><td>×1.5</td><td>×1.5</td><td>×1</td><td>×0.5</td></tr>
+        <tr><th scope="row">Artillery</th><td>×0.5</td><td>×1</td><td>×1.5</td><td>×1</td></tr>
+      </tbody>
+    </table>
   </section>
   <section>
     <h2 class="_color -white _text -l -center">Landscapes</h2>
