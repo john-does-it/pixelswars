@@ -18,7 +18,10 @@
 		{/if}
 	</div>
 	{#if cell}
-		<p>Movement cost: {cell.cost} · Terrain defense: {cell.defense}</p>
+		<p>
+			Movement cost: {cell.cost}<br />
+			Terrain defense: {cell.defense}
+		</p>
 		{#if cell.building}
 			<p>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'} · Capture: {cell.capturePoints}/20</p>
 		{/if}
