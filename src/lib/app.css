@@ -24,10 +24,11 @@ a {
 
 button,
 .button {
+	--button-background: #34434e;
 	font: inherit;
 	font-size: 14px;
 	color: inherit;
-	background: #34434e;
+	background: var(--button-background);
 	border: 1px solid #6e8392;
 	border-radius: 5px;
 	padding: 10px 14px;
@@ -35,9 +36,9 @@ button,
 	display: inline-block;
 }
 
-button:hover:not(:disabled),
+button:hover:not(:disabled):not(.cell-container),
 .button:hover {
-	background-color: #455d6e;
+	background-color: color-mix(in srgb, var(--button-background) 90%, white);
 }
 
 button:disabled {
@@ -47,7 +48,7 @@ button:disabled {
 
 button.primary,
 .button.primary {
-	background: #f0d780;
+	--button-background: #f0d780;
 	color: #202a32;
 	border-color: #f0d780;
 	font-weight: bold;
