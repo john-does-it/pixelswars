@@ -61,8 +61,15 @@ Run `npm run format` before committing. CI checks these conventions with
 - `src/lib/game/combat-rules.js`: pure attack geometry and damage multipliers.
 - `src/lib/game/catalog.js`: unit definitions, prices and terrain rules.
 - `src/lib/data/`: original map layouts as JSON.
-- `assets/`: original art and sounds, retained without modification. The prepare,
-  predev and prebuild scripts copy them into ignored `static/assets/` for SvelteKit.
+- `assets/`: image sources stored as `.png.base64` / `.gif.base64` text files,
+  plus the original MP3 sounds. The prepare, predev and prebuild scripts decode
+  images into ignored `static/assets/` and copy the audio for SvelteKit.
+  `favicon.png.base64` similarly generates `static/favicon.png`.
+  The decoded image bytes and public URLs are unchanged, including GIF animation.
+  To edit artwork, decode its source, edit the image, then encode it back into
+  the corresponding `.base64` file. Run `node scripts/sync-assets.js` to refresh
+  a running preview after changing an image source. Generated files should not
+  be committed.
 - `static/css/sprites.css`: sprite mappings; layouts use scoped component CSS.
 - `tests/`: Node rule tests and Playwright browser tests.
 
