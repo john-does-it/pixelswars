@@ -12,12 +12,14 @@ const showSmartphoneUI = document.getElementById('smartphone-ui')
 const validMoveSmartphoneUI = document.getElementById('valid-move')
 const cancelMoveSmartphoneUI = document.getElementById('cancel-move')
 const captureBuildingSmartphoneUI = document.getElementById('capture-building')
+
 captureBuildingSmartphoneUI.disabled = true
+
 const factories = document.querySelectorAll('.-factory')
 const numberOfCols = getGridDimensions().cols
 const numberOfRows = getGridDimensions().rows
 
-function calculateCellSize () {
+function calculateCellSize() {
   const gridAspectRatio = numberOfCols / numberOfRows
   const windowAspectRatio = window.innerWidth / window.innerHeight
 
@@ -32,10 +34,10 @@ function calculateCellSize () {
   return cellSize
 }
 
-function adjustGridSize () {
+function adjustGridSize() {
   const cellSize = calculateCellSize()
 
-  cells.forEach(cell => {
+  cells.forEach((cell) => {
     cell.style.width = `${cellSize}px`
     cell.style.height = `${cellSize}px` // Keeping cells square
   })
@@ -56,50 +58,42 @@ getDeviceType()
 const currentDevice = getDeviceType()
 
 const unitsHTML = {
-  infantryUnitPlayerOne:
-  `
+  infantryUnitPlayerOne: `
   <div class="unit-container -infantry -one _flex" data-player="1" data-capture_capacity="1" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200"  data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>  
   `,
-  infantryUnitPlayerTwo:
-  `
+  infantryUnitPlayerTwo: `
   <div class="unit-container -infantry -two _flex" data-capture_capacity="1" data-player="2" data-name="infantry" data-attack_damage="40" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="10" data-movement_range="5" data-residual_move_capacity="5" data-health="100" data-max_health="100" data-type="infantry" data-cost="200"  data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>  
   `,
-  jeepUnitPlayerOne:
-  `
+  jeepUnitPlayerOne: `
   <div class="unit-container -jeep -one _flex" data-player="1" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>
   `,
-  jeepUnitPlayerTwo:
-  `
+  jeepUnitPlayerTwo: `
   <div class="unit-container -jeep -two _flex" data-player="2" data-name="jeep" data-attack_damage="50" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="20" data-movement_range="8" data-residual_move_capacity="8" data-health="125" data-max_health="125" data-type="jeep" data-cost="600" data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>  
   `,
-  artilleryPlayerOne:
-  `
+  artilleryPlayerOne: `
   <div class="unit-container -artillery -one _flex" data-player="1" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="2000">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>
   `,
-  artilleryPlayerTwo:
-  `
+  artilleryPlayerTwo: `
   <div class="unit-container -artillery -two _flex" data-player="2" data-name="artillery" data-attack_damage="60" data-attack_range="3" data-exclusion_attack_range="1" data-attack_capacity="1" data-residual_attack_capacity="1" data-defense="25" data-movement_range="3" data-residual_move_capacity="3" data-health="120" data-max_health="120" data-type="artillery" data-cost="1200" data-sound_delay="2000">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>
   `,
-  tankPlayerOne:
-  `
+  tankPlayerOne: `
   <div class="unit-container -tank -one _flex" data-player="1" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>
   `,
-  tankPlayerTwo:
-  `
+  tankPlayerTwo: `
   <div class="unit-container -tank -two _flex" data-player="2" data-name="tank" data-attack_damage="70" data-attack_range="1" data-attack_capacity="2" data-residual_attack_capacity="2" data-defense="40" data-movement_range="5" data-residual_move_capacity="5" data-health="180" data-max_health="180" data-type="tank" data-cost="1200" data-sound_delay="500">
     <img class="health" src="./assets/icons/icon-health.png" alt="icon health">
   </div>
@@ -119,7 +113,7 @@ let buildingDatas
 let factory
 let allowPlayMusic = false
 
-function initWorld () {
+function initWorld() {
   const landscapes = [
     {
       selector: '.-grass',
@@ -172,7 +166,7 @@ getGridDimensions()
 selectUnit()
 statPreview()
 
-function getGridDimensions () {
+function getGridDimensions() {
   const style = getComputedStyle(document.getElementById('grid'))
 
   const rows = style.getPropertyValue('grid-template-rows').trim().split(' ').length
@@ -181,77 +175,35 @@ function getGridDimensions () {
   return { rows, cols }
 }
 
-function isCellContainUnit (cell) {
+function isCellContainUnit(cell) {
   return cell.querySelector('.unit-container') !== null
 }
 
-function returnAdjacentCells (cellIndex, attackRange) {
-  const adjacentCells = []
-
-  for (let i = 1; i <= attackRange; i++) {
-    const rightCell = cellIndex + i
-    const leftCell = cellIndex - i
-    const topCell = cellIndex - (i * numberOfCols)
-    const bottomCell = cellIndex + (i * numberOfCols)
-
-    const moduloRightCell = rightCell % numberOfCols
-    const moduloLeftCell = leftCell % numberOfCols
-    const moduloCurrentCell = cellIndex % numberOfCols
-
-    if (moduloLeftCell < moduloCurrentCell && moduloLeftCell >= 0) {
-      adjacentCells.push(leftCell)
-    }
-
-    if (moduloRightCell > moduloCurrentCell && moduloRightCell < numberOfCols) {
-      adjacentCells.push(rightCell)
-    }
-
-    if (topCell >= 0) {
-      adjacentCells.push(topCell)
-    }
-
-    if (bottomCell < numberOfCols * numberOfRows) {
-      adjacentCells.push(bottomCell)
-    }
-
-    // if unit as a attack range superior to one, we need to increase the size of the area by adding entry in our array
-    for (let j = 1; j <= attackRange; j++) {
-      const bottomRightCell = bottomCell + j
-      const bottomLeftCell = bottomCell - j
-      const topRightCell = topCell + j
-      const topLeftCell = topCell - j
-
-      if (topLeftCell >= 0 && topLeftCell % numberOfCols < moduloCurrentCell) {
-        adjacentCells.push(topLeftCell)
-      }
-
-      if (topRightCell >= 0 && topRightCell % numberOfCols > moduloCurrentCell) {
-        adjacentCells.push(topRightCell)
-      }
-
-      if (bottomLeftCell < numberOfCols * numberOfRows && bottomLeftCell % numberOfCols < moduloCurrentCell) {
-        adjacentCells.push(bottomLeftCell)
-      }
-
-      if (bottomRightCell < numberOfCols * numberOfRows && bottomRightCell % numberOfCols > moduloCurrentCell) {
-        adjacentCells.push(bottomRightCell)
-      }
-    }
-  }
-
-  return adjacentCells
+function getUnitAttackCells(unit, cellIndex = Number(unit.parentElement.dataset.index)) {
+  return CombatRules.attackCells(cellIndex, numberOfCols, numberOfRows,
+    Number(unit.dataset.attack_range), Number(unit.dataset.exclusion_attack_range || 0))
 }
 
-function getEnemyUnitsInRange (adjacentCells) {
+function canUnitAttack(attacker, defender) {
+  return Boolean(attacker && defender && attacker.isConnected && defender.isConnected &&
+    Number(attacker.dataset.health) > 0 && Number(defender.dataset.health) > 0 &&
+    attacker.dataset.player !== defender.dataset.player &&
+    CombatRules.canTarget(attacker.dataset.type, defender.dataset.type) &&
+    getUnitAttackCells(attacker).includes(Number(defender.parentElement.dataset.index)))
+}
+
+function getEnemyUnitsInRange(adjacentCells) {
   const cells = document.querySelectorAll('.cell-container')
   const enemyUnitsInRange = []
 
-  adjacentCells.forEach(adjacentCellIndex => {
+  adjacentCells.forEach((adjacentCellIndex) => {
     const cell = cells[adjacentCellIndex]
     if (cell) {
       const unitContainer = cell.querySelector('.unit-container')
 
-      if (unitContainer && Number(unitContainer.dataset.player) !== currentPlayer) {
+      if (unitContainer && Number(unitContainer.dataset.player) !== currentPlayer &&
+          Number(unitContainer.dataset.health) > 0 &&
+          CombatRules.canTarget(selectedUnit.dataset.type, unitContainer.dataset.type)) {
         enemyUnitsInRange.push(unitContainer)
       }
     }
@@ -260,7 +212,7 @@ function getEnemyUnitsInRange (adjacentCells) {
   return enemyUnitsInRange
 }
 
-function getLandscapeData (unit) {
+function getLandscapeData(unit) {
   const landscape = unit.parentElement
   const landscapeIndex = landscape.dataset.index
   const landcapeCostOfMovement = landscape.dataset.cost_of_movement
@@ -270,7 +222,7 @@ function getLandscapeData (unit) {
   return landscapeDatas
 }
 
-function getBuildingData (unit) {
+function getBuildingData(unit) {
   const building = unit.parentElement
   const buildingCapturePoint = building.dataset.capture_points
   const buildingPlayerAppartenance = building.dataset.player
@@ -279,17 +231,18 @@ function getBuildingData (unit) {
 }
 
 // Game Mechanics and Logic
-function selectUnit () {
+function selectUnit() {
   unselectUnit() // Unselect any previously selected unit
 
   const playableUnits = document.querySelectorAll('.unit-container')
 
-  playableUnits.forEach(element => {
+  playableUnits.forEach((element) => {
     element.addEventListener('click', unitClickHandler)
   })
 }
 
-function unitClickHandler (event) {
+function unitClickHandler(event) {
+  if (isFighting) return
   const tryToSelectUnit = event.currentTarget
 
   if (Number(tryToSelectUnit.dataset.player) !== currentPlayer) {
@@ -317,7 +270,8 @@ function unitClickHandler (event) {
   }
 }
 
-function unselectUnit () {
+function unselectUnit() {
+  if (isFighting) return
   selectedUnit = null
   isSelectedUnit = false
   showSmartphoneUI.classList.remove('-active')
@@ -327,7 +281,7 @@ function unselectUnit () {
   removeHandleFightEventListeners()
 }
 
-function attachCaptureBuildingEventListenerIfCapturable () {
+function attachCaptureBuildingEventListenerIfCapturable() {
   buildingDatas = getBuildingData(selectedUnit)
   captureBuildingSmartphoneUI.disabled = true
 
@@ -346,7 +300,8 @@ function attachCaptureBuildingEventListenerIfCapturable () {
   }
 }
 
-function keyboardBindWhileSelectedUnit (event, selectedUnit) {
+function keyboardBindWhileSelectedUnit(event, selectedUnit) {
+  if (isFighting) return
   const updatedIndex = Number(selectedUnit.parentElement.dataset.index)
   const unitMoveCapacity = calculateUnitMoveCapacity(selectedUnit)
 
@@ -394,7 +349,7 @@ cancelMoveSmartphoneUI.addEventListener('click', handleCancelMove)
 // store references to particular event listeners
 const eventListenersMap = new Map()
 
-function smartphoneBindWhileSelectedUnit (selectedUnit) {
+function smartphoneBindWhileSelectedUnit(selectedUnit) {
   const reachableCells = document.querySelectorAll('.-reachable')
 
   eventListenersMap.forEach((listener, cell) => {
@@ -407,14 +362,15 @@ function smartphoneBindWhileSelectedUnit (selectedUnit) {
   // show cancelmove / validmove smartphone ui
   showSmartphoneUI.classList.add('-active')
 
-  reachableCells.forEach(reachableCell => {
+  reachableCells.forEach((reachableCell) => {
     const listener = (event) => smartMove(event, selectedUnit)
     reachableCell.addEventListener('click', listener)
     eventListenersMap.set(reachableCell, listener)
   })
 }
 
-function smartMove (event, selectedUnit) {
+function smartMove(event, selectedUnit) {
+  if (isFighting) return
   if (event.target.classList.contains('-reachable') && !event.target.querySelector('.unit-container')) {
     event.target.appendChild(selectedUnit)
     attachCaptureBuildingEventListenerIfCapturable()
@@ -426,7 +382,8 @@ function smartMove (event, selectedUnit) {
   }
 }
 
-function handleCancelMove () {
+function handleCancelMove() {
+  if (isFighting || !selectedUnit) return
   const originalCell = cells[originalIndex]
   originalCell.appendChild(selectedUnit)
   resetUnitResidualMoveCapacity(originalMoveCapacity)
@@ -436,10 +393,8 @@ function handleCancelMove () {
   unselectUnit()
 }
 
-function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, direction) {
+function handleDirectionalMove(targetIndex, moveCapacity, selectedUnit, direction) {
   const targetCell = cells[targetIndex]
-  const adjacentCells = returnAdjacentCells(targetIndex, selectedUnit.dataset.attack_range)
-  getEnemyUnitsInRange(adjacentCells)
 
   if (isValidMove(targetCell, targetIndex, moveCapacity, direction)) {
     processUnitMove(targetIndex, moveCapacity, selectedUnit, targetCell)
@@ -449,13 +404,13 @@ function handleDirectionalMove (targetIndex, moveCapacity, selectedUnit, directi
   }
 }
 
-function calculateUnitMoveCapacity (selectedUnit) {
+function calculateUnitMoveCapacity(selectedUnit) {
   const movementRange = Number(selectedUnit.dataset.movement_range)
   const residualCapacity = Number(selectedUnit.dataset.residual_move_capacity)
   return movementRange === residualCapacity ? movementRange : residualCapacity
 }
 
-function isValidMove (cell, index, moveCapacity, direction) {
+function isValidMove(cell, index, moveCapacity, direction) {
   if (!cell || moveCapacity < cell.dataset.cost_of_movement || isCellContainUnit(cell)) {
     return false
   }
@@ -464,24 +419,24 @@ function isValidMove (cell, index, moveCapacity, direction) {
     case 'left':
       return (index + 1) % numberOfCols !== 0
     case 'right':
-      return (index) % numberOfCols !== 0
+      return index % numberOfCols !== 0
     case 'up':
-      return (index) >= 0
+      return index >= 0
     case 'down':
-      return (index) <= numberOfCols * numberOfRows
+      return index <= numberOfCols * numberOfRows
     default:
       return false
   }
 }
 
-function processUnitMove (index, moveCapacity, selectedUnit, targetCell) {
+function processUnitMove(index, moveCapacity, selectedUnit, targetCell) {
   addInRangeToEnemyUnits(index)
   updateUnitResidualMoveCapacity(moveCapacity, targetCell.dataset.cost_of_movement)
   updateCellsAndUnitsState(index)
   targetCell.appendChild(selectedUnit)
 }
 
-function updateCellsAndUnitsState (index) {
+function updateCellsAndUnitsState(index) {
   removeReachableFromCells()
   removeAttackableFromCells()
   highlightReachableCells(index)
@@ -493,43 +448,43 @@ function updateCellsAndUnitsState (index) {
   addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange)
 }
 
-function updateUnitResidualMoveCapacity (unitMoveCapacity, costOfMovement) {
+function updateUnitResidualMoveCapacity(unitMoveCapacity, costOfMovement) {
   const residualMoveCapacity = unitMoveCapacity - costOfMovement
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
 }
 
-function resetUnitResidualMoveCapacity (originalMoveCapacity) {
+function resetUnitResidualMoveCapacity(originalMoveCapacity) {
   const residualMoveCapacity = originalMoveCapacity
   selectedUnit.setAttribute('data-residual_move_capacity', residualMoveCapacity)
 }
 
-function resetUnitsResidualMoveCapacity () {
+function resetUnitsResidualMoveCapacity() {
   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
+  units.forEach((unit) => {
     unit.setAttribute('data-residual_move_capacity', unit.dataset.movement_range)
   })
 }
 
-function resetResidualCaptureCapacityOnUnits () {
+function resetResidualCaptureCapacityOnUnits() {
   const updatedUnits = document.querySelectorAll('.unit-container')
 
-  updatedUnits.forEach(unit => {
+  updatedUnits.forEach((unit) => {
     if (unit.dataset.capture_capacity === '0') {
       unit.setAttribute('data-capture_capacity', 1)
     }
   })
 }
 
-function resetUnitsResidualAttackCapacity () {
+function resetUnitsResidualAttackCapacity() {
   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
+  units.forEach((unit) => {
     unit.setAttribute('data-residual_attack_capacity', unit.dataset.attack_capacity)
   })
 }
 
-function highlightReachableCells (cellIndex) {
+function highlightReachableCells(cellIndex) {
   const unitMoveCapacity = Number(selectedUnit.dataset.residual_move_capacity)
 
   const reachableCells = []
@@ -563,51 +518,53 @@ function highlightReachableCells (cellIndex) {
   return reachableCells
 }
 
-function highlightUnitAttackRange (cellIndex, selectedUnit) {
-  const adjacentCells = returnAdjacentCells(cellIndex, selectedUnit.dataset.attack_range)
+function highlightUnitAttackRange(cellIndex, selectedUnit) {
+  const adjacentCells = getUnitAttackCells(selectedUnit, cellIndex)
 
-  adjacentCells.forEach(cell => {
+  adjacentCells.forEach((cell) => {
     const adjacentCell = document.querySelector(`.cell-container[data-index="${cell}"]`)
+    const unit = adjacentCell.querySelector('.unit-container')
+    if (unit && !CombatRules.canTarget(selectedUnit.dataset.type, unit.dataset.type)) return
     adjacentCell.classList.add('-attackable')
   })
 }
 
-function removeReachableFromCells () {
-  cells.forEach(element => {
+function removeReachableFromCells() {
+  cells.forEach((element) => {
     element.classList.remove('-reachable')
   })
 }
 
-function removeAttackableFromCells () {
-  cells.forEach(element => {
+function removeAttackableFromCells() {
+  cells.forEach((element) => {
     element.classList.remove('-attackable')
   })
 }
 
-function removeInRangeFromUnits () {
+function removeInRangeFromUnits() {
   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
+  units.forEach((unit) => {
     unit.classList.remove('-inrange')
   })
 }
 
-function addInRangeToEnemyUnits (index) {
+function addInRangeToEnemyUnits(index) {
   removeInRangeFromUnits()
 
-  const adjacentCells = returnAdjacentCells(index, Number(selectedUnit.dataset.attack_range))
+  const adjacentCells = getUnitAttackCells(selectedUnit, index)
   const enemyUnits = getEnemyUnitsInRange(adjacentCells)
 
   if (Number(selectedUnit.dataset.residual_attack_capacity) !== 0) {
     const counter = enemyUnits.length
 
-    enemyUnits.forEach(enemyUnit => {
+    enemyUnits.forEach((enemyUnit) => {
       enemyUnit.classList.add('-inrange')
     })
 
     if (counter === 0) {
       const inRangeMessages = document.querySelectorAll('.inrangemessage')
-      inRangeMessages.forEach(inRangeMessage => {
+      inRangeMessages.forEach((inRangeMessage) => {
         inRangeMessage.remove()
       })
     }
@@ -616,111 +573,76 @@ function addInRangeToEnemyUnits (index) {
   return enemyUnits
 }
 
-async function handleFight (event) {
+async function handleFight(event) {
   if (selectedUnit === null || isFighting) {
     return
   }
 
-  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
+  // Capture the participants before awaiting animations; a click may target a child icon.
+  const attacker = selectedUnit
+  const defender = event.currentTarget || event.target.closest('.unit-container')
+  if (!canUnitAttack(attacker, defender)) return
+
+  if (Number(attacker.dataset.residual_attack_capacity) <= 0) {
     playSound(sounds.emptyGunShot)
     return
   }
 
-  updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
-
-  endRoundButton.disabled = true // Disable the "End Round" button
-
-  originalIndex = Number(getLandscapeData(selectedUnit).landscapeIndex) // prevent move cancellation
-
+  originalIndex = Number(attacker.parentElement.dataset.index)
+  originalMoveCapacity = Number(attacker.dataset.residual_move_capacity)
+  endRoundButton.disabled = true
   isFighting = true
-  playFightSound(selectedUnit.dataset.name)
+  try {
+    playFightSound(attacker.dataset.name)
+    applyCombatDamage(attacker, defender)
+    attacker.dataset.residual_attack_capacity = Number(attacker.dataset.residual_attack_capacity) - 1
+    if (Number(attacker.dataset.residual_attack_capacity) === 0) {
+      removeInRangeFromUnits()
+      updateUnitStatus(attacker, '-outofammo', true)
+    }
 
-  // New damage calculation
-  const damage = calculateDamage(
-    Number(selectedUnit.dataset.attack_damage),
-    Number(selectedUnit.dataset.health),
-    Number(event.target.dataset.defense),
-    Number(getLandscapeData(event.target).landscapeDefenseBonus)
-  )
-
-  event.target.setAttribute('data-health', Math.round(Number(event.target.dataset.health) - damage))
-  updateHealthAnimation(event.target)
-  selectedUnit.setAttribute('data-residual_attack_capacity', Number(selectedUnit.dataset.residual_attack_capacity) - 1)
-
-  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-    removeInRangeFromUnits()
-  }
-
-  if (Number(selectedUnit.dataset.residual_attack_capacity) === 0) {
-    updateUnitStatus(selectedUnit, '-outofammo', true)
-  }
-
-  handleFightBack(event)
-
-  // If enemy unit is dead
-  if (Number(event.target.dataset.health) <= 0) {
-    const previouslyTargetedUnit = event.target
-    await handleDeathOfUnit(previouslyTargetedUnit, Number(getLandscapeData(previouslyTargetedUnit).landscapeIndex), selectedUnit)
-    updateCellsAndUnitsState(Number(getLandscapeData(selectedUnit).landscapeIndex))
+    if (Number(defender.dataset.health) <= 0) {
+      await handleDeathOfUnit(defender, Number(defender.parentElement.dataset.index), attacker)
+    } else {
+      await new Promise(resolve => setTimeout(resolve, Number(attacker.dataset.sound_delay)))
+      // Retaliation uses the defender's own range and type permissions.
+      if (canUnitAttack(defender, attacker)) {
+        playFightSound(defender.dataset.name)
+        applyCombatDamage(defender, attacker)
+        if (Number(attacker.dataset.health) <= 0) {
+          await handleDeathOfUnit(attacker, Number(attacker.parentElement.dataset.index), defender)
+        } else {
+          await new Promise(resolve => setTimeout(resolve, Number(defender.dataset.sound_delay)))
+        }
+      }
+    }
+  } finally {
     isFighting = false
-    endRoundButton.disabled = false // Re-enable the "End Round" button
-    checkIfLost()
-  }
-}
-
-function handleFightBack (event) {
-  // Calculate the array of adjacent cells for the enemy unit
-  const enemyAttackRangeCells = returnAdjacentCells(
-    Number(getLandscapeData(event.target).landscapeIndex),
-    Number(event.target.dataset.attack_range)
-  )
-
-  // delay the ripost using selectedUnit.dataset.sound_delay
-  const riposteDelay = Number(selectedUnit.dataset.sound_delay)
-
-  // if enemy not dead and can ripost
-  if (Number(event.target.dataset.health) > 0 && enemyAttackRangeCells.includes(Number(getLandscapeData(selectedUnit).landscapeIndex))) {
-    setTimeout(() => {
-      playFightSound(event.target.dataset.name)
-    }, riposteDelay)
-    const returnDamage = calculateDamage(
-      Number(event.target.dataset.attack_damage),
-      Number(event.target.dataset.health),
-      Number(selectedUnit.dataset.defense),
-      Number(getLandscapeData(selectedUnit).landscapeDefenseBonus)
-    )
-    selectedUnit.setAttribute('data-health', Math.max(0, Math.round(Number(selectedUnit.dataset.health) - returnDamage)))
-    updateHealthAnimation(selectedUnit)
-    const healthStatPreview = document.getElementById('statpreview-health')
-
-    if (healthStatPreview) {
-      healthStatPreview.innerHTML = Number(event.target.dataset.health)
+    endRoundButton.disabled = false
+    if (attacker.isConnected) {
+      updateCellsAndUnitsState(Number(attacker.parentElement.dataset.index))
+    } else {
+      unselectUnit()
     }
   }
-
-  // If selected unit is dead after riposte
-  if (Number(selectedUnit.dataset.health) <= 0) {
-    handleDeathOfSelectedUnit()
-  }
-
-  // Re-enable the "End Round" button here if riposte is complete and selected unit is not dead
-  endRoundButton.disabled = false
-  isFighting = false
-}
-
-async function handleDeathOfSelectedUnit () {
-  handleDeathOfUnit(selectedUnit, Number(getLandscapeData(selectedUnit).landscapeIndex), event.target)
-  unselectUnit()
   checkIfLost()
 }
 
-function checkIfLost () {
+function applyCombatDamage(attacker, defender) {
+  const damage = CombatRules.damage(Number(attacker.dataset.attack_damage), Number(attacker.dataset.health),
+    Number(defender.dataset.defense), Number(defender.parentElement.dataset.defense_bonus),
+    attacker.dataset.type, defender.dataset.type)
+  defender.dataset.health = Math.max(0, Math.round(Number(defender.dataset.health) - damage))
+  updateHealthAnimation(defender)
+}
+
+function checkIfLost() {
   let numberOfPlayerOneUnits = 0
   let numberOfPlayerTwoUnits = 0
 
   const survivingUnits = document.querySelectorAll('.unit-container')
 
-  survivingUnits.forEach(unit => {
+  survivingUnits.forEach((unit) => {
     if (Number(unit.dataset.player) === 1) {
       numberOfPlayerOneUnits++
     }
@@ -740,7 +662,7 @@ function checkIfLost () {
   }
 }
 
-function handleDeathOfUnit (unit, cellIndex, killingUnit) {
+function handleDeathOfUnit(unit, cellIndex, killingUnit) {
   return new Promise((resolve) => {
     const cell = cells[cellIndex]
     const deathDelay = Number(killingUnit.dataset.sound_delay)
@@ -753,7 +675,7 @@ function handleDeathOfUnit (unit, cellIndex, killingUnit) {
   })
 }
 
-function createExplosion (cell) {
+function createExplosion(cell) {
   const imgElement = document.createElement('img')
   sounds.bomb.volume = 0.5
   sounds.bomb.play()
@@ -766,34 +688,27 @@ function createExplosion (cell) {
   }, 500) // Duration of the explosion GIF display
 }
 
-function calculateDamage (attackerDamage, attackerHealth, defenderDefense, defenderLandscapeDefenseBonus) {
-  const totalDefenseBonus = (defenderDefense + defenderLandscapeDefenseBonus) / 10
-  const healthFactor = (1 / 100) * attackerHealth
-  const damage = (attackerDamage - totalDefenseBonus) * healthFactor
-  return damage
-}
-
-function unselectFactory () {
+function unselectFactory() {
   factory = null
   factoryContainer.classList.remove('_flex')
   factoryContainer.classList.remove('-column')
 }
 
-function selectFactory (event) {
+function selectFactory(event) {
   // if a unit isn't on the factory, allow player to buy a unit
   if (Number(event.target.dataset.player) === currentPlayer && event.target.classList.contains('-factory')) {
     factory = event.target
     factoryContainer.classList.toggle('_flex')
     factoryContainer.classList.toggle('-column')
-    factoriesButtons.forEach(button => button.addEventListener('click', buyUnit))
+    factoriesButtons.forEach((button) => button.addEventListener('click', buyUnit))
   }
 }
 
-function buyUnit (event) {
-  if (!Array.from(factory.children).some(child => child.classList.contains('unit-container'))) {
+function buyUnit(event) {
+  if (!Array.from(factory.children).some((child) => child.classList.contains('unit-container'))) {
     const unitType = event.target.dataset.type
     const unitCost = Number(event.target.dataset.cost)
-    const currentPlayerMoney = (currentPlayer === 1) ? playerOneMoney : playerTwoMoney
+    const currentPlayerMoney = currentPlayer === 1 ? playerOneMoney : playerTwoMoney
 
     if (unitCost > currentPlayerMoney) {
       // logToConsoleContainer('<span class="_color -red">You can\'t afford that unit.</span>')
@@ -846,7 +761,7 @@ function buyUnit (event) {
   }
 }
 
-function createAndAddUnit (unitHTML) {
+function createAndAddUnit(unitHTML) {
   // Sanitize the HTML string with DOMPurify
   // eslint-disable-next-line no-undef
   const sanitizedUnitHTML = DOMPurify.sanitize(unitHTML)
@@ -861,11 +776,11 @@ function createAndAddUnit (unitHTML) {
   selectUnit() // update units adding new units
 }
 
-function captureBuilding () {
+function captureBuilding() {
   document.addEventListener('keypress', startCaptureBuilding)
 }
 
-function startCaptureBuilding (event) {
+function startCaptureBuilding(event) {
   event.preventDefault()
 
   if (selectedUnit && selectedUnit.dataset.capture_capacity && selectedUnit.dataset.capture_capacity > 0) {
@@ -891,10 +806,10 @@ function startCaptureBuilding (event) {
   document.removeEventListener('keypress', startCaptureBuilding)
 }
 
-function healthUnitOnHospital () {
+function healthUnitOnHospital() {
   const units = document.querySelectorAll('.unit-container')
 
-  units.forEach(unit => {
+  units.forEach((unit) => {
     const hospitalParent = unit.parentElement
 
     if (hospitalParent && hospitalParent.classList.contains('-hospital') && unit.getAttribute('data-player') === hospitalParent.getAttribute('data-player') && Number(hospitalParent.dataset.player) === currentPlayer) {
@@ -913,7 +828,8 @@ function healthUnitOnHospital () {
   })
 }
 
-function endRound () {
+function endRound() {
+  if (isFighting) return
   currentRound++
   unselectUnit()
   distributeMoney()
@@ -929,16 +845,16 @@ function endRound () {
   unselectFactory()
 }
 
-function resetUnitStatuses () {
+function resetUnitStatuses() {
   const units = document.querySelectorAll('.unit-container')
-  units.forEach(unit => {
+  units.forEach((unit) => {
     updateUnitStatus(unit, '-outofammo', false)
     updateUnitStatus(unit, '-outofmovement', false)
     updateUnitStatus(unit, '-outofcapture', false)
   })
 }
 
-function determinePlayer () {
+function determinePlayer() {
   if (currentRound === 1 || currentRound % 2 === 1) {
     currentPlayer = 1
   } else if (currentRound % 2 !== 1) {
@@ -950,7 +866,7 @@ function determinePlayer () {
   }
 }
 
-function updateCurrentPlayerUI () {
+function updateCurrentPlayerUI() {
   const currentPlayerUI = document.getElementById('current-player-ui')
   const currentRoundContainer = document.getElementById('current-round')
   const currentPlayerMiniatures = currentPlayerUI.getElementsByTagName('img')
@@ -968,10 +884,10 @@ function updateCurrentPlayerUI () {
   }, 3000)
 }
 
-function distributeMoney () {
+function distributeMoney() {
   const buildings = document.querySelectorAll('.-building')
 
-  buildings.forEach(building => {
+  buildings.forEach((building) => {
     if (building.classList.contains('-city') && building.dataset.player !== '0') {
       if (Number(building.dataset.player) === 1 && currentPlayer === 2) {
         playerOneMoney = playerOneMoney + 200
@@ -984,7 +900,7 @@ function distributeMoney () {
       }
     }
 
-    function highlightMoneyMakeFromCity (building) {
+    function highlightMoneyMakeFromCity(building) {
       building.classList.add('-active')
       setTimeout(() => {
         building.classList.remove('-active')
@@ -993,7 +909,7 @@ function distributeMoney () {
   })
 }
 
-function updateMoneyUI () {
+function updateMoneyUI() {
   currentMoneyPlayerOneUIContainer.innerText = playerOneMoney
   currentMoneyPlayerTwoUIContainer.innerText = playerTwoMoney
 }
@@ -1026,13 +942,13 @@ const sounds = {
 
 const infantrySounds = [sounds.infantry, sounds.infantry2, sounds.infantry3]
 
-Object.values(sounds).forEach(sound => {
+Object.values(sounds).forEach((sound) => {
   if (sound && sound.load) {
     sound.load()
   }
 })
 
-function playSound (sound) {
+function playSound(sound) {
   if (sound) {
     sound.volume = 0.5
     sound.currentTime = 0
@@ -1040,7 +956,7 @@ function playSound (sound) {
   }
 }
 
-function playSelectSound (unitType) {
+function playSelectSound(unitType) {
   let randomInfantrySound
 
   switch (unitType) {
@@ -1062,7 +978,7 @@ function playSelectSound (unitType) {
   }
 }
 
-function playFightSound (unitType) {
+function playFightSound(unitType) {
   switch (unitType) {
     case 'infantry':
       playSound(sounds.gunBattle)
@@ -1082,7 +998,7 @@ function playFightSound (unitType) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function playMusic () {
+function playMusic() {
   allowPlayMusic = !allowPlayMusic // Toggle music play state
 
   if (allowPlayMusic) {
@@ -1105,7 +1021,7 @@ function playMusic () {
   }
 }
 
-function controlMusicForCurrentPlayer () {
+function controlMusicForCurrentPlayer() {
   // Load and play music for the current player, pause for the other
   const playerMusic = currentPlayer === 1 ? sounds.playerOneMusic : sounds.playerTwoMusic
   const otherMusic = currentPlayer === 1 ? sounds.playerTwoMusic : sounds.playerOneMusic
@@ -1117,7 +1033,7 @@ function controlMusicForCurrentPlayer () {
 }
 
 // UI Management
-function updateUnitStatus (unit, statusType, add) {
+function updateUnitStatus(unit, statusType, add) {
   let statusElement = unit.querySelector(`.${statusType}`)
   if (add) {
     if (!statusElement) {
@@ -1133,7 +1049,7 @@ function updateUnitStatus (unit, statusType, add) {
   }
 }
 
-function updateHealthAnimation (unit) {
+function updateHealthAnimation(unit) {
   const healthIcon = unit.querySelector('.health')
 
   if (!healthIcon) {
@@ -1155,33 +1071,52 @@ function updateHealthAnimation (unit) {
   healthIcon.style.animationDuration = `${animationDuration}s`
 }
 
-function toggleYouWinDialogContainer () {
+function toggleYouWinDialogContainer() {
   dialogContainer.show()
 }
 
-function youWinMessageInDialogContainer (winner) {
+function youWinMessageInDialogContainer(winner) {
   const newMessage = document.createElement('p')
   newMessage.innerText = winner + ', congratulation you win!'
   dialogContent.appendChild(newMessage)
 }
 
-function statPreview () {
+function statPreview() {
   const statsContainer = document.getElementById('stats-container')
+  // Observe the displayed cell so damage, healing and unit removal stay in sync.
+  let previewedCell = null
+  const previewObserver = new MutationObserver(() => {
+    if (previewedCell) showCellsStats(previewedCell)
+  })
 
-  function addHoverListeners () {
-    cells.forEach(cell => {
-      cell.addEventListener('mouseenter', (event) => { showCellsStats(cell, event) })
+  function addHoverListeners() {
+    cells.forEach((cell) => {
+      cell.addEventListener('mouseenter', () => {
+        previewObserver.disconnect()
+        previewedCell = cell
+        showCellsStats(cell)
+        previewObserver.observe(cell, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: [
+            'data-health', 'data-residual_attack_capacity', 'data-attack_range',
+            'data-residual_move_capacity', 'data-attack_damage', 'data-defense',
+            'data-defense_bonus', 'data-cost_of_movement'
+          ]
+        })
+      })
     })
   }
 
   window.addEventListener('load', addHoverListeners) // Pass function reference
 
-  function getBackgroundImage (element) {
+  function getBackgroundImage(element) {
     const style = window.getComputedStyle(element, null).getPropertyValue('background-image')
     return style.replace(/url\((['"])?(.*?)\1\)/gi, '$2')
   }
 
-  function showCellsStats (cell, event) {
+  function showCellsStats(cell) {
     let statsHTML = ''
 
     for (const child of cell.children) {
@@ -1189,31 +1124,33 @@ function statPreview () {
         let unitBackground = getBackgroundImage(child)
         unitBackground = unitBackground.replace('.png', '-fit.png')
 
-        statsHTML += `
-                <span class="miniature" style="background-image: url('${unitBackground}');"></span>` +
-                '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
-                child.dataset.health + '</span>' +
-                '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
-                child.dataset.residual_attack_capacity + '</span>' +
-                '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
-                child.dataset.attack_range + '</span>' +
-                '<span class="stat -movement _flex -justifycenter -aligncenter">' +
-                child.dataset.residual_move_capacity +
-                '</span>' +
-                '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
-                child.dataset.attack_damage + '</span>' +
-                '<span class="stat -defense _flex -justifycenter -aligncenter">' +
-                child.dataset.defense + '</span>'
+        statsHTML +=
+          `
+          <span class="miniature" style="background-image: url('${unitBackground}');"></span>` +
+          '<span class="stat -health _flex -justifycenter -aligncenter" id="statpreview-health">' +
+          child.dataset.health +
+          '</span>' +
+          '<span class="stat -attackcapacity _flex -justifycenter -aligncenter">' +
+          child.dataset.residual_attack_capacity +
+          '</span>' +
+          '<span class="stat -attackrange _flex -justifycenter -aligncenter">' +
+          child.dataset.attack_range +
+          '</span>' +
+          '<span class="stat -movement _flex -justifycenter -aligncenter">' +
+          child.dataset.residual_move_capacity +
+          '</span>' +
+          '<span class="stat -attackdamage _flex -justifycenter -aligncenter">' +
+          child.dataset.attack_damage +
+          '</span>' +
+          '<span class="stat -defense _flex -justifycenter -aligncenter">' +
+          child.dataset.defense +
+          '</span>'
       }
     }
 
     const cellBackground = getBackgroundImage(cell)
 
-    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}');"></span>` +
-                '<span class="stat -defense _flex -justifycenter -aligncenter">' +
-                cell.dataset.defense_bonus + '</span>' +
-                '<span class="stat -movement _flex -justifycenter -aligncenter">' +
-                cell.dataset.cost_of_movement + '</span>'
+    statsHTML += `<span class="miniature" style="background-image: url('${cellBackground}');"></span>` + '<span class="stat -defense _flex -justifycenter -aligncenter">' + cell.dataset.defense_bonus + '</span>' + '<span class="stat -movement _flex -justifycenter -aligncenter">' + cell.dataset.cost_of_movement + '</span>'
 
     // Sanitize and set the HTML content
     // eslint-disable-next-line no-undef
@@ -1233,19 +1170,19 @@ window.addEventListener('keydown', (event) => {
   }
 })
 
-function addEventListenerHandleFightToEnemyUnitsInRange (enemyUnitsInRange) {
+function addEventListenerHandleFightToEnemyUnitsInRange(enemyUnitsInRange) {
   // If an existing event listener is present, remove it
   removeHandleFightEventListeners()
-  enemyUnitsInRange.forEach(enemyUnit => {
+  enemyUnitsInRange.forEach((enemyUnit) => {
     // Attach a new event listener
     enemyUnit.fightEventListener = (event) => handleFight(event)
     enemyUnit.addEventListener('click', enemyUnit.fightEventListener)
   })
 }
 
-function removeHandleFightEventListeners () {
+function removeHandleFightEventListeners() {
   const units = document.querySelectorAll('.unit-container')
-  units.forEach(unit => {
+  units.forEach((unit) => {
     // Check if the named reference exists and remove it
     if (unit.fightEventListener) {
       unit.removeEventListener('click', unit.fightEventListener)
@@ -1254,7 +1191,7 @@ function removeHandleFightEventListeners () {
   })
 }
 
-function addEventListenerToFactories () {
-  factories.forEach(factory => factory.addEventListener('click', selectFactory))
+function addEventListenerToFactories() {
+  factories.forEach((factory) => factory.addEventListener('click', selectFactory))
 }
 addEventListenerToFactories()
