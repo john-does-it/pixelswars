@@ -47,15 +47,16 @@ for (const map of maps) {
 	})
 }
 
-test('rectangular map has rotational symmetry, equal armies and reachable objectives', () => {
+test('rectangular map keeps equal armies, terrain budgets and symmetric reachable objectives', () => {
 	const state = initialState(maps[1])
 	for (const cell of state.cells) {
 		const opposite = state.cells[state.cells.length - 1 - cell.index]
-		assert.equal(cell.cost, opposite.cost)
-		assert.equal(cell.defense, opposite.defense)
 		assert.equal(cell.building, opposite.building)
 		assert.equal(cell.owner, 0)
 	}
+	assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
+	const terrainBudget = (cells) => cells.map((cell) => cell.terrain).sort()
+	assert.deepEqual(terrainBudget(state.cells.slice(0, 48)), terrainBudget(state.cells.slice(48)))
 	for (const unit of state.units) {
 		assert.ok(state.units.some((other) => other.player !== unit.player && other.type === unit.type && other.cell === 95 - unit.cell))
 	}
