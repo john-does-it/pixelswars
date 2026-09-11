@@ -3,6 +3,7 @@
 	import TerrainIcon from './TerrainIcon.svelte'
 	import { unitAt } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
+	import { unitSprite } from '$lib/game/unit-sprites.js'
 
 	let { state } = $props()
 	const cell = $derived(state.cells[state.hoveredIndex])
@@ -31,7 +32,7 @@
 					<h3>Player {unit.player}</h3>
 					<span>{type.name}</span>
 				</div>
-				<img class="unit-icon" src="{base}/assets/units/{unit.type}-{unit.player}-fit.png" alt="" />
+				<img class="unit-icon" src="{base}{unitSprite(unit, true)}" alt="" />
 			</div>
 			<dl>
 				<dt>Health</dt>

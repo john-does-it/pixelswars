@@ -1,12 +1,13 @@
 <script>
 	import { base } from '$app/paths'
 	import { unitTypes } from '$lib/game/catalog.js'
+	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
 
 	let { unit, selected = false, target = false } = $props()
 	const type = $derived(unitTypes[unit.type])
 </script>
 
-<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health}>
+<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image="url('{base}{unitSprite(unit)}')">
 	<img class="health" src="{base}/assets/icons/icon-health.png" alt="" style:animation-duration="{Math.max(0.2, (unit.health / type.maxHealth) * 2)}s" />
 	<span class="health-value">{unit.health}</span>
 	<span class="statuses">
