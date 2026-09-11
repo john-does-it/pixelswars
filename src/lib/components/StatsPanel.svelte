@@ -24,7 +24,10 @@
 		{/if}
 		{#if unit}
 			<div class="heading unit-heading">
-				<h3>Player {unit.player} · {type.name}</h3>
+				<div class="unit-name">
+					<h3>Player {unit.player}</h3>
+					<span>{type.name}</span>
+				</div>
 				<img class="unit-icon" src="{base}/assets/units/{unit.type}-{unit.player}-fit.png" alt="" />
 			</div>
 			<dl>
@@ -84,6 +87,12 @@
 		font-size: 16px;
 		color: #ffe985;
 		margin: 0;
+	}
+
+	.unit-name {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
 	}
 
 	dl {

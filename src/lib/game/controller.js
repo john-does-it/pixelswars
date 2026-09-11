@@ -62,8 +62,10 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 			if (disposed || locked(state)) return
 			const unit = unitAt(state, index)
 			if (unit) {
-				if (unit.player === state.player) this.select(unit.id)
-				else void fight(unit)
+				if (unit.player === state.player) {
+					if (state.selectedId === unit.id) actions.openFactory(state, index)
+					else this.select(unit.id)
+				} else void fight(unit)
 			} else if (selectedUnit(state) && actions.move(state, index)) play('woosh-movement')
 			else actions.openFactory(state, index)
 			state.hoveredIndex = index

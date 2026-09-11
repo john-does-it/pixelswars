@@ -66,7 +66,7 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await expect(cell(8).locator('[data-unit]')).toBeVisible()
 	await expect(page.locator('[data-unit]')).toHaveCount(11)
 	await cell(8).click()
-	await page.getByRole('button', { name: 'Open factory', exact: true }).click()
+	await cell(8).click()
 	await expect(page.getByRole('button', { name: 'Buy Infantry' })).toBeDisabled()
 	await expect(page.getByText('Free this factory to build a unit').first()).toBeVisible()
 	await page.keyboard.press('Escape')

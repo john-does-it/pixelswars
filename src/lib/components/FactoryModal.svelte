@@ -12,7 +12,7 @@
 	{#each Object.entries(unitTypes) as [id, type] (id)}
 		{@const status = purchaseStatus(game.state, id)}
 		<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
-			<img src="{base}/assets/units/{id}-{game.state.player}.png" alt="" />
+			<img src="{base}/assets/units/{id}-{game.state.player}-fit.png" alt="" />
 			<div>
 				<strong>{type.name}</strong>
 				<p>{type.cost}$</p>
@@ -29,7 +29,7 @@
 		grid-template-columns: 48px 1fr auto;
 		gap: 12px;
 		align-items: center;
-		padding: 14px 8px;
+		padding: 14px;
 		border: 1px solid #56636d;
 		border-radius: 5px;
 		margin: 10px 0;
