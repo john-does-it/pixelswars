@@ -47,6 +47,34 @@ for (const map of maps) {
 	})
 }
 
+test('rectangular map has rotational symmetry, equal armies and reachable objectives', () => {
+	const state = initialState(maps[1])
+	for (const cell of state.cells) {
+		const opposite = state.cells[state.cells.length - 1 - cell.index]
+		assert.equal(cell.cost, opposite.cost)
+		assert.equal(cell.defense, opposite.defense)
+		assert.equal(cell.building, opposite.building)
+		assert.equal(cell.owner, 0)
+	}
+	for (const unit of state.units) {
+		assert.ok(state.units.some((other) => other.player !== unit.player && other.type === unit.type && other.cell === 95 - unit.cell))
+	}
+	// Every objective can be reached by infantry without crossing water or mountains.
+	const visited = new Set([1])
+	const pending = [1]
+	while (pending.length) {
+		const index = pending.pop()
+		for (const next of [index - 12, index + 12, ...(index % 12 ? [index - 1] : []), ...(index % 12 < 11 ? [index + 1] : [])]) {
+			if (state.cells[next]?.cost <= 3 && !visited.has(next)) {
+				visited.add(next)
+				pending.push(next)
+			}
+		}
+	}
+	assert.equal(state.cells.filter((cell) => cell.building).length, 8)
+	assert.ok(state.cells.filter((cell) => cell.building).every((cell) => visited.has(cell.index)))
+})
+
 test('capture requires infantry on an enemy/neutral building; two turns transfer ownership', () => {
 	const state = fixture(),
 		unit = state.units[1],
