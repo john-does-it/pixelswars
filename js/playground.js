@@ -6,7 +6,9 @@ const currentMoneyPlayerTwoUIContainer = document.getElementById('current-money-
 const dialogContainer = document.getElementById('dialog-container')
 const dialogContent = document.getElementById('dialog-content')
 const factoryContainer = document.getElementById('factory-container')
-const factoriesButtons = factoryContainer.querySelectorAll('button')
+const factoriesButtons = factoryContainer.querySelectorAll('button[data-cost][data-type]')
+factoryContainer.querySelector('.-close').addEventListener('click', unselectFactory)
+factoriesButtons.forEach(button => button.addEventListener('click', buyUnit))
 const togglePlayerMusicButton = document.getElementById('toggle-player-music')
 const showSmartphoneUI = document.getElementById('smartphone-ui')
 const validMoveSmartphoneUI = document.getElementById('valid-move')
@@ -695,23 +697,60 @@ function unselectFactory() {
 }
 
 function selectFactory(event) {
-  // if a unit isn't on the factory, allow player to buy a unit
+  if (isFighting) return
   if (Number(event.target.dataset.player) === currentPlayer && event.target.classList.contains('-factory')) {
+    if (factory === event.target) {
+      unselectFactory()
+      return
+    }
     factory = event.target
-    factoryContainer.classList.toggle('_flex')
-    factoryContainer.classList.toggle('-column')
-    factoriesButtons.forEach((button) => button.addEventListener('click', buyUnit))
+    updateFactoryAvailability()
+    factoryContainer.classList.add('_flex', '-column')
   }
 }
 
+function updateFactoryAvailability() {
+  if (!factory) return
+  const money = currentPlayer === 1 ? playerOneMoney : playerTwoMoney
+  const occupied = isCellContainUnit(factory)
+  let budget = factoryContainer.querySelector('.factory-budget')
+  if (!budget) {
+    budget = document.createElement('p')
+    budget.className = 'factory-budget _color -white'
+    budget.setAttribute('role', 'status')
+    factoryContainer.firstElementChild.after(budget)
+  }
+  budget.textContent = `Player ${currentPlayer} · Available: ${money}$${occupied ? ' · Factory occupied' : ''}`
+
+  factoriesButtons.forEach(button => {
+    const missing = Math.max(0, Number(button.dataset.cost) - money)
+    const available = missing === 0 && !occupied && Number(factory.dataset.player) === currentPlayer
+    const row = button.closest('.factoryunit-container')
+    let status = row.querySelector('.factory-availability')
+    if (!status) {
+      status = document.createElement('span')
+      status.className = 'factory-availability'
+      status.id = `factory-availability-${button.dataset.type}`
+      row.append(status)
+      button.setAttribute('aria-describedby', status.id)
+    }
+    button.disabled = !available
+    row.classList.toggle('-affordable', available)
+    row.classList.toggle('-unavailable', !available)
+    status.textContent = occupied ? 'Free this factory to build a unit' : missing > 0 ? `Need ${missing}$ more` : 'Available'
+  })
+}
+
 function buyUnit(event) {
+  if (isFighting || !factory || Number(factory.dataset.player) !== currentPlayer) return
   if (!Array.from(factory.children).some((child) => child.classList.contains('unit-container'))) {
-    const unitType = event.target.dataset.type
-    const unitCost = Number(event.target.dataset.cost)
+    const button = event.currentTarget
+    const unitType = button.dataset.type
+    const unitCost = Number(button.dataset.cost)
     const currentPlayerMoney = currentPlayer === 1 ? playerOneMoney : playerTwoMoney
 
     if (unitCost > currentPlayerMoney) {
-      // logToConsoleContainer('<span class="_color -red">You can\'t afford that unit.</span>')
+      updateFactoryAvailability()
       return
     }
 
@@ -754,8 +793,7 @@ function buyUnit(event) {
       updateMoneyUI()
     }
 
-    factoryContainer.classList.toggle('_flex')
-    factoryContainer.classList.toggle('-column')
+    unselectFactory()
   } else {
     unselectFactory()
   }
@@ -912,6 +950,7 @@ function distributeMoney() {
 function updateMoneyUI() {
   currentMoneyPlayerOneUIContainer.innerText = playerOneMoney
   currentMoneyPlayerTwoUIContainer.innerText = playerTwoMoney
+  updateFactoryAvailability()
 }
 updateMoneyUI()
 

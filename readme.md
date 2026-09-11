@@ -54,6 +54,12 @@ added by this change. Additional flying types should be added to the category ma
 
 ### Regression checks
 
+Factories show the active player's budget, highlight affordable units and show
+the missing amount for disabled purchases. Occupied factories cannot produce units.
+Open `http://localhost:8000/tests/factory-browser.html` to check production and
+budgets for both players. Add `?map=2` for a disposable factory on the rectangular
+map (which has no factory in its current layout), or `?mobile` for a narrow preview.
+
 Run `node --test tests/combat-rules.test.cjs` for the damage table and range boundaries.
 Serve the repository with `python -m http.server 8000`, then open
 `http://localhost:8000/tests/combat-browser.html` for actual game integration checks.
