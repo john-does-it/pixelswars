@@ -771,6 +771,9 @@ input:disabled {
   gap: 1em;
 }
 .factory-container {
+  box-sizing: border-box;
+  max-height: calc(100dvh - 4em);
+  overflow-y: auto;
   width: 100%;
   max-width: 640px;
   display: none;
@@ -783,6 +786,26 @@ input:disabled {
   padding: 2em;
   z-index: 999;
   border: 4px solid hsl(240, 2%, 41%);
+}
+.factory-container .factoryunit-container {
+  padding: 0.5em;
+  border: 2px solid transparent;
+  gap: 0.35em;
+}
+.factory-container .factoryunit-container.-affordable {
+  border-color: hsl(103, 49%, 59%);
+  background: hsla(103, 49%, 59%, 0.08);
+}
+.factory-container .factoryunit-container.-unavailable .nameandprice-container {
+  color: #c7c7c7;
+}
+.factory-container .factoryunit-container .factory-availability {
+  width: 100%;
+  font-size: 0.9em;
+  color: #dddddd;
+}
+.factory-container .factoryunit-container.-affordable .factory-availability {
+  color: hsl(103, 49%, 59%);
 }
 .factory-container h3 {
   margin-top: 0;

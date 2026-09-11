@@ -117,6 +117,9 @@
 }
 
 .factory-container {
+  box-sizing: border-box;
+  max-height: calc(100dvh - 4em);
+  overflow-y: auto;
   width: 100%;
   max-width: @s;
   display: none;
@@ -135,6 +138,24 @@
   }
   
   .factoryunit-container {
+    padding: 0.5em;
+    border: 2px solid transparent;
+    gap: 0.35em;
+    &.-affordable {
+      border-color: @green;
+      background: hsla(103, 49%, 59%, 0.08);
+    }
+    &.-unavailable .nameandprice-container {
+      color: #c7c7c7;
+    }
+    .factory-availability {
+      width: 100%;
+      font-size: 0.9em;
+      color: #dddddd;
+    }
+    &.-affordable .factory-availability {
+      color: @green;
+    }
     .nameandprice-container {
       width: 100%;
       
