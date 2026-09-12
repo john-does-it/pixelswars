@@ -16,12 +16,12 @@
 		plane: 'Powerful aircraft. Strong against helicopters.'
 	}
 	const terrainDescriptions: Record<TerrainId, string> = {
-		road: 'Fastest way to move.',
-		grass: 'Open ground.',
-		forest: 'Provides defensive cover.',
-		moutain: 'Strong defensive position.',
-		water: 'Ships can enter water.',
-		building: 'A strategic structure.'
+		road: 'The quickest route, with nowhere to hide.',
+		grass: 'Good old grass. Cheap, open and dependable.',
+		forest: 'A slow stroll with solid cover.',
+		moutain: 'A costly climb with excellent cover.',
+		water: 'Ships sail it; aircraft simply fly over.',
+		building: 'A useful place worth fighting for.'
 	}
 	const unitGroups: { name: string; description: string; ids: UnitTypeId[] }[] = [
 		{ name: 'Infantry', description: 'The only unit type that can capture and secure buildings.', ids: ['infantry', 'infantry-rocket'] },
@@ -47,10 +47,10 @@
 	]
 
 	const buildings: { id: BuildingId; name: string; description: string }[] = [
-		{ id: 'city', name: 'City', description: 'Provides 200$ each turn.' },
-		{ id: 'hospital', name: 'Hospital', description: 'Restores 25 health each turn.' },
-		{ id: 'factory', name: 'Factory', description: 'Produces ground units.' },
-		{ id: 'airport', name: 'Airport', description: 'Produces air units.' }
+		{ id: 'city', name: 'City', description: 'Makes 200$ each turn. War is expensive.' },
+		{ id: 'hospital', name: 'Hospital', description: 'Heals 25 health. Better than the wilderness.' },
+		{ id: 'factory', name: 'Factory', description: 'Builds ground units. It may smell terrible.' },
+		{ id: 'airport', name: 'Airport', description: 'Builds aircraft. Please mind the propellers.' }
 	]
 	const maps = [
 		{ id: 1, title: 'The Squared Map', size: '8 × 8', text: 'Capture key buildings, grow your income and build a balanced army.' },
