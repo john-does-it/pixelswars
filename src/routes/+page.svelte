@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
 	import StatList from '$lib/components/StatList.svelte'
+	import type { BuildingId, StatItem, TerrainDefinition, TerrainId, UnitDefinition, UnitTypeId } from '$lib/game/types.js'
 
-	const unitDescriptions = {
+	const unitDescriptions: Record<UnitTypeId, string> = {
 		infantry: 'Affordable unit that captures and secures buildings.',
 		'infantry-rocket': 'Captures buildings. Strong against every vehicle, but vulnerable to attacks.',
 		jeep: 'Fast vehicle. Strong against infantry.',
@@ -13,23 +14,24 @@
 		helicopter: 'Air unit. Strong against infantry and balanced against vehicles.',
 		plane: 'Powerful air unit. Strong against helicopters.'
 	}
-	const terrainDescriptions = {
+	const terrainDescriptions: Record<TerrainId, string> = {
 		road: 'Fastest route for ground units.',
 		grass: 'Open ground.',
 		forest: 'Provides defensive cover.',
 		moutain: 'Strong defensive position.',
-		water: 'Slows ground units.'
+		water: 'Slows ground units.',
+		building: 'A strategic structure.'
 	}
-	const unitGroups = [
+	const unitGroups: { name: string; ids: UnitTypeId[] }[] = [
 		{ name: 'Infantry', ids: ['infantry', 'infantry-rocket'] },
 		{ name: 'Vehicles', ids: ['jeep', 'artillery', 'tank'] },
 		{ name: 'Aircraft', ids: ['helicopter', 'plane'] }
 	]
-	const terrainGroups = [
+	const terrainGroups: { name: string; ids: TerrainId[] }[] = [
 		{ name: 'Ground', ids: ['road', 'grass', 'forest', 'moutain'] },
 		{ name: 'Waterways', ids: ['water'] }
 	]
-	const unitStats = (unit) => [
+	const unitStats = (unit: UnitDefinition): StatItem[] => [
 		{ icon: null, label: 'Cost', value: `${unit.cost}$` },
 		{ icon: 'icon-health', label: 'Health', value: unit.maxHealth },
 		{ icon: 'icon-movement', label: 'Movement', value: unit.movement },
@@ -38,12 +40,12 @@
 		{ icon: 'icon-defense', label: 'Defense', value: unit.defense },
 		{ icon: 'icon-attack-range', label: 'Range', value: `${unit.exclusion + 1}–${unit.range}` }
 	]
-	const terrainStats = (terrain) => [
+	const terrainStats = (terrain: TerrainDefinition): StatItem[] => [
 		{ icon: 'icon-movement', label: 'Movement', value: terrain.cost },
 		{ icon: 'icon-defense', label: 'Defense', value: terrain.defense }
 	]
 
-	const buildings = [
+	const buildings: { id: BuildingId; name: string; description: string }[] = [
 		{ id: 'city', name: 'City', description: 'Provides 200$ each turn.' },
 		{ id: 'hospital', name: 'Hospital', description: 'Restores 25 health each turn.' },
 		{ id: 'factory', name: 'Factory', description: 'Produces ground units.' },

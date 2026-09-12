@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { base } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
@@ -9,10 +9,11 @@
 	import StatsPanel from './StatsPanel.svelte'
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
+	import type { AudioController, GameController, GameMap } from '$lib/game/types.js'
 
-	let { map } = $props()
-	let audio = $state(null)
-	let game = $state(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
+	let { map }: { map: GameMap } = $props()
+	let audio = $state<AudioController>()
+	let game = $state<GameController>(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
 
 	onMount(() => {
 		audio = createAudio(base)
@@ -23,13 +24,6 @@
 
 	$effect(() => {
 		audio?.music(game.state.music, game.state.player)
-	})
-
-	$effect(() => {
-		if (game.state.incomePlayer !== null) {
-			const timer = setTimeout(() => (game.state.incomePlayer = null), 4000)
-			return () => clearTimeout(timer)
-		}
 	})
 
 	function restart() {

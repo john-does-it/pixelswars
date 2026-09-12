@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
+	import type { StatItem } from '$lib/game/types.js'
 
-	let { items } = $props()
+	let { items }: { items: StatItem[] } = $props()
 </script>
 
 <dl>

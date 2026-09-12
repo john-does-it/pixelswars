@@ -1,11 +1,11 @@
-<script>
-	import { onMount } from 'svelte'
+<script lang="ts">
+	import { onMount, type Snippet } from 'svelte'
 
-	let { title, onclose, children } = $props()
-	let dialog = $state()
+	let { title, onclose, children }: { title: string; onclose?: () => void; children: Snippet } = $props()
+	let dialog = $state<HTMLDialogElement>()
 	onMount(() => {
-		dialog.showModal()
-		return () => dialog.close()
+		dialog?.showModal()
+		return () => dialog?.close()
 	})
 </script>
 

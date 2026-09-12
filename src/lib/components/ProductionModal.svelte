@@ -1,34 +1,33 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import Modal from './Modal.svelte'
 	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
 	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'
+	import type { GameController, ProductionBuildingId, UnitTypeId } from '$lib/game/types.js'
 
-	let { game } = $props()
-	const building = $derived(game.state.cells[game.state.productionIndex]?.building)
-	const definition = $derived(productionBuildings[building])
-	const offers = $derived(
-		Object.entries(unitTypes)
-			.filter(([id]) => productionBuilding(id) === building)
-			.sort(([, left], [, right]) => left.cost - right.cost)
-	)
+	let { game }: { game: GameController } = $props()
+	const building = $derived(game.state.productionIndex === null ? null : (game.state.cells[game.state.productionIndex]?.building ?? null))
+	const definition = $derived(building && building in productionBuildings ? productionBuildings[building as ProductionBuildingId] : null)
+	const offers = $derived((Object.entries(unitTypes) as [UnitTypeId, (typeof unitTypes)[UnitTypeId]][]).filter(([id]) => productionBuilding(id) === building).sort(([, left], [, right]) => left.cost - right.cost))
 </script>
 
-<Modal title={definition.name} onclose={() => (game.state.productionIndex = null)}>
-	<p role="status">Player {game.state.player} · Available: {game.state.money[game.state.player]}$</p>
-	{#each offers as [id, type] (id)}
-		{@const status = purchaseStatus(game.state, id)}
-		<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
-			<img src="{base}/assets/units/{id}-{game.state.player}-fit.png" alt="" />
-			<div>
-				<strong>{type.name}</strong>
-				<p>{type.cost}$</p>
-				<small id="availability-{id}">{status.occupied ? `Free this ${definition.name.toLowerCase()} to build a unit` : status.missing ? `Need ${status.missing}$ more` : 'Available'}</small>
+{#if definition}
+	<Modal title={definition.name} onclose={() => (game.state.productionIndex = null)}>
+		<p role="status">Player {game.state.player} · Available: {game.state.money[game.state.player]}$</p>
+		{#each offers as [id, type] (id)}
+			{@const status = purchaseStatus(game.state, id)}
+			<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
+				<img src="{base}/assets/units/{id}-{game.state.player}-fit.png" alt="" />
+				<div>
+					<strong>{type.name}</strong>
+					<p>{type.cost}$</p>
+					<small id="availability-{id}">{status.occupied ? `Free this ${definition.name.toLowerCase()} to build a unit` : status.missing ? `Need ${status.missing}$ more` : 'Available'}</small>
+				</div>
+				<button disabled={!status.available} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>Buy {type.name}</button>
 			</div>
-			<button disabled={!status.available} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>Buy {type.name}</button>
-		</div>
-	{/each}
-</Modal>
+		{/each}
+	</Modal>
+{/if}
 
 <style>
 	.offer {

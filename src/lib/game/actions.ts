@@ -1,13 +1,14 @@
-import { createUnit, unitTypes, productionBuildings } from './catalog.js'
-import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.js'
+import { createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
+import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.ts'
+import type { GameState, UnitTypeId } from './types.ts'
 
-export function deselect(state) {
+export function deselect(state: GameState): void {
 	if (locked(state)) return
 	state.selectedId = null
 	state.origin = null
 }
 
-export function select(state, id) {
+export function select(state: GameState, id: number): void {
 	if (locked(state)) return
 	const unit = state.units.find((unit) => unit.id === id)
 	if (!unit || unit.player !== state.player || unit.health <= 0) return
@@ -16,7 +17,7 @@ export function select(state, id) {
 	state.productionIndex = null
 }
 
-export function move(state, index) {
+export function move(state: GameState, index: number): boolean {
 	if (locked(state)) return false
 	const unit = selectedUnit(state)
 	if (!unit || !reachableCells(state, unit).includes(index)) return false
@@ -25,7 +26,7 @@ export function move(state, index) {
 	return true
 }
 
-export function cancelMove(state) {
+export function cancelMove(state: GameState): void {
 	if (locked(state)) return
 	const unit = selectedUnit(state)
 	if (unit && state.origin) {
@@ -35,10 +36,11 @@ export function cancelMove(state) {
 	deselect(state)
 }
 
-export function capture(state) {
+export function capture(state: GameState): boolean {
 	if (!canCapture(state)) return false
-	const unit = selectedUnit(state),
-		cell = state.cells[unit.cell]
+	const unit = selectedUnit(state)
+	if (!unit) return false
+	const cell = state.cells[unit.cell]
 	if (cell.owner === state.player) {
 		cell.capturePoints = 20
 		state.securedCells.push(cell.index)
@@ -54,16 +56,16 @@ export function capture(state) {
 	return true
 }
 
-export function buy(state, type) {
-	if (!purchaseStatus(state, type).available) return false
-	state.units.push(createUnit(type, state.player, state.productionIndex, state.nextId++))
+export function buy(state: GameState, type: string): boolean {
+	if (!isUnitTypeId(type) || !purchaseStatus(state, type).available) return false
+	state.units.push(createUnit(type, state.player, state.productionIndex!, state.nextId++))
 	state.money[state.player] -= unitTypes[type].cost
 	state.productionIndex = null
 	deselect(state)
 	return true
 }
 
-export function endTurn(state) {
+export function endTurn(state: GameState): boolean {
 	if (locked(state)) return false
 	deselect(state)
 	state.productionIndex = null
@@ -86,10 +88,10 @@ export function endTurn(state) {
 	return true
 }
 
-export function openProduction(state, index) {
+export function openProduction(state: GameState, index: number): void {
 	if (locked(state)) return
 	const cell = state.cells[index]
-	if (!productionBuildings[cell?.building] || cell.owner !== state.player) return
+	if (!cell?.building || !(cell.building in productionBuildings) || cell.owner !== state.player) return
 	deselect(state)
 	state.productionIndex = state.productionIndex === index ? null : index
 }

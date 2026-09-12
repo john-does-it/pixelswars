@@ -1,16 +1,17 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
 	import { unitAt } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
+	import type { GameState, StatItem, Unit } from '$lib/game/types.js'
 
-	let { state } = $props()
-	const cell = $derived(state.cells[state.hoveredIndex])
+	let { state }: { state: GameState } = $props()
+	const cell = $derived(state.hoveredIndex === null ? undefined : state.cells[state.hoveredIndex])
 	const unit = $derived(cell && unitAt(state, cell.index))
 	const type = $derived(unit && unitTypes[unit.type])
-	const terrainStats = $derived(
+	const terrainStats = $derived<StatItem[]>(
 		cell
 			? [
 					{ icon: 'icon-movement', label: 'Movement cost', value: cell.cost },
@@ -18,18 +19,19 @@
 				]
 			: []
 	)
-	const unitStats = $derived(
-		unit
-			? [
-					{ icon: 'icon-health', label: 'Health', value: `${unit.health}/${type.maxHealth}`, testId: 'preview-health' },
-					{ icon: 'icon-movement', label: 'Movement', value: `${unit.movement}/${type.movement}` },
-					{ icon: 'icon-attack-capacity', label: 'Attacks', value: `${unit.attacks}/${type.attacks}` },
-					{ icon: 'icon-attack-damage', label: 'Attack', value: type.attack },
-					{ icon: 'icon-defense', label: 'Defense', value: type.defense },
-					{ icon: 'icon-attack-range', label: 'Range', value: `${type.exclusion + 1}–${type.range}` }
-				]
-			: []
-	)
+	const unitStats = $derived<StatItem[]>(unit ? statsFor(unit) : [])
+
+	function statsFor(currentUnit: Unit): StatItem[] {
+		const definition = unitTypes[currentUnit.type]
+		return [
+			{ icon: 'icon-health', label: 'Health', value: `${currentUnit.health}/${definition.maxHealth}`, testId: 'preview-health' },
+			{ icon: 'icon-movement', label: 'Movement', value: `${currentUnit.movement}/${definition.movement}` },
+			{ icon: 'icon-attack-capacity', label: 'Attacks', value: `${currentUnit.attacks}/${definition.attacks}` },
+			{ icon: 'icon-attack-damage', label: 'Attack', value: definition.attack },
+			{ icon: 'icon-defense', label: 'Defense', value: definition.defense },
+			{ icon: 'icon-attack-range', label: 'Range', value: `${definition.exclusion + 1}–${definition.range}` }
+		]
+	}
 </script>
 
 <aside aria-label="Cell statistics" class="panel">
@@ -44,7 +46,7 @@
 		{#if cell.building}
 			<p>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'} · Capture: {cell.capturePoints}/20</p>
 		{/if}
-		{#if unit}
+		{#if unit && type}
 			<div class="heading unit-heading">
 				<div class="unit-name">
 					<h3>Player {unit.player}</h3>

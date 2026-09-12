@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
+	import type { GameController } from '$lib/game/types.js'
 
-	let { game } = $props()
+	let { game }: { game: GameController } = $props()
 	const state = $derived(game.state)
 	const selected = $derived(selectedUnit(state))
 </script>

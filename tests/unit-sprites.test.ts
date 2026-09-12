@@ -1,12 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
-import { unitTypes } from '../src/lib/game/catalog.js'
-import { damageStage, unitSprite } from '../src/lib/game/unit-sprites.js'
+import { unitTypes } from '../src/lib/game/catalog.ts'
+import { damageStage, unitSprite } from '../src/lib/game/unit-sprites.ts'
+import type { Player, UnitTypeId } from '../src/lib/game/types.ts'
 
 test('damage stages use each unit’s maximum health and recover when healed', () => {
-	for (const [type, { maxHealth }] of Object.entries(unitTypes)) {
-		const unit = { type, player: 1, health: maxHealth }
+	for (const [type, { maxHealth }] of Object.entries(unitTypes) as [UnitTypeId, (typeof unitTypes)[UnitTypeId]][]) {
+		const unit = { type, player: 1 as Player, health: maxHealth }
 		for (const [ratio, expected] of [
 			[1, 0],
 			[0.81, 0],
@@ -27,8 +28,8 @@ test('damage stages use each unit’s maximum health and recover when healed', (
 })
 
 test('every selected board and preview sprite has a source asset', () => {
-	for (const [type, { maxHealth }] of Object.entries(unitTypes)) {
-		for (const player of [1, 2]) {
+	for (const [type, { maxHealth }] of Object.entries(unitTypes) as [UnitTypeId, (typeof unitTypes)[UnitTypeId]][]) {
+		for (const player of [1, 2] as const) {
 			for (const ratio of [1, 0.8, 0.6, 0.4, 0.2]) {
 				for (const fit of [false, true]) {
 					const sprite = unitSprite({ type, player, health: ratio * maxHealth }, fit)

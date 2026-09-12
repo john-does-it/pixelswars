@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
+	import type { GameState } from '$lib/game/types.js'
 
-	let { state, name } = $props()
+	let { state, name }: { state: GameState; name: string } = $props()
 </script>
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>

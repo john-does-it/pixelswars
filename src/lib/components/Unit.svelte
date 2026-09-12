@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
+	import type { Unit as GameUnit } from '$lib/game/types.js'
 
-	let { unit, selected = false, target = false } = $props()
+	let { unit, selected = false, target = false }: { unit: GameUnit; selected?: boolean; target?: boolean } = $props()
 	const type = $derived(unitTypes[unit.type])
 </script>
 

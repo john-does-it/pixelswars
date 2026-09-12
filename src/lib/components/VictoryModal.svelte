@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import Modal from './Modal.svelte'
+	import type { Player } from '$lib/game/types.js'
 
-	let { winner, onrestart } = $props()
+	let { winner, onrestart }: { winner: Player; onrestart: () => void } = $props()
 </script>
 
 <Modal title="Victory">

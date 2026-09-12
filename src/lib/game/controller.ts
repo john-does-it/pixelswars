@@ -1,16 +1,17 @@
-import { unitTypes } from './catalog.js'
-import { selectedUnit, unitAt, canAttack, applyDamage, locked } from './model.js'
-import * as actions from './actions.js'
+import { unitTypes } from './catalog.ts'
+import { selectedUnit, unitAt, canAttack, applyDamage, locked } from './model.ts'
+import * as actions from './actions.ts'
+import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 // A controller belongs to one mounted game. No DOM, global state or audio objects.
-export function createController(state, { sound = () => {}, delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) } = {}) {
+export function createController(state: GameState, { sound = () => {}, delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)) }: ControllerOptions = {}): GameController {
 	let disposed = false
-	const play = (name) => {
+	const play = (name: string): void => {
 		if (!disposed) sound(name)
 	}
-	async function fight(defender) {
+	async function fight(defender: Unit): Promise<void> {
 		const attacker = selectedUnit(state)
-		if (disposed || locked(state) || !canAttack(state, attacker, defender) || attacker.attacks <= 0) return
+		if (!attacker || disposed || locked(state) || !canAttack(state, attacker, defender) || attacker.attacks <= 0) return
 		state.origin = { cell: attacker.cell, movement: attacker.movement }
 		state.fighting = true
 		try {
@@ -52,13 +53,13 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 			disposed = true
 		},
 		fight,
-		select(id) {
+		select(id: number) {
 			if (locked(state)) return
 			actions.select(state, id)
 			const unit = selectedUnit(state)
 			if (unit?.id === id) play(unitTypes[unit.type].selectSound)
 		},
-		clickCell(index) {
+		clickCell(index: number) {
 			if (disposed || locked(state)) return
 			const unit = unitAt(state, index)
 			if (unit) {
@@ -70,35 +71,38 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 			else actions.openProduction(state, index)
 			state.hoveredIndex = index
 		},
-		move(index) {
+		move(index: number) {
 			if (actions.move(state, index)) play('woosh-movement')
 		},
 		cancel() {
 			actions.cancelMove(state)
 		},
-		openProduction(index) {
+		openProduction(index: number) {
 			actions.openProduction(state, index)
 		},
 		confirm() {
 			actions.deselect(state)
 		},
 		capture() {
-			if (actions.capture(state)) play(state.cells[selectedUnit(state).cell].capturePoints === 20 ? 'trumpet-fanfare' : 'jump-capture')
+			const unit = selectedUnit(state)
+			if (unit && actions.capture(state)) play(state.cells[unit.cell].capturePoints === 20 ? 'trumpet-fanfare' : 'jump-capture')
 		},
-		buy(type) {
+		buy(type: UnitTypeId) {
 			if (actions.buy(state, type)) play(type === 'infantry' ? 'military-march' : 'mechanic-building')
 		},
 		endTurn() {
 			if (actions.endTurn(state)) play('next-round')
 		},
-		keydown(event) {
-			if (locked(state) || state.productionIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(event.target?.tagName) && event.target?.dataset?.cell === undefined)) return
+		keydown(event: KeyboardEvent) {
+			const target = event.target instanceof HTMLElement ? event.target : null
+			if (locked(state) || state.productionIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) && target.dataset.cell === undefined)) return
 			const unit = selectedUnit(state)
 			if (!unit) return
-			const offsets = { ArrowLeft: -1, q: -1, ArrowRight: 1, d: 1, ArrowUp: -state.cols, z: -state.cols, ArrowDown: state.cols, s: state.cols }
-			if (event.key in offsets) {
+			const offsets: Record<string, number> = { ArrowLeft: -1, q: -1, ArrowRight: 1, d: 1, ArrowUp: -state.cols, z: -state.cols, ArrowDown: state.cols, s: state.cols }
+			const offset = offsets[event.key]
+			if (offset !== undefined) {
 				event.preventDefault()
-				this.move(unit.cell + offsets[event.key])
+				this.move(unit.cell + offset)
 			} else if (event.key === 'Escape') {
 				event.preventDefault()
 				this.cancel()

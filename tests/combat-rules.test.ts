@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import rules from '../src/lib/game/combat-rules.js'
+import rules from '../src/lib/game/combat-rules.ts'
 
 test('all 16 approved unit matchups', () => {
 	const types = ['infantry', 'jeep', 'tank', 'artillery']

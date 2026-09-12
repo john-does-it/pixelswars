@@ -1,14 +1,15 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { initialState, reachableCells, canAttack, canCapture, purchaseStatus } from '../src/lib/game/model.js'
-import { createUnit, unitTypes } from '../src/lib/game/catalog.js'
-import * as actions from '../src/lib/game/actions.js'
-import { createController } from '../src/lib/game/controller.js'
+import { initialState, reachableCells, canAttack, canCapture, purchaseStatus } from '../src/lib/game/model.ts'
+import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
+import * as actions from '../src/lib/game/actions.ts'
+import { createController } from '../src/lib/game/controller.ts'
+import type { Cell, GameMap, GameState, Player, Unit, UnitTypeId } from '../src/lib/game/types.ts'
 
-const maps = [1, 2].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url))))
+const maps: GameMap[] = [1, 2].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
 const fixture = () => initialState(maps[0])
-const spawn = (state, type, player, cell) => {
+const spawn = (state: GameState, type: UnitTypeId, player: Player, cell: number): Unit => {
 	const unit = createUnit(type, player, cell, state.nextId++)
 	state.units.push(unit)
 	return unit
@@ -58,7 +59,7 @@ test('rectangular map keeps equal armies, terrain budgets and symmetric reachabl
 	}
 	assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
 	for (const terrain of ['moutain', 'road', 'forest']) {
-		const count = (cells) => cells.filter((cell) => cell.terrain === terrain).length
+		const count = (cells: Cell[]) => cells.filter((cell) => cell.terrain === terrain).length
 		assert.ok(Math.abs(count(state.cells.slice(0, 48)) - count(state.cells.slice(48))) <= (terrain === 'forest' ? 1 : 0))
 	}
 	for (const unit of state.units) {
@@ -68,7 +69,7 @@ test('rectangular map keeps equal armies, terrain budgets and symmetric reachabl
 	const visited = new Set([1])
 	const pending = [1]
 	while (pending.length) {
-		const index = pending.pop()
+		const index = pending.pop()!
 		for (const next of [index - 12, index + 12, ...(index % 12 ? [index - 1] : []), ...(index % 12 < 11 ? [index + 1] : [])]) {
 			if (state.cells[next]?.cost <= 3 && !visited.has(next)) {
 				visited.add(next)
@@ -183,7 +184,7 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	const a = spawn(state, 'infantry', 1, 18),
 		b = spawn(state, 'infantry', 2, 19)
 	state.cells[18].defense = state.cells[19].defense = 0
-	const pending = []
+	const pending: Array<() => void> = []
 	const game = createController(state, { delay: () => new Promise((resolve) => pending.push(resolve)) })
 	game.select(a.id)
 	const fight = game.fight(b)
@@ -196,10 +197,10 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	assert.equal(a.cell, 18)
 	assert.equal(state.selectedId, a.id)
 	assert.equal(state.round, 1)
-	pending.shift()()
+	pending.shift()!()
 	await Promise.resolve()
 	assert.equal(a.health, 76)
-	pending.shift()()
+	pending.shift()!()
 	await fight
 	assert.equal(a.attacks, 1)
 	assert.equal(b.attacks, 2)
@@ -268,8 +269,8 @@ test('disposing a game during a pending fight stops later damage and sounds', as
 	state.units = []
 	const a = spawn(state, 'infantry', 1, 18),
 		b = spawn(state, 'infantry', 2, 19)
-	let resolve
-	const sounds = []
+	let resolve: () => void = () => {}
+	const sounds: string[] = []
 	const game = createController(state, { sound: (name) => sounds.push(name), delay: () => new Promise((r) => (resolve = r)) })
 	game.select(a.id)
 	const fight = game.fight(b)
@@ -317,6 +318,7 @@ test('airport produces air units while factories produce rocket infantry', () =>
 	assert.equal(unitTypes['infantry-rocket'].movement, 4)
 	const state = initialState(maps[1])
 	const airport = state.cells.find((cell) => cell.building === 'airport')
+	assert.ok(airport)
 	assert.equal(state.cells.filter((cell) => cell.building === 'airport').length, 1)
 	assert.ok([41, 42, 53, 54].includes(airport.index))
 	airport.owner = 1
@@ -341,6 +343,7 @@ test('airport produces air units while factories produce rocket infantry', () =>
 	state.money[1] = 10000
 	assert.equal(actions.buy(state, 'plane'), false)
 	const factory = state.cells.find((cell) => cell.building === 'factory')
+	assert.ok(factory)
 	factory.owner = 1
 	actions.openProduction(state, factory.index)
 	assert.equal(actions.buy(state, 'plane'), false)
@@ -360,7 +363,7 @@ test('planes move at one point per terrain and cannot be attacked by ground unit
 		assert.ok(actions.move(state, 21))
 		assert.equal(plane.movement, 0)
 	}
-	for (const type of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery']) {
+	for (const type of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery'] as const) {
 		const enemy = spawn(state, type, 2, 22)
 		assert.equal(canAttack(state, enemy, plane), false)
 		assert.ok(canAttack(state, plane, enemy))
@@ -385,7 +388,7 @@ test('helicopters ignore terrain costs, attack ground and air, and cannot captur
 		assert.ok(actions.move(state, 21))
 		assert.equal(helicopter.movement, 0)
 	}
-	for (const type of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery']) {
+	for (const type of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery'] as const) {
 		const enemy = spawn(state, type, 2, 22)
 		assert.equal(canAttack(state, enemy, helicopter), false)
 		assert.ok(canAttack(state, helicopter, enemy))
@@ -404,7 +407,7 @@ test('selecting each air unit plays its dedicated engine sound', () => {
 	state.units = []
 	const plane = spawn(state, 'plane', 1, 20)
 	const helicopter = spawn(state, 'helicopter', 1, 22)
-	const sounds = []
+	const sounds: string[] = []
 	const game = createController(state, { sound: (name) => sounds.push(name) })
 	game.select(plane.id)
 	game.select(helicopter.id)
@@ -425,7 +428,7 @@ test('ground units cannot retaliate against a plane and air units get no terrain
 	const second = spawn(state, 'plane', 2, 21)
 	const full = second.health
 	state.cells[21].defense = 50
-	const { applyDamage } = await import('../src/lib/game/model.js')
+	const { applyDamage } = await import('../src/lib/game/model.ts')
 	applyDamage(state, plane, second)
 	const damage = full - second.health
 	second.health = full

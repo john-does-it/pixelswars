@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import '$lib/app.css'
+	import type { Snippet } from 'svelte'
 
-	let { children } = $props()
+	let { children }: { children: Snippet } = $props()
 </script>
 
 <svelte:head>

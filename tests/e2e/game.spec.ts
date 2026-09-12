@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test'
 
 for (const [id, cols, count] of [
 	[1, 8, 10],
-	[2, 12, 8]
-]) {
+	[2, 12, 10]
+] as const) {
 	test(`map ${id}: hydration, movement, cancellation, turns and fresh navigation`, async ({ page }) => {
-		const errors = []
+		const errors: string[] = []
 		page.on('pageerror', (error) => errors.push(error.message))
 		await page.goto(`/play/${id}/`)
 		await expect(page.locator('[data-cell]')).toHaveCount(cols * 8)
@@ -29,10 +29,10 @@ for (const [id, cols, count] of [
 }
 
 test('capture city and factory, earn income and purchase through the dialog', async ({ page }) => {
-	const errors = []
+	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/play/1/')
-	const cell = (index) => page.locator(`[data-cell="${index}"]`)
+	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
 	const capture = () => page.getByRole('button', { name: 'Capture', exact: true }).click()
 	const end = () => page.getByRole('button', { name: 'End round', exact: true }).click()
 	await cell(2).click()
@@ -84,10 +84,10 @@ test('old board URLs lead to the Svelte game', async ({ page }) => {
 })
 
 test('combat updates rune-driven health, locks controls and clears a dead attacker', async ({ page }) => {
-	const errors = []
+	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/play/1/')
-	const cell = (index) => page.locator(`[data-cell="${index}"]`)
+	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
 	const end = page.getByRole('button', { name: 'End round', exact: true })
 	await cell(2).click()
 	await cell(10).click()
@@ -130,7 +130,7 @@ test('keyboard movement leaves no focused cell after confirming or cancelling', 
 
 test('captured airport offers aircraft and buys a plane after the tile is freed', async ({ page }) => {
 	await page.goto('/play/2/')
-	const cell = (i) => page.locator('[data-cell="' + i + '"]')
+	const cell = (i: number) => page.locator('[data-cell="' + i + '"]')
 	const end = () => page.getByRole('button', { name: 'End round', exact: true }).click()
 	const next = async () => {
 		await end()

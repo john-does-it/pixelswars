@@ -1,6 +1,8 @@
+type MatchupTable = Record<string, Record<string, number>>
+
 // Shared by the browser game and Node regression tests.
 const CombatRules = (() => {
-	const modifiers = {
+	const modifiers: MatchupTable = {
 		'infantry-rocket': { infantry: 0.5, 'infantry-rocket': 1.5, jeep: 2.5, tank: 2.5, artillery: 2.5, aircraft: 0, plane: 0, helicopter: 0 },
 		plane: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1.5, artillery: 1, aircraft: 1, plane: 1, helicopter: 2 },
 		helicopter: { infantry: 2, 'infantry-rocket': 2, jeep: 1, tank: 1, artillery: 1, aircraft: 1, plane: 0.5, helicopter: 1 },
@@ -11,8 +13,8 @@ const CombatRules = (() => {
 		artillery: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 0.5, jeep: 1, tank: 1.5, artillery: 1 }
 	}
 
-	function attackCells(index, cols, rows, range, exclusion = 0) {
-		const result = []
+	function attackCells(index: number, cols: number, rows: number, range: number, exclusion = 0): number[] {
+		const result: number[] = []
 		const x = index % cols
 		const y = Math.floor(index / cols)
 		// Preserve the prototype's square ranges, including diagonal attacks.
@@ -25,16 +27,16 @@ const CombatRules = (() => {
 		return result
 	}
 
-	function typeModifier(attackerType, defenderType) {
+	function typeModifier(attackerType: string, defenderType: string): number {
 		return modifiers[attackerType]?.[defenderType] ?? 1
 	}
 
 	// Zero means an impossible attack, not a shot that consumes ammo for no damage.
-	function canTarget(attackerType, defenderType) {
+	function canTarget(attackerType: string, defenderType: string): boolean {
 		return typeModifier(attackerType, defenderType) > 0
 	}
 
-	function damage(attack, health, defense, terrainDefense, attackerType, defenderType) {
+	function damage(attack: number, health: number, defense: number, terrainDefense: number, attackerType: string, defenderType: string): number {
 		const base = Math.max(0, attack - (defense + terrainDefense) / 10)
 		return ((base * Math.max(0, health)) / 100) * typeModifier(attackerType, defenderType)
 	}

@@ -1,8 +1,23 @@
-<script>
+<script lang="ts">
 	import { base } from '$app/paths'
 	import Unit from './Unit.svelte'
+	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
 
-	let { cell, unit, selected, reachable, attackable, target, explosion, income, captured, secured, onclick, onpreview } = $props()
+	type Props = {
+		cell: Cell
+		unit?: GameUnit
+		selected?: boolean
+		reachable: boolean
+		attackable: boolean
+		target?: boolean
+		explosion: boolean
+		income: boolean
+		captured: boolean
+		secured: boolean
+		onclick: () => void
+		onpreview: () => void
+	}
+	let { cell, unit, selected = false, reachable, attackable, target = false, explosion, income, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((c) => !c.startsWith('-capturedby') && c !== '-halfcaptured').join(' '))
 	const label = $derived(`Cell ${cell.index + 1}: ${cell.building || cell.name}${cell.owner ? ', player ' + cell.owner : ''}${unit ? ', player ' + unit.player + ' ' + unit.type + ', ' + unit.health + ' health' : ''}`)
 

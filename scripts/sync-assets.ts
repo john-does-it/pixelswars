@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 // Images have text sources; generated binaries retain their original public URLs.
-function syncDirectory(source, destination) {
+function syncDirectory(source: string, destination: string): void {
 	mkdirSync(destination, { recursive: true })
 	for (const entry of readdirSync(source, { withFileTypes: true })) {
 		const input = join(source, entry.name)
