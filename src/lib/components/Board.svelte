@@ -35,7 +35,7 @@
 		grid-template-columns: repeat(var(--cols), 1fr);
 		width: min(100%, calc((100svh - 240px) * var(--cols) / var(--rows)));
 		min-width: 240px;
-		margin: auto;
+		margin: 0 auto;
 		box-shadow: 0 12px 40px #0007;
 
 		&:focus {

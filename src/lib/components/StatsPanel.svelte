@@ -14,7 +14,7 @@
 	const terrainStats = $derived<StatItem[]>(
 		cell
 			? [
-					{ icon: 'icon-movement', label: 'Movement cost', value: cell.cost },
+					{ icon: 'icon-movement', label: 'Movement cost', value: cell.terrain === 'water' ? `${cell.cost} (ships only)` : cell.cost },
 					{ icon: 'icon-defense', label: 'Terrain defense', value: cell.defense }
 				]
 			: []
@@ -44,7 +44,10 @@
 	{#if cell}
 		<StatList items={terrainStats} />
 		{#if cell.building}
-			<p>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'} · Capture: {cell.capturePoints}/20</p>
+			<p class="building-status">
+				<span>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'}</span>
+				<span>Capture: {cell.capturePoints}/20</span>
+			</p>
 		{/if}
 		{#if unit && type}
 			<div class="heading unit-heading">
@@ -64,11 +67,7 @@
 <style>
 	aside {
 		font-size: 14px;
-		min-height: 160px;
-
-		@media (max-width: 900px) {
-			min-height: 400px;
-		}
+		min-height: 480px;
 	}
 
 	.heading {
@@ -111,5 +110,11 @@
 	p {
 		color: #e1e9ed;
 		line-height: 1.5;
+	}
+
+	.building-status {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
 	}
 </style>

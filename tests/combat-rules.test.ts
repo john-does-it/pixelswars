@@ -78,3 +78,15 @@ test('helicopters hunt infantry, trade evenly with vehicles and lose to planes',
 	assert.equal(rules.typeModifier('helicopter', 'plane'), 0.5)
 	assert.equal(rules.typeModifier('plane', 'helicopter'), 2)
 })
+
+test('anti-air attacks only aircraft and uses the approved one-shot/two-shot balance', () => {
+	for (const ground of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery', 'anti-air']) {
+		assert.equal(rules.canTarget('anti-air', ground), false)
+	}
+	assert.equal(rules.canTarget('anti-air', 'helicopter'), true)
+	assert.equal(rules.canTarget('anti-air', 'plane'), true)
+	assert.ok(rules.damage(70, 100, 15, 0, 'anti-air', 'helicopter') >= 110)
+	const planeDamage = rules.damage(70, 100, 20, 0, 'anti-air', 'plane')
+	assert.ok(planeDamage < 120)
+	assert.ok(planeDamage * 2 >= 120)
+})

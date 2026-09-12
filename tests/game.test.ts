@@ -1,18 +1,81 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { initialState, reachableCells, canAttack, canCapture, purchaseStatus } from '../src/lib/game/model.ts'
+import { initialState, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain } from '../src/lib/game/model.ts'
 import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
 import type { Cell, GameMap, GameState, Player, Unit, UnitTypeId } from '../src/lib/game/types.ts'
 
-const maps: GameMap[] = [1, 2].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
+const maps: GameMap[] = [1, 2, 3, 4, 5, 6, 7, 8].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
+const additionalMaps = maps.slice(2)
 const fixture = () => initialState(maps[0])
 const spawn = (state: GameState, type: UnitTypeId, player: Player, cell: number): Unit => {
 	const unit = createUnit(type, player, cell, state.nextId++)
 	state.units.push(unit)
 	return unit
+}
+
+test('water costs two for ships, one for aircraft and is impassable to ground units', () => {
+	const state = fixture()
+	const water = state.cells.find((cell) => cell.terrain === 'water')
+	assert.ok(water)
+	assert.equal(water.cost, 2)
+	assert.equal(movementCostForDomain('naval', water), 2)
+	assert.equal(movementCostForDomain('air', water), 1)
+	assert.equal(movementCostForDomain('ground', water), Infinity)
+	assert.equal(movementCost(state.units[1], water), Infinity)
+})
+
+for (const map of additionalMaps) {
+	test(`${map.name}: balanced objectives with an asymmetric layout`, () => {
+		const state = initialState(map)
+		const armies = [1, 2].map((player) => state.units.filter((unit) => unit.player === player))
+		assert.equal(armies[0].length, armies[1].length)
+		assert.deepEqual(armies[0].map((unit) => unit.type).sort(), armies[1].map((unit) => unit.type).sort())
+		for (const building of ['city', 'factory', 'hospital'] as const) {
+			const top = state.cells.slice(0, Math.floor(state.cells.length / 2)).filter((cell) => cell.building === building).length
+			const bottom = state.cells.slice(Math.ceil(state.cells.length / 2)).filter((cell) => cell.building === building).length
+			assert.equal(top, bottom, building)
+		}
+		const expectedAirports = ['5', '7'].includes(map.id) ? 0 : ['6', '8'].includes(map.id) ? 2 : 1
+		const airports = state.cells.filter((cell) => cell.building === 'airport')
+		assert.equal(airports.length, expectedAirports)
+		if (expectedAirports === 2) {
+			assert.equal(airports.filter((cell) => cell.index < state.cells.length / 2).length, 1)
+			assert.equal(airports.filter((cell) => cell.index > state.cells.length / 2).length, 1)
+		}
+		if (Number(map.id) >= 5) {
+			assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
+			const isRoad = (index: number) => state.cells[index]?.terrain === 'road'
+			for (const cell of state.cells.filter((candidate) => candidate.terrain === 'road')) {
+				const left = cell.index % state.cols > 0 && isRoad(cell.index - 1)
+				const right = cell.index % state.cols < state.cols - 1 && isRoad(cell.index + 1)
+				const above = isRoad(cell.index - state.cols)
+				const below = isRoad(cell.index + state.cols)
+				if (cell.classes.includes('-corner') && cell.classes.includes('-bottom')) assert.ok(left && below)
+				else if (cell.classes.includes('-corner') && cell.classes.includes('-top')) assert.ok(above && right)
+				else if (cell.classes.includes('-v')) assert.ok(above && below)
+				else assert.ok((left || cell.index % state.cols === 0) && (right || cell.index % state.cols === state.cols - 1))
+			}
+		}
+		assert.ok(state.cells.some((cell, index) => cell.classes.join(' ') !== state.cells.at(-index - 1)?.classes.join(' ')))
+
+		for (const army of armies) {
+			const visited = new Set([army.find((unit) => unit.type === 'infantry')!.cell])
+			const pending = [...visited]
+			while (pending.length) {
+				const index = pending.pop()!
+				for (const next of [index - state.cols, index + state.cols, ...(index % state.cols ? [index - 1] : []), ...(index % state.cols < state.cols - 1 ? [index + 1] : [])]) {
+					if (state.cells[next] && movementCostForDomain('ground', state.cells[next]) <= unitTypes.infantry.movement && !visited.has(next)) {
+						visited.add(next)
+						pending.push(next)
+					}
+				}
+			}
+			assert.ok(state.cells.filter((cell) => cell.building).every((cell) => visited.has(cell.index)))
+		}
+	})
 }
 
 for (const map of maps) {
@@ -349,6 +412,45 @@ test('airport produces air units while factories produce rocket infantry', () =>
 	assert.equal(actions.buy(state, 'plane'), false)
 	assert.equal(actions.buy(state, 'helicopter'), false)
 	assert.ok(actions.buy(state, 'infantry-rocket'))
+})
+
+test('factories produce anti-air units with range 1–2 and ground attacks receive no retaliation', async () => {
+	const state = fixture()
+	state.units = []
+	const antiAir = spawn(state, 'anti-air', 1, 18)
+	const infantry = spawn(state, 'infantry', 2, 19)
+	const plane = spawn(state, 'plane', 2, 20)
+	assert.ok(canAttack(state, antiAir, plane))
+	assert.equal(canAttack(state, antiAir, infantry), false)
+	assert.equal(canAttack(state, infantry, antiAir), true)
+
+	state.player = 2
+	const game = createController(state, { delay: async () => {} })
+	game.select(infantry.id)
+	const health = infantry.health
+	await game.fight(antiAir)
+	assert.equal(infantry.health, health)
+
+	const factory = state.cells.find((cell) => cell.building === 'factory')
+	assert.ok(factory)
+	state.units = state.units.filter((unit) => unit.cell !== factory.index)
+	factory.owner = 2
+	actions.openProduction(state, factory.index)
+	state.money[2] = unitTypes['anti-air'].cost
+	assert.ok(actions.buy(state, 'anti-air'))
+	assert.ok(state.units.some((unit) => unit.type === 'anti-air' && unit.cell === factory.index))
+})
+
+test('air units use their increased movement capacities', () => {
+	assert.equal(unitTypes.plane.movement, 10)
+	assert.equal(unitTypes.helicopter.movement, 8)
+	assert.equal(unitTypes['anti-air'].movement, 6)
+	assert.equal(unitTypes['anti-air'].attacks, 2)
+	assert.equal(unitTypes['anti-air'].cost, 1000)
+	assert.equal(unitTypes['anti-air'].selectSound, unitTypes.artillery.selectSound)
+	assert.equal(unitTypes['anti-air'].fightSound, unitTypes.artillery.fightSound)
+	assert.equal(unitTypes['anti-air'].exclusion + 1, 1)
+	assert.equal(unitTypes['anti-air'].range, 2)
 })
 
 test('planes move at one point per terrain and cannot be attacked by ground units', () => {

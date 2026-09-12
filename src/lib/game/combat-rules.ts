@@ -3,10 +3,11 @@ type MatchupTable = Record<string, Record<string, number>>
 // Shared by the browser game and Node regression tests.
 const CombatRules = (() => {
 	const modifiers: MatchupTable = {
-		'infantry-rocket': { infantry: 0.5, 'infantry-rocket': 1.5, jeep: 2.5, tank: 2.5, artillery: 2.5, aircraft: 0, plane: 0, helicopter: 0 },
-		plane: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1.5, artillery: 1, aircraft: 1, plane: 1, helicopter: 2 },
-		helicopter: { infantry: 2, 'infantry-rocket': 2, jeep: 1, tank: 1, artillery: 1, aircraft: 1, plane: 0.5, helicopter: 1 },
-		aircraft: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1, artillery: 1, aircraft: 1, plane: 1, helicopter: 1 },
+		'infantry-rocket': { infantry: 0.5, 'infantry-rocket': 1.5, jeep: 2.5, tank: 2.5, artillery: 2.5, 'anti-air': 2.5, aircraft: 0, plane: 0, helicopter: 0 },
+		'anti-air': { infantry: 0, 'infantry-rocket': 0, jeep: 0, tank: 0, artillery: 0, 'anti-air': 0, aircraft: 1, plane: 1, helicopter: 2 },
+		plane: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1.5, artillery: 1, 'anti-air': 1, aircraft: 1, plane: 1, helicopter: 2 },
+		helicopter: { infantry: 2, 'infantry-rocket': 2, jeep: 1, tank: 1, artillery: 1, 'anti-air': 1, aircraft: 1, plane: 0.5, helicopter: 1 },
+		aircraft: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1, artillery: 1, 'anti-air': 1, aircraft: 1, plane: 1, helicopter: 1 },
 		infantry: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1, jeep: 0.5, tank: 0.5, artillery: 1.5 },
 		jeep: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1.5, jeep: 1, tank: 0.5, artillery: 1 },
 		tank: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1.5, jeep: 1.5, tank: 1, artillery: 0.5 },

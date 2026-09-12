@@ -16,6 +16,9 @@
 		event.preventDefault()
 		onclose?.()
 	}}
+	onclick={(event) => {
+		if (event.target === dialog) onclose?.()
+	}}
 >
 	<div class="heading">
 		<h2>{title}</h2>

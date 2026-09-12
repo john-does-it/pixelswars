@@ -44,8 +44,8 @@
 
 	.health {
 		position: absolute;
-		width: 20%;
-		height: 20%;
+		width: 23%;
+		height: 23%;
 		left: 3%;
 		top: 3%;
 		animation: pulse 2s infinite;
@@ -56,10 +56,10 @@
 		bottom: 2px;
 		left: 2px;
 		display: flex;
-		width: 60%;
+		width: 66%;
 
 		img {
-			width: 30%;
+			width: 34%;
 		}
 	}
 

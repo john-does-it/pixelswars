@@ -27,8 +27,10 @@
 	})
 
 	function restart() {
+		const keyboardLayout = game.state.keyboardLayout
 		game.dispose()
 		game = createGame(map, { sound: (name) => audio?.sound(name) })
+		game.state.keyboardLayout = keyboardLayout
 	}
 </script>
 

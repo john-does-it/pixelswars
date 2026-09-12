@@ -1,6 +1,6 @@
 import rules from './combat-rules.ts'
 import { createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
-import type { Cell, GameMap, GameState, PurchaseStatus, TerrainId, Unit, UnitTypeId } from './types.ts'
+import type { Cell, GameMap, GameState, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
 
 const buildingIds = ['city', 'factory', 'hospital', 'airport'] as const
 
@@ -29,7 +29,8 @@ export function initialState(map: GameMap): GameState {
 		incomeCells: [],
 		capturedCells: [],
 		securedCells: [],
-		music: false
+		music: false,
+		keyboardLayout: 'azerty'
 	}
 }
 
@@ -42,7 +43,13 @@ export function neighbors(state: GameState, index: number): number[] {
 	return [x > 0 ? index - 1 : -1, x < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((i) => i >= 0 && i < state.cells.length)
 }
 
-export const movementCost = (unit: Unit, cell: Cell): number => (unitTypes[unit.type].domain === 'air' ? 1 : cell.cost)
+export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'>): number {
+	if (domain === 'air') return 1
+	if (domain === 'naval') return cell.terrain === 'water' ? cell.cost : Infinity
+	return cell.terrain === 'water' ? Infinity : cell.cost
+}
+
+export const movementCost = (unit: Unit, cell: Cell): number => movementCostForDomain(unitTypes[unit.type].domain ?? 'ground', cell)
 export const productionBuilding = (type: UnitTypeId): string => unitTypes[type].production ?? 'factory'
 
 export function reachableCells(state: GameState, unit = selectedUnit(state)): number[] {

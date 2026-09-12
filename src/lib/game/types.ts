@@ -1,7 +1,8 @@
 export type Player = 1 | 2
 export type Owner = 0 | Player
-export type UnitDomain = 'ground' | 'air'
-export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'jeep' | 'artillery' | 'tank' | 'helicopter' | 'plane'
+export type UnitDomain = 'ground' | 'air' | 'naval'
+export type KeyboardLayout = 'azerty' | 'qwerty'
+export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'jeep' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'plane'
 export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest'
 export type BuildingId = 'city' | 'factory' | 'hospital' | 'airport'
 export type ProductionBuildingId = 'factory' | 'airport'
@@ -94,6 +95,7 @@ export interface GameState {
 	capturedCells: number[]
 	securedCells: number[]
 	music: boolean
+	keyboardLayout: KeyboardLayout
 }
 
 export interface PurchaseStatus {

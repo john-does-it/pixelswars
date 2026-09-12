@@ -11,3 +11,9 @@
 	<button class="primary" onclick={onrestart}>Play again</button>
 	<a class="button" href="{base}/">Choose another map</a>
 </Modal>
+
+<style>
+	a:hover {
+		text-decoration: none;
+	}
+</style>

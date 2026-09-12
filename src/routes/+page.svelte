@@ -6,33 +6,34 @@
 	import type { BuildingId, StatItem, TerrainDefinition, TerrainId, UnitDefinition, UnitTypeId } from '$lib/game/types.js'
 
 	const unitDescriptions: Record<UnitTypeId, string> = {
-		infantry: 'Affordable unit that captures and secures buildings.',
-		'infantry-rocket': 'Captures buildings. Strong against every vehicle, but vulnerable to attacks.',
+		infantry: 'Captures and secures buildings.',
+		'infantry-rocket': 'Captures buildings. Strong against vehicles.',
 		jeep: 'Fast vehicle. Strong against infantry.',
 		artillery: 'Long-range support. Strong against tanks.',
-		tank: 'Powerful armored unit for direct combat.',
-		helicopter: 'Air unit. Strong against infantry and balanced against vehicles.',
-		plane: 'Powerful air unit. Strong against helicopters.'
+		tank: 'Armored unit for direct combat.',
+		'anti-air': 'Air defense. Cannot attack ground units.',
+		helicopter: 'Fast aircraft. Strong against infantry.',
+		plane: 'Powerful aircraft. Strong against helicopters.'
 	}
 	const terrainDescriptions: Record<TerrainId, string> = {
-		road: 'Fastest route for ground units.',
+		road: 'Fastest way to move.',
 		grass: 'Open ground.',
 		forest: 'Provides defensive cover.',
 		moutain: 'Strong defensive position.',
-		water: 'Slows ground units.',
+		water: 'Ships can enter water.',
 		building: 'A strategic structure.'
 	}
-	const unitGroups: { name: string; ids: UnitTypeId[] }[] = [
-		{ name: 'Infantry', ids: ['infantry', 'infantry-rocket'] },
-		{ name: 'Vehicles', ids: ['jeep', 'artillery', 'tank'] },
-		{ name: 'Aircraft', ids: ['helicopter', 'plane'] }
+	const unitGroups: { name: string; description: string; ids: UnitTypeId[] }[] = [
+		{ name: 'Infantry', description: 'The only unit type that can capture and secure buildings.', ids: ['infantry', 'infantry-rocket'] },
+		{ name: 'Vehicles', description: 'Specialized and durable ground units.', ids: ['jeep', 'artillery', 'tank', 'anti-air'] },
+		{ name: 'Aircraft', description: 'The only unit type unaffected by terrain movement costs.', ids: ['helicopter', 'plane'] }
 	]
 	const terrainGroups: { name: string; ids: TerrainId[] }[] = [
 		{ name: 'Ground', ids: ['road', 'grass', 'forest', 'moutain'] },
 		{ name: 'Waterways', ids: ['water'] }
 	]
 	const unitStats = (unit: UnitDefinition): StatItem[] => [
-		{ icon: null, label: 'Cost', value: `${unit.cost}$` },
+		{ icon: 'icon-money', label: 'Cost', value: `${unit.cost}$` },
 		{ icon: 'icon-health', label: 'Health', value: unit.maxHealth },
 		{ icon: 'icon-movement', label: 'Movement', value: unit.movement },
 		{ icon: 'icon-attack-capacity', label: 'Attacks', value: unit.attacks },
@@ -50,6 +51,16 @@
 		{ id: 'hospital', name: 'Hospital', description: 'Restores 25 health each turn.' },
 		{ id: 'factory', name: 'Factory', description: 'Produces ground units.' },
 		{ id: 'airport', name: 'Airport', description: 'Produces air units.' }
+	]
+	const maps = [
+		{ id: 1, title: 'The Squared Map', size: '8 × 8', text: 'Capture key buildings, grow your income and build a balanced army.' },
+		{ id: 2, title: 'The Rectangular Map', size: '12 × 8', text: 'Cross a wider battlefield where every move and every unit matters.' },
+		{ id: 3, title: 'The Crossroads', size: '10 × 10', text: 'Control two fast routes and contest the objectives across a square arena.' },
+		{ id: 4, title: 'The Long Front', size: '14 × 7', text: 'Advance along a broad front and seize the production point at its center.' },
+		{ id: 5, title: 'The Split Valley', size: '12 × 9', text: 'Cross uneven passes and control a winding road through the valley.' },
+		{ id: 6, title: 'The Gauntlet', size: '9 × 11', text: 'Push through a narrow corridor and contest its two airports.' },
+		{ id: 7, title: 'The Wide Divide', size: '16 × 7', text: 'Manage a wide front where distant objectives reward careful planning.' },
+		{ id: 8, title: 'The Broken Crown', size: '10 × 13', text: 'Climb through broken defenses and fight around a central crossroads.' }
 	]
 </script>
 
@@ -69,7 +80,7 @@
 	<section aria-labelledby="maps">
 		<h2 id="maps">Choose your battlefield</h2>
 		<div class="maps">
-			{#each [{ id: 1, title: 'The Squared Map', size: '8 × 8', text: 'Cities, factories and hospitals. Build an army and control the economy.' }, { id: 2, title: 'The Rectangular Map', size: '12 × 8', text: 'A wider battlefield. Make every unit count.' }] as map}
+			{#each maps as map}
 				<a class="panel map" href="{base}/play/{map.id}/">
 					<span>{map.size}</span>
 					<h3>{map.title}</h3>
@@ -82,7 +93,7 @@
 	<section class="panel">
 		<h2>How to play</h2>
 		<p>Two players share one device. Move your units, attack enemies and capture buildings.</p>
-		<p>Use the arrows or ZQSD to move, Enter to confirm, Escape to cancel and Space to capture. The on-screen controls work with mouse and touch.</p>
+		<p>Use the arrows or your selected ZQSD/WASD layout to move, Enter to confirm, Escape to cancel and Space to capture. The on-screen controls work with mouse and touch.</p>
 		<p>Infantry captures buildings. Cities provide income, hospitals heal, and production buildings create units. Destroy all opposing units to win.</p>
 	</section>
 	<section>
@@ -90,6 +101,7 @@
 		{#each unitGroups as group}
 			<div class="catalog-group">
 				<h3>{group.name}</h3>
+				<p class="group-description">{group.description}</p>
 				<div class="catalog">
 					{#each group.ids as id}
 						{@const unit = unitTypes[id]}
@@ -215,6 +227,11 @@
 		color: #ffe985;
 	}
 
+	.map p {
+		width: 21ch;
+		min-height: 6.8em;
+	}
+
 	.catalog {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
@@ -225,9 +242,15 @@
 		margin-top: 24px;
 
 		h3 {
-			margin-bottom: 12px;
+			margin-bottom: 6px;
 			color: #c7dce8;
 		}
+	}
+
+	.group-description {
+		max-width: 720px;
+		margin: 0 0 14px;
+		font-size: 14px;
 	}
 
 	article {

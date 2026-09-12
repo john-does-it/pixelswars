@@ -94,17 +94,26 @@ MARKS['helicopter'] = [
     [(60, 110, 76, 118, DARK), (68, 118, 84, 126, SCORCH),
      (124, 102, 132, 110, '#e78146')],
 ]
+MARKS['anti-air'] = [
+    [(76, 103, 92, 111, SCORCH), (76, 103, 84, 107, METAL)],
+    [(116, 87, 124, 103, DARK), (108, 95, 116, 103, METAL)],
+    [(92, 127, 108, 135, DARK), (100, 135, 116, 143, SCORCH)],
+    [(60, 119, 76, 127, DARK), (68, 127, 84, 135, SCORCH),
+     (124, 111, 132, 119, '#e78146')],
+]
+only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
+selected_marks = {only: MARKS[only]} if only else MARKS
 # Cropped originals for the supplied new units.
-for kind in ('plane', 'infantry-rocket', 'helicopter'):
+for kind in selected_marks:
     for player in (1, 2):
         original = read(f'{kind}-{player}')
         save(original.crop(original.getbbox()), f'{kind}-{player}-fit')
 
-sheet = Image.new('RGB', (1060, len(MARKS) * 2 * 190 + 55), '#20232c')
+sheet = Image.new('RGB', (1060, len(selected_marks) * 2 * 190 + 55), '#20232c')
 labels = ImageDraw.Draw(sheet)
 for stage, label in enumerate(['Healthy', 'Light damage', 'Moderate damage', 'Heavy damage', 'Critical']):
     labels.text((75 + stage * 200, 18), label, fill='#ffffff')
-for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player in (1, 2)):
+for row, (kind, player) in enumerate((kind, player) for kind in selected_marks for player in (1, 2)):
     name = f'{kind}-{player}'
     original = read(name)
     im = original.copy()
@@ -122,7 +131,7 @@ for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player
             # Keep every original silhouette/transparent pixel, even at critical health.
             im.putalpha(original.getchannel('A'))
             save(im, f'{name}-damage-{stage}')
-            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter') else read(f'{name}-fit')
+            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air') else read(f'{name}-fit')
             fitted = Image.new('RGBA', fit.size)
             box = fit.getbbox()
             crop = im.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)
@@ -130,9 +139,10 @@ for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player
             save(fitted, f'{name}-damage-{stage}-fit')
         sheet.paste(im, (45 + stage * 200, 40 + row * 190), im)
     labels.text((10, 55 + row * 190), name, fill='#ffffff')
-preview = io.BytesIO()
-sheet.save(preview, format='PNG')
-OUTPUTS['docs/unit-damage-variants.png'] = base64.b64encode(preview.getvalue()).decode()
+if not only:
+    preview = io.BytesIO()
+    sheet.save(preview, format='PNG')
+    OUTPUTS['docs/unit-damage-variants.png'] = base64.b64encode(preview.getvalue()).decode()
 if '--stdout' in sys.argv:
     print(json.dumps(OUTPUTS))
 else:

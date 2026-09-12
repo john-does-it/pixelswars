@@ -53,24 +53,24 @@ Run `npm run format` before committing. CI checks these conventions with
 
 - `src/routes/`: map selection, game routes and compatibility redirects.
 - `src/lib/components/`: Game, Board, Cell, Unit, GameHeader, StatsPanel,
-  Controls, FactoryModal, VictoryModal and a shared native-dialog component.
-- `src/lib/game/game.svelte.js`: creates a separate `$state` for each game.
-- `src/lib/game/model.js`: initial state and rule queries.
-- `src/lib/game/actions.js`: movement, capture, economy and turn actions.
-- `src/lib/game/controller.js`: input and asynchronous combat coordination.
-- `src/lib/game/combat-rules.js`: pure attack geometry and damage multipliers.
-- `src/lib/game/catalog.js`: unit definitions, prices and terrain rules.
-- `src/lib/data/`: original map layouts as JSON.
+  Controls, ProductionModal, VictoryModal and a shared native-dialog component.
+- `src/lib/game/game.svelte.ts`: creates a separate `$state` for each game.
+- `src/lib/game/model.ts`: initial state and rule queries.
+- `src/lib/game/actions.ts`: movement, capture, economy and turn actions.
+- `src/lib/game/controller.ts`: input and asynchronous combat coordination.
+- `src/lib/game/combat-rules.ts`: pure attack geometry and damage multipliers.
+- `src/lib/game/catalog.ts`: unit definitions, prices and terrain rules.
+- `src/lib/data/board-N.json`: one explicit, editable JSON file per map.
 - `assets/`: image sources stored as `.png.base64` / `.gif.base64` text files,
   plus the original MP3 sounds. The prepare, predev and prebuild scripts decode
   images into ignored `static/assets/` and copy the audio for SvelteKit.
   `favicon.png.base64` similarly generates `static/favicon.png`.
   The decoded image bytes and public URLs are unchanged, including GIF animation.
   To edit artwork, decode its source, edit the image, then encode it back into
-  the corresponding `.base64` file. Run `node scripts/sync-assets.js` to refresh
+  the corresponding `.base64` file. Run `node --experimental-strip-types scripts/sync-assets.ts` to refresh
   a running preview after changing an image source. Generated files should not
   be committed.
-- `static/css/sprites.css`: sprite mappings; layouts use scoped component CSS.
+- `src/lib/app.css`: global styles and sprite mappings; layouts use scoped component CSS.
 - `tests/`: Node rule tests and Playwright browser tests.
 
 Components use `$props`, `$derived` and `$state`. Effects manage music and transient
@@ -85,7 +85,7 @@ matchups to combat-rules.js. The factory enumerates the catalog automatically.
 
 ## Rules
 
-Click/tap a unit and adjacent blue cells to move, or use arrows / ZQSD.
+Click/tap a unit and adjacent blue cells to move, or use arrows with the selectable ZQSD / WASD keyboard layout.
 Enter confirms, Escape cancels, Space captures. On-screen controls provide
 the same actions on touch devices.
 

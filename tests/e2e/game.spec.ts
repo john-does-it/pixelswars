@@ -28,6 +28,65 @@ for (const [id, cols, count] of [
 	})
 }
 
+for (const [id, cols, rows] of [
+	[3, 10, 10],
+	[4, 14, 7],
+	[5, 12, 9],
+	[6, 9, 11],
+	[7, 16, 7],
+	[8, 10, 13]
+] as const) {
+	test(`map ${id}: renders the complete new battlefield without horizontal overflow`, async ({ page }) => {
+		await page.goto(`/play/${id}/`)
+		await expect(page.locator('[data-cell]')).toHaveCount(cols * rows)
+		await expect(page.locator('[data-unit]')).toHaveCount(10)
+		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
+		const width = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, viewport: innerWidth }))
+		expect(width.scroll).toBeLessThanOrEqual(width.viewport)
+	})
+}
+
+test('selecting a unit does not shift or resize the battlefield', async ({ page }) => {
+	await page.setViewportSize({ width: 1200, height: 540 })
+	await page.goto('/play/7/')
+	const board = page.locator('.board')
+	const panel = page.getByRole('complementary', { name: 'Cell statistics' })
+	const before = await board.boundingBox()
+	const panelBox = await panel.boundingBox()
+	await page.locator('[data-cell="1"]').click()
+	const after = await board.boundingBox()
+	expect(before).not.toBeNull()
+	expect(panelBox).not.toBeNull()
+	expect(after).not.toBeNull()
+	expect(before!.y).toBeCloseTo(panelBox!.y, 1)
+	expect(after!.x).toBeCloseTo(before!.x, 1)
+	expect(after!.width).toBeCloseTo(before!.width, 1)
+})
+
+test('how-to-play dialog replaces the permanent control hint', async ({ page }) => {
+	await page.goto('/play/1/')
+	await expect(page.getByText('Select a unit, then click adjacent blue cells')).toHaveCount(0)
+	await page.getByRole('button', { name: 'How to play', exact: true }).click()
+	const dialog = page.getByRole('dialog', { name: 'How to play', exact: true })
+	await expect(dialog).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Touch and mouse', exact: true })).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Keyboard', exact: true })).toBeVisible()
+	await expect(dialog.getByText('Arrow keys or ZQSD', { exact: true })).toBeVisible()
+	const qwerty = dialog.getByRole('button', { name: 'QWERTY · WASD', exact: true })
+	await qwerty.click()
+	await expect(qwerty).toHaveAttribute('aria-pressed', 'true')
+	await expect(dialog.getByText('Arrow keys or WASD', { exact: true })).toBeVisible()
+	await page.keyboard.press('Escape')
+	await expect(dialog).toHaveCount(0)
+	await page.locator('[data-cell="1"]').click()
+	await page.locator('[data-cell="1"]').press('ArrowDown')
+	await page.locator('[data-cell="9"]').press('w')
+	await expect(page.locator('[data-cell="1"] [data-unit="1"]')).toBeVisible()
+	await page.reload()
+	await page.getByRole('button', { name: 'How to play', exact: true }).click()
+	await expect(page.getByRole('button', { name: 'QWERTY · WASD', exact: true })).toHaveAttribute('aria-pressed', 'true')
+})
+
 test('capture city and factory, earn income and purchase through the dialog', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
@@ -58,6 +117,7 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await cell(8).click()
 	await expect(page.getByRole('dialog', { name: 'Factory' })).toBeVisible()
 	await expect(page.getByRole('button', { name: 'Buy Infantry' })).toBeDisabled()
+	await expect(page.getByRole('button', { name: 'Buy Anti-air' })).toBeDisabled()
 	await expect(page.getByText('Need 200$ more', { exact: true })).toBeVisible()
 	await page.getByRole('button', { name: 'Close', exact: true }).click()
 	await end()
@@ -143,7 +203,16 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 	await next()
 	await cell(14).click()
 	await capture()
-	for (const i of [26, 27, 28, 29, 30]) await cell(i).click()
+	for (const [i, key] of [
+		[26, 'ArrowDown'],
+		[27, 'ArrowRight'],
+		[28, 'ArrowRight'],
+		[29, 'ArrowRight'],
+		[30, 'ArrowRight']
+	] as const) {
+		await cell(i === 26 ? 14 : i - 1).press(key)
+		await expect(cell(i).locator('[data-unit]')).toBeVisible()
+	}
 	await next()
 	await cell(30).click()
 	await cell(42).click()

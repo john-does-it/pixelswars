@@ -98,8 +98,10 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			if (locked(state) || state.productionIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) && target.dataset.cell === undefined)) return
 			const unit = selectedUnit(state)
 			if (!unit) return
-			const offsets: Record<string, number> = { ArrowLeft: -1, q: -1, ArrowRight: 1, d: 1, ArrowUp: -state.cols, z: -state.cols, ArrowDown: state.cols, s: state.cols }
-			const offset = offsets[event.key]
+			const letterOffsets: Record<string, number> = state.keyboardLayout === 'qwerty' ? { a: -1, d: 1, w: -state.cols, s: state.cols } : { q: -1, d: 1, z: -state.cols, s: state.cols }
+			const offsets: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -state.cols, ArrowDown: state.cols, ...letterOffsets }
+			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key
+			const offset = offsets[key]
 			if (offset !== undefined) {
 				event.preventDefault()
 				this.move(unit.cell + offset)
