@@ -5,6 +5,10 @@
 		moutain: '-moutain -ongrass',
 		water: '-water',
 		building: '-building -city -ongrass',
+		factory: '-building -factory -ongrass',
+		airport: '-building -airport -ongrass',
+		hospital: '-building -hospital -ongrass',
+		city: '-building -city -ongrass',
 		road: '-road -h',
 		forest: '-forest -ongrass'
 	}

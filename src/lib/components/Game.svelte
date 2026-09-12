@@ -7,26 +7,31 @@
 	import GameHeader from './GameHeader.svelte'
 	import Controls from './Controls.svelte'
 	import StatsPanel from './StatsPanel.svelte'
-	import FactoryModal from './FactoryModal.svelte'
+	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
 
 	let { map } = $props()
 	let audio = $state(null)
 	let game = $state(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
+
 	onMount(() => {
 		audio = createAudio(base)
 		return () => audio?.dispose()
 	})
+
 	onDestroy(() => game.dispose())
+
 	$effect(() => {
 		audio?.music(game.state.music, game.state.player)
 	})
+
 	$effect(() => {
 		if (game.state.incomePlayer !== null) {
 			const timer = setTimeout(() => (game.state.incomePlayer = null), 4000)
 			return () => clearTimeout(timer)
 		}
 	})
+
 	function restart() {
 		game.dispose()
 		game = createGame(map, { sound: (name) => audio?.sound(name) })
@@ -44,8 +49,8 @@
 		<StatsPanel state={game.state} />
 	</div>
 	<Controls {game} />
-	{#if game.state.factoryIndex !== null}
-		<FactoryModal {game} />
+	{#if game.state.productionIndex !== null}
+		<ProductionModal {game} />
 	{/if}
 	{#if game.state.winner !== null}
 		<VictoryModal winner={game.state.winner} onrestart={restart} />

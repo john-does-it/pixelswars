@@ -9,7 +9,6 @@
 
 <span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image="url('{base}{unitSprite(unit)}')">
 	<img class="health" src="{base}/assets/icons/icon-health.png" alt="" style:animation-duration="{Math.max(0.2, (unit.health / type.maxHealth) * 2)}s" />
-	<span class="health-value">{unit.health}</span>
 	<span class="statuses">
 		{#if unit.attacks === 0}
 			<img src="{base}/assets/icons/icon-attack-capacity.png" alt="No attacks left" />
@@ -49,17 +48,6 @@
 		left: 3%;
 		top: 3%;
 		animation: pulse 2s infinite;
-	}
-
-	.health-value {
-		position: absolute;
-		bottom: 1px;
-		right: 2px;
-		font: bold clamp(8px, 1vw, 12px) monospace;
-		color: white;
-		text-shadow:
-			1px 1px 2px black,
-			-1px -1px 2px black;
 	}
 
 	.statuses {

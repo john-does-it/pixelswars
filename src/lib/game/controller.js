@@ -63,11 +63,11 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 			const unit = unitAt(state, index)
 			if (unit) {
 				if (unit.player === state.player) {
-					if (state.selectedId === unit.id) actions.openFactory(state, index)
+					if (state.selectedId === unit.id) actions.openProduction(state, index)
 					else this.select(unit.id)
 				} else void fight(unit)
 			} else if (selectedUnit(state) && actions.move(state, index)) play('woosh-movement')
-			else actions.openFactory(state, index)
+			else actions.openProduction(state, index)
 			state.hoveredIndex = index
 		},
 		move(index) {
@@ -76,8 +76,8 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 		cancel() {
 			actions.cancelMove(state)
 		},
-		openFactory(index) {
-			actions.openFactory(state, index)
+		openProduction(index) {
+			actions.openProduction(state, index)
 		},
 		confirm() {
 			actions.deselect(state)
@@ -92,7 +92,7 @@ export function createController(state, { sound = () => {}, delay = (ms) => new 
 			if (actions.endTurn(state)) play('next-round')
 		},
 		keydown(event) {
-			if (locked(state) || state.factoryIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(event.target?.tagName) && event.target?.dataset?.cell === undefined)) return
+			if (locked(state) || state.productionIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(event.target?.tagName) && event.target?.dataset?.cell === undefined)) return
 			const unit = selectedUnit(state)
 			if (!unit) return
 			const offsets = { ArrowLeft: -1, q: -1, ArrowRight: 1, d: 1, ArrowUp: -state.cols, z: -state.cols, ArrowDown: state.cols, s: state.cols }

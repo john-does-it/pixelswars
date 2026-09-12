@@ -215,7 +215,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-airport", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -505,6 +505,16 @@
 			"cell": 3,
 			"type": "jeep",
 			"player": 1
+		},
+		{
+			"cell": 4,
+			"type": "infantry-rocket",
+			"player": 1
+		},
+		{
+			"cell": 91,
+			"type": "infantry-rocket",
+			"player": 2
 		},
 		{
 			"cell": 92,

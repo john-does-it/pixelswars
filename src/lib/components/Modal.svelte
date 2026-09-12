@@ -32,10 +32,10 @@
 		max-height: 85svh;
 		overflow: auto;
 		padding: 24px;
-		border: 2px solid #83939e;
+		border: 2px solid #a9bbc6;
 		border-radius: 10px;
-		background: #202a32;
-		color: #f2f4f5;
+		background: #19242c;
+		color: #ffffff;
 
 		&::backdrop {
 			background: #000a;

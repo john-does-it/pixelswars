@@ -4,7 +4,7 @@ Unit damage art
 ![All unit damage stages](unit-damage-variants.png)
 
 Each team has four hand-authored damage variants for infantry, jeep, tank, and
-artillery, plus matching cropped stat-panel images. The healthy sprites remain
+artillery, rocket infantry, planes and helicopters, plus matching cropped stat-panel images. The healthy sprites remain
 the originals. All variants preserve the original canvas and alpha silhouette.
 Infantry wounds progress across the face, arm, and leg, following the reference.
 Red infantry uses dark crimson blood so wounds remain visible against its uniform.

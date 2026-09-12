@@ -64,3 +64,17 @@ test('both map sizes clip range at edges without wrapping or duplicate cells', (
 		}
 	}
 })
+
+test('rocket infantry is strong against every vehicle but vulnerable to every attacker', () => {
+	for (const target of ['jeep', 'artillery', 'tank']) assert.equal(rules.typeModifier('infantry-rocket', target), 2.5)
+	assert.equal(rules.typeModifier('infantry-rocket', 'infantry'), 0.5)
+	for (const attacker of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
+	assert.equal(rules.typeModifier('helicopter', 'infantry-rocket'), 2)
+})
+
+test('helicopters hunt infantry, trade evenly with vehicles and lose to planes', () => {
+	for (const target of ['infantry', 'infantry-rocket']) assert.equal(rules.typeModifier('helicopter', target), 2)
+	for (const target of ['jeep', 'artillery', 'tank']) assert.equal(rules.typeModifier('helicopter', target), 1)
+	assert.equal(rules.typeModifier('helicopter', 'plane'), 0.5)
+	assert.equal(rules.typeModifier('plane', 'helicopter'), 2)
+})

@@ -1,22 +1,29 @@
 <script>
 	import { base } from '$app/paths'
 	import Modal from './Modal.svelte'
-	import { unitTypes } from '$lib/game/catalog.js'
-	import { purchaseStatus } from '$lib/game/model.js'
+	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
+	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'
 
 	let { game } = $props()
+	const building = $derived(game.state.cells[game.state.productionIndex]?.building)
+	const definition = $derived(productionBuildings[building])
+	const offers = $derived(
+		Object.entries(unitTypes)
+			.filter(([id]) => productionBuilding(id) === building)
+			.sort(([, left], [, right]) => left.cost - right.cost)
+	)
 </script>
 
-<Modal title="Factory" onclose={() => (game.state.factoryIndex = null)}>
+<Modal title={definition.name} onclose={() => (game.state.productionIndex = null)}>
 	<p role="status">Player {game.state.player} · Available: {game.state.money[game.state.player]}$</p>
-	{#each Object.entries(unitTypes) as [id, type] (id)}
+	{#each offers as [id, type] (id)}
 		{@const status = purchaseStatus(game.state, id)}
 		<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
 			<img src="{base}/assets/units/{id}-{game.state.player}-fit.png" alt="" />
 			<div>
 				<strong>{type.name}</strong>
 				<p>{type.cost}$</p>
-				<small id="availability-{id}">{status.occupied ? 'Free this factory to build a unit' : status.missing ? `Need ${status.missing}$ more` : 'Available'}</small>
+				<small id="availability-{id}">{status.occupied ? `Free this ${definition.name.toLowerCase()} to build a unit` : status.missing ? `Need ${status.missing}$ more` : 'Available'}</small>
 			</div>
 			<button disabled={!status.available} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>Buy {type.name}</button>
 		</div>
@@ -30,7 +37,7 @@
 		gap: 12px;
 		align-items: center;
 		padding: 14px;
-		border: 1px solid #56636d;
+		border: 1px solid #91a6b4;
 		border-radius: 5px;
 		margin: 10px 0;
 
@@ -40,12 +47,12 @@
 	}
 
 	.affordable {
-		background: #294038;
-		border-color: #8dc4a7;
+		background: #17382c;
+		border-color: #a7e6c8;
 	}
 
 	.unavailable {
-		color: #b3bac1;
+		color: #dce6eb;
 
 		img {
 			opacity: 0.45;

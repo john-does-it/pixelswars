@@ -70,10 +70,37 @@ def read(name):
 def save(im, name):
     data = io.BytesIO()
     im.save(data, format='PNG', optimize=True)
-    OUTPUTS[f'assets/units/{name}.png.base64'] = base64.b64encode(data.getvalue()).decode() + '\n'
+    encoded = base64.b64encode(data.getvalue()).decode()
+    OUTPUTS[f'assets/units/{name}.png'] = encoded
+    OUTPUTS[f'assets/units/{name}.png.base64'] = encoded + '\n'
 
 
-sheet = Image.new('RGB', (1060, 8 * 190 + 55), '#20232c')
+MARKS['infantry-rocket'] = [
+    [(108, 87, 116, 95, RED)],
+    [(116, 106, 124, 122, WOUND), (116, 114, 124, 122, RED)],
+    [(76, 137, 84, 153, RED), (68, 145, 76, 153, WOUND)],
+    [(108, 135, 116, 151, WOUND), (116, 143, 124, 151, RED), (92, 65, 100, 73, DARK)]
+]
+MARKS['plane'] = [
+    [(84, 94, 100, 102, SCORCH), (84, 94, 92, 98, METAL)],
+    [(68, 70, 76, 86, DARK), (76, 78, 84, 86, METAL)],
+    [(108, 102, 124, 110, DARK), (116, 110, 124, 118, SCORCH)],
+    [(68, 126, 84, 134, DARK), (76, 134, 92, 142, SCORCH), (116, 94, 124, 102, '#e78146')]
+]
+MARKS['helicopter'] = [
+    [(76, 94, 92, 102, SCORCH), (76, 94, 84, 98, METAL)],
+    [(116, 78, 124, 94, DARK), (108, 86, 116, 94, METAL)],
+    [(92, 118, 108, 126, DARK), (100, 126, 116, 134, SCORCH)],
+    [(60, 110, 76, 118, DARK), (68, 118, 84, 126, SCORCH),
+     (124, 102, 132, 110, '#e78146')],
+]
+# Cropped originals for the supplied new units.
+for kind in ('plane', 'infantry-rocket', 'helicopter'):
+    for player in (1, 2):
+        original = read(f'{kind}-{player}')
+        save(original.crop(original.getbbox()), f'{kind}-{player}-fit')
+
+sheet = Image.new('RGB', (1060, len(MARKS) * 2 * 190 + 55), '#20232c')
 labels = ImageDraw.Draw(sheet)
 for stage, label in enumerate(['Healthy', 'Light damage', 'Moderate damage', 'Heavy damage', 'Critical']):
     labels.text((75 + stage * 200, 18), label, fill='#ffffff')
@@ -89,13 +116,13 @@ for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player
             for x1, y1, x2, y2, color in MARKS[kind][stage - 1]:
                 # Crimson blood stays distinct from player two's orange-red cloth.
                 # Preserve the same face, arm and leg wound progression as blue.
-                if kind == 'infantry' and player == 2:
+                if kind in ('infantry', 'infantry-rocket') and player == 2:
                     color = {RED: '#b50932', WOUND: '#680d2b'}.get(color, color)
                 draw.rectangle((x1, y1 + offset, x2 - 1, y2 - 1 + offset), fill=color)
             # Keep every original silhouette/transparent pixel, even at critical health.
             im.putalpha(original.getchannel('A'))
             save(im, f'{name}-damage-{stage}')
-            fit = read(f'{name}-fit')
+            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter') else read(f'{name}-fit')
             fitted = Image.new('RGBA', fit.size)
             box = fit.getbbox()
             crop = im.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)

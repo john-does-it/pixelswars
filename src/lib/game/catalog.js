@@ -1,5 +1,8 @@
 // Add unit types here; factories and the stat panel use the same definitions.
 export const unitTypes = {
+	'infantry-rocket': { name: 'Rocket infantry', attack: 40, range: 1, exclusion: 0, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 400, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'tank-shot' },
+	plane: { name: 'Plane', domain: 'air', production: 'airport', attack: 70, range: 1, exclusion: 0, attacks: 1, defense: 20, movement: 8, maxHealth: 120, cost: 3000, captures: false, delay: 1000, selectSound: 'plane-engine', fightSound: 'missile-launch' },
+	helicopter: { name: 'Helicopter', domain: 'air', production: 'airport', attack: 65, range: 1, exclusion: 0, attacks: 1, defense: 15, movement: 6, maxHealth: 110, cost: 1800, captures: false, delay: 750, selectSound: 'helico-engine', fightSound: 'gun-battle' },
 	infantry: { name: 'Infantry', attack: 40, range: 1, exclusion: 0, attacks: 2, defense: 10, movement: 5, maxHealth: 100, cost: 200, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'gun-battle' },
 	jeep: { name: 'Jeep', attack: 50, range: 1, exclusion: 0, attacks: 2, defense: 20, movement: 8, maxHealth: 125, cost: 600, captures: false, delay: 500, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
 	tank: { name: 'Tank', attack: 70, range: 1, exclusion: 0, attacks: 2, defense: 40, movement: 5, maxHealth: 180, cost: 1200, captures: false, delay: 500, selectSound: 'tank-engine', fightSound: 'tank-shot' },
@@ -19,4 +22,9 @@ export function createUnit(type, player, cell, id) {
 	const definition = unitTypes[type]
 	if (!definition) throw new Error(`Unknown unit type: ${type}`)
 	return { id, type, player, cell, health: definition.maxHealth, movement: definition.movement, attacks: definition.attacks, capture: definition.captures ? 1 : 0 }
+}
+
+export const productionBuildings = {
+	factory: { name: 'Factory' },
+	airport: { name: 'Airport' }
 }

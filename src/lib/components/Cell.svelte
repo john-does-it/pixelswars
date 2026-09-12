@@ -2,7 +2,7 @@
 	import { base } from '$app/paths'
 	import Unit from './Unit.svelte'
 
-	let { cell, unit, selected, reachable, attackable, target, explosion, income, captured, onclick, onpreview } = $props()
+	let { cell, unit, selected, reachable, attackable, target, explosion, income, captured, secured, onclick, onpreview } = $props()
 	const classes = $derived(cell.classes.filter((c) => !c.startsWith('-capturedby') && c !== '-halfcaptured').join(' '))
 	const label = $derived(`Cell ${cell.index + 1}: ${cell.building || cell.name}${cell.owner ? ', player ' + cell.owner : ''}${unit ? ', player ' + unit.player + ' ' + unit.type + ', ' + unit.health + ' health' : ''}`)
 
@@ -18,7 +18,9 @@
 	{#if explosion}
 		<img class="explosion" src="{base}/assets/gifs/explosion.gif" alt="Explosion" />
 	{/if}
-	{#if captured}
+	{#if secured}
+		<span class="income">Secured!</span>
+	{:else if captured}
 		<span class="income">Captured!</span>
 	{:else if income}
 		<span class="income">+200$</span>

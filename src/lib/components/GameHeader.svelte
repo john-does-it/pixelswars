@@ -7,10 +7,10 @@
 <header class:blue={state.player === 1} class:red={state.player === 2}>
 	<a href="{base}/">← Pixel’s War</a>
 	<h1>{name}</h1>
-	<div class="turn" aria-live="polite">Player {state.player} <span>Round {state.round}</span></div>
+	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src="{base}/assets/units/infantry-{state.player}-fit.png" alt="" />Player {state.player} <span>Round {state.round}</span></div>
 	<div class="budgets">
-		<span>Player 1: <b>{state.money[1]}$</b></span>
-		<span>Player 2: <b>{state.money[2]}$</b></span>
+		<span><span class="player-one">Player 1</span> <b>{state.money[1]}$</b></span>
+		<span><span class="player-two">Player 2</span> <b>{state.money[2]}$</b></span>
 	</div>
 </header>
 
@@ -37,7 +37,7 @@
 		font-size: 16px;
 		margin: 0;
 		font-weight: normal;
-		color: #c0cbd0;
+		color: #e5edf1;
 	}
 
 	a {
@@ -45,12 +45,22 @@
 	}
 
 	.turn {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+
+		img {
+			width: 28px;
+			height: 28px;
+			object-fit: contain;
+			image-rendering: pixelated;
+		}
 		grid-column: 2;
 		grid-row: 1;
 		font-weight: bold;
 
 		span {
-			margin-left: 12px;
+			margin-left: 4px;
 			color: #ffe985;
 		}
 	}
@@ -60,6 +70,14 @@
 		display: flex;
 		gap: 16px;
 		font-size: 14px;
+	}
+
+	.player-one {
+		color: #8dcbff;
+	}
+
+	.player-two {
+		color: #ffb3b1;
 	}
 
 	@media (max-width: 500px) {

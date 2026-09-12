@@ -197,3 +197,22 @@
 	-webkit-animation: outOf 2.5s infinite alternate;
 	animation: outOf 2.5s infinite alternate;
 }
+
+.cell-container.-airport {
+	background-image: url('../assets/cells/cell-airport-on-grass.png');
+	&.-capturedby1 {
+		background-image: url('../assets/cells/cell-airport-on-grass-captured-by-1.png');
+	}
+	&.-capturedby2 {
+		background-image: url('../assets/cells/cell-airport-on-grass-captured-by-2.png');
+	}
+	&.-halfcaptured {
+		background-image: url('../assets/cells/cell-airport-on-grass-halfcaptured.png');
+	}
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('../assets/cells/cell-airport-on-grass-halfcaptured-by-1.png');
+	}
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('../assets/cells/cell-airport-on-grass-halfcaptured-by-2.png');
+	}
+}

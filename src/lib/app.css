@@ -1,7 +1,7 @@
 :root {
 	font-family: ui-monospace, 'Cascadia Code', monospace;
-	color: #eff3f5;
-	background: #171d22;
+	color: #ffffff;
+	background: #0d1216;
 	font-synthesis: none;
 }
 
@@ -15,7 +15,8 @@ body {
 
 a {
 	color: inherit;
-	text-decoration: none;
+	text-decoration: underline;
+	text-underline-offset: 0.18em;
 
 	&:hover {
 		text-decoration: underline;
@@ -24,16 +25,20 @@ a {
 
 button,
 .button {
-	--button-background: #34434e;
+	--button-background: #2b3d49;
 	font: inherit;
 	font-size: 14px;
 	color: inherit;
 	background: var(--button-background);
-	border: 1px solid #6e8392;
+	border: 1px solid #91a6b4;
 	border-radius: 5px;
 	padding: 10px 14px;
 	cursor: pointer;
 	display: inline-block;
+}
+
+.button {
+	text-decoration: none;
 }
 
 button:hover:not(:disabled):not(.cell-container),
@@ -42,7 +47,9 @@ button:hover:not(:disabled):not(.cell-container),
 }
 
 button:disabled {
-	opacity: 0.45;
+	color: #aebbc4;
+	background: #202a31;
+	border-color: #536673;
 	cursor: not-allowed;
 }
 
@@ -60,8 +67,8 @@ button.primary,
 }
 
 .panel {
-	background: #202a32;
-	border: 1px solid #3a4b57;
+	background: #19242c;
+	border: 1px solid #78909f;
 	border-radius: 8px;
 	padding: 18px;
 }

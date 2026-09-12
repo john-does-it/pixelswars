@@ -1,6 +1,7 @@
 <script>
 	import { base } from '$app/paths'
 	import TerrainIcon from './TerrainIcon.svelte'
+	import StatList from './StatList.svelte'
 	import { unitAt } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
@@ -9,6 +10,26 @@
 	const cell = $derived(state.cells[state.hoveredIndex])
 	const unit = $derived(cell && unitAt(state, cell.index))
 	const type = $derived(unit && unitTypes[unit.type])
+	const terrainStats = $derived(
+		cell
+			? [
+					{ icon: 'icon-movement', label: 'Movement cost', value: cell.cost },
+					{ icon: 'icon-defense', label: 'Terrain defense', value: cell.defense }
+				]
+			: []
+	)
+	const unitStats = $derived(
+		unit
+			? [
+					{ icon: 'icon-health', label: 'Health', value: `${unit.health}/${type.maxHealth}`, testId: 'preview-health' },
+					{ icon: 'icon-movement', label: 'Movement', value: `${unit.movement}/${type.movement}` },
+					{ icon: 'icon-attack-capacity', label: 'Attacks', value: `${unit.attacks}/${type.attacks}` },
+					{ icon: 'icon-attack-damage', label: 'Attack', value: type.attack },
+					{ icon: 'icon-defense', label: 'Defense', value: type.defense },
+					{ icon: 'icon-attack-range', label: 'Range', value: `${type.exclusion + 1}–${type.range}` }
+				]
+			: []
+	)
 </script>
 
 <aside aria-label="Cell statistics" class="panel">
@@ -19,10 +40,7 @@
 		{/if}
 	</div>
 	{#if cell}
-		<p>
-			Movement cost: {cell.cost}<br />
-			Terrain defense: {cell.defense}
-		</p>
+		<StatList items={terrainStats} />
 		{#if cell.building}
 			<p>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'} · Capture: {cell.capturePoints}/20</p>
 		{/if}
@@ -34,18 +52,7 @@
 				</div>
 				<img class="unit-icon" src="{base}{unitSprite(unit, true)}" alt="" />
 			</div>
-			<dl>
-				<dt>Health</dt>
-				<dd data-testid="preview-health">{unit.health}/{type.maxHealth}</dd>
-				<dt>Movement</dt>
-				<dd>{unit.movement}/{type.movement}</dd>
-				<dt>Attacks</dt>
-				<dd>{unit.attacks}/{type.attacks}</dd>
-				<dt>Attack / defense</dt>
-				<dd>{type.attack} / {type.defense}</dd>
-				<dt>Range</dt>
-				<dd>{type.exclusion + 1}–{type.range}</dd>
-			</dl>
+			<StatList items={unitStats} />
 		{/if}
 	{:else}
 		<p>Point to a cell or select a unit to inspect its statistics.</p>
@@ -58,7 +65,7 @@
 		min-height: 160px;
 
 		@media (max-width: 900px) {
-			min-height: 360px;
+			min-height: 400px;
 		}
 	}
 
@@ -99,18 +106,8 @@
 		gap: 4px;
 	}
 
-	dl {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 8px;
-	}
-
-	dd {
-		margin: 0;
-	}
-
 	p {
-		color: #c0cbd0;
+		color: #e1e9ed;
 		line-height: 1.5;
 	}
 </style>

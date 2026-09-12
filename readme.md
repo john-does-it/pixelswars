@@ -146,3 +146,20 @@ Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundt
 QA: Gauthier Miessen.
 
 Feedback and contributions: hello@johndoesit.be.
+
+## Air units and airports
+
+Map 2 has one neutral airport on a central tile (row 4, column 7).
+Captured airports produce helicopters at 1800$ and planes at 3000$. Factories
+produce ground units, including rocket infantry at 400$. An occupied production
+tile blocks purchases.
+Planes have 120 health, 8 movement and one adjacent attack per turn. Each empty
+tile costs exactly 1 movement, with no terrain defense bonus. They can attack
+both ground and air targets; no current ground unit can target or retaliate
+against aircraft. Helicopters have 110 health, 6 movement and one adjacent attack.
+They are strong against infantry, neutral against vehicles and weak against planes.
+Air units cannot capture buildings; one unit per tile still applies.
+Rocket infantry has infantry health/defense, 4 movement and one attack per turn,
+2.5× damage against every vehicle, and 0.5× against regular infantry. Every unit
+deals increased damage to it, making it an offensive specialist. It can capture
+and secure buildings. All units have five health-based sprite stages for both players.

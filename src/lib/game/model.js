@@ -12,7 +12,7 @@ export function initialState(map) {
 				Object.keys(terrainTypes)
 					.filter((type) => cell.classes.includes('-' + type))
 					.at(-1) || 'grass'
-			return { ...cell, classes: [...cell.classes], index, terrain, ...terrainTypes[terrain], building: ['city', 'factory', 'hospital'].find((type) => cell.classes.includes('-' + type)) || null }
+			return { ...cell, classes: [...cell.classes], index, terrain, ...terrainTypes[terrain], building: ['city', 'factory', 'hospital', 'airport'].find((type) => cell.classes.includes('-' + type)) || null }
 		}),
 		units: map.units.map((unit, id) => createUnit(unit.type, unit.player, unit.cell, id)),
 		nextId: map.units.length,
@@ -21,13 +21,14 @@ export function initialState(map) {
 		money: { 1: 0, 2: 0 },
 		selectedId: null,
 		origin: null,
-		factoryIndex: null,
+		productionIndex: null,
 		hoveredIndex: null,
 		fighting: false,
 		winner: null,
 		explosion: null,
 		incomeCells: [],
 		capturedCells: [],
+		securedCells: [],
 		music: false
 	}
 }
@@ -41,8 +42,11 @@ export function neighbors(state, index) {
 	return [x > 0 ? index - 1 : -1, x < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((i) => i >= 0 && i < state.cells.length)
 }
 
+export const movementCost = (unit, cell) => (unitTypes[unit.type].domain === 'air' ? 1 : cell.cost)
+export const productionBuilding = (type) => unitTypes[type]?.production || 'factory'
+
 export function reachableCells(state, unit = selectedUnit(state)) {
-	return unit ? neighbors(state, unit.cell).filter((index) => state.cells[index].cost <= unit.movement && !unitAt(state, index)) : []
+	return unit ? neighbors(state, unit.cell).filter((index) => movementCost(unit, state.cells[index]) <= unit.movement && !unitAt(state, index)) : []
 }
 
 export function attackCells(state, unit = selectedUnit(state)) {
@@ -58,20 +62,20 @@ export function canAttack(state, attacker, defender) {
 export function canCapture(state) {
 	const unit = selectedUnit(state)
 	const cell = unit && state.cells[unit.cell]
-	return !!(!locked(state) && unit && unit.capture > 0 && cell.building && cell.owner !== state.player)
+	return !!(!locked(state) && unit && unit.capture > 0 && unit.player === state.player && cell.building && (cell.owner !== state.player || cell.capturePoints < 20))
 }
 
 export function purchaseStatus(state, type) {
-	const cell = state.cells[state.factoryIndex]
+	const cell = state.cells[state.productionIndex]
 	const cost = unitTypes[type]?.cost
 	const missing = Math.max(0, (cost ?? Infinity) - state.money[state.player])
 	const occupied = !!cell && !!unitAt(state, cell.index)
-	return { missing, occupied, available: !locked(state) && !!cell && cell.building === 'factory' && cell.owner === state.player && !occupied && missing === 0 }
+	return { missing, occupied, available: !locked(state) && !!cell && !!unitTypes[type] && cell.building === productionBuilding(type) && cell.owner === state.player && !occupied && missing === 0 }
 }
 
 export function applyDamage(state, attacker, defender) {
 	const a = unitTypes[attacker.type],
 		d = unitTypes[defender.type]
-	const amount = rules.damage(a.attack, attacker.health, d.defense, state.cells[defender.cell].defense, attacker.type, defender.type)
+	const amount = rules.damage(a.attack, attacker.health, d.defense, d.domain === 'air' ? 0 : state.cells[defender.cell].defense, attacker.type, defender.type)
 	defender.health = Math.max(0, Math.round(defender.health - amount))
 }

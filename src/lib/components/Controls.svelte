@@ -10,7 +10,7 @@
 <nav aria-label="Game controls">
 	<button disabled={locked(state) || !selected} onclick={() => game.confirm()}>Confirm move</button>
 	<button disabled={locked(state) || !selected} onclick={() => game.cancel()}>Cancel move</button>
-	<button disabled={!canCapture(state)} onclick={() => game.capture()}>Capture</button>
+	<button disabled={!canCapture(state)} onclick={() => game.capture()}>{selected && state.cells[selected.cell].owner === state.player && state.cells[selected.cell].capturePoints < 20 ? 'Secure' : 'Capture'}</button>
 	<button class="music" aria-label="Music {state.music ? 'on' : 'off'}" title="Music {state.music ? 'on' : 'off'}" aria-pressed={state.music} onclick={() => (state.music = !state.music)}>
 		Music
 		<img src="{base}/assets/icons/icon-{state.music ? 'play' : 'mute'}-sound.png" alt="" />
@@ -47,7 +47,7 @@
 
 	.help {
 		text-align: center;
-		color: #aebbc4;
+		color: #dce6eb;
 		font-size: 12px;
 		line-height: 1.6;
 	}
