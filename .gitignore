@@ -1,0 +1,11 @@
+node_modules/
+.svelte-kit/
+build/
+static/assets/
+static/favicon.png
+.npm-cache/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example

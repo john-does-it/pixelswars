@@ -1,0 +1,366 @@
+:root {
+	font-family: ui-monospace, 'Cascadia Code', monospace;
+	color: #ffffff;
+	background: #0d1216;
+	font-synthesis: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 0.18em;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+button,
+.button {
+	--button-background: #2b3d49;
+	font: inherit;
+	font-size: 14px;
+	color: inherit;
+	background: var(--button-background);
+	border: 1px solid #91a6b4;
+	border-radius: 5px;
+	padding: 10px 14px;
+	cursor: pointer;
+	display: inline-block;
+}
+
+.button {
+	text-decoration: none;
+}
+
+button:hover:not(:disabled):not(.cell-container),
+.button:hover {
+	background-color: color-mix(in srgb, var(--button-background) 90%, white);
+}
+
+button:disabled {
+	color: #aebbc4;
+	background: #202a31;
+	border-color: #536673;
+	cursor: not-allowed;
+}
+
+button.primary,
+.button.primary {
+	--button-background: #f0d780;
+	color: #202a32;
+	border-color: #f0d780;
+	font-weight: bold;
+}
+
+:focus-visible {
+	outline: 3px solid #ffe985;
+	outline-offset: 3px;
+}
+
+.panel {
+	background: #19242c;
+	border: 1px solid #78909f;
+	border-radius: 8px;
+	padding: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}
+
+/* Original terrain and unit sprites; layout lives in Svelte components. */
+
+.cell-container.-attackable .unit-container.-inrange::before {
+	position: absolute;
+	display: flex;
+	content: '';
+	width: 50%;
+	height: 50%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	background-image: url('/assets/icons/icon-crosshair.png');
+	background-size: contain;
+	z-index: 20;
+}
+
+.cell-container.-grass {
+	background-image: url('/assets/cells/cell-grass.png');
+
+	&.-variant {
+		background-image: url('/assets/cells/cell-grass-variant.png');
+	}
+
+	&.-variant2 {
+		background-image: url('/assets/cells/cell-grass-variant-2.png');
+	}
+
+	&.-variant3 {
+		background-image: url('/assets/cells/cell-grass-variant-3.png');
+	}
+}
+
+.cell-container.-moutain.-ongrass {
+	background-image: url('/assets/cells/cell-moutain-on-grass.png');
+}
+
+.cell-container.-forest.-ongrass {
+	background-image: url('/assets/cells/cell-forest-on-grass.png');
+
+	&.-variant {
+		background-image: url('/assets/cells/cell-forest-on-grass-variant.png');
+	}
+}
+
+.cell-container.-road.-v {
+	background-image: url('/assets/cells/cell-road-v.png');
+}
+
+.cell-container.-road.-h {
+	background-image: url('/assets/cells/cell-road-h.png');
+}
+
+.cell-container.-road.-corner.-top {
+	background-image: url('/assets/cells/cell-road-corner-top.png');
+}
+
+.cell-container.-road.-corner.-bottom {
+	background-image: url('/assets/cells/cell-road-corner-bottom.png');
+}
+
+.cell-container.-road.-endtop {
+	background-image: url('/assets/cells/cell-road-end-top.png');
+}
+
+.cell-container.-water {
+	background-image: url('/assets/cells/cell-water.png');
+
+	&.-grass.-left {
+		background-image: url('/assets/cells/cell-water-grass-on-left.png');
+	}
+
+	&.-grass.-right {
+		background-image: url('/assets/cells/cell-water-grass-on-right.png');
+	}
+
+	&.-grass.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-top.png');
+	}
+
+	&.-grass.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-on-bottom.png');
+	}
+
+	&.-grass.-left.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-top.png');
+	}
+
+	&.-grass.-right.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-right-and-top.png');
+	}
+
+	&.-grass.-left.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-bottom.png');
+	}
+
+	&.-grass.-right.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-on-right-and-bottom.png');
+	}
+
+	&.-grass.-corner.-left.-top {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-top.png');
+	}
+
+	&.-grass.-corner.-right.-top {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-top.png');
+	}
+
+	&.-grass.-corner.-left.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-bottom.png');
+	}
+
+	&.-grass.-corner.-right.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-bottom.png');
+	}
+
+	&.-grass.-left.-right {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-right.png');
+	}
+
+	&.-grass.-left-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-left-corners.png');
+	}
+
+	&.-grass.-right-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-right-corners.png');
+	}
+
+	&.-grass.-top-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-top-corners.png');
+	}
+
+	&.-grass.-bottom-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-bottom-corners.png');
+	}
+
+	&.-grass.-top-and-bottom-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-top-and-bottom-corners.png');
+	}
+}
+
+.cell-container.-building.-factory.-ongrass {
+	background-image: url('/assets/cells/cell-factory-on-grass.png');
+
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-factory-on-grass-captured-by-1.png');
+	}
+
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-factory-on-grass-captured-by-2.png');
+	}
+
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-factory-on-grass-halfcaptured.png');
+	}
+
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-factory-on-grass-half-captured-by-1.png');
+	}
+
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-factory-on-grass-halfcaptured-by-2.png');
+	}
+}
+
+.cell-container.-building.-hospital.-ongrass {
+	background-image: url('/assets/cells/cell-hospital-on-grass.png');
+
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-hospital-on-grass-captured-by-1.png');
+	}
+
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-hospital-on-grass-captured-by-2.png');
+	}
+
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured.png');
+	}
+
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png');
+	}
+
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
+	}
+}
+
+.cell-container.-building.-city.-ongrass {
+	background-image: url('/assets/cells/cell-city-on-grass.png');
+
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-city-on-grass-captured-by-1.png');
+	}
+
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-city-on-grass-captured-by-2.png');
+	}
+
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured.png');
+	}
+
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
+	}
+
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
+	}
+}
+
+.unit-container.-infantry.-one {
+	background-image: url('/assets/units/infantry-1.png');
+}
+
+.unit-container.-infantry.-two {
+	background-image: url('/assets/units/infantry-2.png');
+}
+
+.unit-container.-jeep.-one {
+	background-image: url('/assets/units/jeep-1.png');
+}
+
+.unit-container.-jeep.-two {
+	background-image: url('/assets/units/jeep-2.png');
+}
+
+.unit-container.-artillery.-one {
+	background-image: url('/assets/units/artillery-1.png');
+}
+
+.unit-container.-artillery.-two {
+	background-image: url('/assets/units/artillery-2.png');
+}
+
+.unit-container.-tank.-one {
+	background-image: url('/assets/units/tank-1.png');
+}
+
+.unit-container.-tank.-two {
+	background-image: url('/assets/units/tank-2.png');
+}
+
+.unit-container .-outofammo {
+	background-image: url('/assets/icons/icon-attack-capacity.png');
+	-webkit-animation: outOf 2.5s infinite alternate;
+	animation: outOf 2.5s infinite alternate;
+}
+
+.unit-container .-outofmovement {
+	background-image: url('/assets/icons/icon-movement.png');
+	-webkit-animation: outOf 2.5s infinite alternate;
+	animation: outOf 2.5s infinite alternate;
+}
+
+.unit-container .-outofcapture {
+	background-image: url('/assets/icons/icon-capture-capacity.png');
+	-webkit-animation: outOf 2.5s infinite alternate;
+	animation: outOf 2.5s infinite alternate;
+}
+
+.cell-container.-airport {
+	background-image: url('/assets/cells/cell-airport-on-grass.png');
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-airport-on-grass-captured-by-1.png');
+	}
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-airport-on-grass-captured-by-2.png');
+	}
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured.png');
+	}
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured-by-1.png');
+	}
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured-by-2.png');
+	}
+}
