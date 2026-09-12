@@ -41,10 +41,12 @@
 <main class="game-shell">
 	<GameHeader state={game.state} name={map.name} />
 	<div class="field">
-		<Board {game} name={map.name} />
+		<div class="board-column">
+			<Board {game} name={map.name} />
+			<Controls {game} />
+		</div>
 		<StatsPanel state={game.state} />
 	</div>
-	<Controls {game} />
 	{#if game.state.productionIndex !== null}
 		<ProductionModal {game} />
 	{/if}
@@ -67,6 +69,15 @@
 
 		@media (max-width: 900px) {
 			grid-template-columns: minmax(0, 1fr);
+
+			:global(aside) {
+				width: min(100%, 480px);
+				justify-self: center;
+			}
 		}
+	}
+
+	.board-column {
+		min-width: 0;
 	}
 </style>

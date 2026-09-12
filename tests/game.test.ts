@@ -7,7 +7,7 @@ import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
 import type { Cell, GameMap, GameState, Player, Unit, UnitTypeId } from '../src/lib/game/types.ts'
 
-const maps: GameMap[] = [1, 2, 3, 4, 5, 6, 7, 8].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
+const maps: GameMap[] = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
 const additionalMaps = maps.slice(2)
 const fixture = () => initialState(maps[0])
 const spawn = (state: GameState, type: UnitTypeId, player: Player, cell: number): Unit => {
@@ -45,7 +45,7 @@ for (const map of additionalMaps) {
 			assert.equal(airports.filter((cell) => cell.index < state.cells.length / 2).length, 1)
 			assert.equal(airports.filter((cell) => cell.index > state.cells.length / 2).length, 1)
 		}
-		if (Number(map.id) >= 5) {
+		if (Number(map.id) >= 5 && Number(map.id) <= 8) {
 			assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
 			const isRoad = (index: number) => state.cells[index]?.terrain === 'road'
 			for (const cell of state.cells.filter((candidate) => candidate.terrain === 'road')) {
@@ -59,6 +59,7 @@ for (const map of additionalMaps) {
 				else assert.ok((left || cell.index % state.cols === 0) && (right || cell.index % state.cols === state.cols - 1))
 			}
 		}
+		if (map.id === '9') assert.ok(state.cells.filter((cell) => cell.terrain === 'water').length >= 40)
 		assert.ok(state.cells.some((cell, index) => cell.classes.join(' ') !== state.cells.at(-index - 1)?.classes.join(' ')))
 
 		for (const army of armies) {

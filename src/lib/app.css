@@ -151,12 +151,76 @@ button.primary,
 .cell-container.-water {
 	background-image: url('/assets/cells/cell-water.png');
 
+	&.-grass.-left {
+		background-image: url('/assets/cells/cell-water-grass-on-left.png');
+	}
+
 	&.-grass.-right {
 		background-image: url('/assets/cells/cell-water-grass-on-right.png');
 	}
 
+	&.-grass.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-top.png');
+	}
+
+	&.-grass.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-on-bottom.png');
+	}
+
+	&.-grass.-left.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-top.png');
+	}
+
+	&.-grass.-right.-top {
+		background-image: url('/assets/cells/cell-water-grass-on-right-and-top.png');
+	}
+
+	&.-grass.-left.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-bottom.png');
+	}
+
 	&.-grass.-right.-bottom {
 		background-image: url('/assets/cells/cell-water-grass-on-right-and-bottom.png');
+	}
+
+	&.-grass.-corner.-left.-top {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-top.png');
+	}
+
+	&.-grass.-corner.-right.-top {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-top.png');
+	}
+
+	&.-grass.-corner.-left.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-bottom.png');
+	}
+
+	&.-grass.-corner.-right.-bottom {
+		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-bottom.png');
+	}
+
+	&.-grass.-left.-right {
+		background-image: url('/assets/cells/cell-water-grass-on-left-and-right.png');
+	}
+
+	&.-grass.-left-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-left-corners.png');
+	}
+
+	&.-grass.-right-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-right-corners.png');
+	}
+
+	&.-grass.-top-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-top-corners.png');
+	}
+
+	&.-grass.-bottom-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-bottom-corners.png');
+	}
+
+	&.-grass.-top-and-bottom-corners {
+		background-image: url('/assets/cells/cell-water-grass-on-top-and-bottom-corners.png');
 	}
 }
 

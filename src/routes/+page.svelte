@@ -60,7 +60,8 @@
 		{ id: 5, title: 'The Split Valley', size: '12 × 9', text: 'Cross uneven passes and control a winding road through the valley.' },
 		{ id: 6, title: 'The Gauntlet', size: '9 × 11', text: 'Push through a narrow corridor and contest its two airports.' },
 		{ id: 7, title: 'The Wide Divide', size: '16 × 7', text: 'Manage a wide front where distant objectives reward careful planning.' },
-		{ id: 8, title: 'The Broken Crown', size: '10 × 13', text: 'Climb through broken defenses and fight around a central crossroads.' }
+		{ id: 8, title: 'The Broken Crown', size: '10 × 13', text: 'Climb through broken defenses and fight around a central crossroads.' },
+		{ id: 9, title: 'The Tidal Gates', size: '12 × 10', text: 'Advance between two flooded basins through three narrow land passages.' }
 	]
 </script>
 

@@ -34,7 +34,8 @@ for (const [id, cols, rows] of [
 	[5, 12, 9],
 	[6, 9, 11],
 	[7, 16, 7],
-	[8, 10, 13]
+	[8, 10, 13],
+	[9, 12, 10]
 ] as const) {
 	test(`map ${id}: renders the complete new battlefield without horizontal overflow`, async ({ page }) => {
 		await page.goto(`/play/${id}/`)
@@ -72,9 +73,11 @@ test('how-to-play dialog replaces the permanent control hint', async ({ page }) 
 	await expect(dialog.getByRole('heading', { name: 'Touch and mouse', exact: true })).toBeVisible()
 	await expect(dialog.getByRole('heading', { name: 'Keyboard', exact: true })).toBeVisible()
 	await expect(dialog.getByText('Arrow keys or ZQSD', { exact: true })).toBeVisible()
-	const qwerty = dialog.getByRole('button', { name: 'QWERTY · WASD', exact: true })
-	await qwerty.click()
-	await expect(qwerty).toHaveAttribute('aria-pressed', 'true')
+	await page.keyboard.press('Escape')
+	const keyboardLayout = page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true })
+	await keyboardLayout.selectOption('qwerty')
+	await page.getByRole('button', { name: 'How to play', exact: true }).click()
+	await expect(dialog.getByText('Current movement layout: QWERTY · WASD', { exact: true })).toBeVisible()
 	await expect(dialog.getByText('Arrow keys or WASD', { exact: true })).toBeVisible()
 	await page.keyboard.press('Escape')
 	await expect(dialog).toHaveCount(0)
@@ -83,8 +86,9 @@ test('how-to-play dialog replaces the permanent control hint', async ({ page }) 
 	await page.locator('[data-cell="9"]').press('w')
 	await expect(page.locator('[data-cell="1"] [data-unit="1"]')).toBeVisible()
 	await page.reload()
+	await expect(page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true })).toHaveValue('qwerty')
 	await page.getByRole('button', { name: 'How to play', exact: true }).click()
-	await expect(page.getByRole('button', { name: 'QWERTY · WASD', exact: true })).toHaveAttribute('aria-pressed', 'true')
+	await expect(page.getByText('Current movement layout: QWERTY · WASD', { exact: true })).toBeVisible()
 })
 
 test('capture city and factory, earn income and purchase through the dialog', async ({ page }) => {

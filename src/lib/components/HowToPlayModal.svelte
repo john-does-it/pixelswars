@@ -2,7 +2,7 @@
 	import Modal from './Modal.svelte'
 	import type { KeyboardLayout } from '$lib/game/types.js'
 
-	let { keyboardLayout, onlayoutchange, onclose }: { keyboardLayout: KeyboardLayout; onlayoutchange: (layout: KeyboardLayout) => void; onclose: () => void } = $props()
+	let { keyboardLayout, onclose }: { keyboardLayout: KeyboardLayout; onclose: () => void } = $props()
 </script>
 
 <Modal title="How to play" {onclose}>
@@ -40,13 +40,7 @@
 
 	<section>
 		<h3>Keyboard</h3>
-		<div class="keyboard-setting">
-			<span>Movement layout</span>
-			<div class="layout-options" aria-label="Keyboard movement layout">
-				<button aria-pressed={keyboardLayout === 'azerty'} onclick={() => onlayoutchange('azerty')}>AZERTY · ZQSD</button>
-				<button aria-pressed={keyboardLayout === 'qwerty'} onclick={() => onlayoutchange('qwerty')}>QWERTY · WASD</button>
-			</div>
-		</div>
+		<p class="keyboard-layout">Current movement layout: <strong>{keyboardLayout === 'azerty' ? 'AZERTY · ZQSD' : 'QWERTY · WASD'}</strong></p>
 		<dl>
 			<div>
 				<dt>Move</dt>
@@ -108,28 +102,12 @@
 		gap: 7px;
 	}
 
-	.keyboard-setting {
-		display: grid;
-		gap: 8px;
-		margin-bottom: 14px;
-	}
-
-	.keyboard-setting > span,
 	dt {
 		font-weight: bold;
 	}
 
-	.layout-options {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.layout-options button[aria-pressed='true'] {
-		color: #202a32;
-		background: #ffe985;
-		border-color: #ffe985;
-		font-weight: bold;
+	.keyboard-layout {
+		margin-bottom: 14px;
 	}
 
 	dl div {
