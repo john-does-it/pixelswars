@@ -7,6 +7,29 @@
 
 * {
 	box-sizing: border-box;
+	scrollbar-color: #91a6b4 #19242c;
+	scrollbar-width: auto;
+}
+
+/* Keep native dragging and touch scrolling, with colors from the game UI. */
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+	background: #19242c;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #91a6b4;
+	border: 3px solid #19242c;
+	border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #ffe985;
 }
 
 body {
@@ -83,22 +106,6 @@ button.primary,
 }
 
 /* Original terrain and unit sprites; layout lives in Svelte components. */
-
-.cell-container.-attackable .unit-container.-inrange::before {
-	position: absolute;
-	display: flex;
-	content: '';
-	width: 50%;
-	height: 50%;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: auto;
-	background-image: url('/assets/icons/icon-crosshair.png');
-	background-size: contain;
-	z-index: 20;
-}
 
 .cell-container.-grass {
 	background-image: url('/assets/cells/cell-grass.png');
@@ -294,56 +301,6 @@ button.primary,
 	&.-halfcaptured.-capturedby2 {
 		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
 	}
-}
-
-.unit-container.-infantry.-one {
-	background-image: url('/assets/units/infantry-1.png');
-}
-
-.unit-container.-infantry.-two {
-	background-image: url('/assets/units/infantry-2.png');
-}
-
-.unit-container.-jeep.-one {
-	background-image: url('/assets/units/jeep-1.png');
-}
-
-.unit-container.-jeep.-two {
-	background-image: url('/assets/units/jeep-2.png');
-}
-
-.unit-container.-artillery.-one {
-	background-image: url('/assets/units/artillery-1.png');
-}
-
-.unit-container.-artillery.-two {
-	background-image: url('/assets/units/artillery-2.png');
-}
-
-.unit-container.-tank.-one {
-	background-image: url('/assets/units/tank-1.png');
-}
-
-.unit-container.-tank.-two {
-	background-image: url('/assets/units/tank-2.png');
-}
-
-.unit-container .-outofammo {
-	background-image: url('/assets/icons/icon-attack-capacity.png');
-	-webkit-animation: outOf 2.5s infinite alternate;
-	animation: outOf 2.5s infinite alternate;
-}
-
-.unit-container .-outofmovement {
-	background-image: url('/assets/icons/icon-movement.png');
-	-webkit-animation: outOf 2.5s infinite alternate;
-	animation: outOf 2.5s infinite alternate;
-}
-
-.unit-container .-outofcapture {
-	background-image: url('/assets/icons/icon-capture-capacity.png');
-	-webkit-animation: outOf 2.5s infinite alternate;
-	animation: outOf 2.5s infinite alternate;
 }
 
 .cell-container.-airport {

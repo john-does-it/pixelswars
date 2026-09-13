@@ -12,7 +12,7 @@ npm run dev
 ```
 
 Open the Vite address. Routes: `/` (map selection), `/play/1/` (8 × 8),
-`/play/2/` (12 × 8). Old board HTML URLs redirect to the new routes.
+`/play/2/` (12 × 8), through `/play/9/`. The obsolete board HTML routes have been removed.
 
 ```sh
 npm run check
@@ -33,8 +33,8 @@ npm run build
 npm run test:e2e
 ```
 
-Tests cover both maps, desktop/mobile layouts, movement and cancellation, turns,
-capture, income, purchases, occupied factories, combat, navigation and old URLs.
+Tests cover all nine maps, desktop/mobile layouts, movement and cancellation, turns,
+capture, income, purchases, occupied factories, combat, navigation, settings and minimap navigation.
 To use installed Chrome instead, set `PW_CHANNEL=chrome`
 (PowerShell: `$env:PW_CHANNEL = 'chrome'`).
 
@@ -51,7 +51,7 @@ own selector. Keep the `<script>`, markup and `<style>` sections distinct.
 Run `npm run format` before committing. CI checks these conventions with
 `npm run format:check`.
 
-- `src/routes/`: map selection, game routes and compatibility redirects.
+- `src/routes/`: map selection and game routes.
 - `src/lib/components/`: Game, Board, Cell, Unit, GameHeader, StatsPanel,
   Controls, ProductionModal, VictoryModal and a shared native-dialog component.
 - `src/lib/game/game.svelte.ts`: creates a separate `$state` for each game.
@@ -78,20 +78,24 @@ income notifications. State belongs to a component instance: server rendering
 and navigation never share another game's state. Pending combat work is
 cancelled on disposal. Audio is created on mount and stopped on navigation.
 
-The DOM renders state; it no longer stores it. There are no global game scripts,
-DOM queries, manual HTML insertion or MutationObservers.
+The DOM renders game state; it no longer stores it. Board DOM measurements only
+manage scrolling, keyboard focus and the minimap viewport.
 To add a unit, extend the catalog, supply sprites/sounds and add non-neutral
-matchups to combat-rules.js. The factory enumerates the catalog automatically.
+matchups to combat-rules.ts. The army base enumerates the catalog automatically.
 
 ## Rules
 
 Click/tap a unit and adjacent blue cells to move, or use arrows with the selectable ZQSD / WASD keyboard layout.
 Enter confirms, Escape cancels, Space captures. On-screen controls provide
-the same actions on touch devices.
+the same actions on touch devices. Mobile maps include an interactive overview:
+tap or drag on the minimap to center the visible area, or use the edge arrow
+buttons. Language, audio and keyboard settings live in Options and help.
 
 Movement is orthogonal and pays the destination terrain cost. Attack ranges
 are square and include diagonals. Artillery attacks at distances 2–3, excluding
-all eight adjacent cells. Other current units attack at range 1.
+all eight adjacent cells. Snipers attack at distance 2; anti-air attacks at 1–2.
+Other current units attack at range 1. Mountains extend ranged ground units'
+maximum range by one.
 
 | Attacker  | Infantry | Jeep | Tank | Artillery |
 | --------- | -------- | ---- | ---- | --------- |
@@ -150,16 +154,33 @@ Feedback and contributions: hello@johndoesit.be.
 ## Air units and airports
 
 Map 2 has one neutral airport on a central tile (row 4, column 7).
-Captured airports produce helicopters at 1800$ and planes at 3000$. Factories
+Captured airports produce helicopters at 1800$ and planes at 3000$. Army bases
 produce ground units, including rocket infantry at 400$. An occupied production
 tile blocks purchases.
-Planes have 120 health, 8 movement and one adjacent attack per turn. Each empty
+Planes have 120 health, 10 movement and one adjacent attack per turn. Each empty
 tile costs exactly 1 movement, with no terrain defense bonus. They can attack
-both ground and air targets; no current ground unit can target or retaliate
-against aircraft. Helicopters have 110 health, 6 movement and one adjacent attack.
+both ground and air targets; anti-air can target and retaliate against aircraft.
+Helicopters have 110 health, 8 movement and one adjacent attack.
 They are strong against infantry, neutral against vehicles and weak against planes.
 Air units cannot capture buildings; one unit per tile still applies.
 Rocket infantry has infantry health/defense, 4 movement and one attack per turn,
 2.5× damage against every vehicle, and 0.5× against regular infantry. Every unit
 deals increased damage to it, making it an offensive specialist. It can capture
 and secure buildings. All units have five health-based sprite stages for both players.
+
+## Snipers and high ground
+
+Army bases train snipers for 500$: 100 health, 60 attack, 10 defense, 4 movement
+and one attack per turn. Their range is 2–2, so they cannot retaliate at contact.
+They deal ×1.5 damage against infantry, rockets and other snipers, and can capture
+buildings. They share infantry target restrictions and cannot attack aircraft.
+
+Mountains cost 4 movement. Ranged ground units on a mountain gain +1 maximum
+range while keeping their minimum range: sniper 2–3, artillery 2–4, anti-air 1–3.
+Artillery has 4 movement; artillery and anti-air both have 30 defense.
+
+The original sniper vectors are kept in `assets/temp/`. Run
+`node scripts/export-sniper-sprites.mjs` to generate both teams' healthy and four
+damage stages, full and cropped PNG sources, and `docs/sniper-damage-variants.png`.
+Scratches use individual outline-colored pixel blocks. Red-team wounds use darker
+reds for contrast. Run `npm run prebuild` afterward to synchronize public assets.

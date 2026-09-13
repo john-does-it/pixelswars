@@ -30,6 +30,7 @@ export function initialState(map: GameMap): GameState {
 		capturedCells: [],
 		securedCells: [],
 		music: false,
+		sound: true,
 		keyboardLayout: 'azerty'
 	}
 }
@@ -39,8 +40,8 @@ export const unitAt = (state: GameState, index: number): Unit | undefined => sta
 export const locked = (state: GameState): boolean => state.fighting || state.winner !== null
 
 export function neighbors(state: GameState, index: number): number[] {
-	const x = index % state.cols
-	return [x > 0 ? index - 1 : -1, x < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((i) => i >= 0 && i < state.cells.length)
+	const column = index % state.cols
+	return [column > 0 ? index - 1 : -1, column < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((neighborIndex) => neighborIndex >= 0 && neighborIndex < state.cells.length)
 }
 
 export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'>): number {
@@ -56,10 +57,17 @@ export function reachableCells(state: GameState, unit = selectedUnit(state)): nu
 	return unit ? neighbors(state, unit.cell).filter((index) => movementCost(unit, state.cells[index]) <= unit.movement && !unitAt(state, index)) : []
 }
 
+export function effectiveRange(state: GameState, unit: Unit): { minimum: number; maximum: number; bonus: number } {
+	const definition = unitTypes[unit.type]
+	const cell = state.cells[unit.cell]
+	const bonus = (definition.domain ?? 'ground') === 'ground' && definition.range > 1 && cell?.terrain === 'moutain' && movementCost(unit, cell) <= definition.movement ? 1 : 0
+	return { minimum: definition.exclusion + 1, maximum: definition.range + bonus, bonus }
+}
+
 export function attackCells(state: GameState, unit = selectedUnit(state)): number[] {
 	if (!unit) return []
-	const type = unitTypes[unit.type]
-	return rules.attackCells(unit.cell, state.cols, state.rows, type.range, type.exclusion)
+	const range = effectiveRange(state, unit)
+	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1)
 }
 
 export function canAttack(state: GameState, attacker?: Unit, defender?: Unit): boolean {
@@ -83,8 +91,8 @@ export function purchaseStatus(state: GameState, type: string): PurchaseStatus {
 }
 
 export function applyDamage(state: GameState, attacker: Unit, defender: Unit): void {
-	const a = unitTypes[attacker.type],
-		d = unitTypes[defender.type]
-	const amount = rules.damage(a.attack, attacker.health, d.defense, d.domain === 'air' ? 0 : state.cells[defender.cell].defense, attacker.type, defender.type)
-	defender.health = Math.max(0, Math.round(defender.health - amount))
+	const attackerDefinition = unitTypes[attacker.type]
+	const defenderDefinition = unitTypes[defender.type]
+	const damageAmount = rules.damage(attackerDefinition.attack, attacker.health, defenderDefinition.defense, defenderDefinition.domain === 'air' ? 0 : state.cells[defender.cell].defense, attacker.type, defender.type)
+	defender.health = Math.max(0, Math.round(defender.health - damageAmount))
 }

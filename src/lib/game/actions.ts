@@ -1,6 +1,6 @@
 import { createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
 import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.ts'
-import type { GameState, UnitTypeId } from './types.ts'
+import type { GameState } from './types.ts'
 
 export function deselect(state: GameState): void {
 	if (locked(state)) return
@@ -76,13 +76,13 @@ export function endTurn(state: GameState): boolean {
 	state.incomeCells = state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).map((cell) => cell.index)
 	state.money[state.player] += state.incomeCells.length * 200
 	for (const unit of state.units) {
-		const type = unitTypes[unit.type],
-			cell = state.cells[unit.cell]
-		unit.movement = type.movement
-		unit.attacks = type.attacks
-		unit.capture = type.captures ? 1 : 0
+		const definition = unitTypes[unit.type]
+		const cell = state.cells[unit.cell]
+		unit.movement = definition.movement
+		unit.attacks = definition.attacks
+		unit.capture = definition.captures ? 1 : 0
 		if (cell.building === 'hospital' && cell.owner === state.player && unit.player === state.player) {
-			unit.health = Math.min(type.maxHealth, unit.health + 25)
+			unit.health = Math.min(definition.maxHealth, unit.health + 25)
 		}
 	}
 	return true

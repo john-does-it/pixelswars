@@ -70,9 +70,9 @@ def read(name):
     return Image.open(io.BytesIO(base64.b64decode((ASSETS / f'{name}.png.base64').read_text()))).convert('RGBA')
 
 
-def save(im, name):
+def save(image, name):
     data = io.BytesIO()
-    im.save(data, format='PNG', optimize=True)
+    image.save(data, format='PNG', optimize=True)
     encoded = base64.b64encode(data.getvalue()).decode()
     OUTPUTS[f'assets/units/{name}.png'] = encoded
     OUTPUTS[f'assets/units/{name}.png.base64'] = encoded + '\n'
@@ -122,28 +122,28 @@ for stage, label in enumerate(['Healthy', 'Light damage', 'Moderate damage', 'He
 for row, (kind, player) in enumerate((kind, player) for kind in selected_marks for player in (1, 2)):
     name = f'{kind}-{player}'
     original = read(name)
-    im = original.copy()
+    image = original.copy()
     # Match the small vertical offsets already present in the team sprites.
     offset = original.getbbox()[1] - read(f'{kind}-1').getbbox()[1]
     for stage in range(5):
         if stage:
-            draw = ImageDraw.Draw(im)
-            for x1, y1, x2, y2, color in MARKS[kind][stage - 1]:
+            draw = ImageDraw.Draw(image)
+            for left, top, right, bottom, color in MARKS[kind][stage - 1]:
                 # Crimson blood stays distinct from player two's orange-red cloth.
                 # Preserve the same face, arm and leg wound progression as blue.
                 if kind in ('infantry', 'infantry-rocket') and player == 2:
                     color = {RED: '#76031c', WOUND: '#380211'}.get(color, color)
-                draw.rectangle((x1, y1 + offset, x2 - 1, y2 - 1 + offset), fill=color)
+                draw.rectangle((left, top + offset, right - 1, bottom - 1 + offset), fill=color)
             # Keep every original silhouette/transparent pixel, even at critical health.
-            im.putalpha(original.getchannel('A'))
-            save(im, f'{name}-damage-{stage}')
+            image.putalpha(original.getchannel('A'))
+            save(image, f'{name}-damage-{stage}')
             fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air') else read(f'{name}-fit')
             fitted = Image.new('RGBA', fit.size)
             box = fit.getbbox()
-            crop = im.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)
+            crop = image.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)
             fitted.paste(crop, (box[0], box[1]))
             save(fitted, f'{name}-damage-{stage}-fit')
-        sheet.paste(im, (45 + stage * 200, 40 + row * 190), im)
+        sheet.paste(image, (45 + stage * 200, 40 + row * 190), image)
     labels.text((10, 55 + row * 190), name, fill='#ffffff')
 if not only:
     preview = io.BytesIO()

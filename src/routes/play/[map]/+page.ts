@@ -8,11 +8,14 @@ import board6 from '$lib/data/board-6.json'
 import board7 from '$lib/data/board-7.json'
 import board8 from '$lib/data/board-8.json'
 import board9 from '$lib/data/board-9.json'
+import board10 from '$lib/data/board-10.json'
+import board11 from '$lib/data/board-11.json'
+import board12 from '$lib/data/board-12.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '$lib/game/types.js'
 
 export const entries: EntryGenerator = () => {
-	return [{ map: '1' }, { map: '2' }, { map: '3' }, { map: '4' }, { map: '5' }, { map: '6' }, { map: '7' }, { map: '8' }, { map: '9' }]
+	return Array.from({ length: 12 }, (_, index) => ({ map: String(index + 1) }))
 }
 export const load: PageLoad = ({ params }) => {
 	const maps: Record<string, GameMap> = {
@@ -24,7 +27,10 @@ export const load: PageLoad = ({ params }) => {
 		6: board6 as GameMap,
 		7: board7 as GameMap,
 		8: board8 as GameMap,
-		9: board9 as GameMap
+		9: board9 as GameMap,
+		10: board10 as GameMap,
+		11: board11 as GameMap,
+		12: board12 as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')

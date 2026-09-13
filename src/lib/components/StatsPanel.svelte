@@ -2,20 +2,21 @@
 	import { asset } from '$app/paths'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
-	import { unitAt } from '$lib/game/model.js'
+	import { unitAt, effectiveRange } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
+	import { m as messages } from '$lib/paraglide/messages.js'
+	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { GameState, StatItem, Unit } from '$lib/game/types.js'
 
 	let { state }: { state: GameState } = $props()
 	const cell = $derived(state.hoveredIndex === null ? undefined : state.cells[state.hoveredIndex])
 	const unit = $derived(cell && unitAt(state, cell.index))
-	const type = $derived(unit && unitTypes[unit.type])
 	const terrainStats = $derived<StatItem[]>(
 		cell
 			? [
-					{ icon: 'icon-movement', label: 'Movement cost', value: cell.terrain === 'water' ? `${cell.cost} (ships only)` : cell.cost },
-					{ icon: 'icon-defense', label: 'Terrain defense', value: cell.defense }
+					{ icon: 'icon-movement', label: translate(messages.movement_cost), value: cell.terrain === 'water' ? `${cell.cost} (${translate(messages.ships_only)})` : cell.cost },
+					{ icon: 'icon-defense', label: translate(messages.terrain_defense), value: cell.defense }
 				]
 			: []
 	)
@@ -23,20 +24,21 @@
 
 	function statsFor(currentUnit: Unit): StatItem[] {
 		const definition = unitTypes[currentUnit.type]
+		const range = effectiveRange(state, currentUnit)
 		return [
-			{ icon: 'icon-health', label: 'Health', value: `${currentUnit.health}/${definition.maxHealth}`, testId: 'preview-health' },
-			{ icon: 'icon-movement', label: 'Movement', value: `${currentUnit.movement}/${definition.movement}` },
-			{ icon: 'icon-attack-capacity', label: 'Attacks', value: `${currentUnit.attacks}/${definition.attacks}` },
-			{ icon: 'icon-attack-damage', label: 'Attack', value: definition.attack },
-			{ icon: 'icon-defense', label: 'Defense', value: definition.defense },
-			{ icon: 'icon-attack-range', label: 'Range', value: `${definition.exclusion + 1}–${definition.range}` }
+			{ icon: 'icon-health', label: translate(messages.stat_health), value: `${currentUnit.health}/${definition.maxHealth}`, testId: 'preview-health' },
+			{ icon: 'icon-movement', label: translate(messages.stat_movement), value: `${currentUnit.movement}/${definition.movement}` },
+			{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: `${currentUnit.attacks}/${definition.attacks}` },
+			{ icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: definition.attack },
+			{ icon: 'icon-defense', label: translate(messages.stat_defense), value: definition.defense },
+			{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: `${range.minimum}–${range.maximum}`, testId: 'preview-range' }
 		]
 	}
 </script>
 
-<aside aria-label="Cell statistics" class="panel">
+<aside aria-label={translate(messages.cell_statistics)} class="panel">
 	<div class="heading">
-		<h2>{cell ? cell.building || cell.name : 'Field information'}</h2>
+		<h2>{cell ? (cell.building ? buildingName(cell.building) : terrainName(cell.terrain)) : translate(messages.field_information)}</h2>
 		{#if cell}
 			<TerrainIcon {cell} />
 		{/if}
@@ -45,22 +47,25 @@
 		<StatList items={terrainStats} />
 		{#if cell.building}
 			<p class="building-status">
-				<span>Owner: {cell.owner ? `Player ${cell.owner}` : 'Neutral'}</span>
-				<span>Capture: {cell.capturePoints}/20</span>
+				<span>{translate(messages.owner, { owner: cell.owner ? translate(messages.player, { player: cell.owner }) : translate(messages.neutral) })}</span>
+				<span>{translate(messages.capture_points, { points: cell.capturePoints })}</span>
 			</p>
 		{/if}
-		{#if unit && type}
+		{#if unit}
 			<div class="heading unit-heading">
 				<div class="unit-name">
-					<h3>Player {unit.player}</h3>
-					<span>{type.name}</span>
+					<h3>{translate(messages.player, { player: unit.player })}</h3>
+					<span>{unitName(unit.type)}</span>
 				</div>
 				<img class="unit-icon" src={asset(unitSprite(unit, true))} alt="" />
 			</div>
 			<StatList items={unitStats} />
+			{#if effectiveRange(state, unit).bonus}
+				<p>{translate(messages.mountain_range_bonus)}</p>
+			{/if}
 		{/if}
 	{:else}
-		<p>Point to a cell or select a unit to inspect its statistics.</p>
+		<p>{translate(messages.inspect_hint)}</p>
 	{/if}
 </aside>
 
@@ -89,7 +94,6 @@
 	}
 
 	h2 {
-		text-transform: capitalize;
 		font-size: 18px;
 		margin: 0;
 	}

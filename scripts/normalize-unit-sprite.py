@@ -12,11 +12,11 @@ OUTLINE_COLOR = (63, 38, 49, 255)
 
 def normalize_outline(image: Image.Image) -> None:
     pixels = image.load()
-    for y in range(image.height):
-        for x in range(image.width):
-            red, green, blue, alpha = pixels[x, y]
+    for row in range(image.height):
+        for column in range(image.width):
+            red, green, blue, alpha = pixels[column, row]
             if alpha >= 16 and 40 <= red <= 90 and green <= 55 and 15 <= blue <= 70 and red > green and blue >= green:
-                pixels[x, y] = OUTLINE_COLOR
+                pixels[column, row] = OUTLINE_COLOR
 
 
 def normalize(source: Path, destination: Path) -> None:

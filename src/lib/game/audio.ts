@@ -5,7 +5,7 @@ import type { AudioController, Player } from './types.ts'
 
 export function createAudio(): AudioController {
 	const tracks = new Map<string, HTMLAudioElement>()
-	const get = (name: string): HTMLAudioElement => {
+	const getTrack = (name: string): HTMLAudioElement => {
 		const existing = tracks.get(name)
 		if (existing) return existing
 		const filename = name === 'bomb' ? 'bombing' : name
@@ -13,7 +13,7 @@ export function createAudio(): AudioController {
 		tracks.set(name, track)
 		return track
 	}
-	const play = (audio: HTMLAudioElement, volume: number): void => {
+	const playTrack = (audio: HTMLAudioElement, volume: number): void => {
 		audio.volume = volume
 		audio.currentTime = 0
 		void audio.play().catch(() => {}) // Autoplay restrictions must not interrupt a turn.
@@ -21,14 +21,14 @@ export function createAudio(): AudioController {
 	return {
 		sound(name: string) {
 			if (name === 'infantry') name = ['infantry', 'infantry-2', 'infantry-3'][Math.floor(Math.random() * 3)]!
-			play(get(name), 0.5)
+			playTrack(getTrack(name), 0.5)
 		},
 		music(enabled: boolean, player: Player) {
 			for (const name of ['player-one-music', 'player-two-music']) tracks.get(name)?.pause()
 			if (enabled) {
-				const track = get(player === 1 ? 'player-one-music' : 'player-two-music')
+				const track = getTrack(player === 1 ? 'player-one-music' : 'player-two-music')
 				track.loop = true
-				play(track, 0.125)
+				playTrack(track, 0.125)
 			}
 		},
 		dispose() {

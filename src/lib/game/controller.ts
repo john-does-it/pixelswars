@@ -7,7 +7,7 @@ import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } f
 export function createController(state: GameState, { sound = () => {}, delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)) }: ControllerOptions = {}): GameController {
 	let disposed = false
 	const play = (name: string): void => {
-		if (!disposed) sound(name)
+		if (!disposed && state.sound) sound(name)
 	}
 	async function fight(defender: Unit): Promise<void> {
 		const attacker = selectedUnit(state)
@@ -95,9 +95,9 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 		},
 		keydown(event: KeyboardEvent) {
 			const target = event.target instanceof HTMLElement ? event.target : null
-			if (locked(state) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
+			if (locked(state) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
 			if (event.key === 'Escape') {
-				if (state.productionIndex !== null || target?.closest('dialog')) return
+				if (state.productionIndex !== null) return
 				if (selectedUnit(state)) {
 					event.preventDefault()
 					this.cancel()

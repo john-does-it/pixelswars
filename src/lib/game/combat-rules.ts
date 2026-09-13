@@ -14,22 +14,26 @@ const CombatRules = (() => {
 		artillery: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 0.5, jeep: 1, tank: 1.5, artillery: 1 }
 	}
 
-	function attackCells(index: number, cols: number, rows: number, range: number, exclusion = 0): number[] {
-		const result: number[] = []
-		const x = index % cols
-		const y = Math.floor(index / cols)
+	function attackCells(index: number, columnCount: number, rowCount: number, range: number, exclusion = 0): number[] {
+		const targetCells: number[] = []
+		const originColumn = index % columnCount
+		const originRow = Math.floor(index / columnCount)
 		// Preserve the prototype's square ranges, including diagonal attacks.
-		for (let row = Math.max(0, y - range); row <= Math.min(rows - 1, y + range); row++) {
-			for (let col = Math.max(0, x - range); col <= Math.min(cols - 1, x + range); col++) {
-				const distance = Math.max(Math.abs(col - x), Math.abs(row - y))
-				if (distance > exclusion) result.push(row * cols + col)
+		for (let row = Math.max(0, originRow - range); row <= Math.min(rowCount - 1, originRow + range); row++) {
+			for (let column = Math.max(0, originColumn - range); column <= Math.min(columnCount - 1, originColumn + range); column++) {
+				const distance = Math.max(Math.abs(column - originColumn), Math.abs(row - originRow))
+				if (distance > exclusion) targetCells.push(row * columnCount + column)
 			}
 		}
-		return result
+		return targetCells
 	}
 
 	function typeModifier(attackerType: string, defenderType: string): number {
-		return modifiers[attackerType]?.[defenderType] ?? 1
+		if (attackerType === 'infantry-sniper' && ['infantry', 'infantry-rocket', 'infantry-sniper'].includes(defenderType)) return 1.5
+		// Other sniper matchups use infantry armor and target restrictions.
+		const attackerMatchup = attackerType === 'infantry-sniper' ? 'infantry' : attackerType
+		const defenderMatchup = defenderType === 'infantry-sniper' ? 'infantry' : defenderType
+		return modifiers[attackerMatchup]?.[defenderMatchup] ?? 1
 	}
 
 	// Zero means an impossible attack, not a shot that consumes ammo for no damage.
@@ -38,8 +42,8 @@ const CombatRules = (() => {
 	}
 
 	function damage(attack: number, health: number, defense: number, terrainDefense: number, attackerType: string, defenderType: string): number {
-		const base = Math.max(0, attack - (defense + terrainDefense) / 10)
-		return ((base * Math.max(0, health)) / 100) * typeModifier(attackerType, defenderType)
+		const baseDamage = Math.max(0, attack - (defense + terrainDefense) / 10)
+		return ((baseDamage * Math.max(0, health)) / 100) * typeModifier(attackerType, defenderType)
 	}
 
 	return { attackCells, typeModifier, canTarget, damage }

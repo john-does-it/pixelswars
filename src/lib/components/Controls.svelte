@@ -1,69 +1,83 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
 	import { asset } from '$app/paths'
 	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
+	import { m as messages } from '$lib/paraglide/messages.js'
+	import { translate } from '$lib/i18n.svelte.js'
+	import { updatePreferences } from '$lib/preferences.svelte.js'
 	import type { GameController, KeyboardLayout } from '$lib/game/types.js'
 	import HowToPlayModal from './HowToPlayModal.svelte'
+	import LanguageSelect from './LanguageSelect.svelte'
+	import SettingSelect from './SettingSelect.svelte'
 
-	const keyboardPreferenceKey = 'pixel-wars-keyboard-layout'
 	let { game }: { game: GameController } = $props()
 	let showHelp = $state(false)
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
 
-	onMount(() => {
-		const savedLayout = localStorage.getItem(keyboardPreferenceKey)
-		if (savedLayout === 'azerty' || savedLayout === 'qwerty') gameState.keyboardLayout = savedLayout
-	})
-
 	function setKeyboardLayout(layout: KeyboardLayout) {
 		gameState.keyboardLayout = layout
-		localStorage.setItem(keyboardPreferenceKey, layout)
+		updatePreferences({ keyboardLayout: layout })
 	}
 
-	function changeKeyboardLayout(event: Event) {
-		const layout = (event.currentTarget as HTMLSelectElement).value
+	function changeKeyboardLayout(layout: string) {
 		if (layout === 'azerty' || layout === 'qwerty') setKeyboardLayout(layout)
 	}
 </script>
 
-<nav aria-label="Game controls">
-	<div class="utility-controls">
-		<button class="music" aria-label="Music {gameState.music ? 'on' : 'off'}" title="Music {gameState.music ? 'on' : 'off'}" aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
-			Music
-			<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
-		</button>
-		<button aria-haspopup="dialog" onclick={() => (showHelp = true)}>How to play</button>
-		<label class="keyboard-layout">
-			<span>Keyboard</span>
-			<select aria-label="Keyboard movement layout" value={gameState.keyboardLayout} onchange={changeKeyboardLayout}>
-				<option value="azerty">AZERTY · ZQSD</option>
-				<option value="qwerty">QWERTY · WASD</option>
-			</select>
-		</label>
-	</div>
+<nav aria-label={translate(messages.game_controls)}>
+	<button aria-haspopup="dialog" onclick={() => (showHelp = true)}>{translate(messages.options_and_help)}</button>
 	<div class="action-controls">
-		<button disabled={locked(gameState) || !selected} onclick={() => game.confirm()}>Confirm move</button>
-		<button disabled={locked(gameState) || !selected} onclick={() => game.cancel()}>Cancel move</button>
-		<button disabled={!canCapture(gameState)} onclick={() => game.capture()}>{selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? 'Secure' : 'Capture'}</button>
-		<button class="primary" disabled={locked(gameState)} onclick={() => game.endTurn()}>End round</button>
+		<button disabled={locked(gameState) || !selected} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
+		<button disabled={locked(gameState) || !selected} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>
+		<button disabled={!canCapture(gameState)} onclick={() => game.capture()}>{translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture)}</button>
+		<button class="primary" disabled={locked(gameState)} onclick={() => game.endTurn()}>{translate(messages.end_round)}</button>
 	</div>
 </nav>
 {#if showHelp}
-	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)} />
+	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)}>
+		{#snippet settings()}
+			<div class="settings-controls">
+				<button class="audio" aria-label={translate(gameState.sound ? messages.sound_on : messages.sound_off)} title={translate(gameState.sound ? messages.sound_on : messages.sound_off)} aria-pressed={gameState.sound} onclick={() => (gameState.sound = !gameState.sound)}>
+					{translate(messages.sound)}
+					<img src={asset(`/assets/icons/icon-${gameState.sound ? 'play' : 'mute'}-sound.png`)} alt="" />
+				</button>
+				<button class="audio" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
+					{translate(messages.music)}
+					<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
+				</button>
+				<LanguageSelect compact />
+				<SettingSelect
+					label={translate(messages.keyboard)}
+					ariaLabel={translate(messages.keyboard_movement_layout)}
+					value={gameState.keyboardLayout}
+					options={[
+						{ value: 'azerty', label: 'AZERTY · ZQSD' },
+						{ value: 'qwerty', label: 'QWERTY · WASD' }
+					]}
+					onchange={changeKeyboardLayout}
+				/>
+			</div>
+		{/snippet}
+	</HowToPlayModal>
 {/if}
 {#if gameState.fighting}
-	<p role="status">Combat in progress…</p>
+	<p role="status">{translate(messages.combat_in_progress)}</p>
 {/if}
 
 <style>
-	.music {
+	.settings-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.audio {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
 	}
 
-	.music img {
+	.audio img {
 		display: block;
 		width: 24px;
 		height: 24px;
@@ -79,7 +93,6 @@
 		margin-top: 20px;
 	}
 
-	.utility-controls,
 	.action-controls {
 		display: flex;
 		flex-wrap: wrap;
@@ -87,39 +100,8 @@
 		gap: 8px;
 	}
 
-	.keyboard-layout {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding-left: 10px;
-		color: #dce6eb;
-		background: #19242c;
-		border: 1px solid #78909f;
-		border-radius: 5px;
-	}
-
-	.keyboard-layout span {
-		font-size: 13px;
-		font-weight: bold;
-	}
-
-	select {
-		min-height: 46px;
-		align-self: stretch;
-		font: inherit;
-		font-size: 13px;
-		color: inherit;
-		background: #2b3d49;
-		border: 0;
-		border-left: 1px solid #78909f;
-		border-radius: 0 4px 4px 0;
-		padding: 0 9px;
-		cursor: pointer;
-	}
-
 	@media (max-width: 900px) {
 		nav,
-		.utility-controls,
 		.action-controls {
 			justify-content: center;
 		}

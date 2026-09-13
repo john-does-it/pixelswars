@@ -1,5 +1,37 @@
 import { test, expect } from '@playwright/test'
 
+for (const [mapId, columns, rows, name] of [
+	[10, 16, 14, 'The Shattered Reach'],
+	[11, 18, 14, 'Thunder Ridge'],
+	[12, 18, 18, 'The Iron Estuary']
+] as const) {
+	test(`${name}: opens from home with reinforced armies and a playable sniper`, async ({ page }, testInfo) => {
+		await page.goto('/')
+		await page.getByRole('link', { name: new RegExp(name) }).click()
+		await expect(page).toHaveURL(new RegExp(`/play/${mapId}/$`))
+		await expect(page.locator('[data-cell]')).toHaveCount(columns * rows)
+		await expect(page.locator('[data-unit]')).toHaveCount(22)
+		await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
+		for (const type of ['infantry-sniper', 'helicopter', 'anti-air']) await expect(page.locator(`.board .unit-container.-${type}`)).toHaveCount(2)
+		const sniperColumn = Math.floor((columns - 11) / 2) + 5
+		await page.locator(`[data-cell="${sniperColumn}"]`).click()
+		await page.locator(`[data-cell="${columns + sniperColumn}"]`).click()
+		if (sniperColumn !== 7) {
+			await page.locator(`[data-cell="${columns + 7}"]`).click()
+			for (let turn = 0; turn < 2; turn++) await page.getByRole('button', { name: 'End round', exact: true }).click()
+			await page.locator(`[data-cell="${columns + 7}"]`).click()
+		}
+		await page.locator(`[data-cell="${2 * columns + 7}"]`).click()
+		await page.getByRole('button', { name: 'Capture', exact: true }).click()
+		await expect(page.locator(`[data-cell="${2 * columns + 7}"]`)).toHaveClass(/-halfcaptured/)
+		await page.setViewportSize({ width: 360, height: 800 })
+		await expect(page.locator('[data-minimap-unit]')).toHaveCount(22)
+		await page.locator('.minimap').screenshot({ path: testInfo.outputPath(`map-${mapId}.png`) })
+		const dimensions = await page.locator('.board-viewport').evaluate((element) => ({ client: element.clientWidth, scroll: element.scrollWidth }))
+		expect(dimensions.scroll).toBeGreaterThan(dimensions.client)
+	})
+}
+
 for (const [id, cols, count] of [
 	[1, 8, 10],
 	[2, 12, 10]
@@ -19,7 +51,7 @@ for (const [id, cols, count] of [
 		await page.getByRole('button', { name: 'End round', exact: true }).click()
 		await expect(page.getByText('Round 2', { exact: true })).toBeVisible()
 		await page.getByRole('link', { name: '← Pixel’s War' }).click()
-		await page.getByRole('link', { name: new RegExp(id === 1 ? 'The Rectangular Map' : 'The Squared Map') }).click()
+		await page.getByRole('link', { name: new RegExp(id === 1 ? 'Iron Horizon' : 'Emberfall') }).click()
 		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
 		await expect(page.locator('[data-cell]')).toHaveCount(id === 1 ? 96 : 64)
 		expect(errors).toEqual([])
@@ -64,31 +96,130 @@ test('selecting a unit does not shift or resize the battlefield', async ({ page 
 	expect(after!.width).toBeCloseTo(before!.width, 1)
 })
 
-test('how-to-play dialog replaces the permanent control hint', async ({ page }) => {
+test('options and help groups settings above synchronized rules without moving the selected unit', async ({ page }) => {
 	await page.goto('/play/1/')
-	await expect(page.getByText('Select a unit, then click adjacent blue cells')).toHaveCount(0)
-	await page.getByRole('button', { name: 'How to play', exact: true }).click()
-	const dialog = page.getByRole('dialog', { name: 'How to play', exact: true })
+	await page.locator('[data-cell="1"]').click()
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	const dialog = page.getByRole('dialog', { name: 'Options and help', exact: true })
 	await expect(dialog).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Options', level: 3, exact: true })).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'How to play', level: 3, exact: true })).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Goal', level: 4, exact: true })).toBeVisible()
 	await expect(dialog.getByRole('heading', { name: 'Touch and mouse', exact: true })).toBeVisible()
-	await expect(dialog.getByRole('heading', { name: 'Keyboard', exact: true })).toBeVisible()
 	await expect(dialog.getByText('Arrow keys or ZQSD', { exact: true })).toBeVisible()
-	await page.keyboard.press('Escape')
-	const keyboardLayout = page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true })
+	const keyboardLayout = dialog.getByRole('combobox', { name: 'Keyboard movement layout', exact: true })
 	await keyboardLayout.selectOption('qwerty')
-	await page.getByRole('button', { name: 'How to play', exact: true }).click()
 	await expect(dialog.getByText('Current movement layout: QWERTY · WASD', { exact: true })).toBeVisible()
 	await expect(dialog.getByText('Arrow keys or WASD', { exact: true })).toBeVisible()
+	await dialog.focus()
+	await page.keyboard.press('s')
+	await expect(page.locator('[data-cell="1"] [data-unit="1"]')).toHaveCount(1)
 	await page.keyboard.press('Escape')
 	await expect(dialog).toHaveCount(0)
-	await page.locator('[data-cell="1"]').click()
+	await expect(page.locator('[data-cell="1"]')).toHaveAttribute('aria-pressed', 'true')
 	await page.locator('[data-cell="1"]').press('ArrowDown')
 	await page.locator('[data-cell="9"]').press('w')
 	await expect(page.locator('[data-cell="1"] [data-unit="1"]')).toBeVisible()
 	await page.reload()
-	await expect(page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true })).toHaveValue('qwerty')
-	await page.getByRole('button', { name: 'How to play', exact: true }).click()
-	await expect(page.getByText('Current movement layout: QWERTY · WASD', { exact: true })).toBeVisible()
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	await expect(keyboardLayout).toHaveValue('qwerty')
+})
+
+test('language and audio settings update the UI and persist in session cookies', async ({ page, context }) => {
+	await page.goto('/play/1/')
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	const sound = page.getByRole('button', { name: 'Sound on', exact: true })
+	const music = page.getByRole('button', { name: 'Music off', exact: true })
+	await expect(sound).toBeEnabled()
+	await expect(music).toBeEnabled()
+	await sound.click()
+	await expect(page.getByRole('button', { name: 'Sound off', exact: true })).toBeVisible()
+	await expect(music).toBeDisabled()
+	await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('fr')
+	await expect(page.getByRole('dialog', { name: 'Options et aide', exact: true })).toBeVisible()
+	await page.keyboard.press('Escape')
+	await expect(page.getByRole('button', { name: 'Fin du tour', exact: true })).toBeVisible()
+	await page.reload()
+	await page.getByRole('button', { name: 'Options et aide', exact: true }).click()
+	await expect(page.getByRole('button', { name: 'Son désactivé', exact: true })).toBeVisible()
+	await expect(page.getByRole('button', { name: 'Musique désactivée', exact: true })).toBeDisabled()
+	await expect(page.getByRole('combobox', { name: 'Langue', exact: true })).toHaveValue('fr')
+	const cookie = (await context.cookies()).find(({ name }) => name === 'pixelswars-settings')
+	expect(cookie?.expires).toBe(-1)
+	expect(decodeURIComponent(cookie?.value ?? '')).toContain('"locale":"fr"')
+})
+
+test('the complete home catalog switches between English, German and French', async ({ page }) => {
+	await page.goto('/')
+	const language = page.getByRole('combobox', { name: 'Language', exact: true })
+	await language.selectOption('de')
+	await expect(page.getByRole('heading', { name: 'Wähle dein Schlachtfeld', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Raketenwerfer', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Scharfschütze', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Militärbasis', exact: true })).toBeVisible()
+	await expect(page.getByText('Bringt jede Runde 200$. Krieg ist teuer.', { exact: true })).toBeVisible()
+	await page.getByRole('combobox', { name: 'Sprache', exact: true }).selectOption('fr')
+	await expect(page.getByRole('heading', { name: 'Choisissez votre champ de bataille', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Lance-roquettes', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Sniper', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Base armée', exact: true })).toBeVisible()
+	const width = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, viewport: innerWidth }))
+	expect(width.scroll).toBeLessThanOrEqual(width.viewport)
+})
+
+test('home offers the complete how-to-play dialog', async ({ page }) => {
+	await page.goto('/')
+	await page.getByRole('button', { name: 'Learn more', exact: true }).click()
+	const dialog = page.getByRole('dialog', { name: 'How to play', exact: true })
+	await expect(dialog).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Touch and mouse', exact: true })).toBeVisible()
+	await expect(dialog.getByRole('heading', { name: 'Keyboard', exact: true })).toBeVisible()
+	await expect(dialog.getByText(/Snipers cost/)).toHaveCount(0)
+	const scrollArea = dialog.locator('.dialog-content')
+	const outerBounds = await dialog.boundingBox()
+	const innerBounds = await scrollArea.boundingBox()
+	expect(innerBounds!.y - outerBounds!.y).toBeGreaterThanOrEqual(10)
+	expect(outerBounds!.y + outerBounds!.height - innerBounds!.y - innerBounds!.height).toBeGreaterThanOrEqual(10)
+	await scrollArea.evaluate((element) => element.scrollTo({ top: element.scrollHeight }))
+	await expect.poll(() => scrollArea.evaluate((element) => element.scrollHeight - element.scrollTop - element.clientHeight)).toBeLessThanOrEqual(1)
+	await page.keyboard.press('Escape')
+	await expect(dialog).toHaveCount(0)
+})
+
+test('mobile controls keep full-size selects and wide maps use 48px scrollable tiles', async ({ page }) => {
+	await page.setViewportSize({ width: 360, height: 800 })
+	await page.goto('/play/7/')
+	await expect(page.locator('[data-cell]')).toHaveCount(112)
+	await expect(page.getByRole('combobox')).toHaveCount(0)
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	const selectHeights = await page.getByRole('combobox').evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().height))
+	expect(selectHeights).toHaveLength(2)
+	for (const height of selectHeights) expect(height).toBeGreaterThanOrEqual(44)
+	await page.keyboard.press('Escape')
+	const dimensions = await page.locator('.board-viewport').evaluate((viewport) => {
+		const firstCell = viewport.querySelector<HTMLElement>('[data-cell]')
+		return {
+			cellWidth: firstCell?.getBoundingClientRect().width ?? 0,
+			clientWidth: viewport.clientWidth,
+			scrollWidth: viewport.scrollWidth
+		}
+	})
+	expect(dimensions.cellWidth).toBeGreaterThanOrEqual(48)
+	expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth)
+	await expect(page.locator('.board-viewport')).toHaveCSS('scrollbar-width', 'none')
+})
+
+test('visual assets preload once and are reused when opening another map', async ({ page }) => {
+	let manifestRequests = 0
+	page.on('request', (request) => {
+		if (new URL(request.url()).pathname.endsWith('/assets/preload-manifest.json')) manifestRequests++
+	})
+	await page.goto('/play/1/')
+	await expect(page.locator('[data-cell]')).toHaveCount(64)
+	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await page.getByRole('link', { name: /Iron Horizon/ }).click()
+	await expect(page.locator('[data-cell]')).toHaveCount(96)
+	expect(manifestRequests).toBe(1)
 })
 
 test('capture city and factory, earn income and purchase through the dialog', async ({ page }) => {
@@ -106,6 +237,7 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await cell(8).click()
 	await capture()
 	await expect(cell(8)).toHaveClass(/-halfcaptured/)
+	if (await page.locator('.minimap').count()) await expect(page.locator('[data-minimap-cell="8"] .terrain-icon')).toHaveCSS('background-image', await cell(8).evaluate((cell) => getComputedStyle(cell).backgroundImage))
 	await end()
 	await end()
 	await cell(10).click()
@@ -113,13 +245,14 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await cell(8).click()
 	await capture()
 	await expect(cell(8)).toHaveClass(/-capturedby1/)
+	if (await page.locator('.minimap').count()) await expect(page.locator('[data-minimap-cell="8"] .terrain-icon')).toHaveCSS('background-image', await cell(8).evaluate((cell) => getComputedStyle(cell).backgroundImage))
 	await expect(cell(8).getByText('Captured!', { exact: true })).toBeVisible()
 	await expect(cell(10).getByText('Captured!', { exact: true })).toBeVisible()
 	await expect(cell(10).getByText('+200$', { exact: true })).toHaveCount(0)
 	await cell(9).click()
 	await page.getByRole('button', { name: 'Confirm move', exact: true }).click()
 	await cell(8).click()
-	await expect(page.getByRole('dialog', { name: 'Factory' })).toBeVisible()
+	await expect(page.getByRole('dialog', { name: 'Army base' })).toBeVisible()
 	await expect(page.getByRole('button', { name: 'Buy Infantry' })).toBeDisabled()
 	await expect(page.getByRole('button', { name: 'Buy Anti-air' })).toBeDisabled()
 	await expect(page.getByText('Need 200$ more', { exact: true })).toBeVisible()
@@ -135,16 +268,20 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await cell(8).click()
 	await cell(8).click()
 	await expect(page.getByRole('button', { name: 'Buy Infantry' })).toBeDisabled()
-	await expect(page.getByText('Free this factory to build a unit').first()).toBeVisible()
+	await expect(page.getByText('Clear this building to train a unit').first()).toBeVisible()
 	await page.keyboard.press('Escape')
 	await expect(page.getByRole('dialog')).toHaveCount(0)
+	await cell(8).click()
+	await cell(16).click()
+	await page.getByRole('button', { name: 'Confirm move', exact: true }).click()
+	for (let turn = 0; turn < 6; turn++) await end()
+	await cell(8).click()
+	await expect(page.getByRole('button', { name: 'Buy Sniper', exact: true })).toBeEnabled()
+	await page.getByRole('button', { name: 'Buy Sniper', exact: true }).click()
+	await expect(cell(8).locator('[data-unit]')).toHaveCSS('background-image', /infantry-sniper-1\.png/)
+	await cell(8).click()
+	await expect(page.getByTestId('preview-range')).toHaveText('2–2')
 	expect(errors).toEqual([])
-})
-
-test('old board URLs lead to the Svelte game', async ({ page }) => {
-	await page.goto('/board-1.html')
-	await expect(page).toHaveURL(/\/play\/1\/$/)
-	await expect(page.locator('[data-cell]')).toHaveCount(64)
 })
 
 test('combat updates rune-driven health, locks controls and clears a dead attacker', async ({ page }) => {
@@ -199,7 +336,7 @@ test('Escape cancels movement while a non-modal control has focus', async ({ pag
 	await origin.click()
 	await destination.click()
 	await expect(destination.locator('[data-unit="1"]')).toBeVisible()
-	await page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true }).focus()
+	await page.getByRole('button', { name: 'Options and help', exact: true }).focus()
 	await page.keyboard.press('Escape')
 	await expect(origin.locator('[data-unit="1"]')).toBeVisible()
 	await expect(page.locator('[aria-pressed="true"][data-cell]')).toHaveCount(0)
@@ -207,7 +344,7 @@ test('Escape cancels movement while a non-modal control has focus', async ({ pag
 
 test('captured airport offers aircraft and buys a plane after the tile is freed', async ({ page }) => {
 	await page.goto('/play/2/')
-	const cell = (i: number) => page.locator('[data-cell="' + i + '"]')
+	const cell = (cellIndex: number) => page.locator('[data-cell="' + cellIndex + '"]')
 	const end = () => page.getByRole('button', { name: 'End round', exact: true }).click()
 	const next = async () => {
 		await end()
@@ -220,15 +357,15 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 	await next()
 	await cell(14).click()
 	await capture()
-	for (const [i, key] of [
+	for (const [cellIndex, key] of [
 		[26, 'ArrowDown'],
 		[27, 'ArrowRight'],
 		[28, 'ArrowRight'],
 		[29, 'ArrowRight'],
 		[30, 'ArrowRight']
 	] as const) {
-		await cell(i === 26 ? 14 : i - 1).press(key)
-		await expect(cell(i).locator('[data-unit]')).toBeVisible()
+		await cell(cellIndex === 26 ? 14 : cellIndex - 1).press(key)
+		await expect(cell(cellIndex).locator('[data-unit]')).toBeVisible()
 	}
 	await next()
 	await cell(30).click()
@@ -239,7 +376,7 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 	await capture()
 	await cell(42).click()
 	await expect(page.getByRole('dialog', { name: 'Airport', exact: true })).toBeVisible()
-	await expect(page.getByText('Free this airport to build a unit').first()).toBeVisible()
+	await expect(page.getByText('Clear this building to train a unit').first()).toBeVisible()
 	await page.getByRole('button', { name: 'Close', exact: true }).click()
 	await cell(42).click()
 	await cell(43).click()
@@ -250,9 +387,123 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 	await expect(page.getByRole('button', { name: 'Buy Helicopter', exact: true })).toBeDisabled()
 	await expect(page.getByRole('button', { name: 'Buy Plane', exact: true })).toBeDisabled()
 	await page.getByRole('button', { name: 'Close', exact: true }).click()
-	for (let i = 0; i < 15; i++) await next()
+	for (let roundIndex = 0; roundIndex < 15; roundIndex++) await next()
 	await cell(42).click()
 	await page.getByRole('button', { name: 'Buy Plane', exact: true }).click()
 	await expect(page.getByRole('dialog')).toHaveCount(0)
-	await expect(cell(42)).toHaveAttribute('aria-label', /plane/)
+	await expect(cell(42)).toHaveAttribute('aria-label', /plane/i)
+})
+
+test('horizontal scroll arrows work and preserve the entire map height', async ({ page }) => {
+	await page.setViewportSize({ width: 360, height: 600 })
+	await page.goto('/play/8/')
+	await expect(page.locator('[data-cell]')).toHaveCount(130)
+	const viewport = page.locator('.board-viewport')
+	const edge = (direction: string) => page.locator('.scroll-edge.' + direction)
+	await expect(edge('left')).toHaveCSS('opacity', '0')
+	await expect(page.getByRole('button', { name: 'Scroll left', exact: true })).toBeDisabled()
+	await page.getByRole('button', { name: 'Scroll right', exact: true }).click()
+	await expect(edge('right')).toHaveCSS('opacity', '0')
+	await expect(edge('left')).toHaveCSS('opacity', '1')
+	await page.getByRole('button', { name: 'Scroll left', exact: true }).click()
+	await expect(edge('left')).toHaveCSS('opacity', '0')
+	await viewport.evaluate((viewport) => viewport.scrollTo({ left: 24 }))
+	await expect(edge('left')).toHaveCSS('opacity', '0.5')
+	const height = await viewport.evaluate((viewport) => ({ visible: viewport.clientHeight, total: viewport.scrollHeight }))
+	expect(height.visible).toBe(height.total)
+	await page.setViewportSize({ width: 1400, height: 1200 })
+	for (const direction of ['left', 'right']) await expect(edge(direction)).toHaveCSS('opacity', '0')
+})
+
+test('mobile minimap shows the complete battlefield and repositions without moving units', async ({ page }) => {
+	await page.setViewportSize({ width: 360, height: 700 })
+	await page.goto('/play/7/')
+	const overview = page.getByRole('button', { name: 'Move the battlefield view', exact: true })
+	await expect(overview).toBeVisible()
+	await expect(overview.locator('[data-minimap-unit]')).toHaveCount(10)
+	await expect(overview.locator('[data-minimap-cell]')).toHaveCount(112)
+	await expect(overview.locator('svg')).toHaveAttribute('viewBox', '0 0 160 70')
+	await page.locator('[data-cell="1"]').click()
+	await page.locator('[data-cell="17"]').click()
+	await expect(overview.locator('[data-minimap-cell="17"] [data-minimap-unit="1"]')).toHaveCount(1)
+	await expect(overview.locator('[data-minimap-cell="17"]')).toHaveClass(/selected/)
+	await page.getByRole('button', { name: 'Cancel move', exact: true }).click()
+	await expect(overview.locator('[data-minimap-cell="1"] [data-minimap-unit="1"]')).toHaveCount(1)
+	const initialUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => unit.parentElement?.dataset.cell))
+	const box = await overview.boundingBox()
+	await overview.click({ position: { x: box!.width - 5, y: box!.height / 2 } })
+	await expect.poll(() => page.locator('.board-viewport').evaluate((viewport) => viewport.scrollLeft)).toBeGreaterThan(300)
+	await expect.poll(() => overview.locator('.visible-area').getAttribute('x')).not.toBe('0.75')
+	await overview.press('Home')
+	await expect.poll(() => page.locator('.board-viewport').evaluate((viewport) => viewport.scrollLeft)).toBe(0)
+	await overview.press('End')
+	await expect.poll(() => page.locator('.board-viewport').evaluate((viewport) => viewport.scrollLeft)).toBeGreaterThan(300)
+	await overview.press('Home')
+	const dragBounds = await overview.boundingBox()
+	await page.mouse.move(dragBounds!.x + 5, dragBounds!.y + dragBounds!.height / 2)
+	await page.mouse.down()
+	await page.mouse.move(dragBounds!.x + dragBounds!.width - 5, dragBounds!.y + dragBounds!.height / 2, { steps: 5 })
+	await page.mouse.up()
+	await expect.poll(() => page.locator('.board-viewport').evaluate((viewport) => viewport.scrollLeft)).toBeGreaterThan(300)
+	expect(await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => unit.parentElement?.dataset.cell))).toEqual(initialUnits)
+	await page.setViewportSize({ width: 850, height: 900 })
+	await expect(overview).toHaveCount(0)
+	await page.setViewportSize({ width: 360, height: 700 })
+	await expect(overview).toBeVisible()
+})
+
+test('minimap uses the board terrain variants and each team’s actual unit sprites', async ({ page }, testInfo) => {
+	await page.setViewportSize({ width: 360, height: 800 })
+	await page.goto('/play/9/')
+	await expect(page.locator('[data-cell]')).toHaveCount(120)
+	const terrainSprites = await page.locator('[data-cell]').evaluateAll((cells) => cells.map((cell) => getComputedStyle(cell).backgroundImage))
+	const minimapTerrain = await page.locator('[data-minimap-cell] .terrain-icon').evaluateAll((cells) => cells.map((cell) => getComputedStyle(cell).backgroundImage))
+	expect(minimapTerrain).toEqual(terrainSprites)
+	expect(minimapTerrain.every((sprite) => sprite !== 'none')).toBe(true)
+	const boardUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => ({ cell: unit.parentElement?.dataset.cell, sprite: getComputedStyle(unit).backgroundImage })))
+	const minimapUnits = await page.locator('[data-minimap-unit]').evaluateAll((units) => units.map((unit) => ({ cell: unit.parentElement?.dataset.minimapCell, sprite: `url("${(unit as HTMLImageElement).src}")` })))
+	expect(minimapUnits).toEqual(boardUnits)
+	for (const sprite of await page.locator('[data-minimap-unit]').evaluateAll((images) => images.map((image) => ({ complete: (image as HTMLImageElement).complete, width: (image as HTMLImageElement).naturalWidth })))) {
+		expect(sprite.complete).toBe(true)
+		expect(sprite.width).toBeGreaterThan(0)
+	}
+	await page.locator('.minimap').screenshot({ path: testInfo.outputPath('minimap.png') })
+})
+
+test('home map cards share the tallest height across rows in every language', async ({ page }) => {
+	await page.setViewportSize({ width: 1100, height: 900 })
+	await page.goto('/')
+	for (const locale of ['en', 'fr', 'de']) {
+		await page.getByRole('combobox').selectOption(locale)
+		const heights = await page.locator('.maps .map').evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().height))
+		expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(1)
+	}
+	await page.setViewportSize({ width: 360, height: 800 })
+	await expect(page.locator('.maps')).toHaveCSS('grid-auto-rows', 'auto')
+})
+
+test('catalog cards stack at desktop width and mountain lists its ranged ground bonus', async ({ page }) => {
+	await page.setViewportSize({ width: 1200, height: 900 })
+	await page.goto('/')
+	const mountain = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Mountain', exact: true }) })
+	await expect(mountain.getByText('Range bonus for ranged ground units', { exact: true })).toBeVisible()
+	await expect(mountain.getByText('+1', { exact: true })).toBeVisible()
+	const cards = await page
+		.locator('.catalog')
+		.first()
+		.locator('article')
+		.evaluateAll((cards) =>
+			cards.map((card) => {
+				const rectangle = card.getBoundingClientRect()
+				return { top: rectangle.top, bottom: rectangle.bottom, width: rectangle.width }
+			})
+		)
+	for (let index = 1; index < cards.length; index++) {
+		expect(cards[index].top).toBeGreaterThan(cards[index - 1].bottom)
+		expect(cards[index].width).toBe(cards[0].width)
+	}
+	const select = page.getByRole('combobox')
+	await select.focus()
+	await expect(select).toHaveCSS('outline-style', 'none')
+	await expect(select.locator('..')).toHaveCSS('outline-style', 'solid')
 })

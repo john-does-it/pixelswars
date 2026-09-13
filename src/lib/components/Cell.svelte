@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
+	import { m as messages } from '$lib/paraglide/messages.js'
+	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
 
 	type Props = {
@@ -18,8 +20,15 @@
 		onpreview: () => void
 	}
 	let { cell, unit, selected = false, reachable, attackable, target = false, explosion, income, captured, secured, onclick, onpreview }: Props = $props()
-	const classes = $derived(cell.classes.filter((c) => !c.startsWith('-capturedby') && c !== '-halfcaptured').join(' '))
-	const label = $derived(`Cell ${cell.index + 1}: ${cell.building || cell.name}${cell.owner ? ', player ' + cell.owner : ''}${unit ? ', player ' + unit.player + ' ' + unit.type + ', ' + unit.health + ' health' : ''}`)
+	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
+	const label = $derived(
+		translate(messages.cell_label, {
+			cell: cell.index + 1,
+			terrain: cell.building ? buildingName(cell.building) : terrainName(cell.terrain),
+			owner: cell.owner ? `, ${translate(messages.player, { player: cell.owner })}` : '',
+			unit: unit ? `, ${translate(messages.player, { player: unit.player })} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}` : ''
+		})
+	)
 
 	function previewOnHover() {
 		if (matchMedia('(hover: hover)').matches) onpreview()
@@ -31,12 +40,12 @@
 		<Unit {unit} {selected} {target} />
 	{/if}
 	{#if explosion}
-		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt="Explosion" />
+		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt={translate(messages.explosion)} />
 	{/if}
 	{#if secured}
-		<span class="income">Secured!</span>
+		<span class="income">{translate(messages.secured)}</span>
 	{:else if captured}
-		<span class="income">Captured!</span>
+		<span class="income">{translate(messages.captured)}</span>
 	{:else if income}
 		<span class="income">+200$</span>
 	{/if}

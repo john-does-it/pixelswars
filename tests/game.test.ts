@@ -81,17 +81,17 @@ for (const map of additionalMaps) {
 
 for (const map of maps) {
 	test(`map ${map.id}: dimensions, initial armies and isolated sessions`, () => {
-		const a = initialState(map),
-			b = initialState(map)
-		assert.equal(a.cells.length, a.cols * a.rows)
-		assert.equal(a.units.length, 10)
-		assert.ok(a.units.every((unit) => unit.cell >= 0 && unit.cell < a.cells.length))
-		a.units[0].health = 1
-		a.cells[0].owner = 2
-		a.money[1] = 1000
-		assert.equal(b.units[0].health, 120)
-		assert.equal(b.cells[0].owner, 0)
-		assert.equal(b.money[1], 0)
+		const firstSession = initialState(map),
+			secondSession = initialState(map)
+		assert.equal(firstSession.cells.length, firstSession.cols * firstSession.rows)
+		assert.equal(firstSession.units.length, 10)
+		assert.ok(firstSession.units.every((unit) => unit.cell >= 0 && unit.cell < firstSession.cells.length))
+		firstSession.units[0].health = 1
+		firstSession.cells[0].owner = 2
+		firstSession.money[1] = 1000
+		assert.equal(secondSession.units[0].health, 120)
+		assert.equal(secondSession.cells[0].owner, 0)
+		assert.equal(secondSession.money[1], 0)
 	})
 	test(`map ${map.id}: movement, occupancy, edge wrapping and cancellation`, () => {
 		const state = initialState(map)
@@ -245,63 +245,63 @@ test('turns pay only the incoming player, reset capacities and heal owned hospit
 test('real controller combat applies health-scaled retaliation and locks actions until completion', async () => {
 	const state = fixture()
 	state.units = []
-	const a = spawn(state, 'infantry', 1, 18),
-		b = spawn(state, 'infantry', 2, 19)
+	const attacker = spawn(state, 'infantry', 1, 18),
+		defender = spawn(state, 'infantry', 2, 19)
 	state.cells[18].defense = state.cells[19].defense = 0
 	const pending: Array<() => void> = []
 	const game = createController(state, { delay: () => new Promise((resolve) => pending.push(resolve)) })
-	game.select(a.id)
-	const fight = game.fight(b)
-	assert.equal(b.health, 61)
+	game.select(attacker.id)
+	const fight = game.fight(defender)
+	assert.equal(defender.health, 61)
 	assert.equal(state.fighting, true)
 	game.move(26)
 	game.cancel()
 	game.confirm()
 	game.endTurn()
-	assert.equal(a.cell, 18)
-	assert.equal(state.selectedId, a.id)
+	assert.equal(attacker.cell, 18)
+	assert.equal(state.selectedId, attacker.id)
 	assert.equal(state.round, 1)
 	pending.shift()!()
 	await Promise.resolve()
-	assert.equal(a.health, 76)
+	assert.equal(attacker.health, 76)
 	pending.shift()!()
 	await fight
-	assert.equal(a.attacks, 1)
-	assert.equal(b.attacks, 2)
+	assert.equal(attacker.attacks, 1)
+	assert.equal(defender.attacks, 2)
 	assert.equal(state.fighting, false)
 })
 
 test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	const state = fixture()
 	state.units = []
-	const a = spawn(state, 'artillery', 1, 18),
-		b = spawn(state, 'tank', 2, 19)
+	const attacker = spawn(state, 'artillery', 1, 18),
+		defender = spawn(state, 'tank', 2, 19)
 	const game = createController(state, { delay: async () => {} })
-	game.select(a.id)
-	await game.fight(b)
-	assert.equal(b.health, 180)
-	assert.equal(a.attacks, 1)
-	b.cell = 20
+	game.select(attacker.id)
+	await game.fight(defender)
+	assert.equal(defender.health, 180)
+	assert.equal(attacker.attacks, 1)
+	defender.cell = 20
 	state.cells[20].defense = 0
-	await game.fight(b)
-	assert.equal(b.health, 79)
-	assert.equal(a.health, 120)
-	assert.equal(a.attacks, 0)
-	b.type = 'plane'
-	a.type = 'tank'
-	b.cell = 19
-	assert.equal(canAttack(state, a, b), false)
+	await game.fight(defender)
+	assert.equal(defender.health, 79)
+	assert.equal(attacker.health, 120)
+	assert.equal(attacker.attacks, 0)
+	defender.type = 'plane'
+	attacker.type = 'tank'
+	defender.cell = 19
+	assert.equal(canAttack(state, attacker, defender), false)
 })
 
 test('death clears selection, declares a winner and prevents subsequent actions', async () => {
 	const state = fixture()
 	state.units = []
-	const a = spawn(state, 'jeep', 1, 18),
-		b = spawn(state, 'tank', 2, 19)
-	a.health = 1
+	const attacker = spawn(state, 'jeep', 1, 18),
+		defender = spawn(state, 'tank', 2, 19)
+	attacker.health = 1
 	const game = createController(state, { delay: async () => {} })
-	game.select(a.id)
-	await game.fight(b)
+	game.select(attacker.id)
+	await game.fight(defender)
 	assert.equal(state.units.length, 1)
 	assert.equal(state.selectedId, null)
 	assert.equal(state.winner, 2)
@@ -312,37 +312,37 @@ test('death clears selection, declares a winner and prevents subsequent actions'
 test('attack commits position; stale and friendly targets never consume ammunition', async () => {
 	const state = fixture()
 	state.units = []
-	const a = spawn(state, 'infantry', 1, 18),
-		b = spawn(state, 'artillery', 2, 19)
+	const attacker = spawn(state, 'infantry', 1, 18),
+		defender = spawn(state, 'artillery', 2, 19)
 	const game = createController(state, { delay: async () => {} })
-	game.select(a.id)
-	a.cell = 26
-	await game.fight(b)
+	game.select(attacker.id)
+	attacker.cell = 26
+	await game.fight(defender)
 	game.cancel()
-	assert.equal(a.cell, 26)
-	game.select(a.id)
-	const ammo = a.attacks
-	b.cell = 63
-	await game.fight(b)
-	await game.fight(a)
-	assert.equal(a.attacks, ammo)
+	assert.equal(attacker.cell, 26)
+	game.select(attacker.id)
+	const ammo = attacker.attacks
+	defender.cell = 63
+	await game.fight(defender)
+	await game.fight(attacker)
+	assert.equal(attacker.attacks, ammo)
 })
 
 test('disposing a game during a pending fight stops later damage and sounds', async () => {
 	const state = fixture()
 	state.units = []
-	const a = spawn(state, 'infantry', 1, 18),
-		b = spawn(state, 'infantry', 2, 19)
+	const attacker = spawn(state, 'infantry', 1, 18),
+		defender = spawn(state, 'infantry', 2, 19)
 	let resolve: () => void = () => {}
 	const sounds: string[] = []
-	const game = createController(state, { sound: (name) => sounds.push(name), delay: () => new Promise((r) => (resolve = r)) })
-	game.select(a.id)
-	const fight = game.fight(b)
+	const game = createController(state, { sound: (name) => sounds.push(name), delay: () => new Promise((resolveDelay) => (resolve = resolveDelay)) })
+	game.select(attacker.id)
+	const fight = game.fight(defender)
 	game.dispose()
 	const count = sounds.length
 	resolve()
 	await fight
-	assert.equal(a.health, 100)
+	assert.equal(attacker.health, 100)
 	assert.equal(sounds.length, count)
 })
 
@@ -515,6 +515,18 @@ test('selecting each air unit plays its dedicated engine sound', () => {
 	game.select(plane.id)
 	game.select(helicopter.id)
 	assert.deepEqual(sounds, ['plane-engine', 'helico-engine'])
+})
+
+test('the sound preference suppresses game effects', () => {
+	const state = fixture()
+	const sounds: string[] = []
+	const game = createController(state, { sound: (name) => sounds.push(name) })
+	state.sound = false
+	game.select(state.units[0]!.id)
+	assert.deepEqual(sounds, [])
+	state.sound = true
+	game.select(state.units[0]!.id)
+	assert.equal(sounds.length, 1)
 })
 
 test('ground units cannot retaliate against a plane and air units get no terrain defense', async () => {

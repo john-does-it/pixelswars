@@ -16,5 +16,16 @@ function syncDirectory(source: string, destination: string): void {
 	}
 }
 
-syncDirectory(fileURLToPath(new URL('../assets/', import.meta.url)), fileURLToPath(new URL('../static/assets/', import.meta.url)))
+function visualAssets(directory: string, prefix = '/assets'): string[] {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+		const input = join(directory, entry.name)
+		const url = `${prefix}/${entry.name}`
+		if (entry.isDirectory()) return visualAssets(input, url)
+		return /\.(?:gif|png|svg|webp)$/i.test(entry.name) ? [url] : []
+	})
+}
+
+const staticAssets = fileURLToPath(new URL('../static/assets/', import.meta.url))
+syncDirectory(fileURLToPath(new URL('../assets/', import.meta.url)), staticAssets)
+writeFileSync(join(staticAssets, 'preload-manifest.json'), JSON.stringify(visualAssets(staticAssets).sort()))
 writeFileSync(new URL('../static/favicon.png', import.meta.url), Buffer.from(readFileSync(new URL('../favicon.png.base64', import.meta.url), 'utf8').replace(/\s/g, ''), 'base64'))

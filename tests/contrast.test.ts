@@ -7,7 +7,7 @@ function luminance(color: string): number {
 }
 
 function contrast(foreground: string, background: string): number {
-	const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a)
+	const values = [luminance(foreground), luminance(background)].sort((firstLuminance, secondLuminance) => secondLuminance - firstLuminance)
 	return (values[0] + 0.05) / (values[1] + 0.05)
 }
 

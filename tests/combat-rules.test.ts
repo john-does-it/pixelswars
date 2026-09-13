@@ -11,9 +11,9 @@ test('all 16 approved unit matchups', () => {
 		[0.5, 1, 1.5, 1]
 	]
 	types.forEach((attacker, row) =>
-		types.forEach((defender, col) => {
-			assert.equal(rules.typeModifier(attacker, defender), expected[row][col], `${attacker} -> ${defender}`)
-			assert.equal(rules.damage(40, 100, 10, 30, attacker, defender), 36 * expected[row][col])
+		types.forEach((defender, column) => {
+			assert.equal(rules.typeModifier(attacker, defender), expected[row][column], `${attacker} -> ${defender}`)
+			assert.equal(rules.damage(40, 100, 10, 30, attacker, defender), 36 * expected[row][column])
 		})
 	)
 })
