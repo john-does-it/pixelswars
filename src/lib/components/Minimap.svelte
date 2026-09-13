@@ -25,88 +25,52 @@
 	}
 </script>
 
-<details class="minimap">
-	<summary onkeydown={(event) => event.stopPropagation()}>{translate(messages.minimap)}</summary>
-	<div class="minimap-content">
-		<p>{translate(messages.minimap_hint)}</p>
-		<button
-			class="overview"
-			aria-label={translate(messages.minimap_navigation)}
-			style:width={`min(220px, 100%, ${(150 * gameState.cols) / gameState.rows}px)`}
-			onpointerdown={(event) => {
-				if (event.button !== 0) return
-				dragging = true
-				event.currentTarget.setPointerCapture(event.pointerId)
-				seekAtPointer(event)
-			}}
-			onpointermove={(event) => {
-				if (dragging) seekAtPointer(event)
-			}}
-			onpointerup={() => (dragging = false)}
-			onpointercancel={() => (dragging = false)}
-			onlostpointercapture={() => (dragging = false)}
-			onkeydown={navigateWithKeyboard}
-			onclick={(event) => {
-				if (event.detail === 0) onseek(0.5)
-			}}
-		>
-			<span class="terrain-grid" style:grid-template-columns={`repeat(${gameState.cols}, minmax(0, 1fr))`} aria-hidden="true">
-				{#each gameState.cells as cell (cell.index)}
-					{@const unit = unitsByCell.get(cell.index)}
-					<span class="mini-cell" class:selected={!!unit && unit.id === gameState.selectedId} data-minimap-cell={cell.index}>
-						<TerrainIcon {cell} size="fill" />
-						{#if unit}
-							<img class="mini-unit" src={asset(unitSprite(unit))} alt="" data-minimap-unit={unit.id} />
-						{/if}
-					</span>
-				{/each}
-			</span>
-			<svg viewBox={`0 0 ${gameState.cols * 10} ${gameState.rows * 10}`} aria-hidden="true">
-				<rect class="visible-area" x={visibleLeft * gameState.cols * 10 + 0.75} y="0.75" width={Math.max(0, visibleWidth * gameState.cols * 10 - 1.5)} height={gameState.rows * 10 - 1.5} fill="#ffe98518" stroke="#ffe985" stroke-width="1.5" />
-			</svg>
-		</button>
-		<div class="legend">
-			<span class="player-one">● {translate(messages.player, { player: 1 })}</span>
-			<span class="player-two">● {translate(messages.player, { player: 2 })}</span>
-		</div>
-	</div>
-</details>
+<div class="minimap">
+	<button
+		class="overview"
+		aria-label={translate(messages.minimap_navigation)}
+		style:width={`min(220px, 100%, ${(150 * gameState.cols) / gameState.rows}px)`}
+		onpointerdown={(event) => {
+			if (event.button !== 0) return
+			dragging = true
+			event.currentTarget.setPointerCapture(event.pointerId)
+			seekAtPointer(event)
+		}}
+		onpointermove={(event) => {
+			if (dragging) seekAtPointer(event)
+		}}
+		onpointerup={() => (dragging = false)}
+		onpointercancel={() => (dragging = false)}
+		onlostpointercapture={() => (dragging = false)}
+		onkeydown={navigateWithKeyboard}
+		onclick={(event) => {
+			if (event.detail === 0) onseek(0.5)
+		}}
+	>
+		<span class="terrain-grid" style:grid-template-columns={`repeat(${gameState.cols}, minmax(0, 1fr))`} aria-hidden="true">
+			{#each gameState.cells as cell (cell.index)}
+				{@const unit = unitsByCell.get(cell.index)}
+				<span class="mini-cell" class:selected={!!unit && unit.id === gameState.selectedId} data-minimap-cell={cell.index}>
+					<TerrainIcon {cell} size="fill" />
+					{#if unit}
+						<img class="mini-unit" src={asset(unitSprite(unit))} alt="" data-minimap-unit={unit.id} />
+					{/if}
+				</span>
+			{/each}
+		</span>
+		<svg viewBox={`0 0 ${gameState.cols * 10} ${gameState.rows * 10}`} aria-hidden="true">
+			<rect class="visible-area" x={visibleLeft * gameState.cols * 10 + 0.75} y="0.75" width={Math.max(0, visibleWidth * gameState.cols * 10 - 1.5)} height={gameState.rows * 10 - 1.5} fill="#ffe98518" stroke="#ffe985" stroke-width="1.5" />
+		</svg>
+	</button>
+</div>
 
 <style>
 	.minimap {
 		display: none;
 		@media (max-width: 900px) {
-			display: block;
-			border: 1px solid #78909f;
-			border-radius: 8px;
-			background: #19242c;
+			display: grid;
+			justify-items: center;
 		}
-	}
-	.minimap-content {
-		display: grid;
-		justify-items: center;
-		gap: 10px;
-		padding: 0 14px 14px;
-	}
-
-	summary {
-		padding: 12px;
-		min-height: 44px;
-		font-size: 14px;
-		color: #ffe985;
-		cursor: pointer;
-
-		&:focus-visible {
-			outline: 2px solid #ffe985;
-			outline-offset: 2px;
-		}
-	}
-	p {
-		margin: 6px 0 0;
-		font-size: 12px;
-		line-height: 1.5;
-		color: #c7dce8;
-		text-align: center;
 	}
 	.overview {
 		position: relative;
@@ -147,18 +111,5 @@
 		position: absolute;
 		inset: 0;
 		border: 1px solid #ffe985;
-	}
-	.legend {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 14px;
-		font-size: 12px;
-	}
-	.player-one {
-		color: #8dcbff;
-	}
-	.player-two {
-		color: #ffb3b1;
 	}
 </style>

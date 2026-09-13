@@ -151,7 +151,7 @@
 		&.right {
 			top: 0;
 			bottom: var(--scrollbar-height);
-			width: 28px;
+			width: 44px;
 		}
 
 		&.left {

@@ -26,8 +26,8 @@
 <nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight}>
 	<button class="help-button" aria-haspopup="dialog" onclick={() => (showHelp = true)}>{translate(messages.options_and_help)}</button>
 	<div class="action-controls">
-		<button class:mobile-hidden={!selected} disabled={locked(gameState) || !selected} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
 		<button class:mobile-hidden={!selected} disabled={locked(gameState) || !selected} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>
+		<button class:mobile-hidden={!selected} disabled={locked(gameState) || !selected} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
 		<button class:mobile-hidden={!canCapture(gameState)} disabled={!canCapture(gameState)} onclick={() => game.capture()}>{translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture)}</button>
 		<button class="primary" disabled={locked(gameState)} onclick={() => game.endTurn()}>{translate(messages.end_round)}</button>
 	</div>
