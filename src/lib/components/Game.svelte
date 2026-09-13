@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte'
-	import { base } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import Board from './Board.svelte'
@@ -16,7 +15,7 @@
 	let game = $state<GameController>(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
 
 	onMount(() => {
-		audio = createAudio(base)
+		audio = createAudio()
 		return () => audio?.dispose()
 	})
 

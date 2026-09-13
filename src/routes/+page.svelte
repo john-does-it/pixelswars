@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset, resolve } from '$app/paths'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
 	import StatList from '$lib/components/StatList.svelte'
@@ -72,9 +72,9 @@
 	<header>
 		<p class="eyebrow">LOCAL MULTIPLAYER · TURN-BASED STRATEGY</p>
 		<div class="title">
-			<img src="{base}/assets/units/infantry-1-damage-2-fit.png" alt="" />
+			<img src={asset('/assets/units/infantry-1-damage-2-fit.png')} alt="" />
 			<h1>Pixel’s War</h1>
-			<img src="{base}/assets/units/infantry-2-damage-2-fit.png" alt="" />
+			<img src={asset('/assets/units/infantry-2-damage-2-fit.png')} alt="" />
 		</div>
 		<p>Lead your army to victory. Capture cities, build your forces and outsmart a friend on the same device.</p>
 	</header>
@@ -82,7 +82,7 @@
 		<h2 id="maps">Choose your battlefield</h2>
 		<div class="maps">
 			{#each maps as map}
-				<a class="panel map" href="{base}/play/{map.id}/">
+				<a class="panel map" href={`${resolve('/play/[map]', { map: String(map.id) })}/`}>
 					<span>{map.size}</span>
 					<h3>{map.title}</h3>
 					<p>{map.text}</p>
@@ -107,7 +107,7 @@
 					{#each group.ids as id}
 						{@const unit = unitTypes[id]}
 						<article class="panel">
-							<img src="{base}/assets/units/{id}-1.png" alt={unit.name} />
+							<img src={asset(`/assets/units/${id}-1.png`)} alt={unit.name} />
 							<h4>{unit.name}</h4>
 							<StatList items={unitStats(unit)} />
 							<p class="description">{unitDescriptions[id]}</p>

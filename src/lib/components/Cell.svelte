@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
 	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
 
@@ -31,7 +31,7 @@
 		<Unit {unit} {selected} {target} />
 	{/if}
 	{#if explosion}
-		<img class="explosion" src="{base}/assets/gifs/explosion.gif" alt="Explosion" />
+		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt="Explosion" />
 	{/if}
 	{#if secured}
 		<span class="income">Secured!</span>

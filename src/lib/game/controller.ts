@@ -95,7 +95,16 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 		},
 		keydown(event: KeyboardEvent) {
 			const target = event.target instanceof HTMLElement ? event.target : null
-			if (locked(state) || state.productionIndex !== null || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || (target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) && target.dataset.cell === undefined)) return
+			if (locked(state) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
+			if (event.key === 'Escape') {
+				if (state.productionIndex !== null || target?.closest('dialog')) return
+				if (selectedUnit(state)) {
+					event.preventDefault()
+					this.cancel()
+				}
+				return
+			}
+			if (state.productionIndex !== null || (target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) && target.dataset.cell === undefined)) return
 			const unit = selectedUnit(state)
 			if (!unit) return
 			const letterOffsets: Record<string, number> = state.keyboardLayout === 'qwerty' ? { a: -1, d: 1, w: -state.cols, s: state.cols } : { q: -1, d: 1, z: -state.cols, s: state.cols }
@@ -105,9 +114,6 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			if (offset !== undefined) {
 				event.preventDefault()
 				this.move(unit.cell + offset)
-			} else if (event.key === 'Escape') {
-				event.preventDefault()
-				this.cancel()
 			} else if (event.key === 'Enter') {
 				event.preventDefault()
 				this.confirm()

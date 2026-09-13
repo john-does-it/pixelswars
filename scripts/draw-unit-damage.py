@@ -23,12 +23,15 @@ OUTPUTS = {}
 # Rectangles use exclusive right/bottom edges and follow the existing ~8px grid.
 MARKS = {
     'infantry': [
-        [(84, 85, 92, 93, RED), (84, 93, 88, 101, WOUND)],
-        [(76, 116, 84, 132, WOUND), (76, 124, 84, 132, RED)],
-        [(76, 140, 84, 156, RED), (68, 148, 76, 156, WOUND)],
+        [(84, 85, 92, 93, RED), (84, 93, 88, 101, WOUND),
+         (92, 64, 100, 72, DARK)],
+        [(76, 116, 84, 132, WOUND), (76, 124, 84, 132, RED),
+         (68, 112, 76, 120, DARK)],
+        [(76, 140, 84, 156, RED), (68, 148, 76, 156, WOUND),
+         (92, 136, 100, 144, DARK)],
         [(84, 132, 92, 148, WOUND), (84, 140, 92, 148, RED),
          (108, 62, 116, 70, DARK), (100, 70, 116, 78, DARK),
-         (116, 109, 124, 117, SCORCH)],
+         (116, 109, 124, 117, SCORCH), (108, 144, 116, 152, DARK)],
     ],
     'jeep': [
         [(60, 86, 76, 94, SCORCH), (60, 86, 68, 90, METAL)],
@@ -76,10 +79,13 @@ def save(im, name):
 
 
 MARKS['infantry-rocket'] = [
-    [(108, 87, 116, 95, RED)],
-    [(116, 106, 124, 122, WOUND), (116, 114, 124, 122, RED)],
-    [(76, 137, 84, 153, RED), (68, 145, 76, 153, WOUND)],
-    [(108, 135, 116, 151, WOUND), (116, 143, 124, 151, RED), (92, 65, 100, 73, DARK)]
+    [(108, 87, 116, 95, RED), (100, 64, 108, 72, DARK)],
+    [(116, 106, 124, 122, WOUND), (116, 114, 124, 122, RED),
+     (76, 104, 84, 112, DARK)],
+    [(76, 137, 84, 153, RED), (68, 145, 76, 153, WOUND),
+     (84, 112, 92, 120, DARK)],
+    [(108, 135, 116, 151, WOUND), (116, 143, 124, 151, RED),
+     (92, 65, 100, 73, DARK), (68, 152, 76, 160, DARK)]
 ]
 MARKS['plane'] = [
     [(84, 94, 100, 102, SCORCH), (84, 94, 92, 98, METAL)],
@@ -126,7 +132,7 @@ for row, (kind, player) in enumerate((kind, player) for kind in selected_marks f
                 # Crimson blood stays distinct from player two's orange-red cloth.
                 # Preserve the same face, arm and leg wound progression as blue.
                 if kind in ('infantry', 'infantry-rocket') and player == 2:
-                    color = {RED: '#b50932', WOUND: '#680d2b'}.get(color, color)
+                    color = {RED: '#76031c', WOUND: '#380211'}.get(color, color)
                 draw.rectangle((x1, y1 + offset, x2 - 1, y2 - 1 + offset), fill=color)
             # Keep every original silhouette/transparent pixel, even at critical health.
             im.putalpha(original.getchannel('A'))

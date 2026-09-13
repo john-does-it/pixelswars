@@ -1,12 +1,15 @@
 // Browser-only resource owner, created on mount and disposed on navigation.
+import { asset } from '$app/paths'
+
 import type { AudioController, Player } from './types.ts'
 
-export function createAudio(base: string): AudioController {
+export function createAudio(): AudioController {
 	const tracks = new Map<string, HTMLAudioElement>()
 	const get = (name: string): HTMLAudioElement => {
 		const existing = tracks.get(name)
 		if (existing) return existing
-		const track = new Audio(`${base}/assets/mp3/${name === 'bomb' ? 'bombing' : name}.mp3`)
+		const filename = name === 'bomb' ? 'bombing' : name
+		const track = new Audio(asset(`/assets/mp3/${filename}.mp3`))
 		tracks.set(name, track)
 		return track
 	}

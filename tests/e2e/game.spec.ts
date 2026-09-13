@@ -192,6 +192,19 @@ test('keyboard movement leaves no focused cell after confirming or cancelling', 
 	await expect(destination.locator('[data-unit]')).toBeVisible()
 })
 
+test('Escape cancels movement while a non-modal control has focus', async ({ page }) => {
+	await page.goto('/play/1/')
+	const origin = page.locator('[data-cell="1"]')
+	const destination = page.locator('[data-cell="9"]')
+	await origin.click()
+	await destination.click()
+	await expect(destination.locator('[data-unit="1"]')).toBeVisible()
+	await page.getByRole('combobox', { name: 'Keyboard movement layout', exact: true }).focus()
+	await page.keyboard.press('Escape')
+	await expect(origin.locator('[data-unit="1"]')).toBeVisible()
+	await expect(page.locator('[aria-pressed="true"][data-cell]')).toHaveCount(0)
+})
+
 test('captured airport offers aircraft and buys a plane after the tile is freed', async ({ page }) => {
 	await page.goto('/play/2/')
 	const cell = (i: number) => page.locator('[data-cell="' + i + '"]')

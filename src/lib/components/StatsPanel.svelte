@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
 	import { unitAt } from '$lib/game/model.js'
@@ -55,7 +55,7 @@
 					<h3>Player {unit.player}</h3>
 					<span>{type.name}</span>
 				</div>
-				<img class="unit-icon" src="{base}{unitSprite(unit, true)}" alt="" />
+				<img class="unit-icon" src={asset(unitSprite(unit, true))} alt="" />
 			</div>
 			<StatList items={unitStats} />
 		{/if}
@@ -67,7 +67,6 @@
 <style>
 	aside {
 		font-size: 14px;
-		min-height: 480px;
 	}
 
 	.heading {

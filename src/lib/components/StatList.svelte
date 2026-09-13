@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import type { StatItem } from '$lib/game/types.js'
 
 	let { items }: { items: StatItem[] } = $props()
@@ -9,7 +9,7 @@
 	{#each items as item}
 		<dt>
 			{#if item.icon}
-				<img src="{base}/assets/icons/{item.icon}.png" alt="" />
+				<img src={asset(`/assets/icons/${item.icon}.png`)} alt="" />
 			{:else}
 				<span class="symbol" aria-hidden="true">$</span>
 			{/if}

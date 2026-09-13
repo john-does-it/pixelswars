@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
 	import type { Unit as GameUnit } from '$lib/game/types.js'
@@ -8,21 +8,21 @@
 	const type = $derived(unitTypes[unit.type])
 </script>
 
-<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image="url('{base}{unitSprite(unit)}')">
-	<img class="health" src="{base}/assets/icons/icon-health.png" alt="" style:animation-duration="{Math.max(0.2, (unit.health / type.maxHealth) * 2)}s" />
+<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image={`url('${asset(unitSprite(unit))}')`}>
+	<img class="health" src={asset('/assets/icons/icon-health.png')} alt="" style:animation-duration="{Math.max(0.2, (unit.health / type.maxHealth) * 2)}s" />
 	<span class="statuses">
 		{#if unit.attacks === 0}
-			<img src="{base}/assets/icons/icon-attack-capacity.png" alt="No attacks left" />
+			<img src={asset('/assets/icons/icon-attack-capacity.png')} alt="No attacks left" />
 		{/if}
 		{#if unit.movement === 0}
-			<img src="{base}/assets/icons/icon-movement.png" alt="No movement left" />
+			<img src={asset('/assets/icons/icon-movement.png')} alt="No movement left" />
 		{/if}
 		{#if type.captures && unit.capture === 0}
-			<img src="{base}/assets/icons/icon-capture-capacity.png" alt="Capture used" />
+			<img src={asset('/assets/icons/icon-capture-capacity.png')} alt="Capture used" />
 		{/if}
 	</span>
 	{#if target}
-		<img class="crosshair" src="{base}/assets/icons/icon-crosshair.png" alt="Attack target" />
+		<img class="crosshair" src={asset('/assets/icons/icon-crosshair.png')} alt="Attack target" />
 	{/if}
 </span>
 

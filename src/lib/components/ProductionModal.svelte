@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import Modal from './Modal.svelte'
 	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
 	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'
@@ -17,7 +17,7 @@
 		{#each offers as [id, type] (id)}
 			{@const status = purchaseStatus(game.state, id)}
 			<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
-				<img src="{base}/assets/units/{id}-{game.state.player}-fit.png" alt="" />
+				<img src={asset(`/assets/units/${id}-${game.state.player}-fit.png`)} alt="" />
 				<div>
 					<strong>{type.name}</strong>
 					<p>{type.cost}$</p>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { base } from '$app/paths'
+	import { asset } from '$app/paths'
 	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
 	import type { GameController, KeyboardLayout } from '$lib/game/types.js'
 	import HowToPlayModal from './HowToPlayModal.svelte'
@@ -31,7 +31,7 @@
 	<div class="utility-controls">
 		<button class="music" aria-label="Music {gameState.music ? 'on' : 'off'}" title="Music {gameState.music ? 'on' : 'off'}" aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
 			Music
-			<img src="{base}/assets/icons/icon-{gameState.music ? 'play' : 'mute'}-sound.png" alt="" />
+			<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
 		</button>
 		<button aria-haspopup="dialog" onclick={() => (showHelp = true)}>How to play</button>
 		<label class="keyboard-layout">
@@ -104,6 +104,7 @@
 	}
 
 	select {
+		min-height: 46px;
 		align-self: stretch;
 		font: inherit;
 		font-size: 13px;

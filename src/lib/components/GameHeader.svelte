@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { base } from '$app/paths'
+	import { asset, resolve } from '$app/paths'
 	import type { GameState } from '$lib/game/types.js'
 
 	let { state, name }: { state: GameState; name: string } = $props()
 </script>
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>
-	<a href="{base}/">← Pixel’s War</a>
+	<a href={resolve('/', {})}>← Pixel’s War</a>
 	<h1>{name}</h1>
-	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src="{base}/assets/units/infantry-{state.player}-fit.png" alt="" />Player {state.player} <span>Round {state.round}</span></div>
+	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />Player {state.player} <span>Round {state.round}</span></div>
 	<div class="budgets">
 		<span><span class="player-one">Player 1</span> <b>{state.money[1]}$</b></span>
 		<span><span class="player-two">Player 2</span> <b>{state.money[2]}$</b></span>
