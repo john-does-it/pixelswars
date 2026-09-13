@@ -10,9 +10,11 @@
 		"prepare": "node --experimental-strip-types scripts/sync-assets.ts && svelte-kit sync",
 		"predev": "node --experimental-strip-types scripts/sync-assets.ts",
 		"prebuild": "node --experimental-strip-types scripts/sync-assets.ts",
+		"generate:i18n": "node scripts/generate-i18n.mjs",
+		"precheck": "npm run generate:i18n",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "node --experimental-strip-types --test tests/*.test.ts",
-		"test:e2e": "playwright test",
+		"test:e2e": "node node_modules/@playwright/test/cli.js test",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},

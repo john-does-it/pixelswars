@@ -22,13 +22,19 @@ npm run build
 npm run preview
 ```
 
+`npm run check` generates the Paraglide messages and TypeScript declarations before
+checking Svelte, including on a fresh checkout without a previous build.
+`npm run generate:i18n` also runs this step independently. The generation script and Vite share
+`paraglide.config.js`; generated files in `src/lib/paraglide/` are
+not committed or formatted.
+
 The static production site is generated in `build/`. Serve it over HTTP;
 opening source HTML via file:// is no longer supported.
 
 ### Browser tests
 
 ```sh
-npx playwright install chromium
+node node_modules/@playwright/test/cli.js install chromium
 npm run build
 npm run test:e2e
 ```
