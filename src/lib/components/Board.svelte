@@ -65,33 +65,50 @@
 	})
 </script>
 
-<div class="board-frame" style:--scrollbar-height={`${scrollbarHeight}px`}>
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex (Scrollable regions need keyboard focus for native arrow-key scrolling.) -->
-	<div class="board-viewport" bind:this={viewport} onscroll={updateEdges} tabindex={scrollable ? 0 : undefined} role="region" aria-label={name}>
-		<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
-			{#each gameState.cells as cell (cell.index)}
-				{@const unit = units.get(cell.index)}
-				<Cell {cell} {unit} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} target={(selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
-			{/each}
+<div class="board-layout">
+	<div class="board-frame" style:--scrollbar-height={`${scrollbarHeight}px`}>
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex (Scrollable regions need keyboard focus for native arrow-key scrolling.) -->
+		<div class="board-viewport" bind:this={viewport} onscroll={updateEdges} tabindex={scrollable ? 0 : undefined} role="region" aria-label={name}>
+			<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
+				{#each gameState.cells as cell (cell.index)}
+					{@const unit = units.get(cell.index)}
+					<Cell {cell} {unit} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} target={(selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
+				{/each}
+			</div>
 		</div>
+		{#each scrollDirections as direction}
+			<div class="scroll-edge {direction}" style:opacity={Math.min(1, edges[direction] / 48)}>
+				<button type="button" aria-label={translate(direction === 'left' ? messages.scroll_left : messages.scroll_right)} disabled={edges[direction] === 0} tabindex={edges[direction] === 0 ? -1 : 0} onclick={() => scrollHorizontally(direction)}>
+					<span aria-hidden="true">{direction === 'left' ? '‹' : '›'}</span>
+				</button>
+			</div>
+		{/each}
 	</div>
-	{#each scrollDirections as direction}
-		<div class="scroll-edge {direction}" style:opacity={Math.min(1, edges[direction] / 48)}>
-			<button type="button" aria-label={translate(direction === 'left' ? messages.scroll_left : messages.scroll_right)} disabled={edges[direction] === 0} tabindex={edges[direction] === 0 ? -1 : 0} onclick={() => scrollHorizontally(direction)}>
-				<span aria-hidden="true">{direction === 'left' ? '‹' : '›'}</span>
-			</button>
-		</div>
-	{/each}
-</div>
-{#if scrollable}
-	<p class="scroll-hint">{translate(messages.map_scroll_hint)}</p>
-{/if}
+	{#if scrollable}
+		<p class="scroll-hint">{translate(messages.map_scroll_hint)}</p>
+	{/if}
 
-{#if scrollable}
-	<Minimap state={gameState} visibleLeft={visibleArea.left} visibleWidth={visibleArea.width} onseek={seekOnMinimap} />
-{/if}
+	{#if scrollable}
+		<div class="board-navigation">
+			<Minimap state={gameState} visibleLeft={visibleArea.left} visibleWidth={visibleArea.width} onseek={seekOnMinimap} />
+		</div>
+	{/if}
+</div>
 
 <style>
+	.board-layout {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	.board-navigation {
+		@media (max-width: 900px) {
+			order: -1;
+			margin-bottom: 16px;
+		}
+	}
+
 	.board-frame {
 		position: relative;
 		min-width: 0;

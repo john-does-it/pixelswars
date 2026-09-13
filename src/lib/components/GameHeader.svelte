@@ -4,13 +4,14 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state, name }: { state: GameState; name: string } = $props()
+	let { state, name, onhelp }: { state: GameState; name: string; onhelp: () => void } = $props()
 </script>
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>
-	<a href={resolve('/', {})}>← Pixel’s War</a>
+	<a href={resolve('/', {})} aria-label="← Pixel’s War">← <span>Pixel’s War</span></a>
 	<h1>{name}</h1>
-	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{translate(messages.player, { player: state.player })} <span>{translate(messages.round, { round: state.round })}</span></div>
+	<button class="mobile-options" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onhelp}>⚙</button>
+	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{translate(messages.player, { player: state.player })} <span>{translate(messages.round, { round: state.round })}</span><b class="current-budget">{state.money[state.player]}$</b></div>
 	<div class="budgets">
 		<span><span class="player-one">{translate(messages.player, { player: 1 })}</span> <b>{state.money[1]}$</b></span>
 		<span><span class="player-two">{translate(messages.player, { player: 2 })}</span> <b>{state.money[2]}$</b></span>
@@ -25,10 +26,6 @@
 		padding: 14px 0;
 		border-bottom: 3px solid #71b9ee;
 		margin-bottom: 20px;
-
-		@media (max-width: 500px) {
-			grid-template-columns: 1fr;
-		}
 
 		&.red {
 			border-color: #f59b9b;
@@ -83,11 +80,54 @@
 		color: #ffb3b1;
 	}
 
-	@media (max-width: 500px) {
-		.turn,
+	.mobile-options,
+	.current-budget {
+		display: none;
+	}
+
+	@media (max-width: 900px) {
+		header {
+			grid-template-columns: 44px minmax(0, 1fr) 44px;
+			gap: 8px;
+			padding: 8px 0;
+			margin-bottom: 12px;
+			align-items: center;
+		}
+
+		a {
+			display: grid;
+			place-items: center;
+			min-height: 44px;
+		}
+
+		a span,
 		.budgets {
-			grid-column: 1;
-			grid-row: auto;
+			display: none;
+		}
+
+		h1 {
+			grid-column: 2;
+			font-size: 14px;
+			line-height: 1.5;
+		}
+
+		.mobile-options {
+			display: block;
+			min-height: 44px;
+			padding: 0;
+			font-size: 24px;
+		}
+
+		.turn {
+			grid-column: 1 / -1;
+			grid-row: 2;
+			font-size: 12px;
+			gap: 6px;
+		}
+
+		.current-budget {
+			display: block;
+			margin-left: auto;
 		}
 	}
 </style>

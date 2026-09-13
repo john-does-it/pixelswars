@@ -18,6 +18,8 @@
 	let audio = $state<AudioController>()
 	let game = $state<GameController>(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
 	let preferencesLoaded = $state(false)
+	let showHelp = $state(false)
+	let controlsHeight = $state(0)
 	const assetsReady = preloadGameAssets()
 
 	onMount(() => {
@@ -57,12 +59,14 @@
 		<p role="status">{translate(messages.loading_battlefield)}</p>
 	</main>
 {:then}
-	<main class="game-shell">
-		<GameHeader state={game.state} name={mapName(map.id)} />
+	<main class="game-shell" style:--controls-height={`${controlsHeight}px`}>
+		<GameHeader state={game.state} name={mapName(map.id)} onhelp={() => (showHelp = true)} />
 		<div class="field">
 			<div class="board-column">
 				<Board {game} name={mapName(map.id)} />
-				<Controls {game} />
+				<div class="controls">
+					<Controls {game} bind:showHelp bind:controlsHeight />
+				</div>
 			</div>
 			<StatsPanel state={game.state} />
 		</div>
@@ -79,6 +83,10 @@
 	.game-shell {
 		width: min(1200px, 100% - 32px);
 		margin: auto;
+
+		@media (max-width: 900px) {
+			padding-bottom: calc(var(--controls-height, 80px) + 24px);
+		}
 	}
 
 	.loading {
@@ -106,6 +114,15 @@
 	}
 
 	.board-column {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
 		min-width: 0;
+	}
+
+	.controls {
+		@media (max-width: 900px) {
+			display: contents;
+		}
 	}
 </style>
