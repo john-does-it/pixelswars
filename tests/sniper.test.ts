@@ -38,6 +38,8 @@ test('sniper specializes against all infantry and inherits infantry target restr
 	for (const aircraft of ['plane', 'helicopter']) assert.equal(rules.canTarget('infantry-sniper', aircraft), false)
 	assert.equal(rules.canTarget('anti-air', 'infantry-sniper'), false)
 	assert.equal(rules.typeModifier('helicopter', 'infantry-sniper'), 2)
+	assert.equal(rules.typeModifier('infantry-sniper', 'artillery'), 1)
+	assert.equal(rules.typeModifier('infantry', 'artillery'), 1.5)
 	assert.equal(unitTypes.artillery.defense, 30)
 	assert.equal(unitTypes['anti-air'].defense, 30)
 })
@@ -54,7 +56,7 @@ test('mountain extends only ranged ground units and preserves minimum range', ()
 		assert.equal(effectiveRange(state, unit).bonus, 0)
 	}
 	const sniper = createUnit('infantry-sniper', 1, 27, 0)
-	state.units = [sniper, createUnit('infantry', 2, 30, 1)]
+	state.units = [sniper, createUnit('infantry', 2, 31, 1)]
 	assert.equal(canAttack(state, sniper, state.units[1]), true)
 	for (const adjacent of [18, 19, 20, 26, 28, 34, 35, 36]) assert.equal(attackCells(state, sniper).includes(adjacent), false)
 	state.cells[27].terrain = 'grass'

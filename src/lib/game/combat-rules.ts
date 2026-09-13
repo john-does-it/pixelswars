@@ -3,6 +3,7 @@ type MatchupTable = Record<string, Record<string, number>>
 // Shared by the browser game and Node regression tests.
 const CombatRules = (() => {
 	const modifiers: MatchupTable = {
+		'infantry-sniper': { infantry: 1.5, 'infantry-rocket': 1.5, jeep: 0.5, tank: 0.5, artillery: 1, 'anti-air': 1, aircraft: 0, plane: 0, helicopter: 0 },
 		'infantry-rocket': { infantry: 0.5, 'infantry-rocket': 1.5, jeep: 2.5, tank: 2.5, artillery: 2.5, 'anti-air': 2.5, aircraft: 0, plane: 0, helicopter: 0 },
 		'anti-air': { infantry: 0, 'infantry-rocket': 0, jeep: 0, tank: 0, artillery: 0, 'anti-air': 0, aircraft: 1, plane: 1, helicopter: 2 },
 		plane: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1.5, artillery: 1, 'anti-air': 1, aircraft: 1, plane: 1, helicopter: 2 },
@@ -29,11 +30,9 @@ const CombatRules = (() => {
 	}
 
 	function typeModifier(attackerType: string, defenderType: string): number {
-		if (attackerType === 'infantry-sniper' && ['infantry', 'infantry-rocket', 'infantry-sniper'].includes(defenderType)) return 1.5
-		// Other sniper matchups use infantry armor and target restrictions.
-		const attackerMatchup = attackerType === 'infantry-sniper' ? 'infantry' : attackerType
+		// Snipers share infantry vulnerabilities, but have their own attack matchups.
 		const defenderMatchup = defenderType === 'infantry-sniper' ? 'infantry' : defenderType
-		return modifiers[attackerMatchup]?.[defenderMatchup] ?? 1
+		return modifiers[attackerType]?.[defenderMatchup] ?? 1
 	}
 
 	// Zero means an impossible attack, not a shot that consumes ammo for no damage.
@@ -41,9 +40,10 @@ const CombatRules = (() => {
 		return typeModifier(attackerType, defenderType) > 0
 	}
 
-	function damage(attack: number, health: number, defense: number, terrainDefense: number, attackerType: string, defenderType: string): number {
+	function damage(attack: number, health: number, maxHealth: number, defense: number, terrainDefense: number, attackerType: string, defenderType: string): number {
 		const baseDamage = Math.max(0, attack - (defense + terrainDefense) / 10)
-		return ((baseDamage * Math.max(0, health)) / 100) * typeModifier(attackerType, defenderType)
+		const healthRatio = maxHealth > 0 ? Math.min(1, Math.max(0, health) / maxHealth) : 0
+		return baseDamage * healthRatio * typeModifier(attackerType, defenderType)
 	}
 
 	return { attackCells, typeModifier, canTarget, damage }

@@ -92,8 +92,8 @@ tap or drag on the minimap to center the visible area, or use the edge arrow
 buttons. Language, audio and keyboard settings live in Options and help.
 
 Movement is orthogonal and pays the destination terrain cost. Attack ranges
-are square and include diagonals. Artillery attacks at distances 2–3, excluding
-all eight adjacent cells. Snipers attack at distance 2; anti-air attacks at 1–2.
+are square and include diagonals. Artillery attacks at distances 2–4, excluding
+all eight adjacent cells. Snipers attack at distances 2–3; anti-air attacks at 1–2.
 Other current units attack at range 1. Mountains extend ranged ground units'
 maximum range by one.
 
@@ -104,7 +104,9 @@ maximum range by one.
 | Tank      | 1.5      | 1.5  | 1    | 0.5       |
 | Artillery | 0.5      | 1    | 1.5  | 1         |
 
-Damage preserves the original health/100 scaling and terrain defense formula.
+Damage scales with the attacker's remaining health divided by its maximum health.
+A fully healthy unit uses its listed attack without an extra bonus for having more
+than 100 maximum health. Terrain and unit defense retain their existing formula.
 Health is rounded and clamped to zero. A surviving defender retaliates if its
 own range and matchup allow it; retaliation does not consume an attack point.
 A zero multiplier forbids targeting. Tanks cannot target aircraft, planes or
@@ -171,13 +173,13 @@ and secure buildings. All units have five health-based sprite stages for both pl
 ## Snipers and high ground
 
 Army bases train snipers for 500$: 100 health, 60 attack, 10 defense, 4 movement
-and one attack per turn. Their range is 2–2, so they cannot retaliate at contact.
-They deal ×1.5 damage against infantry, rockets and other snipers, and can capture
+and one attack per turn. Their range is 2–3, so they cannot retaliate at contact.
+They deal ×1.5 damage against infantry, rockets and other snipers, ×1 against artillery, and can capture
 buildings. They share infantry target restrictions and cannot attack aircraft.
 
 Mountains cost 4 movement. Ranged ground units on a mountain gain +1 maximum
-range while keeping their minimum range: sniper 2–3, artillery 2–4, anti-air 1–3.
-Artillery has 4 movement; artillery and anti-air both have 30 defense.
+range while keeping their minimum range: sniper 2–4, artillery 2–5, anti-air 1–3.
+Artillery costs 1400$ and has 4 movement; artillery and anti-air both have 30 defense.
 
 The original sniper vectors are kept in `assets/temp/`. Run
 `node scripts/export-sniper-sprites.mjs` to generate both teams' healthy and four

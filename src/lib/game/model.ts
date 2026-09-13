@@ -93,6 +93,6 @@ export function purchaseStatus(state: GameState, type: string): PurchaseStatus {
 export function applyDamage(state: GameState, attacker: Unit, defender: Unit): void {
 	const attackerDefinition = unitTypes[attacker.type]
 	const defenderDefinition = unitTypes[defender.type]
-	const damageAmount = rules.damage(attackerDefinition.attack, attacker.health, defenderDefinition.defense, defenderDefinition.domain === 'air' ? 0 : state.cells[defender.cell].defense, attacker.type, defender.type)
+	const damageAmount = rules.damage(attackerDefinition.attack, attacker.health, attackerDefinition.maxHealth, defenderDefinition.defense, defenderDefinition.domain === 'air' ? 0 : state.cells[defender.cell].defense, attacker.type, defender.type)
 	defender.health = Math.max(0, Math.round(defender.health - damageAmount))
 }

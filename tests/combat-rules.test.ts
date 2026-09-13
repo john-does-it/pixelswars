@@ -13,7 +13,7 @@ test('all 16 approved unit matchups', () => {
 	types.forEach((attacker, row) =>
 		types.forEach((defender, column) => {
 			assert.equal(rules.typeModifier(attacker, defender), expected[row][column], `${attacker} -> ${defender}`)
-			assert.equal(rules.damage(40, 100, 10, 30, attacker, defender), 36 * expected[row][column])
+			assert.equal(rules.damage(40, 100, 100, 10, 30, attacker, defender), 36 * expected[row][column])
 		})
 	)
 })
@@ -21,7 +21,7 @@ test('all 16 approved unit matchups', () => {
 test('aircraft, planes and helicopters cannot be targeted by tanks', () => {
 	for (const target of ['aircraft', 'plane', 'helicopter']) {
 		assert.equal(rules.canTarget('tank', target), false)
-		assert.equal(rules.damage(70, 180, 0, 0, 'tank', target), 0)
+		assert.equal(rules.damage(70, 180, 180, 0, 0, 'tank', target), 0)
 	}
 	assert.equal(rules.canTarget('aircraft', 'tank'), true)
 })
@@ -32,11 +32,21 @@ test('future unspecified matchups are neutral', () => {
 })
 
 test('terrain and attacker health still affect damage; defense never heals a target', () => {
-	assert.equal(rules.damage(40, 50, 10, 30, 'infantry', 'artillery'), 27)
-	assert.equal(rules.damage(1, 100, 100, 100, 'jeep', 'infantry'), 0)
+	assert.equal(rules.damage(40, 50, 100, 10, 30, 'infantry', 'artillery'), 27)
+	assert.equal(rules.damage(1, 125, 125, 100, 100, 'jeep', 'infantry'), 0)
 })
 
-test('artillery excludes all eight neighbors but retains square range 2–3', () => {
+test('damage follows health percentage rather than raw maximum health', () => {
+	for (const maxHealth of [100, 110, 120, 125, 180]) {
+		assert.equal(rules.damage(70, maxHealth, maxHealth, 40, 0, 'tank', 'tank'), 66)
+		assert.equal(rules.damage(70, maxHealth / 2, maxHealth, 40, 0, 'tank', 'tank'), 33)
+		assert.equal(rules.damage(70, 0, maxHealth, 40, 0, 'tank', 'tank'), 0)
+	}
+	assert.equal(rules.damage(70, 360, 180, 40, 0, 'tank', 'tank'), 66)
+	assert.equal(rules.damage(70, 100, 0, 40, 0, 'tank', 'tank'), 0)
+})
+
+test('sniper excludes all eight neighbors but retains square range 2–3', () => {
 	const cells = rules.attackCells(27, 8, 8, 3, 1)
 	assert.equal(cells.length, 40)
 	for (const excluded of [18, 19, 20, 26, 27, 28, 34, 35, 36]) assert.ok(!cells.includes(excluded))
@@ -85,8 +95,8 @@ test('anti-air attacks only aircraft and uses the approved one-shot/two-shot bal
 	}
 	assert.equal(rules.canTarget('anti-air', 'helicopter'), true)
 	assert.equal(rules.canTarget('anti-air', 'plane'), true)
-	assert.ok(rules.damage(70, 100, 15, 0, 'anti-air', 'helicopter') >= 110)
-	const planeDamage = rules.damage(70, 100, 20, 0, 'anti-air', 'plane')
+	assert.ok(rules.damage(70, 120, 120, 15, 0, 'anti-air', 'helicopter') >= 110)
+	const planeDamage = rules.damage(70, 120, 120, 20, 0, 'anti-air', 'plane')
 	assert.ok(planeDamage < 120)
 	assert.ok(planeDamage * 2 >= 120)
 })

@@ -271,6 +271,21 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	assert.equal(state.fighting, false)
 })
 
+test('vehicle combat uses each unit’s maximum health for its first shot and retaliation', async () => {
+	const state = fixture()
+	state.units = []
+	const attacker = spawn(state, 'tank', 1, 18)
+	const defender = spawn(state, 'jeep', 2, 19)
+	state.cells[18].defense = state.cells[19].defense = 0
+	const game = createController(state, { delay: async () => {} })
+	game.select(attacker.id)
+	await game.fight(defender)
+	assert.equal(defender.health, 23)
+	assert.equal(attacker.health, 176)
+	assert.equal(attacker.attacks, 1)
+	game.dispose()
+})
+
 test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	const state = fixture()
 	state.units = []
@@ -284,7 +299,7 @@ test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	defender.cell = 20
 	state.cells[20].defense = 0
 	await game.fight(defender)
-	assert.equal(defender.health, 79)
+	assert.equal(defender.health, 96)
 	assert.equal(attacker.health, 120)
 	assert.equal(attacker.attacks, 0)
 	defender.type = 'plane'
