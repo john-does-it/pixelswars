@@ -1,5 +1,5 @@
 export type Player = 1 | 2
-export type AiDifficulty = 'easy' | 'medium' | 'hard'
+export type AiDifficulty = 'easy' | 'medium' | 'hard' | 'expert'
 export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
@@ -90,6 +90,7 @@ export interface GameState {
 	productionIndex: number | null
 	hoveredIndex: number | null
 	fighting: boolean
+	combatTargetIndex: number | null
 	winner: Player | null
 	explosion: number | null
 	incomeCells: number[]
@@ -115,6 +116,7 @@ export interface ControllerOptions {
 
 export interface GameController {
 	state: GameState
+	start?(): void
 	dispose(): void
 	fight(defender: Unit): Promise<void>
 	select(id: number): void

@@ -7,7 +7,7 @@
 	import { selectedUnit, reachableCells, attackCells, canAttack } from '$lib/game/model.js'
 	import type { GameController } from '$lib/game/types.js'
 
-	let { game, name }: { game: GameController; name: string } = $props()
+	let { game, name, aiMode = false }: { game: GameController; name: string; aiMode?: boolean } = $props()
 	let boardElement = $state<HTMLElement>()
 	let viewport = $state<HTMLDivElement>()
 	let scrollbarHeight = $state(0)
@@ -48,12 +48,24 @@
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 
 	$effect(() => {
+		const target = gameState.combatTargetIndex
+		if (target === null || !boardElement || !viewport) return
+		const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + target + '"]')
+		if (!cell) return
+		const cellBounds = cell.getBoundingClientRect()
+		const viewportBounds = viewport.getBoundingClientRect()
+		// Show the impact even if the enemy fires from the other side of a wide map.
+		const offset = cellBounds.left < viewportBounds.left ? cellBounds.left - viewportBounds.left : Math.max(0, cellBounds.right - viewportBounds.left - viewport.clientWidth)
+		if (offset) viewport.scrollBy({ left: offset, behavior: 'instant' })
+	})
+
+	$effect(() => {
 		const index = selected?.cell
 		if (boardElement?.contains(document.activeElement)) {
 			if (index !== undefined) {
 				const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + index + '"]')
 				cell?.focus({ preventScroll: true })
-				if (cell && viewport) {
+				if (cell && viewport && gameState.combatTargetIndex === null) {
 					const cellBounds = cell.getBoundingClientRect()
 					const viewportBounds = viewport.getBoundingClientRect()
 					const right = viewportBounds.left + viewport.clientWidth
@@ -72,7 +84,7 @@
 			<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
 				{#each gameState.cells as cell (cell.index)}
 					{@const unit = units.get(cell.index)}
-					<Cell {cell} {unit} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} target={(selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
+					<Cell {cell} {unit} {aiMode} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} underFire={gameState.combatTargetIndex === cell.index} target={gameState.fighting ? gameState.combatTargetIndex === cell.index : (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
 				{/each}
 			</div>
 		</div>

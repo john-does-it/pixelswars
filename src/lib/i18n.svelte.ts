@@ -1,9 +1,13 @@
 import { m as messages } from '$lib/paraglide/messages.js'
 import { preferences } from '$lib/preferences.svelte.js'
-import type { BuildingId, TerrainId, UnitTypeId } from '$lib/game/types.js'
+import type { BuildingId, Player, TerrainId, UnitTypeId } from '$lib/game/types.js'
 
 export function translate(message: (...parameters: any[]) => string, inputs: Record<string, unknown> = {}): string {
 	return message(inputs, { locale: preferences.locale })
+}
+
+export function playerName(player: Player, aiMode = false): string {
+	return aiMode ? translate(player === 1 ? messages.ai_player : messages.human_player) : translate(messages.player, { player })
 }
 
 export function unitName(id: UnitTypeId): string {

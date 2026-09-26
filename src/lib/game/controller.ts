@@ -14,6 +14,7 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 		if (!attacker || disposed || locked(state) || !canAttack(state, attacker, defender) || attacker.attacks <= 0) return
 		state.origin = { cell: attacker.cell, movement: attacker.movement }
 		state.fighting = true
+		state.combatTargetIndex = defender.cell
 		try {
 			play(unitTypes[attacker.type].fightSound)
 			applyDamage(state, attacker, defender)
@@ -21,6 +22,7 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			await delay(unitTypes[attacker.type].delay)
 			if (disposed) return
 			if (defender.health > 0 && canAttack(state, defender, attacker)) {
+				state.combatTargetIndex = attacker.cell
 				play(unitTypes[defender.type].fightSound)
 				applyDamage(state, defender, attacker)
 				await delay(unitTypes[defender.type].delay)
@@ -44,13 +46,17 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 				if (!disposed) state.explosion = null
 			}
 		} finally {
-			if (!disposed) state.fighting = false
+			if (!disposed) {
+				state.fighting = false
+				state.combatTargetIndex = null
+			}
 		}
 	}
 	return {
 		state,
 		dispose() {
 			disposed = true
+			state.combatTargetIndex = null
 		},
 		fight,
 		select(id: number) {

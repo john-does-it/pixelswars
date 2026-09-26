@@ -7,7 +7,7 @@
 
 	let { map, onclose }: { map: number; onclose: () => void } = $props()
 	let chooseDifficulty = $state(false)
-	const levels: AiDifficulty[] = ['easy', 'medium', 'hard']
+	const levels: AiDifficulty[] = ['easy', 'medium', 'hard', 'expert']
 	const mapUrl = $derived(`${resolve('/play/[map]', { map: String(map) })}/`)
 </script>
 

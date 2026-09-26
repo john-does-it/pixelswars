@@ -334,6 +334,44 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	expect(errors).toEqual([])
 })
 
+test('ranged combat keeps its exact target visible through the last shot and retaliation', async ({ page }) => {
+	await page.goto('/play/1/')
+	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
+	const end = page.getByRole('button', { name: 'End round', exact: true })
+	await cell(0).click()
+	await cell(8).click()
+	await cell(16).click()
+	await end.click()
+	await end.click()
+	await cell(16).click()
+	for (const index of [17, 18, 19, 20]) await cell(index).click()
+	await end.click()
+	await end.click()
+	await cell(20).click()
+	await cell(28).click()
+	// Dispatch without Playwright scrolling the target into view for us.
+	await page.locator('.board-viewport').evaluate((viewport) => viewport.scrollTo({ left: 0 }))
+	await cell(63).dispatchEvent('click')
+	await expect(end).toBeDisabled()
+	await expect(cell(63)).toHaveClass(/under-fire/)
+	await expect(cell(63).getByAltText('Attack target')).toBeVisible()
+	await expect(page.locator('.crosshair')).toHaveCount(1)
+	await expect
+		.poll(() =>
+			cell(63).evaluate((cell) => {
+				const target = cell.getBoundingClientRect()
+				const viewport = cell.closest('.board-viewport')!.getBoundingClientRect()
+				return target.left >= viewport.left - 1 && target.right <= viewport.right + 1
+			})
+		)
+		.toBe(true)
+	await expect(cell(28)).toHaveClass(/under-fire/, { timeout: 4000 })
+	await expect(cell(28).getByAltText('Attack target')).toBeVisible()
+	await expect(end).toBeEnabled()
+	await expect(page.locator('.under-fire')).toHaveCount(0)
+	await expect(page.locator('.crosshair')).toHaveCount(0)
+})
+
 test('keyboard movement leaves no focused cell after confirming or cancelling', async ({ page }) => {
 	await page.goto('/play/1/')
 	const origin = page.locator('[data-cell="1"]')

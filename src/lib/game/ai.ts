@@ -1,10 +1,11 @@
 import rules from './combat-rules.ts'
 import { unitTypes } from './catalog.ts'
+import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import { neighbors, movementCost, effectiveRange, canAttack, applyDamage, canCapture, unitAt, productionBuilding } from './model.ts'
 import type { AiDifficulty, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 export function isAiDifficulty(value: unknown): value is AiDifficulty {
-	return value === 'easy' || value === 'medium' || value === 'hard'
+	return value === 'easy' || value === 'medium' || value === 'hard' || value === 'expert'
 }
 
 // Weighted paths use exactly the same adjacent steps, occupancy and terrain costs as move().
@@ -46,7 +47,7 @@ function attackValue(state: GameState, attacker: Unit, defender: Unit): number {
 	return (dealt / unitTypes[defender.type].maxHealth) * targetValue + (survivor.health <= 0 ? targetValue * 0.6 : 0) - (retaliation / unitTypes[attacker.type].maxHealth) * unitTypes[attacker.type].cost * 1.2
 }
 
-function simulateAttack(state: GameState, attacker: Unit, defender: Unit): GameState {
+export function simulateAttack(state: GameState, attacker: Unit, defender: Unit): GameState {
 	const simulated = { ...state, units: state.units.map((unit) => ({ ...unit })) }
 	const simulatedAttacker = simulated.units.find((unit) => unit.id === attacker.id)!
 	const simulatedDefender = simulated.units.find((unit) => unit.id === defender.id)!
@@ -64,7 +65,7 @@ export function chooseAttack(state: GameState, difficulty: AiDifficulty): { atta
 			if (!canAttack(state, attacker, defender)) continue
 			if (difficulty === 'easy') return { attackerId: attacker.id, defenderId: defender.id, score: 1 }
 			let score = attackValue(state, attacker, defender)
-			if (difficulty === 'hard') {
+			if (difficulty === 'hard' || difficulty === 'expert') {
 				// Two-ply ordering: an artillery hit can make the next tank shot lethal, removing retaliation.
 				const simulated = simulateAttack(state, attacker, defender)
 				const followUp = chooseAttack(simulated, 'medium')
@@ -106,11 +107,11 @@ export function chooseMovement(state: GameState, difficulty: AiDifficulty, moved
 		for (const cell of state.cells) {
 			if (!paths.has(cell.index)) continue
 			if (cell.building && definition.captures && unit.capture > 0 && (cell.owner !== unit.player || cell.capturePoints < 20)) {
-				objectives.push({ cell: cell.index, value: (cell.capturePoints < 20 ? 280 : 180) + (cell.building === 'factory' ? 50 : 0) })
+				objectives.push({ cell: cell.index, value: difficulty === 'expert' ? economicObjectiveValue(state, cell) + (cell.capturePoints < 20 ? 160 : 0) : (cell.capturePoints < 20 ? 280 : 180) + (cell.building === 'factory' ? 50 : 0) })
 			}
 			if (difficulty !== 'easy' && cell.building === 'hospital' && cell.owner === unit.player && unit.health < definition.maxHealth * 0.6) objectives.push({ cell: cell.index, value: 250 })
-			if (difficulty === 'hard' && cell.building && cell.owner === unit.player && enemies.some((enemy) => unitTypes[enemy.type].captures && [cell.index, ...neighbors(state, cell.index)].some((approach) => positions.get(enemy.id)?.includes(approach)))) {
-				objectives.push({ cell: cell.index, value: 230 })
+			if ((difficulty === 'hard' || difficulty === 'expert') && cell.building && cell.owner === unit.player && enemies.some((enemy) => unitTypes[enemy.type].captures && [cell.index, ...neighbors(state, cell.index)].some((approach) => positions.get(enemy.id)?.includes(approach)))) {
+				objectives.push({ cell: cell.index, value: difficulty === 'expert' ? economicObjectiveValue(state, cell) : 230 })
 			}
 			if (unit.attacks > 0 && enemies.some((enemy) => threatens(state, { ...unit, cell: cell.index }, enemy))) objectives.push({ cell: cell.index, value: 150 })
 		}
@@ -133,8 +134,8 @@ export function chooseMovement(state: GameState, difficulty: AiDifficulty, moved
 				const shot = unit.attacks > 0 ? Math.max(0, ...enemies.filter((enemy) => threatens(state, projected, enemy)).map((enemy) => attackValue(state, projected, enemy))) : 0
 				const risk = exposure(state, projected, positions)
 				score += shot + ((definition.domain ?? 'ground') === 'ground' ? state.cells[cell].defense * 0.5 : 0)
-				score -= (risk / definition.maxHealth) * definition.cost * (difficulty === 'hard' ? 0.7 : 0.35)
-				if (difficulty === 'hard') {
+				score -= (risk / definition.maxHealth) * definition.cost * (difficulty === 'hard' || difficulty === 'expert' ? 0.7 : 0.35)
+				if (difficulty === 'hard' || difficulty === 'expert') {
 					// Prefer a durable screen inside friendly ranged coverage, but never reward suicidal bait.
 					const support = state.units.filter((ally) => ally.player === unit.player && ally.id !== unit.id && unitTypes[ally.type].range > 1 && enemies.some((enemy) => (positions.get(enemy.id) ?? []).some((enemyCell) => threatens(state, { ...enemy, cell: enemyCell }, projected) && threatens(state, ally, { ...enemy, cell: enemyCell })))).length
 					if (definition.range === 1 && definition.defense >= 20 && risk > 0 && risk < unit.health * 0.6) score += Math.min(2, support) * 70
@@ -150,6 +151,10 @@ export function chooseMovement(state: GameState, difficulty: AiDifficulty, moved
 }
 
 export function choosePurchase(state: GameState, buildingIndex: number, difficulty: AiDifficulty): UnitTypeId | null {
+	if (difficulty === 'expert') {
+		const plan = planExpertProduction(state)
+		return plan?.affordable && plan.buildingIndex === buildingIndex ? plan.type : null
+	}
 	const cell = state.cells[buildingIndex]
 	if (!cell || cell.owner !== state.player || unitAt(state, buildingIndex)) return null
 	const offers = (Object.keys(unitTypes) as UnitTypeId[]).filter((type) => productionBuilding(type) === cell.building && unitTypes[type].cost <= state.money[state.player])
@@ -180,49 +185,116 @@ export function choosePurchase(state: GameState, buildingIndex: number, difficul
 	)
 }
 
-export async function runAiTurn(controller: GameController, difficulty: AiDifficulty, active: () => boolean, delay: (milliseconds: number) => Promise<void>): Promise<void> {
-	const state = controller.state
-	const moved = new Set<number>()
-	const produced = new Set<number>()
-	const continuing = () => active() && state.player === 2 && state.winner === null
-	for (let step = 0; continuing() && step < state.cells.length * 4; step++) {
-		// Yield between decisions so touch scrolling, options and navigation stay responsive.
-		await delay(550)
-		if (!continuing()) return
-		const capturer = state.units.find((unit) => unit.player === state.player && canCapture({ ...state, selectedId: unit.id }))
-		if (capturer) {
-			controller.select(capturer.id)
-			controller.capture()
-			moved.add(capturer.id)
-			continue
-		}
-		const attack = chooseAttack(state, difficulty)
-		if (attack) {
-			controller.select(attack.attackerId)
-			await controller.fight(state.units.find((unit) => unit.id === attack.defenderId)!)
-			continue
-		}
-		const movement = chooseMovement(state, difficulty, moved)
-		if (movement) {
-			moved.add(movement.unitId)
-			controller.select(movement.unitId)
-			for (const cell of movement.path) {
-				if (!continuing()) return
-				controller.move(cell)
-				await delay(200)
+export type CaptureStep = { kind: 'capture'; unitId: number } | { kind: 'move'; unitId: number; path: number[] }
+export type AiDecision = CaptureStep | { kind: 'relay'; steps: CaptureStep[] } | { kind: 'attack'; attackerId: number; defenderId: number } | { kind: 'buy'; buildingIndex: number; type: UnitTypeId } | { kind: 'end' }
+
+// Capture progress belongs to the building. Two infantry can therefore complete
+// it in one turn if the first can vacate and the second can reach it legally.
+export function chooseCaptureRelay(state: GameState): Extract<AiDecision, { kind: 'relay' }> | null {
+	const infantry = state.units.filter((unit) => unit.player === state.player && unitTypes[unit.type].captures && unit.health > 0)
+	if (infantry.length < 2) return null
+	let best: { steps: CaptureStep[]; score: number } | null = null
+	for (const building of state.cells.filter((cell) => cell.building && cell.owner !== state.player)) {
+		const occupant = unitAt(state, building.index)
+		if (occupant && (occupant.player !== state.player || !unitTypes[occupant.type].captures)) continue
+		for (const first of infantry) {
+			if (occupant && occupant.id !== first.id) continue
+			if (building.capturePoints > 10 && first.capture <= 0) continue
+			// A single available capture already finishes this building; no relay needed.
+			if (building.capturePoints <= 10 && first.capture > 0) continue
+			const approach = pathsFrom(state, first, first.movement).get(building.index)
+			if (!approach) continue
+			const onBuilding = { ...first, cell: building.index, movement: first.movement - approach.cost }
+			const afterApproach = { ...state, units: state.units.map((unit) => (unit.id === first.id ? onBuilding : unit)) }
+			for (const [destination, exit] of pathsFrom(afterApproach, onBuilding, onBuilding.movement)) {
+				if (!exit.path.length) continue
+				const afterExit = { ...afterApproach, units: afterApproach.units.map((unit) => (unit.id === first.id ? { ...onBuilding, cell: destination } : unit)) }
+				for (const second of infantry.filter((unit) => unit.id !== first.id && unit.capture > 0)) {
+					const replacement = pathsFrom(afterExit, second, second.movement).get(building.index)
+					if (!replacement?.path.length) continue
+					const nextBuilding = state.cells[destination]
+					const setup = nextBuilding.building && nextBuilding.owner !== state.player ? economicObjectiveValue(state, nextBuilding) * 0.15 : 0
+					const score = economicObjectiveValue(state, building) + setup - (approach.cost + exit.cost + replacement.cost) * 5
+					if (best && score <= best.score) continue
+					const steps: CaptureStep[] = []
+					if (approach.path.length) steps.push({ kind: 'move', unitId: first.id, path: approach.path })
+					if (building.capturePoints > 10) steps.push({ kind: 'capture', unitId: first.id })
+					steps.push({ kind: 'move', unitId: first.id, path: exit.path }, { kind: 'move', unitId: second.id, path: replacement.path }, { kind: 'capture', unitId: second.id })
+					best = { steps, score }
+				}
 			}
-			if (!continuing()) return
-			controller.confirm()
-			continue
 		}
+	}
+	return best ? { kind: 'relay', steps: best.steps } : null
+}
+
+export function chooseHeuristicDecision(state: GameState, difficulty: AiDifficulty, moved: Set<number>, produced: Set<number>): AiDecision {
+	if (difficulty === 'expert') {
+		const relay = chooseCaptureRelay(state)
+		if (relay) return relay
+	}
+	const capturers = state.units.filter((unit) => unit.player === state.player && canCapture({ ...state, selectedId: unit.id }))
+	if (difficulty === 'expert') capturers.sort((left, right) => economicObjectiveValue(state, state.cells[right.cell]) - economicObjectiveValue(state, state.cells[left.cell]))
+	if (capturers[0]) return { kind: 'capture', unitId: capturers[0].id }
+	const attack = chooseAttack(state, difficulty)
+	if (attack) return { kind: 'attack', attackerId: attack.attackerId, defenderId: attack.defenderId }
+	const movement = chooseMovement(state, difficulty, moved)
+	if (movement) return { kind: 'move', unitId: movement.unitId, path: movement.path }
+	if (difficulty === 'expert') {
+		const plan = planExpertProduction(state, produced)
+		if (plan?.affordable) return { kind: 'buy', buildingIndex: plan.buildingIndex, type: plan.type }
+	} else {
 		const purchase = state.cells
 			.filter((cell) => !produced.has(cell.index))
 			.map((cell) => ({ index: cell.index, type: choosePurchase(state, cell.index, difficulty) }))
 			.find((offer) => offer.type)
-		if (purchase?.type) {
-			produced.add(purchase.index)
-			controller.openProduction(purchase.index)
-			controller.buy(purchase.type)
+		if (purchase?.type) return { kind: 'buy', buildingIndex: purchase.index, type: purchase.type }
+	}
+	return { kind: 'end' }
+}
+
+export async function runAiTurn(controller: GameController, difficulty: AiDifficulty, active: () => boolean, delay: (milliseconds: number) => Promise<void>): Promise<void> {
+	const state = controller.state
+	const player = state.player
+	const moved = new Set<number>()
+	const produced = new Set<number>()
+	const continuing = () => active() && state.player === player && state.winner === null
+	const expert = difficulty === 'expert' ? await import('./expert-ai.ts') : null
+	for (let step = 0; continuing() && step < state.cells.length * 4; step++) {
+		// Yield between decisions so touch scrolling, options and navigation stay responsive.
+		await delay(550)
+		if (!continuing()) return
+		const decision = expert ? await expert.chooseExpertDecision(state, moved, produced, continuing, () => delay(0)) : chooseHeuristicDecision(state, difficulty, moved, produced)
+		if (!continuing()) return
+		if (decision.kind === 'relay' || decision.kind === 'capture' || decision.kind === 'move') {
+			const steps = decision.kind === 'relay' ? decision.steps : [decision]
+			for (const [index, action] of steps.entries()) {
+				if (!continuing()) return
+				controller.select(action.unitId)
+				if (action.kind === 'capture') controller.capture()
+				else {
+					for (const cell of action.path) {
+						if (!continuing()) return
+						controller.move(cell)
+						await delay(200)
+					}
+					if (!continuing()) return
+					controller.confirm()
+				}
+				moved.add(action.unitId)
+				if (index < steps.length - 1) await delay(550)
+			}
+			continue
+		}
+		if (decision.kind === 'attack') {
+			controller.select(decision.attackerId)
+			await controller.fight(state.units.find((unit) => unit.id === decision.defenderId)!)
+			continue
+		}
+		if (decision.kind === 'buy') {
+			produced.add(decision.buildingIndex)
+			controller.openProduction(decision.buildingIndex)
+			controller.buy(decision.type)
 			continue
 		}
 		break

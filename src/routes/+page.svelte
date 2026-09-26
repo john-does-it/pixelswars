@@ -106,8 +106,9 @@
 	<section class="panel">
 		<h2>{translate(messages.how_to_play)}</h2>
 		<p>{translate(messages.home_rules_1)}</p>
-		<p>{translate(messages.home_rules_2)}</p>
 		<p>{translate(messages.home_rules_3)}</p>
+		<p>{translate(messages.home_rules_2)}</p>
+		<p>{translate(messages.home_rules_mobile)}</p>
 		<button class="learn-more" aria-haspopup="dialog" onclick={() => (showHelp = true)}>{translate(messages.learn_more)}</button>
 	</section>
 	{#if showHelp}

@@ -12,6 +12,7 @@
 	import StatsPanel from './StatsPanel.svelte'
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
+	import TurnAnnouncement from './TurnAnnouncement.svelte'
 	import type { AiDifficulty, AudioController, GameController, GameMap } from '$lib/game/types.js'
 
 	let { map, difficulty = null }: { map: GameMap; difficulty?: AiDifficulty | null } = $props()
@@ -23,13 +24,20 @@
 	const assetsReady = preloadGameAssets()
 
 	onMount(() => {
+		let mounted = true
 		const saved = initializePreferences()
 		game.state.keyboardLayout = saved.keyboardLayout
 		game.state.sound = saved.sound
 		game.state.music = saved.music
 		preferencesLoaded = true
 		audio = createAudio()
-		return () => audio?.dispose()
+		void assetsReady.then(() => {
+			if (mounted) game.start?.()
+		})
+		return () => {
+			mounted = false
+			audio?.dispose()
+		}
 	})
 
 	onDestroy(() => game.dispose())
@@ -46,6 +54,7 @@
 		game.state.keyboardLayout = keyboardLayout
 		game.state.sound = sound
 		game.state.music = music
+		game.start?.()
 	}
 </script>
 
@@ -60,24 +69,31 @@
 	</main>
 {:then}
 	<main class="game-shell" style:--controls-height={`${controlsHeight}px`}>
-		<GameHeader state={game.state} name={mapName(map.id)} onhelp={() => (showHelp = true)} />
+		{#key game}
+			{#key game.state.round}
+				{#if game.state.winner === null && (!difficulty || (game.state.player === 2 && !game.state.aiThinking))}
+					<TurnAnnouncement player={game.state.player} message={difficulty ? translate(messages.your_turn) : translate(messages.player_turn, { player: game.state.player })} />
+				{/if}
+			{/key}
+		{/key}
+		<GameHeader aiMode={!!difficulty} state={game.state} name={mapName(map.id)} onhelp={() => (showHelp = true)} />
 		{#if difficulty}
 			<p class="match-mode" role="status">{translate(messages.ai_match, { level: translate(messages[`ai_${difficulty}`]) })}{game.state.aiThinking ? ` · ${translate(messages.ai_thinking)}` : ''}</p>
 		{/if}
 		<div class="field">
 			<div class="board-column">
-				<Board {game} name={mapName(map.id)} />
+				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} />
 				<div class="controls">
 					<Controls {game} bind:showHelp bind:controlsHeight />
 				</div>
 			</div>
-			<StatsPanel state={game.state} />
+			<StatsPanel aiMode={!!difficulty} state={game.state} />
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking}
 			<ProductionModal {game} />
 		{/if}
 		{#if game.state.winner !== null}
-			<VictoryModal winner={game.state.winner} onrestart={restart} />
+			<VictoryModal aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} />
 		{/if}
 	</main>
 {/await}

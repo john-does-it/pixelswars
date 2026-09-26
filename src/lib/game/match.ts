@@ -7,7 +7,9 @@ export function createMatchController(state: GameState, options: ControllerOptio
 	const difficulty = options.aiDifficulty
 	if (!difficulty) return controller
 	let disposed = false
-	const aiTurn = () => state.player === 2
+	let running = false
+	const aiTurn = () => state.player === 1
+	state.aiThinking = aiTurn()
 	const delay = options.delay ?? ((milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds)))
 	function guard<Arguments extends unknown[]>(action: (...args: Arguments) => void): (...args: Arguments) => void {
 		return (...args) => {
@@ -15,6 +17,8 @@ export function createMatchController(state: GameState, options: ControllerOptio
 		}
 	}
 	async function playAi() {
+		if (disposed || running || !aiTurn() || state.winner !== null) return
+		running = true
 		state.aiThinking = true
 		try {
 			await runAiTurn(controller, difficulty!, () => !disposed, delay)
@@ -23,11 +27,15 @@ export function createMatchController(state: GameState, options: ControllerOptio
 			console.error('AI turn failed', error)
 			if (!disposed && aiTurn()) controller.endTurn()
 		} finally {
+			running = false
 			if (!disposed) state.aiThinking = false
 		}
 	}
 	return {
 		state,
+		start() {
+			void playAi()
+		},
 		select: guard(controller.select.bind(controller)),
 		clickCell: guard(controller.clickCell.bind(controller)),
 		move: guard(controller.move.bind(controller)),

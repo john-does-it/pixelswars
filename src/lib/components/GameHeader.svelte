@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { asset, resolve } from '$app/paths'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import { playerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state, name, onhelp }: { state: GameState; name: string; onhelp: () => void } = $props()
+	let { state, name, onhelp, aiMode = false }: { state: GameState; name: string; onhelp: () => void; aiMode?: boolean } = $props()
 </script>
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>
 	<a href={resolve('/', {})} aria-label="← Pixel’s War">← <span>Pixel’s War</span></a>
 	<h1>{name}</h1>
 	<button class="mobile-options" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onhelp}>⚙</button>
-	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{translate(messages.player, { player: state.player })} <span>{translate(messages.round, { round: state.round })}</span><b class="current-budget">{state.money[state.player]}$</b></div>
+	<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{playerName(state.player, aiMode)} <span>{translate(messages.round, { round: state.round })}</span><b class="current-budget">{state.money[state.player]}$</b></div>
 	<div class="budgets">
-		<span><span class="player-one">{translate(messages.player, { player: 1 })}</span> <b>{state.money[1]}$</b></span>
-		<span><span class="player-two">{translate(messages.player, { player: 2 })}</span> <b>{state.money[2]}$</b></span>
+		<span><span class="player-one">{playerName(1, aiMode)}</span> <b>{state.money[1]}$</b></span>
+		<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
 	</div>
 </header>
 

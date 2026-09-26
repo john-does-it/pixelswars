@@ -2,16 +2,18 @@
 	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
+	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
 
 	type Props = {
 		cell: Cell
+		aiMode?: boolean
 		unit?: GameUnit
 		selected?: boolean
 		reachable: boolean
 		attackable: boolean
 		target?: boolean
+		underFire?: boolean
 		explosion: boolean
 		income: boolean
 		captured: boolean
@@ -19,14 +21,14 @@
 		onclick: () => void
 		onpreview: () => void
 	}
-	let { cell, unit, selected = false, reachable, attackable, target = false, explosion, income, captured, secured, onclick, onpreview }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, explosion, income, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const label = $derived(
 		translate(messages.cell_label, {
 			cell: cell.index + 1,
 			terrain: cell.building ? buildingName(cell.building) : terrainName(cell.terrain),
-			owner: cell.owner ? `, ${translate(messages.player, { player: cell.owner })}` : '',
-			unit: unit ? `, ${translate(messages.player, { player: unit.player })} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}` : ''
+			owner: cell.owner ? `, ${playerName(cell.owner, aiMode)}` : '',
+			unit: unit ? `, ${playerName(unit.player, aiMode)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}` : ''
 		})
 	)
 
@@ -35,7 +37,7 @@
 	}
 </script>
 
-<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable aria-label={label} aria-pressed={!!selected} data-cell={cell.index} {onclick} onpointerenter={previewOnHover} onfocus={onpreview}>
+<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:under-fire={underFire} aria-label={label} aria-pressed={!!selected} data-cell={cell.index} {onclick} onpointerenter={previewOnHover} onfocus={onpreview}>
 	{#if unit}
 		<Unit {unit} {selected} {target} />
 	{/if}
@@ -93,6 +95,18 @@
 		width: 100%;
 		height: 100%;
 		z-index: 3;
+	}
+
+	.under-fire::after {
+		content: '';
+		position: absolute;
+		inset: 2px;
+		border: 3px solid #ffdf78;
+		box-shadow:
+			0 0 0 2px #521c24,
+			inset 0 0 0 2px #521c24;
+		z-index: 3;
+		pointer-events: none;
 	}
 
 	.income {

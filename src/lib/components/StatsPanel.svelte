@@ -6,10 +6,10 @@
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
+	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { GameState, StatItem, Unit } from '$lib/game/types.js'
 
-	let { state }: { state: GameState } = $props()
+	let { state, aiMode = false }: { state: GameState; aiMode?: boolean } = $props()
 	const cell = $derived(state.hoveredIndex === null ? undefined : state.cells[state.hoveredIndex])
 	const unit = $derived(cell && unitAt(state, cell.index))
 	const terrainStats = $derived<StatItem[]>(
@@ -47,14 +47,14 @@
 		<StatList items={terrainStats} />
 		{#if cell.building}
 			<p class="building-status">
-				<span>{translate(messages.owner, { owner: cell.owner ? translate(messages.player, { player: cell.owner }) : translate(messages.neutral) })}</span>
+				<span>{translate(messages.owner, { owner: cell.owner ? playerName(cell.owner, aiMode) : translate(messages.neutral) })}</span>
 				<span>{translate(messages.capture_points, { points: cell.capturePoints })}</span>
 			</p>
 		{/if}
 		{#if unit}
 			<div class="heading unit-heading">
 				<div class="unit-name">
-					<h3>{translate(messages.player, { player: unit.player })}</h3>
+					<h3>{playerName(unit.player, aiMode)}</h3>
 					<span>{unitName(unit.type)}</span>
 				</div>
 				<img class="unit-icon" src={asset(unitSprite(unit, true))} alt="" />

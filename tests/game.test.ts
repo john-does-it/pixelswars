@@ -254,6 +254,7 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	const fight = game.fight(defender)
 	assert.equal(defender.health, 61)
 	assert.equal(state.fighting, true)
+	assert.equal(state.combatTargetIndex, defender.cell)
 	game.move(26)
 	game.cancel()
 	game.confirm()
@@ -264,12 +265,41 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	pending.shift()!()
 	await Promise.resolve()
 	assert.equal(attacker.health, 76)
+	assert.equal(state.combatTargetIndex, attacker.cell, 'Retaliation highlights its actual recipient')
 	pending.shift()!()
 	await fight
 	assert.equal(attacker.attacks, 1)
 	assert.equal(defender.attacks, 2)
 	assert.equal(state.fighting, false)
+	assert.equal(state.combatTargetIndex, null)
 })
+
+for (const type of ['artillery', 'infantry-sniper', 'anti-air'] as const) {
+	test(`${type}: the last shot keeps its target visible until combat completes`, async () => {
+		const state = fixture()
+		state.units = []
+		const attacker = spawn(state, type, 1, 18)
+		const defender = spawn(state, type === 'anti-air' ? 'helicopter' : 'infantry', 2, 20)
+		attacker.attacks = 1
+		let release: () => void = () => {}
+		let firstDelay = true
+		const game = createController(state, {
+			delay: () => {
+				if (!firstDelay) return Promise.resolve()
+				firstDelay = false
+				return new Promise((resolve) => (release = resolve))
+			}
+		})
+		game.select(attacker.id)
+		const combat = game.fight(defender)
+		assert.equal(attacker.attacks, 0)
+		assert.equal(state.combatTargetIndex, defender.cell)
+		release()
+		await combat
+		assert.equal(state.combatTargetIndex, null)
+		game.dispose()
+	})
+}
 
 test('vehicle combat uses each unit’s maximum health for its first shot and retaliation', async () => {
 	const state = fixture()

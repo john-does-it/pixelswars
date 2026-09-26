@@ -194,12 +194,12 @@ test('AI match blocks human actions during its turn and disposal cancels pending
 			resume = resolve
 		})
 	const match = createMatchController(state, { aiDifficulty: 'hard', delay })
-	match.endTurn()
+	match.start?.()
 	assert.equal(state.aiThinking, true)
 	match.select(enemy.id)
 	match.move(38)
 	match.endTurn()
-	assert.equal(state.player, 2)
+	assert.equal(state.player, 1)
 	assert.equal(state.selectedId, null)
 	assert.equal(enemy.cell, 39)
 	match.dispose()
@@ -207,6 +207,31 @@ test('AI match blocks human actions during its turn and disposal cancels pending
 	resume()
 	await new Promise<void>((resolve) => setImmediate(resolve))
 	assert.equal(JSON.stringify(state), snapshot)
+})
+
+test('blue AI opens once, then red is human-controlled and hands back to blue', async () => {
+	const state = fixture()
+	spawn(state, 'infantry', 1, 0)
+	const human = spawn(state, 'infantry', 2, 39)
+	state.player = 1
+	state.round = 1
+	const match = createMatchController(state, { aiDifficulty: 'medium', delay: noDelay })
+	assert.equal(state.aiThinking, true)
+	match.start?.()
+	match.start?.()
+	await new Promise<void>((resolve) => setImmediate(resolve))
+	assert.equal(state.player, 2)
+	assert.equal(state.round, 2)
+	assert.equal(state.aiThinking, false)
+	match.select(human.id)
+	assert.equal(state.selectedId, human.id)
+	match.endTurn()
+	assert.equal(state.player, 1)
+	assert.equal(state.aiThinking, true)
+	await new Promise<void>((resolve) => setImmediate(resolve))
+	assert.equal(state.player, 2)
+	assert.equal(state.round, 4)
+	match.dispose()
 })
 
 test('local mode still hands the turn directly to the other player', () => {
@@ -219,7 +244,7 @@ test('local mode still hands the turn directly to the other player', () => {
 	assert.equal(isAiDifficulty('impossible'), false)
 })
 
-for (const difficulty of ['easy', 'medium', 'hard'] as const) {
+for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
 	test(`${difficulty} completes legal turns on all twelve maps`, async () => {
 		for (let mapId = 1; mapId <= 12; mapId++) {
 			const map = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')) as GameMap
