@@ -1,4 +1,5 @@
 export type Player = 1 | 2
+export type AiDifficulty = 'easy' | 'medium' | 'hard'
 export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
@@ -97,6 +98,7 @@ export interface GameState {
 	music: boolean
 	sound: boolean
 	keyboardLayout: KeyboardLayout
+	aiThinking: boolean
 }
 
 export interface PurchaseStatus {
@@ -106,6 +108,7 @@ export interface PurchaseStatus {
 }
 
 export interface ControllerOptions {
+	aiDifficulty?: AiDifficulty | null
 	sound?: (name: string) => void
 	delay?: (milliseconds: number) => Promise<void>
 }

@@ -31,7 +31,8 @@ export function initialState(map: GameMap): GameState {
 		securedCells: [],
 		music: false,
 		sound: true,
-		keyboardLayout: 'azerty'
+		keyboardLayout: 'azerty',
+		aiThinking: false
 	}
 }
 

@@ -12,11 +12,11 @@
 	import StatsPanel from './StatsPanel.svelte'
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
-	import type { AudioController, GameController, GameMap } from '$lib/game/types.js'
+	import type { AiDifficulty, AudioController, GameController, GameMap } from '$lib/game/types.js'
 
-	let { map }: { map: GameMap } = $props()
+	let { map, difficulty = null }: { map: GameMap; difficulty?: AiDifficulty | null } = $props()
 	let audio = $state<AudioController>()
-	let game = $state<GameController>(untrack(() => createGame(map, { sound: (name) => audio?.sound(name) })))
+	let game = $state<GameController>(untrack(() => createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) })))
 	let preferencesLoaded = $state(false)
 	let showHelp = $state(false)
 	let controlsHeight = $state(0)
@@ -42,7 +42,7 @@
 	function restart() {
 		const { keyboardLayout, sound, music } = game.state
 		game.dispose()
-		game = createGame(map, { sound: (name) => audio?.sound(name) })
+		game = createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) })
 		game.state.keyboardLayout = keyboardLayout
 		game.state.sound = sound
 		game.state.music = music
@@ -61,6 +61,9 @@
 {:then}
 	<main class="game-shell" style:--controls-height={`${controlsHeight}px`}>
 		<GameHeader state={game.state} name={mapName(map.id)} onhelp={() => (showHelp = true)} />
+		{#if difficulty}
+			<p class="match-mode" role="status">{translate(messages.ai_match, { level: translate(messages[`ai_${difficulty}`]) })}{game.state.aiThinking ? ` · ${translate(messages.ai_thinking)}` : ''}</p>
+		{/if}
 		<div class="field">
 			<div class="board-column">
 				<Board {game} name={mapName(map.id)} />
@@ -70,7 +73,7 @@
 			</div>
 			<StatsPanel state={game.state} />
 		</div>
-		{#if game.state.productionIndex !== null}
+		{#if game.state.productionIndex !== null && !game.state.aiThinking}
 			<ProductionModal {game} />
 		{/if}
 		{#if game.state.winner !== null}
@@ -80,6 +83,11 @@
 {/await}
 
 <style>
+	.match-mode {
+		font-size: 12px;
+		color: #ffe985;
+		margin: 0 0 12px;
+	}
 	.game-shell {
 		width: min(1200px, 100% - 32px);
 		margin: auto;

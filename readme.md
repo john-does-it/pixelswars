@@ -31,6 +31,8 @@ not committed or formatted.
 The static production site is generated in `build/`. Serve it over HTTP;
 opening source HTML via file:// is no longer supported.
 
+AI difficulty rules and implementation notes are documented in [docs/ai.md](docs/ai.md).
+
 ### Browser tests
 
 ```sh

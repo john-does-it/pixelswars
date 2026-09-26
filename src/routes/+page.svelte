@@ -5,6 +5,7 @@
 	import StatList from '$lib/components/StatList.svelte'
 	import LanguageSelect from '$lib/components/LanguageSelect.svelte'
 	import HowToPlayModal from '$lib/components/HowToPlayModal.svelte'
+	import MatchSetupModal from '$lib/components/MatchSetupModal.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import { preferences } from '$lib/preferences.svelte.js'
@@ -63,6 +64,7 @@
 		{ id: 12, title: messages.map_12, size: '18 × 18', text: messages.map_12_description }
 	]
 	let showHelp = $state(false)
+	let selectedMap = $state<number | null>(null)
 </script>
 
 <svelte:head>
@@ -83,7 +85,16 @@
 		<h2 id="maps">{translate(messages.choose_battlefield)}</h2>
 		<div class="maps">
 			{#each maps as map}
-				<a class="panel map" href={`${resolve('/play/[map]', { map: String(map.id) })}/`}>
+				<a
+					class="panel map"
+					href={`${resolve('/play/[map]', { map: String(map.id) })}/`}
+					aria-haspopup="dialog"
+					onclick={(event) => {
+						if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+						event.preventDefault()
+						selectedMap = map.id
+					}}
+				>
 					<span>{map.size}</span>
 					<h3>{translate(map.title)}</h3>
 					<p>{translate(map.text)}</p>
@@ -101,6 +112,9 @@
 	</section>
 	{#if showHelp}
 		<HowToPlayModal keyboardLayout={preferences.keyboardLayout} onclose={() => (showHelp = false)} />
+	{/if}
+	{#if selectedMap !== null}
+		<MatchSetupModal map={selectedMap} onclose={() => (selectedMap = null)} />
 	{/if}
 	<section>
 		<h2>{translate(messages.your_army)}</h2>
