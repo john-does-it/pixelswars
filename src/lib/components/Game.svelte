@@ -83,9 +83,7 @@
 		<div class="field">
 			<div class="board-column">
 				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} />
-				<div class="controls">
-					<Controls {game} bind:showHelp bind:controlsHeight />
-				</div>
+				<Controls {game} bind:showHelp bind:controlsHeight />
 			</div>
 			<StatsPanel aiMode={!!difficulty} state={game.state} />
 		</div>
@@ -142,11 +140,5 @@
 		flex-direction: column;
 		gap: 20px;
 		min-width: 0;
-	}
-
-	.controls {
-		@media (max-width: 900px) {
-			display: contents;
-		}
 	}
 </style>

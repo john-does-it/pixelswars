@@ -1,18 +1,168 @@
 # Pixel’s War
 
-Local two-player strategy, built with **SvelteKit 2 and Svelte 5 runes**.
+**Capture cities. Build your army. Outsmart the AI or a friend.**
+
+A pixel-art, turn-based strategy game for desktop and mobile. Choose your battlefield,
+secure its economy and combine infantry, armor and air power to win.
+
+**[Play in your browser](https://john-does-it.github.io/pixelswars/)** · No installation required
+
+![Map selection in Pixel’s War](docs/screenshots/home.png)
+
+- **12 battlefields:** roads, forests, mountain positions and narrow water crossings.
+- **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
+- **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
+- **Desktop and mobile:** keyboard, mouse and touch controls, with interactive minimaps on narrow screens.
+- **English, French and German:** language, audio and keyboard settings in Options and help.
+
+![A battlefield with the selected unit’s actions and statistics](docs/screenshots/battlefield.png)
+
+<p align="center">
+  <img src="docs/screenshots/mobile.png" width="360" alt="Mobile battlefield with minimap navigation and touch controls">
+</p>
+
+## How to play
+
+Destroy every opposing unit to win. During your turn, you can move and use the
+available actions of **all your units**, in any order. End the turn when finished.
+Blue plays first; in AI matches, the AI commands blue and you command red.
+
+Select a unit, then click or tap highlighted neighboring cells to move, or an
+eligible enemy to attack. Confirm finishes the selection; cancel restores movement
+to the last committed position. Attacking or capturing commits that position,
+so cancelling cannot undo those actions.
+
+| Action           | Keyboard                                      |
+| ---------------- | --------------------------------------------- |
+| Move             | Arrow keys or the selected ZQSD / WASD layout |
+| Confirm          | Enter                                         |
+| Cancel / close   | Escape                                        |
+| Capture / secure | Space                                         |
+
+On mobile, use the contextual action buttons, swipe the battlefield horizontally,
+or tap/drag either minimap to reposition the view. Minimap navigation appears
+when the board overflows its container. The camera follows AI actions.
+Settings are stored in browser session cookies; English is the default language.
+Turning sound off also disables music.
+
+### Buildings and economy
+
+All three infantry types can capture and secure buildings. Buildings have 20
+capture points, and a capture removes 10. Each infantry unit can capture once per
+turn, so two units can finish a capture together. Securing a building you already
+own restores all its capture points in one action.
+
+| Building  | Benefit                                                                              |
+| --------- | ------------------------------------------------------------------------------------ |
+| City      | Adds 200$ at the start of each owner's turn                                          |
+| Hospital  | Heals a friendly unit standing on it by up to 50 HP at the start of the owner's turn |
+| Army base | Produces ground units                                                                |
+| Airport   | Produces helicopters and planes                                                      |
+
+Healing never exceeds maximum health; a floating label shows the HP actually
+recovered at the start of the turn. To buy a unit, you must own the production
+building, leave its cell empty and have enough money. New units can act immediately.
+
+### Units
+
+Movement is a points budget, not a number of cells. Attack and defense are inputs
+to the damage formula below; attack is not the final damage dealt.
+
+| Unit       |  Cost |  HP | Movement | Attacks / turn | Attack | Defense | Range |
+| ---------- | ----: | --: | -------: | -------------: | -----: | ------: | ----- |
+| Infantry   |  200$ | 100 |        5 |              2 |     40 |      10 | 1     |
+| Rocket     |  400$ | 100 |        4 |              1 |     40 |      10 | 1     |
+| Sniper     |  500$ | 100 |        4 |              1 |     60 |      10 | 2–3   |
+| Jeep       |  600$ | 125 |        8 |              2 |     50 |      20 | 1     |
+| Tank       | 1200$ | 180 |        6 |              2 |     70 |      40 | 1     |
+| Artillery  | 1600$ | 120 |        4 |              1 |     60 |      30 | 2–4   |
+| Anti-air   | 1000$ | 120 |        6 |              2 |     70 |      30 | 1–2   |
+| Helicopter | 1800$ | 110 |        8 |              1 |     65 |      15 | 1     |
+| Plane      | 3000$ | 120 |       10 |              1 |     80 |      25 | 1     |
+
+Infantry captures objectives. Rockets counter vehicles; snipers counter infantry.
+Jeeps are fast and effective against infantry, while tanks combine armor and two
+attacks. Artillery softens ground targets from a distance, but cannot fire at
+adjacent cells. Anti-air attacks only flying units. Helicopters hunt infantry;
+planes can attack both ground and air units. Other ground units cannot target
+flying units.
+
+### Terrain and range
+
+Movement is orthogonal and pays the destination cell's cost. One unit occupies a
+cell at a time. Attack ranges are square, including diagonals.
+
+| Terrain  | Ground movement cost | Defense |
+| -------- | -------------------: | ------: |
+| Road     |                    1 |       0 |
+| Grass    |                    2 |       0 |
+| Building |                    2 |      40 |
+| Forest   |                    3 |      30 |
+| Mountain |                    4 |      50 |
+| Water    |           Impassable |       0 |
+
+Flying units spend 1 movement point per cell regardless of terrain, and receive
+no terrain defense. There are no playable naval units yet.
+
+Ranged ground units on a mountain gain **+1 maximum range**, keeping their minimum
+range: sniper 2–4, artillery 2–5, anti-air 1–3. Melee and flying units gain no range.
+
+On grass, infantry can cross two cells per turn, tanks three and jeeps four.
+Roads stretch these distances; forests and mountains shorten them.
+
+### Combat and artillery balance
+
+Damage is calculated before rounding the defender's remaining health:
+
+```text
+base damage = max(0, attack − (unit defense + terrain defense) / 10)
+damage = base damage × (attacker HP / attacker maximum HP) × matchup multiplier
+remaining HP = max(0, round(defender HP − damage))
+```
+
+A surviving defender retaliates if its own range and matchup allow it. Retaliation
+uses its remaining health and does not spend an attack point. Snipers and artillery
+cannot retaliate at contact. A forbidden matchup cannot be selected as a target.
+
+A full-health artillery shot against a full-health target on grass or road gives:
+
+| Target                     | Matchup multiplier | Starting HP | Remaining HP |
+| -------------------------- | -----------------: | ----------: | -----------: |
+| Infantry, Rocket or Sniper |              ×1.35 |         100 |       **20** |
+| Jeep                       |              ×1.45 |         125 |       **41** |
+| Anti-air                   |              ×1.25 |         120 |       **49** |
+| Tank                       |              ×1.60 |         180 |       **90** |
+| Artillery                  |              ×1.00 |         120 |       **63** |
+
+All infantry types take the same artillery damage under the same conditions.
+Terrain protection and damage to the attacker reduce these losses. Artillery
+cannot destroy any of these full-health targets with one shot; its single attack,
+price and adjacent blind spot leave room for faster units to close in.
+
+The complete matchup table lives in [combat-rules.ts](src/lib/game/combat-rules.ts).
+Unit and terrain statistics live in [catalog.ts](src/lib/game/catalog.ts).
+
+### AI opponents
+
+Easy, Medium, Hard and Expert use the same units, budgets and rules as the player.
+Higher levels improve targeting, positioning and purchases. Expert also evaluates
+short sequences of future actions and economic opportunities; it is a bounded
+search, not an exhaustive solution of the game.
+
+See [AI rules and implementation notes](docs/ai.md) for each difficulty's behavior.
 
 ## Development
 
-Node.js 22.14 or newer:
+Built with **SvelteKit 2, Svelte 5 runes and Paraglide**. Requires Node.js 22.14 or newer:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the Vite address. Routes: `/` (map selection), `/play/1/` (8 × 8),
-`/play/2/` (12 × 8), through `/play/9/`. The obsolete board HTML routes have been removed.
+Open the Vite address. The home route is `/`; games use `/play/1/` through
+`/play/12/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
+to play against the AI. Without that parameter, the game is local two-player.
 
 ```sh
 npm run check
@@ -22,16 +172,10 @@ npm run build
 npm run preview
 ```
 
-`npm run check` generates the Paraglide messages and TypeScript declarations before
-checking Svelte, including on a fresh checkout without a previous build.
-`npm run generate:i18n` also runs this step independently. The generation script and Vite share
-`paraglide.config.js`; generated files in `src/lib/paraglide/` are
-not committed or formatted.
-
-The static production site is generated in `build/`. Serve it over HTTP;
-opening source HTML via file:// is no longer supported.
-
-AI difficulty rules and implementation notes are documented in [docs/ai.md](docs/ai.md).
+The production site is generated in `build/`; serve it over HTTP.
+`npm run check` generates Paraglide messages and declarations before checking
+Svelte. `npm run generate:i18n` runs generation separately. Both generation and
+Vite use `paraglide.config.js`; generated `src/lib/paraglide/` files are ignored.
 
 ### Browser tests
 
@@ -41,105 +185,68 @@ npm run build
 npm run test:e2e
 ```
 
-Tests cover all nine maps, desktop/mobile layouts, movement and cancellation, turns,
-capture, income, purchases, occupied factories, combat, navigation, settings and minimap navigation.
-To use installed Chrome instead, set `PW_CHANNEL=chrome`
-(PowerShell: `$env:PW_CHANNEL = 'chrome'`).
+Playwright covers desktop/mobile play, map navigation, movement, combat, capture,
+economy, settings, minimaps and AI. To use installed Chrome, set
+`PW_CHANNEL=chrome` (PowerShell: `$env:PW_CHANNEL = 'chrome'`).
 
-## Architecture
+### Project layout
 
-### Code style
+| Location                                     | Responsibility                                           |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `src/routes/`                                | Map selection and game routes                            |
+| `src/lib/components/`                        | Board, controls, stats, dialogs and other UI             |
+| `src/lib/game/game.svelte.ts`, `model.ts`    | Per-game state and rule queries                          |
+| `src/lib/game/actions.ts`, `controller.ts`   | Actions, input and asynchronous combat                   |
+| `src/lib/game/catalog.ts`, `combat-rules.ts` | Statistics, terrain, attack geometry and damage          |
+| `src/lib/game/ai*.ts`, `expert-ai.ts`        | AI decisions, economy and bounded lookahead              |
+| `src/lib/data/board-N.json`                  | Explicit, editable map layouts                           |
+| `messages/`                                  | English, French and German source translations           |
+| `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
+| `tests/`                                     | Node rule tests and Playwright browser tests             |
 
-Use tabs, single quotes, no JavaScript semicolons and no trailing commas, as defined
-in `.prettierrc`. Keep Svelte blocks and container children on separate indented
-lines. Keep short text elements and attributes inline. Separate CSS rules with a
-blank line; nest descendants, `&` variants and relevant media queries under their
-own selector. Keep the `<script>`, markup and `<style>` sections distinct.
+Components use Svelte runes. Each game owns its state; navigation disposes pending
+combat and audio. The DOM displays state rather than storing game rules. Board
+measurements control scrolling, focus and minimap positioning.
 
-Run `npm run format` before committing. CI checks these conventions with
-`npm run format:check`.
+To add a unit, extend the catalog, provide sprites and translations, and define
+non-neutral matchups. Production menus enumerate the catalog automatically.
 
-- `src/routes/`: map selection and game routes.
-- `src/lib/components/`: Game, Board, Cell, Unit, GameHeader, StatsPanel,
-  Controls, ProductionModal, VictoryModal and a shared native-dialog component.
-- `src/lib/game/game.svelte.ts`: creates a separate `$state` for each game.
-- `src/lib/game/model.ts`: initial state and rule queries.
-- `src/lib/game/actions.ts`: movement, capture, economy and turn actions.
-- `src/lib/game/controller.ts`: input and asynchronous combat coordination.
-- `src/lib/game/combat-rules.ts`: pure attack geometry and damage multipliers.
-- `src/lib/game/catalog.ts`: unit definitions, prices and terrain rules.
-- `src/lib/data/board-N.json`: one explicit, editable JSON file per map.
-- `assets/`: image sources stored as `.png.base64` / `.gif.base64` text files,
-  plus the original MP3 sounds. The prepare, predev and prebuild scripts decode
-  images into ignored `static/assets/` and copy the audio for SvelteKit.
-  `favicon.png.base64` similarly generates `static/favicon.png`.
-  The decoded image bytes and public URLs are unchanged, including GIF animation.
-  To edit artwork, decode its source, edit the image, then encode it back into
-  the corresponding `.base64` file. Run `node --experimental-strip-types scripts/sync-assets.ts` to refresh
-  a running preview after changing an image source. Generated files should not
-  be committed.
-- `src/lib/app.css`: global styles and sprite mappings; layouts use scoped component CSS.
-- `tests/`: Node rule tests and Playwright browser tests.
+Use tabs, single quotes, no JavaScript semicolons and no trailing commas. Keep
+Svelte script, markup and style sections distinct. Nest CSS variants and relevant
+media queries under their selector, with blank lines between rules.
+Run `npm run format` before committing; CI checks formatting.
 
-Components use `$props`, `$derived` and `$state`. Effects manage music and transient
-income notifications. State belongs to a component instance: server rendering
-and navigation never share another game's state. Pending combat work is
-cancelled on disposal. Audio is created on mount and stopped on navigation.
+### Assets
 
-The DOM renders game state; it no longer stores it. Board DOM measurements only
-manage scrolling, keyboard focus and the minimap viewport.
-To add a unit, extend the catalog, supply sprites/sounds and add non-neutral
-matchups to combat-rules.ts. The army base enumerates the catalog automatically.
+Assets include SVGs, original audio and bitmap sources stored as `.png.base64`
+or `.gif.base64`. Prepare, predev and prebuild synchronize these into ignored
+`static/assets/`, decoding Base64 files and copying other sources. Native image
+files take precedence over their Base64 equivalents. The favicon is generated
+from `favicon.png.base64`.
 
-## Rules
+Visual assets are preloaded when entering a game and reused across map navigation.
+To refresh generated assets after editing sources:
 
-Click/tap a unit and adjacent blue cells to move, or use arrows with the selectable ZQSD / WASD keyboard layout.
-Enter confirms, Escape cancels, Space captures. On-screen controls provide
-the same actions on touch devices. Mobile maps include an interactive overview:
-tap or drag on the minimap to center the visible area, or use the edge arrow
-buttons. Language, audio and keyboard settings live in Options and help.
+```sh
+node --experimental-strip-types scripts/sync-assets.ts
+```
 
-Movement is orthogonal and pays the destination terrain cost. Attack ranges
-are square and include diagonals. Artillery attacks at distances 2–4, excluding
-all eight adjacent cells. Snipers attack at distances 2–3; anti-air attacks at 1–2.
-Other current units attack at range 1. Mountains extend ranged ground units'
-maximum range by one.
+All units have a healthy sprite and four damage stages for both teams. Sniper
+vectors live in `assets/temp/`; `node scripts/export-sniper-sprites.mjs`
+regenerates their sprites and `docs/sniper-damage-variants.png`. Scratches use
+single outline-colored pixel blocks, with darker red wounds for contrast.
+Synchronize public assets afterward. Do not commit generated static assets.
 
-| Attacker  | Infantry | Jeep | Tank | Artillery |
-| --------- | -------- | ---- | ---- | --------- |
-| Infantry  | 1        | 0.5  | 0.5  | 1.5       |
-| Jeep      | 1.5      | 1    | 0.5  | 1         |
-| Tank      | 1.5      | 1.5  | 1    | 0.5       |
-| Artillery | 0.5      | 1    | 1.5  | 1         |
+## GitHub Pages deployment
 
-Damage scales with the attacker's remaining health divided by its maximum health.
-A fully healthy unit uses its listed attack without an extra bonus for having more
-than 100 maximum health. Terrain and unit defense retain their existing formula.
-Health is rounded and clamped to zero. A surviving defender retaliates if its
-own range and matchup allow it; retaliation does not consume an attack point.
-A zero multiplier forbids targeting. Tanks cannot target aircraft, planes or
-helicopters. Unspecified matchups remain neutral.
+1. In **Settings → Pages**, choose **GitHub Actions** as the source.
+2. In **Actions → Deploy GitHub Pages → Run workflow**, select the branch to publish.
 
-Infantry removes 10 capture points per action from a 20-point building.
-Capture and combat commit a unit's position, so cancellation cannot undo a
-performed action. Cities pay 200$ to the incoming owner; hospitals heal that
-owner's units by up to 25, capped at maximum health. Factories require ownership,
-a free cell and sufficient funds. Turn changes reset capacities for all units,
-as in the prototype. Eliminating all opposing units wins the game.
+The manual workflow builds with `BASE_PATH=/pixelswars` and publishes the generated
+`build/` artifact. Publishing the source branch instead can display the README
+rather than the app. For a custom domain at its root, use an empty base path.
 
-## GitHub Pages
-
-The root HTML pages are replaced by the generated SvelteKit site.
-Pages must publish the generated artifact, not the source branch.
-
-After merging:
-
-1. In Settings → Pages, select **GitHub Actions** as the source.
-2. Run the manual **Deploy GitHub Pages** workflow on the branch to publish.
-
-The workflow builds with `BASE_PATH=/pixelswars` for the repository URL.
-For a custom domain/root deployment, change that value to an empty string.
-To build for a repository path locally in PowerShell:
+To test a repository-path build in PowerShell:
 
 ```powershell
 $env:BASE_PATH = '/pixelswars'
@@ -147,50 +254,15 @@ npm run build
 Remove-Item Env:BASE_PATH
 ```
 
-A separate CI workflow checks components, rules, builds and desktop/mobile
-browser behavior. Deployment is manual; pushing this migration does not
-automatically deploy it.
+CI checks formatting, components, rules, the build and browser behavior separately.
+Pushing or merging does not automatically deploy the site.
 
 ## Credits
 
 Programming: [John Does it](https://johndoesit.be).
-Art: [Kenney](https://www.kenney.nl).
+Sprites: [Kenney](https://www.kenney.nl).
 Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
 Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
 QA: Gauthier Miessen.
 
 Feedback and contributions: hello@johndoesit.be.
-
-## Air units and airports
-
-Map 2 has one neutral airport on a central tile (row 4, column 7).
-Captured airports produce helicopters at 1800$ and planes at 3000$. Army bases
-produce ground units, including rocket infantry at 400$. An occupied production
-tile blocks purchases.
-Planes have 120 health, 10 movement and one adjacent attack per turn. Each empty
-tile costs exactly 1 movement, with no terrain defense bonus. They can attack
-both ground and air targets; anti-air can target and retaliate against aircraft.
-Helicopters have 110 health, 8 movement and one adjacent attack.
-They are strong against infantry, neutral against vehicles and weak against planes.
-Air units cannot capture buildings; one unit per tile still applies.
-Rocket infantry has infantry health/defense, 4 movement and one attack per turn,
-2.5× damage against every vehicle, and 0.5× against regular infantry. Every unit
-deals increased damage to it, making it an offensive specialist. It can capture
-and secure buildings. All units have five health-based sprite stages for both players.
-
-## Snipers and high ground
-
-Army bases train snipers for 500$: 100 health, 60 attack, 10 defense, 4 movement
-and one attack per turn. Their range is 2–3, so they cannot retaliate at contact.
-They deal ×1.5 damage against infantry, rockets and other snipers, ×1 against artillery, and can capture
-buildings. They share infantry target restrictions and cannot attack aircraft.
-
-Mountains cost 4 movement. Ranged ground units on a mountain gain +1 maximum
-range while keeping their minimum range: sniper 2–4, artillery 2–5, anti-air 1–3.
-Artillery costs 1400$ and has 4 movement; artillery and anti-air both have 30 defense.
-
-The original sniper vectors are kept in `assets/temp/`. Run
-`node scripts/export-sniper-sprites.mjs` to generate both teams' healthy and four
-damage stages, full and cropped PNG sources, and `docs/sniper-damage-variants.png`.
-Scratches use individual outline-colored pixel blocks. Red-team wounds use darker
-reds for contrast. Run `npm run prebuild` afterward to synchronize public assets.

@@ -73,6 +73,7 @@ export function endTurn(state: GameState): boolean {
 	state.player = state.round % 2 ? 1 : 2
 	state.capturedCells = []
 	state.securedCells = []
+	state.healedCells = {}
 	state.incomeCells = state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).map((cell) => cell.index)
 	state.money[state.player] += state.incomeCells.length * 200
 	for (const unit of state.units) {
@@ -82,7 +83,9 @@ export function endTurn(state: GameState): boolean {
 		unit.attacks = definition.attacks
 		unit.capture = definition.captures ? 1 : 0
 		if (cell.building === 'hospital' && cell.owner === state.player && unit.player === state.player) {
-			unit.health = Math.min(definition.maxHealth, unit.health + 25)
+			const recoveredHealth = Math.min(50, definition.maxHealth - unit.health)
+			unit.health += recoveredHealth
+			if (recoveredHealth > 0) state.healedCells[cell.index] = recoveredHealth
 		}
 	}
 	return true

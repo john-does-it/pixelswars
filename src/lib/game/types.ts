@@ -94,6 +94,7 @@ export interface GameState {
 	winner: Player | null
 	explosion: number | null
 	incomeCells: number[]
+	healedCells: Record<number, number>
 	capturedCells: number[]
 	securedCells: number[]
 	music: boolean

@@ -20,6 +20,7 @@ function copyState(state: GameState): GameState {
 		money: { ...state.money },
 		origin: state.origin ? { ...state.origin } : null,
 		incomeCells: [...state.incomeCells],
+		healedCells: { ...state.healedCells },
 		capturedCells: [...state.capturedCells],
 		securedCells: [...state.securedCells]
 	}
@@ -145,7 +146,7 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 		const immediate = simulateDecision(copyState(state), decision, new Set(moved), new Set(produced))
 		// Discount speculative follow-up gains: owning a city now is better than
 		// repeatedly postponing its capture to the end of the search horizon.
-		const value = projected.winner !== null ? evaluateExpertPosition(projected, state.player) : evaluateExpertPosition(projected, state.player) * 0.65 + evaluateExpertPosition(immediate, state.player) * 0.35
+		const value = projected.winner !== null ? evaluateExpertPosition(projected, state.player) : (evaluateExpertPosition(projected, state.player) + evaluateExpertPosition(immediate, state.player)) / 2
 		if (value > bestValue) {
 			bestValue = value
 			best = decision

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, untrack } from 'svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import Cell from './Cell.svelte'
@@ -11,6 +11,7 @@
 	let boardElement = $state<HTMLElement>()
 	let viewport = $state<HTMLDivElement>()
 	let scrollbarHeight = $state(0)
+	let mobileView = $state(false)
 	let visibleArea = $state({ left: 0, width: 1 })
 	let edges = $state({ left: 0, right: 0 })
 	const scrollable = $derived(Object.values(edges).some((distance) => distance > 0))
@@ -33,11 +34,18 @@
 		if (viewport) viewport.scrollTo({ left: fraction * viewport.scrollWidth - viewport.clientWidth / 2, behavior: 'instant' })
 	}
 	onMount(() => {
+		const media = matchMedia('(max-width: 900px)')
+		const updateMobile = () => (mobileView = media.matches)
+		updateMobile()
+		media.addEventListener('change', updateMobile)
 		const observer = new ResizeObserver(updateEdges)
 		if (viewport) observer.observe(viewport)
 		if (boardElement) observer.observe(boardElement)
 		updateEdges()
-		return () => observer.disconnect()
+		return () => {
+			observer.disconnect()
+			media.removeEventListener('change', updateMobile)
+		}
 	})
 	const scrollDirections = ['left', 'right'] as const
 	let hadSelection = false
@@ -48,12 +56,18 @@
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 
 	$effect(() => {
-		const target = gameState.combatTargetIndex
-		if (target === null || !boardElement || !viewport) return
+		const followAi = gameState.aiThinking && mobileView && scrollable
+		const target = gameState.combatTargetIndex ?? (followAi ? selected?.cell : null)
+		if (target === null || target === undefined || !boardElement || !viewport) return
 		const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + target + '"]')
 		if (!cell) return
 		const cellBounds = cell.getBoundingClientRect()
 		const viewportBounds = viewport.getBoundingClientRect()
+		if (followAi) {
+			const center = cellBounds.left - viewportBounds.left + viewport.scrollLeft + cellBounds.width / 2
+			viewport.scrollTo({ left: center - viewport.clientWidth / 2, behavior: gameState.fighting || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+			return
+		}
 		// Show the impact even if the enemy fires from the other side of a wide map.
 		const offset = cellBounds.left < viewportBounds.left ? cellBounds.left - viewportBounds.left : Math.max(0, cellBounds.right - viewportBounds.left - viewport.clientWidth)
 		if (offset) viewport.scrollBy({ left: offset, behavior: 'instant' })
@@ -61,11 +75,12 @@
 
 	$effect(() => {
 		const index = selected?.cell
-		if (boardElement?.contains(document.activeElement)) {
+		if (!gameState.aiThinking && boardElement?.contains(document.activeElement)) {
 			if (index !== undefined) {
 				const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + index + '"]')
 				cell?.focus({ preventScroll: true })
-				if (cell && viewport && gameState.combatTargetIndex === null) {
+				// Combat changes must not refocus our unit and replace the inspected tile.
+				if (cell && viewport && untrack(() => gameState.combatTargetIndex) === null) {
 					const cellBounds = cell.getBoundingClientRect()
 					const viewportBounds = viewport.getBoundingClientRect()
 					const right = viewportBounds.left + viewport.clientWidth
@@ -77,14 +92,23 @@
 	})
 </script>
 
+{#snippet navigation()}
+	{#if scrollable}
+		<div class="board-navigation">
+			<Minimap state={gameState} visibleLeft={visibleArea.left} visibleWidth={visibleArea.width} onseek={seekOnMinimap} />
+		</div>
+	{/if}
+{/snippet}
+
 <div class="board-layout">
+	{@render navigation()}
 	<div class="board-frame" style:--scrollbar-height={`${scrollbarHeight}px`}>
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex (Scrollable regions need keyboard focus for native arrow-key scrolling.) -->
 		<div class="board-viewport" bind:this={viewport} onscroll={updateEdges} tabindex={scrollable ? 0 : undefined} role="region" aria-label={name}>
 			<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
 				{#each gameState.cells as cell (cell.index)}
 					{@const unit = units.get(cell.index)}
-					<Cell {cell} {unit} {aiMode} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} underFire={gameState.combatTargetIndex === cell.index} target={gameState.fighting ? gameState.combatTargetIndex === cell.index : (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
+					<Cell {cell} {unit} {aiMode} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} underFire={gameState.combatTargetIndex === cell.index} target={gameState.fighting ? gameState.combatTargetIndex === cell.index : (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} recoveredHealth={gameState.healedCells[cell.index]} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
 				{/each}
 			</div>
 		</div>
@@ -96,15 +120,7 @@
 			</div>
 		{/each}
 	</div>
-	{#if scrollable}
-		<p class="scroll-hint">{translate(messages.map_scroll_hint)}</p>
-	{/if}
-
-	{#if scrollable}
-		<div class="board-navigation">
-			<Minimap state={gameState} visibleLeft={visibleArea.left} visibleWidth={visibleArea.width} onseek={seekOnMinimap} />
-		</div>
-	{/if}
+	{@render navigation()}
 </div>
 
 <style>
@@ -112,12 +128,13 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
+		gap: 16px;
 	}
 
 	.board-navigation {
+		display: none;
 		@media (max-width: 900px) {
-			order: -1;
-			margin-bottom: 16px;
+			display: block;
 		}
 	}
 
@@ -137,14 +154,6 @@
 				display: none;
 			}
 		}
-	}
-
-	.scroll-hint {
-		margin: 8px 0 0;
-		font-size: 12px;
-		line-height: 1.5;
-		color: #c7dce8;
-		text-align: center;
 	}
 
 	.scroll-edge {

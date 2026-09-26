@@ -28,6 +28,7 @@ export function initialState(map: GameMap): GameState {
 		winner: null,
 		explosion: null,
 		incomeCells: [],
+		healedCells: {},
 		capturedCells: [],
 		securedCells: [],
 		music: false,

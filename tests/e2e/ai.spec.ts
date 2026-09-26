@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test'
 
+test('AI hides actions but keeps settings available and follows its active unit on mobile', async ({ page }) => {
+	await page.setViewportSize({ width: 360, height: 800 })
+	await page.goto('/play/7/?ai=easy')
+	await expect(page.locator('.action-controls')).toBeHidden()
+	await expect(page.locator('.minimap')).toHaveCount(2)
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	await expect(page.getByRole('dialog', { name: 'Options and help' })).toBeVisible()
+	await page.keyboard.press('Escape')
+	await page.locator('.board-viewport').evaluate((viewport) => viewport.scrollTo({ left: viewport.scrollWidth }))
+	await expect
+		.poll(
+			() =>
+				page.evaluate(() => {
+					const viewport = document.querySelector('.board-viewport')!
+					const unit = document.querySelector('.board [aria-pressed="true"]')
+					if (!unit) return Infinity
+					const bounds = unit.getBoundingClientRect()
+					const frame = viewport.getBoundingClientRect()
+					const center = bounds.left - frame.left + viewport.scrollLeft + bounds.width / 2
+					const expected = Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, center - viewport.clientWidth / 2))
+					return Math.abs(viewport.scrollLeft - expected)
+				}),
+			{ timeout: 10000 }
+		)
+		.toBeLessThan(2)
+	await expect(page.locator('.scroll-hint')).toHaveCount(0)
+})
+
 for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 	test(`${difficulty} AI starts from the map chooser, plays a turn and survives reload`, async ({ page }) => {
 		test.setTimeout(60000)
@@ -13,7 +41,8 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 		await expect(page.locator('.match-mode')).toContainText(difficulty)
 		await expect(page.locator('.match-mode')).toContainText('You are red')
 		await expect(page.locator('.turn-announcement')).toHaveCount(0)
-		await expect(page.getByRole('button', { name: 'AI is playing…', exact: true })).toBeDisabled()
+		await expect(page.locator('.action-controls')).toBeHidden()
+		await expect(page.locator('.match-mode')).toContainText('AI is playing…')
 		const humanCell = page.locator('[data-unit="5"]').locator('..')
 		await humanCell.click()
 		await expect(humanCell).toHaveAttribute('aria-pressed', 'false')
@@ -51,7 +80,8 @@ test('AI navigation cancels pending actions and invalid levels use local multipl
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/play/12/?ai=expert')
-	await expect(page.getByRole('button', { name: 'AI is playing…', exact: true })).toBeDisabled()
+	await expect(page.locator('.action-controls')).toBeHidden()
+	await expect(page.locator('.match-mode')).toContainText('AI is playing…')
 	await page.getByRole('link', { name: '← Pixel’s War' }).click()
 	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
 	await page.goto('/play/1/?ai=invalid')

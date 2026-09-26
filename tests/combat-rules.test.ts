@@ -8,7 +8,7 @@ test('all 16 approved unit matchups', () => {
 		[1, 0.5, 0.5, 1.5],
 		[1.5, 1, 0.5, 1],
 		[1.5, 1.5, 1, 0.5],
-		[0.5, 1, 1.5, 1]
+		[1.35, 1.45, 1.6, 1]
 	]
 	types.forEach((attacker, row) =>
 		types.forEach((defender, column) => {
@@ -75,10 +75,11 @@ test('both map sizes clip range at edges without wrapping or duplicate cells', (
 	}
 })
 
-test('rocket infantry is strong against every vehicle but vulnerable to every attacker', () => {
+test('rocket infantry is strong against vehicles but vulnerable to ground-capable attackers', () => {
 	for (const target of ['jeep', 'artillery', 'tank']) assert.equal(rules.typeModifier('infantry-rocket', target), 2.5)
 	assert.equal(rules.typeModifier('infantry-rocket', 'infantry'), 0.5)
-	for (const attacker of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
+	for (const attacker of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
+	assert.equal(rules.typeModifier('artillery', 'infantry-rocket'), 1.35)
 	assert.equal(rules.typeModifier('helicopter', 'infantry-rocket'), 2)
 })
 

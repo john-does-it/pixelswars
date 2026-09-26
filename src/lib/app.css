@@ -60,7 +60,8 @@ button,
 	display: inline-block;
 }
 
-.button {
+.button,
+.button:hover {
 	text-decoration: none;
 }
 
@@ -69,19 +70,23 @@ button:hover:not(:disabled):not(.cell-container),
 	background-color: color-mix(in srgb, var(--button-background) 90%, white);
 }
 
+button.primary,
+.button.primary {
+	--button-background: #f0d780;
+	color: #202a32;
+	border-color: var(--button-background);
+	font-weight: bold;
+
+	&:hover:not(:disabled) {
+		background-color: color-mix(in srgb, var(--button-background) 90%, black);
+	}
+}
+
 button:disabled {
 	color: #aebbc4;
 	background: #202a31;
 	border-color: #536673;
 	cursor: not-allowed;
-}
-
-button.primary,
-.button.primary {
-	--button-background: #f0d780;
-	color: #202a32;
-	border-color: #f0d780;
-	font-weight: bold;
 }
 
 :focus-visible {

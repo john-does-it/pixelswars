@@ -12,18 +12,30 @@
 </script>
 
 {#if visible}
-	<div class="turn-announcement" class:red={player === 2} role="status" aria-live="polite" aria-atomic="true">
-		{message}
+	<div class="turn-transition">
+		<div class="turn-announcement" class:red={player === 2} role="status" aria-live="polite" aria-atomic="true">
+			{message}
+		</div>
 	</div>
 {/if}
 
 <style>
-	.turn-announcement {
+	.turn-transition {
 		position: fixed;
-		top: 22svh;
-		left: 50%;
-		transform: translateX(-50%);
+		inset: 0;
 		z-index: 20;
+		display: grid;
+		place-items: center;
+		background: #080d14b3;
+		pointer-events: none;
+		animation: turn-fade 2800ms ease-out forwards;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+
+	.turn-announcement {
 		width: max-content;
 		max-width: calc(100% - 32px);
 		padding: 16px 24px;
@@ -34,16 +46,10 @@
 		box-shadow: 0 8px 24px #0007;
 		font-size: clamp(16px, 3vw, 22px);
 		text-align: center;
-		pointer-events: none;
-		animation: turn-fade 2800ms ease-out forwards;
 
 		&.red {
 			border-color: #ffb3b1;
 			color: #ffb3b1;
-		}
-
-		@media (prefers-reduced-motion: reduce) {
-			animation: none;
 		}
 	}
 

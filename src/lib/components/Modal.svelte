@@ -35,7 +35,8 @@
 
 <style>
 	dialog {
-		width: min(540px, calc(100% - 32px));
+		width: calc(100% - 2em);
+		max-width: 640px;
 		max-height: 85svh;
 		overflow: hidden;
 		padding: 8px;

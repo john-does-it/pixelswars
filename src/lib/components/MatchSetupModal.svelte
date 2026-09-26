@@ -29,7 +29,7 @@
 				{/each}
 			</section>
 		{/if}
-		<a class="button" href={mapUrl}>{translate(messages.play_local)}</a>
+		<a class="button primary" href={mapUrl}>{translate(messages.play_local)}</a>
 	</div>
 </Modal>
 

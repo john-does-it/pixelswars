@@ -24,23 +24,21 @@
 	}
 </script>
 
-<nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight}>
-	<button class="help-button" aria-haspopup="dialog" onclick={() => (showHelp = true)}>{translate(messages.options_and_help)}</button>
+<nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight} hidden={gameState.aiThinking}>
 	<div class="action-controls">
-		<button class:mobile-hidden={!selected || gameState.aiThinking} disabled={inputLocked || !selected} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>
-		<button class:mobile-hidden={!selected || gameState.aiThinking} disabled={inputLocked || !selected} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
-		<button class:mobile-hidden={!canCapture(gameState) || gameState.aiThinking} disabled={inputLocked || !canCapture(gameState)} onclick={() => game.capture()}>{translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture)}</button>
-		<button class="primary" disabled={inputLocked} onclick={() => game.endTurn()}>{gameState.aiThinking ? translate(messages.ai_thinking) : translate(messages.end_round)}</button>
+		{#if selected}
+			<button disabled={inputLocked} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>
+			<button disabled={inputLocked} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
+		{/if}
+		{#if canCapture(gameState)}
+			<button disabled={inputLocked} onclick={() => game.capture()}>{translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture)}</button>
+		{/if}
+		<button class="primary" disabled={inputLocked} onclick={() => game.endTurn()}>{translate(messages.end_round)}</button>
 	</div>
 </nav>
 {#if showHelp}
 	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)}>
 		{#snippet settings()}
-			<div class="match-budgets">
-				{#each [1, 2] as const as player}
-					<p>{translate(messages.available_money, { player, money: gameState.money[player] })}</p>
-				{/each}
-			</div>
 			<div class="settings-controls">
 				<button class="audio" aria-label={translate(gameState.sound ? messages.sound_on : messages.sound_off)} title={translate(gameState.sound ? messages.sound_on : messages.sound_off)} aria-pressed={gameState.sound} onclick={() => (gameState.sound = !gameState.sound)}>
 					{translate(messages.sound)}
@@ -65,21 +63,11 @@
 		{/snippet}
 	</HowToPlayModal>
 {/if}
-{#if gameState.fighting}
+{#if gameState.fighting && !gameState.aiThinking}
 	<p role="status">{translate(messages.combat_in_progress)}</p>
 {/if}
 
 <style>
-	.match-budgets {
-		display: none;
-
-		@media (max-width: 900px) {
-			display: block;
-			margin-bottom: 12px;
-			font-size: 12px;
-		}
-	}
-
 	.settings-controls {
 		display: flex;
 		flex-wrap: wrap;
@@ -105,6 +93,10 @@
 		flex-wrap: wrap;
 		justify-content: flex-end;
 		gap: 8px;
+
+		&[hidden] {
+			display: none;
+		}
 	}
 
 	.action-controls {
@@ -124,11 +116,6 @@
 			background: #19242cf5;
 			box-shadow: 0 -4px 16px #0005;
 			justify-content: center;
-		}
-
-		.help-button,
-		.mobile-hidden {
-			display: none;
 		}
 
 		.action-controls {

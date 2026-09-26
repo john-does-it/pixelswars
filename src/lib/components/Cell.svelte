@@ -16,12 +16,13 @@
 		underFire?: boolean
 		explosion: boolean
 		income: boolean
+		recoveredHealth?: number
 		captured: boolean
 		secured: boolean
 		onclick: () => void
 		onpreview: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, explosion, income, captured, secured, onclick, onpreview }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, explosion, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const label = $derived(
 		translate(messages.cell_label, {
@@ -50,6 +51,9 @@
 		<span class="income">{translate(messages.captured)}</span>
 	{:else if income}
 		<span class="income">+200$</span>
+	{/if}
+	{#if recoveredHealth > 0}
+		<span class="income healing" role="status">{translate(messages.health_recovered, { health: recoveredHealth })}</span>
 	{/if}
 </button>
 
@@ -126,5 +130,11 @@
 			transform: translateY(-30px);
 			opacity: 0;
 		}
+	}
+
+	.healing {
+		color: #b7f59b;
+		white-space: nowrap;
+		font-size: clamp(10px, 1.2vw, 14px);
 	}
 </style>

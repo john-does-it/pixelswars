@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { initialState, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain } from '../src/lib/game/model.ts'
+import { initialState, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain, applyDamage } from '../src/lib/game/model.ts'
 import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
@@ -231,15 +231,24 @@ test('turns pay only the incoming player, reset capacities and heal owned hospit
 	actions.endTurn(state)
 	assert.deepEqual(state.money, { 1: 0, 2: 200 })
 	assert.equal(unit.health, 60)
+	assert.deepEqual(state.healedCells, {})
 	actions.endTurn(state)
 	assert.deepEqual(state.money, { 1: 200, 2: 200 })
-	assert.equal(unit.health, 85)
+	assert.equal(unit.health, 100)
+	assert.deepEqual(state.healedCells, { 9: 40 })
 	assert.equal(unit.movement, 5)
 	assert.equal(unit.attacks, 2)
 	assert.equal(unit.capture, 1)
 	actions.endTurn(state)
+	assert.deepEqual(state.healedCells, {})
 	actions.endTurn(state)
 	assert.equal(unit.health, 100)
+	assert.deepEqual(state.healedCells, {})
+	unit.health = 20
+	actions.endTurn(state)
+	actions.endTurn(state)
+	assert.equal(unit.health, 70)
+	assert.deepEqual(state.healedCells, { 9: 50 })
 })
 
 test('real controller combat applies health-scaled retaliation and locks actions until completion', async () => {
@@ -316,6 +325,87 @@ test('vehicle combat uses each unit’s maximum health for its first shot and re
 	game.dispose()
 })
 
+test('artillery leaves all infantry equally wounded and healthy vehicles alive after one shot', async () => {
+	const remainingHealth: Partial<Record<UnitTypeId, number>> = { infantry: 20, 'infantry-rocket': 20, 'infantry-sniper': 20, jeep: 41, 'anti-air': 49, tank: 90 }
+	for (const [type, health] of Object.entries(remainingHealth)) {
+		const state = fixture()
+		state.units = []
+		const artillery = spawn(state, 'artillery', 1, 18)
+		const defender = spawn(state, type as UnitTypeId, 2, 22)
+		state.cells[22].defense = 0
+		assert.equal(unitTypes.artillery.cost, 1600)
+		const game = createController(state, { delay: async () => {} })
+		game.select(artillery.id)
+		await game.fight(defender)
+		assert.equal(defender.health, health, type)
+		assert.equal(artillery.health, 120)
+		assert.equal(artillery.attacks, 0)
+		assert.ok(state.units.includes(defender))
+		game.dispose()
+	}
+})
+
+test('tanks cross three grass cells per turn while infantry crosses two and jeeps four', () => {
+	for (const [type, steps] of [
+		['tank', 3],
+		['infantry', 2],
+		['jeep', 4]
+	] as const) {
+		const state = fixture()
+		state.units = []
+		for (const cell of state.cells) Object.assign(cell, { terrain: 'grass', cost: 2 })
+		const unit = spawn(state, type, 1, 0)
+		actions.select(state, unit.id)
+		for (let destination = 1; destination <= steps; destination++) assert.equal(actions.move(state, destination), true)
+		assert.equal(actions.move(state, steps + 1), false)
+		actions.cancelMove(state)
+		assert.equal(unit.cell, 0)
+		assert.equal(unit.movement, unitTypes[type].movement)
+	}
+})
+
+test('artillery damage stays equal across infantry types with cover and reduced attacker health', () => {
+	for (const type of ['infantry', 'infantry-rocket', 'infantry-sniper'] as const) {
+		for (const [attackerHealth, terrainDefense, remainingHealth] of [
+			[120, 50, 27],
+			[60, 0, 60],
+			[60, 50, 64]
+		]) {
+			const state = fixture()
+			const artillery = createUnit('artillery', 1, 18, 100)
+			const defender = createUnit(type, 2, 22, 101)
+			artillery.health = attackerHealth
+			state.cells[22].defense = terrainDefense
+			applyDamage(state, artillery, defender)
+			assert.equal(defender.health, remainingHealth, `${type}, ${attackerHealth} attacker HP, ${terrainDefense} cover`)
+		}
+	}
+})
+
+test('planes defeat helicopters and damage armor heavily but remain vulnerable to anti-air', async () => {
+	for (const [attackerType, defenderType, remainingHealth] of [
+		['plane', 'helicopter', 0],
+		['plane', 'tank', 66],
+		['anti-air', 'plane', 53]
+	] as const) {
+		const state = fixture()
+		state.units = []
+		const attacker = spawn(state, attackerType, 1, 18)
+		const defender = spawn(state, defenderType, 2, attackerType === 'anti-air' ? 20 : 19)
+		state.cells[defender.cell].defense = 0
+		const game = createController(state, { delay: async () => {} })
+		game.select(attacker.id)
+		await game.fight(defender)
+		assert.equal(defender.health, remainingHealth)
+		if (attackerType === 'anti-air') {
+			assert.ok(attacker.health > 0)
+			await game.fight(defender)
+			assert.equal(defender.health, 0, 'Anti-air can finish the plane with two shots from outside retaliation range')
+		}
+		game.dispose()
+	}
+})
+
 test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	const state = fixture()
 	state.units = []
@@ -329,7 +419,7 @@ test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	defender.cell = 20
 	state.cells[20].defense = 0
 	await game.fight(defender)
-	assert.equal(defender.health, 96)
+	assert.equal(defender.health, 90)
 	assert.equal(attacker.health, 120)
 	assert.equal(attacker.attacks, 0)
 	defender.type = 'plane'
