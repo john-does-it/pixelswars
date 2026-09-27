@@ -14,6 +14,7 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 		if (!attacker || disposed || locked(state) || !canAttack(state, attacker, defender) || attacker.attacks <= 0) return
 		state.origin = { cell: attacker.cell, movement: attacker.movement }
 		state.fighting = true
+		state.inspectedEnemyId = null
 		state.combatTargetIndex = defender.cell
 		try {
 			play(unitTypes[attacker.type].fightSound)
@@ -70,10 +71,16 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			const unit = unitAt(state, index)
 			if (unit) {
 				if (unit.player === state.player) {
+					state.inspectedEnemyId = null
 					if (state.selectedId === unit.id) actions.openProduction(state, index)
 					else this.select(unit.id)
-				} else void fight(unit)
-			} else if (selectedUnit(state) && actions.move(state, index)) play('woosh-movement')
+				} else {
+					const attacker = selectedUnit(state)
+					if (attacker && attacker.attacks > 0 && canAttack(state, attacker, unit)) void fight(unit)
+					else state.inspectedEnemyId = state.inspectedEnemyId === unit.id ? null : unit.id
+				}
+			} else if (state.inspectedEnemyId !== null) state.inspectedEnemyId = null
+			else if (selectedUnit(state) && actions.move(state, index)) play('woosh-movement')
 			else actions.openProduction(state, index)
 			state.hoveredIndex = index
 		},
@@ -104,6 +111,11 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			if (locked(state) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
 			if (event.key === 'Escape') {
 				if (state.productionIndex !== null) return
+				if (state.inspectedEnemyId !== null) {
+					event.preventDefault()
+					state.inspectedEnemyId = null
+					return
+				}
 				if (selectedUnit(state)) {
 					event.preventDefault()
 					this.cancel()

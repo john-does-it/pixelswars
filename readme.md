@@ -27,10 +27,21 @@ Destroy every opposing unit to win. During your turn, you can move and use the
 available actions of **all your units**, in any order. End the turn when finished.
 Blue plays first; in AI matches, the AI commands blue and you command red.
 
-Select a unit, then click or tap highlighted neighboring cells to move, or an
+Select a unit, then click or tap diamond-marked neighboring cells to move, or an
 eligible enemy to attack. Confirm finishes the selection; cancel restores movement
 to the last committed position. Attacking or capturing commits that position,
 so cancelling cannot undo those actions.
+
+Both friendly and enemy attack ranges use the same striped overlay, in the
+unit's team color. Movement diamonds remain visible on cells within that range.
+
+With no friendly unit selected, click or tap an enemy to inspect its attack range.
+Striped cells show the range from its **current position**, including mountain
+bonuses and minimum-range exclusions. Unit targeting restrictions still apply;
+the overlay does not predict movement or damage. Click the enemy again, an empty cell, or
+press Escape to dismiss. Inspecting an out-of-range enemy preserves any pending
+friendly movement; an eligible attack still takes priority when a friendly unit
+is selected.
 
 | Action           | Keyboard                                      |
 | ---------------- | --------------------------------------------- |

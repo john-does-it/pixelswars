@@ -1,4 +1,5 @@
 {
+	"inspect_enemy_hint": "Wähle einen Gegner durch Tippen oder Klicken aus, während keine eigene Einheit ausgewählt ist, um seine Angriffsreichweite von der aktuellen Position aus zu sehen. Tippe erneut auf ihn oder drücke Escape, um sie auszublenden.",
 	"map_10": "Das zerrissene Land",
 	"map_11": "Der Donnergrat",
 	"map_12": "Die Eisenmündung",
@@ -132,8 +133,7 @@
 	"need_more": "Noch {money}$ benötigt",
 	"available": "Verfügbar",
 	"buy_unit": "{unit} kaufen",
-	"victory": "Sieg",
-	"victory_message": "Spieler {player}, Glückwunsch — du hast gewonnen!",
+	"victory_message": "Spieler {player} gewinnt!",
 	"play_again": "Noch einmal spielen",
 	"choose_another_map": "Andere Karte wählen",
 	"close": "Schließen",
@@ -149,7 +149,7 @@
 	"rules_building_3": "Gelände verändert Bewegung und Verteidigung. Fliegende Einheiten verbrauchen immer 1 Bewegungspunkt pro Feld.",
 	"touch_and_mouse": "Touchscreen und Maus",
 	"touch_step_1": "Tippe oder klicke auf eine deiner Einheiten, um sie auszuwählen.",
-	"touch_step_2": "Tippe oder klicke zum Bewegen auf markierte Felder oder zum Angreifen auf einen angezeigten Gegner.",
+	"touch_step_2": "Tippe oder klicke auf eine Raute, um auf dieses Feld zu ziehen, oder auf einen markierten Gegner zum Angreifen. Schraffuren zeigen die Reichweite in der Teamfarbe der Einheit.",
 	"touch_step_3": "Mit den Aktionsbuttons bestätigst du, brichst ab, eroberst Gebäude oder beendest deinen Zug.",
 	"current_layout": "Aktuelle Bewegungsbelegung:",
 	"move": "Bewegen",
@@ -207,6 +207,7 @@
 	"home_rules_mobile": "Auf Mobilgeräten tippst du auf eine Einheit, dann zum Bewegen auf ein markiertes Feld oder zum Angreifen auf einen Gegner in Reichweite. Mit den Aktionsbuttons bestätigst du, brichst ab, eroberst Gebäude oder beendest deinen Zug. Wische über die Karte oder nutze die Minikarte für den Überblick.",
 	"ai_player": "KI",
 	"human_player": "Spieler",
-	"ai_victory_message": "{winner} gewinnt!",
+	"ai_victory_message": "Die KI gewinnt!",
+	"human_victory_message": "Der Spieler gewinnt!",
 	"health_recovered": "+{health} LP"
 }

@@ -4,7 +4,7 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import Cell from './Cell.svelte'
 	import Minimap from './Minimap.svelte'
-	import { selectedUnit, reachableCells, attackCells, canAttack } from '$lib/game/model.js'
+	import { selectedUnit, inspectedEnemy, reachableCells, attackCells, canAttack } from '$lib/game/model.js'
 	import type { GameController } from '$lib/game/types.js'
 
 	let { game, name, aiMode = false }: { game: GameController; name: string; aiMode?: boolean } = $props()
@@ -51,8 +51,24 @@
 	let hadSelection = false
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
+	const inspected = $derived(inspectedEnemy(gameState))
+	const rangeUnit = $derived(inspected ?? selected)
 	const reachable = $derived(reachableCells(gameState))
-	const attackRange = $derived(attackCells(gameState))
+	const attackRange = $derived(new Set(rangeUnit ? attackCells(gameState, rangeUnit) : []))
+	const rangeOutline = $derived.by(() => {
+		const segments: string[] = []
+		// Do not recreate a selection border around the unit itself.
+		const covered = (index: number) => attackRange.has(index) || index === rangeUnit?.cell
+		for (const index of attackRange) {
+			const column = index % gameState.cols
+			const row = Math.floor(index / gameState.cols)
+			if (row === 0 || !covered(index - gameState.cols)) segments.push(`M${column},${row}h1`)
+			if (column === gameState.cols - 1 || !covered(index + 1)) segments.push(`M${column + 1},${row}v1`)
+			if (row === gameState.rows - 1 || !covered(index + gameState.cols)) segments.push(`M${column},${row + 1}h1`)
+			if (column === 0 || !covered(index - 1)) segments.push(`M${column},${row}v1`)
+		}
+		return segments.join(' ')
+	})
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 
 	$effect(() => {
@@ -100,7 +116,7 @@
 	{/if}
 {/snippet}
 
-<div class="board-layout">
+<div class="board-layout" class:range-red={rangeUnit?.player === 2}>
 	{@render navigation()}
 	<div class="board-frame" style:--scrollbar-height={`${scrollbarHeight}px`}>
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex (Scrollable regions need keyboard focus for native arrow-key scrolling.) -->
@@ -108,8 +124,11 @@
 			<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
 				{#each gameState.cells as cell (cell.index)}
 					{@const unit = units.get(cell.index)}
-					<Cell {cell} {unit} {aiMode} selected={!!unit && selected?.id === unit.id} reachable={reachable.includes(cell.index)} attackable={attackRange.includes(cell.index)} underFire={gameState.combatTargetIndex === cell.index} target={gameState.fighting ? gameState.combatTargetIndex === cell.index : (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} recoveredHealth={gameState.healedCells[cell.index]} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
+					<Cell {cell} {unit} {aiMode} selected={!!unit && selected?.id === unit.id} inspected={!!unit && inspected?.id === unit.id} reachable={!inspected && reachable.includes(cell.index)} attackable={attackRange.has(cell.index)} underFire={gameState.combatTargetIndex === cell.index} target={gameState.fighting ? gameState.combatTargetIndex === cell.index : !inspected && (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)} explosion={gameState.explosion === cell.index} income={gameState.incomeCells.includes(cell.index)} recoveredHealth={gameState.healedCells[cell.index]} captured={gameState.capturedCells.includes(cell.index)} secured={gameState.securedCells.includes(cell.index)} onclick={() => game.clickCell(cell.index)} onpreview={() => (gameState.hoveredIndex = cell.index)} />
 				{/each}
+				{#if rangeOutline}
+					<svg class="range-outline" aria-hidden="true" viewBox={`0 0 ${gameState.cols} ${gameState.rows}`} preserveAspectRatio="none"><path d={rangeOutline} /></svg>
+				{/if}
 			</div>
 		</div>
 		{#each scrollDirections as direction}
@@ -125,10 +144,17 @@
 
 <style>
 	.board-layout {
+		--range-color: #8dcbff;
+		--range-fill: #174a70;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
 		gap: 16px;
+
+		&.range-red {
+			--range-color: #ffb3b1;
+			--range-fill: #792d3a;
+		}
 	}
 
 	.board-navigation {
@@ -203,7 +229,24 @@
 		}
 	}
 
+	.range-outline {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+
+		path {
+			fill: none;
+			stroke: var(--range-color);
+			stroke-width: 1px;
+			vector-effect: non-scaling-stroke;
+		}
+	}
+
 	.board {
+		position: relative;
 		display: grid;
 		grid-template-columns: repeat(var(--cols), 1fr);
 		width: min(100%, calc((100svh - 240px) * var(--cols) / var(--rows)));

@@ -86,6 +86,7 @@ export interface GameState {
 	round: number
 	money: Record<Player, number>
 	selectedId: number | null
+	inspectedEnemyId: number | null
 	origin: MoveOrigin | null
 	productionIndex: number | null
 	hoveredIndex: number | null

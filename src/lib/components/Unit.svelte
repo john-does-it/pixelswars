@@ -6,11 +6,11 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { Unit as GameUnit } from '$lib/game/types.js'
 
-	let { unit, selected = false, target = false }: { unit: GameUnit; selected?: boolean; target?: boolean } = $props()
+	let { unit, target = false }: { unit: GameUnit; target?: boolean } = $props()
 	const unitDefinition = $derived(unitTypes[unit.type])
 </script>
 
-<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-selected={selected} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image={`url('${asset(unitSprite(unit))}')`}>
+<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image={`url('${asset(unitSprite(unit))}')`}>
 	<img class="health" src={asset('/assets/icons/icon-health.png')} alt="" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s" />
 	<span class="statuses">
 		{#if unit.attacks === 0}
@@ -37,11 +37,6 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		pointer-events: none;
-	}
-
-	.-selected {
-		outline: 3px solid #ffe985;
-		outline-offset: -3px;
 	}
 
 	.health {

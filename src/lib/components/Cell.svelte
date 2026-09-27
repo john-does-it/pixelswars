@@ -14,6 +14,7 @@
 		attackable: boolean
 		target?: boolean
 		underFire?: boolean
+		inspected?: boolean
 		explosion: boolean
 		income: boolean
 		recoveredHealth?: number
@@ -22,7 +23,7 @@
 		onclick: () => void
 		onpreview: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, explosion, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const label = $derived(
 		translate(messages.cell_label, {
@@ -38,9 +39,12 @@
 	}
 </script>
 
-<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:under-fire={underFire} aria-label={label} aria-pressed={!!selected} data-cell={cell.index} {onclick} onpointerenter={previewOnHover} onfocus={onpreview}>
+<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(messages.move)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick} onpointerenter={previewOnHover} onfocus={onpreview}>
+	{#if reachable}
+		<span class="movement-marker" aria-hidden="true"></span>
+	{/if}
 	{#if unit}
-		<Unit {unit} {selected} {target} />
+		<Unit {unit} {target} />
 	{/if}
 	{#if explosion}
 		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt={translate(messages.explosion)} />
@@ -85,12 +89,27 @@
 	}
 
 	.attackable::before {
-		background: #15151540;
+		background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--range-fill) 40%, transparent) 0 6px, color-mix(in srgb, var(--range-fill) 13%, transparent) 6px 12px);
 	}
 
-	.reachable::before {
-		background: #008dff66;
-		box-shadow: inset 0 0 0 1px #8ad4ff;
+	.movement-marker {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: clamp(10px, 20%, 18px);
+		aspect-ratio: 1;
+		transform: translate(-50%, -50%) rotate(45deg);
+		border: 2px solid var(--range-color);
+		background: #19242c;
+		box-shadow: 0 0 0 1px #0d1216;
+		pointer-events: none;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 30%;
+			background: #ffffff;
+		}
 	}
 
 	.explosion {

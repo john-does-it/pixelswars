@@ -5,6 +5,7 @@ import type { GameState } from './types.ts'
 export function deselect(state: GameState): void {
 	if (locked(state)) return
 	state.selectedId = null
+	state.inspectedEnemyId = null
 	state.origin = null
 }
 
@@ -14,6 +15,7 @@ export function select(state: GameState, id: number): void {
 	if (!unit || unit.player !== state.player || unit.health <= 0) return
 	if (state.selectedId !== id) state.origin = { cell: unit.cell, movement: unit.movement }
 	state.selectedId = id
+	state.inspectedEnemyId = null
 	state.productionIndex = null
 }
 
@@ -22,6 +24,7 @@ export function move(state: GameState, index: number): boolean {
 	const unit = selectedUnit(state)
 	if (!unit || !reachableCells(state, unit).includes(index)) return false
 	unit.movement -= movementCost(unit, state.cells[index])
+	state.inspectedEnemyId = null
 	unit.cell = index
 	return true
 }
@@ -51,6 +54,7 @@ export function capture(state: GameState): boolean {
 		cell.capturePoints = 20
 	}
 	unit.capture = 0
+	state.inspectedEnemyId = null
 	// A capture commits the position; cancellation must not undo this action.
 	state.origin = { cell: unit.cell, movement: unit.movement }
 	return true

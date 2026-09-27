@@ -1,4 +1,5 @@
 {
+	"inspect_enemy_hint": "Sans unité alliée sélectionnée, touchez ou cliquez sur un ennemi pour voir sa portée d’attaque depuis sa position actuelle. Touchez-le à nouveau ou appuyez sur Échap pour la masquer.",
 	"map_10": "Les terres fracturées",
 	"map_11": "La crête du tonnerre",
 	"map_12": "L’estuaire de fer",
@@ -132,8 +133,7 @@
 	"need_more": "Il manque {money}$",
 	"available": "Disponible",
 	"buy_unit": "Acheter {unit}",
-	"victory": "Victoire",
-	"victory_message": "Joueur {player}, félicitations — vous avez gagné !",
+	"victory_message": "Victoire du joueur {player} !",
 	"play_again": "Rejouer",
 	"choose_another_map": "Choisir une autre carte",
 	"close": "Fermer",
@@ -149,7 +149,7 @@
 	"rules_building_3": "Le terrain modifie le déplacement et la défense. Les unités volantes dépensent toujours 1 point de déplacement par case.",
 	"touch_and_mouse": "Écran tactile et souris",
 	"touch_step_1": "Touchez ou cliquez sur une de vos unités pour la sélectionner.",
-	"touch_step_2": "Touchez ou cliquez sur les cases surlignées pour vous déplacer, ou sur un ennemi indiqué pour l’attaquer.",
+	"touch_step_2": "Touchez ou cliquez sur un losange pour vous déplacer sur cette case, ou sur un ennemi marqué pour attaquer. Les hachures indiquent la portée dans la couleur du camp de l’unité.",
 	"touch_step_3": "Utilisez les boutons d’action pour confirmer, annuler, capturer ou terminer le tour.",
 	"current_layout": "Disposition actuelle :",
 	"move": "Déplacer",
@@ -207,6 +207,7 @@
 	"home_rules_mobile": "Sur mobile, touchez une unité, puis une case en surbrillance pour la déplacer ou un ennemi à portée pour attaquer. Utilisez les boutons d’action pour confirmer, annuler, capturer ou terminer le tour. Faites glisser la carte ou utilisez la minicarte pour explorer le champ de bataille.",
 	"ai_player": "IA",
 	"human_player": "Joueur",
-	"ai_victory_message": "Victoire : {winner} !",
+	"ai_victory_message": "Victoire de l’IA !",
+	"human_victory_message": "Victoire du joueur !",
 	"health_recovered": "+{health} PV"
 }
