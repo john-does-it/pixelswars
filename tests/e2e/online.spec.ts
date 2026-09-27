@@ -146,11 +146,18 @@ test('expired invitations and unavailable signaling give recoverable errors', as
 	const invitation = page.getByLabel('Invitation link', { exact: true })
 	await expect(invitation).toHaveValue(/#invite=PW2\./)
 	const address = await invitation.inputValue()
+	// Keep lazy-loaded navigation slow enough to expose overlapping navigations.
+	await page.route('**/_app/immutable/**/*.js', async (route) => {
+		await new Promise((resolve) => setTimeout(resolve, 500))
+		await route.continue()
+	})
 	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await expect(page).toHaveURL('/')
 	await page.goto(address)
 	await page.getByRole('button', { name: 'Join', exact: true }).click()
 	await expect(page.getByRole('alert')).toContainText('no longer available', { timeout: 10000 })
 	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await expect(page).toHaveURL('/')
 	await page.goto('/play/1/?online=1')
 	// Stop the real signaling listener to exercise an actual connection failure.
 	signalServer.close()
@@ -168,6 +175,7 @@ test('invalid invitations show a recoverable error', async ({ page }) => {
 	await expect(page.getByRole('alert')).toContainText('invalid')
 	await expect(page.getByRole('button', { name: 'Join', exact: true })).toBeEnabled()
 	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await expect(page).toHaveURL('/')
 	await page.goto('/play/1/?online=1')
 	await expect(page.getByRole('button', { name: 'Create a game' })).toBeVisible()
 })
