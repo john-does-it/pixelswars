@@ -1,7 +1,7 @@
 import { unitTypes } from './catalog.ts'
 import * as actions from './actions.ts'
-import { canAttack, canCapture } from './model.ts'
-import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision } from './ai.ts'
+import { attackCells, canAttack, canCapture } from './model.ts'
+import { chooseAttack, chooseMovement, chooseHeuristicDecision, pathsFrom, simulateAttack, type AiDecision } from './ai.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import rules from './combat-rules.ts'
 import type { GameState, Player } from './types.ts'
@@ -135,11 +135,41 @@ function candidates(state: GameState, moved: Set<number>, produced: Set<number>)
 	return [...unique.slice(0, candidateLimit), { kind: 'end' }]
 }
 
+function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set<number>, produced: Set<number>): boolean {
+	if (decision.kind !== 'move' && decision.kind !== 'capture' && decision.kind !== 'relay') return false
+	const after = simulateDecision(copyState(state), decision, new Set(moved), new Set(produced))
+	const participants = after.units.filter((unit) => {
+		const before = state.units.find((original) => original.id === unit.id)
+		return unit.player === state.player && before && (unit.cell !== before.cell || unit.capture !== before.capture)
+	})
+	const advancesCapture = after.cells.some((cell) => cell.building && (cell.owner === state.player ? state.cells[cell.index].owner !== state.player || cell.capturePoints > state.cells[cell.index].capturePoints : cell.capturePoints < state.cells[cell.index].capturePoints))
+	const approachesBuilding = participants.some((unit) => {
+		if (!unitTypes[unit.type].captures || unit.capture <= 0) return false
+		const before = state.units.find((original) => original.id === unit.id)!
+		const previousPaths = pathsFrom(state, before)
+		const nextPaths = pathsFrom(after, unit)
+		return after.cells.some((cell) => cell.building && cell.owner !== state.player && (nextPaths.get(cell.index)?.cost ?? Infinity) < (previousPaths.get(cell.index)?.cost ?? Infinity))
+	})
+	if (!advancesCapture && !approachesBuilding) return false
+	// Ending must not postpone uncontested captures forever. Holding remains an
+	// option when any participating unit can be attacked on the enemy's next turn.
+	for (const enemy of after.units.filter((unit) => unit.player !== state.player)) {
+		const targets = participants.filter((unit) => rules.canTarget(enemy.type, unit.type))
+		if (!targets.length) continue
+		for (const cell of pathsFrom(after, enemy, unitTypes[enemy.type].movement).keys()) {
+			const range = attackCells(after, { ...enemy, cell })
+			if (targets.some((unit) => range.includes(unit.cell))) return false
+		}
+	}
+	return true
+}
+
 export async function chooseExpertDecision(state: GameState, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}): Promise<AiDecision> {
 	const choices = candidates(state, moved, produced)
 	if (choices.length === 1) return choices[0]
 	let best = choices[0]
 	let bestValue = -Infinity
+	const evaluated: { decision: AiDecision; value: number }[] = []
 	for (const decision of choices) {
 		if (!active()) return { kind: 'end' }
 		const projected = await projectExpertDecision(state, decision, moved, produced, active, yieldControl)
@@ -147,11 +177,16 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 		// Discount speculative follow-up gains: owning a city now is better than
 		// repeatedly postponing its capture to the end of the search horizon.
 		const value = projected.winner !== null ? evaluateExpertPosition(projected, state.player) : (evaluateExpertPosition(projected, state.player) + evaluateExpertPosition(immediate, state.player)) / 2
+		evaluated.push({ decision, value })
 		if (value > bestValue) {
 			bestValue = value
 			best = decision
 		}
 		await yieldControl()
+	}
+	if (active() && best.kind === 'end') {
+		const progress = evaluated.sort((left, right) => right.value - left.value).find(({ decision }) => safeEconomicProgress(state, decision, moved, produced))
+		if (progress) return progress.decision
 	}
 	return best
 }

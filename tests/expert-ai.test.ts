@@ -28,6 +28,66 @@ test('Expert is accepted as a difficulty', () => {
 	assert.equal(isAiDifficulty('expert'), true)
 })
 
+test('Expert starts developing instead of passing its opening turn on every map', async () => {
+	for (let mapId = 1; mapId <= 12; mapId++) {
+		const state = initialState(JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')))
+		const positions = state.units.filter((unit) => unit.player === 1).map((unit) => unit.cell)
+		const game = createController(state, { delay: async () => {} })
+		try {
+			await runAiTurn(
+				game,
+				'expert',
+				() => true,
+				async () => {}
+			)
+			assert.equal(state.player, 2)
+			assert.notDeepEqual(
+				state.units.filter((unit) => unit.player === 1).map((unit) => unit.cell),
+				positions,
+				`Map ${mapId}: deploy units`
+			)
+			assert.ok(
+				state.cells.some((cell) => cell.building && (cell.owner === 1 || cell.capturePoints < 20)),
+				`Map ${mapId}: begin capturing`
+			)
+		} finally {
+			game.dispose()
+		}
+	}
+})
+
+test('The Long Front: Expert captures a base and a city over three turns, then recruits from its income', async () => {
+	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-4.json', import.meta.url), 'utf8')))
+	const game = createController(state, { delay: async () => {} })
+	const startingArmySize = state.units.filter((unit) => unit.player === 1).length
+	try {
+		for (let turn = 0; turn < 3; turn++) {
+			const before = JSON.stringify({ units: state.units, cells: state.cells })
+			await runAiTurn(
+				game,
+				'expert',
+				() => true,
+				async () => {}
+			)
+			assert.notEqual(JSON.stringify({ units: state.units, cells: state.cells }), before, `AI turn ${turn + 1} must make progress even if the human passes`)
+			assert.equal(state.player, 2)
+			game.endTurn()
+		}
+		assert.ok(state.cells.some((cell) => cell.building === 'factory' && cell.owner === 1))
+		assert.ok(state.cells.some((cell) => cell.building === 'city' && cell.owner === 1))
+		assert.ok(state.money[1] >= 200)
+		await runAiTurn(
+			game,
+			'expert',
+			() => true,
+			async () => {}
+		)
+		assert.ok(state.units.filter((unit) => unit.player === 1).length > startingArmySize)
+	} finally {
+		game.dispose()
+	}
+})
+
 test('Expert completes the starting city with an infantry relay during the opening turn', async () => {
 	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-1.json', import.meta.url), 'utf8')))
 	const relay = chooseCaptureRelay(state)!

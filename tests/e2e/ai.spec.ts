@@ -1,5 +1,19 @@
 import { test, expect } from '@playwright/test'
 
+test('Expert develops The Long Front across three opening turns instead of passing', async ({ page }) => {
+	test.setTimeout(90000)
+	await page.goto('/play/4/?ai=expert')
+	const endTurn = page.getByRole('button', { name: 'End round', exact: true })
+	for (const round of [2, 4, 6]) {
+		await expect(page.getByText(`Round ${round}`, { exact: true })).toBeVisible({ timeout: 30000 })
+		await expect(endTurn).toBeEnabled()
+		if (round === 2) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-halfcaptured/)
+		if (round >= 4) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-capturedby1/)
+		if (round === 6) await expect(page.locator('[data-cell="19"]')).toHaveClass(/-capturedby1/)
+		else await endTurn.click()
+	}
+})
+
 test('AI hides actions but keeps settings available and follows its active unit on mobile', async ({ page }) => {
 	await page.setViewportSize({ width: 360, height: 800 })
 	await page.goto('/play/7/?ai=easy')

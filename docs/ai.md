@@ -9,7 +9,8 @@ All difficulties use the normal movement, damage, retaliation, capture, income,
 healing and production rules. There are no bonus resources or hidden stat boosts.
 The AI only reads the visible board. Scrolling, previews and options remain
 available during its turn; human game actions are blocked until it finishes.
-Each human turn is announced with a fading message. Local multiplayer announces
+Each human turn is announced with a left-to-right sweep in the player's color.
+Reduced-motion preferences use a static announcement. Local multiplayer announces
 the current player at the start of every turn.
 
 ## Easy
@@ -66,6 +67,11 @@ Uses hard tactics, plus:
   movement, then a second infantry finishes the same building during this turn.
   Check both paths and occupancy, and weigh immediate gains against discounted
   follow-up gains instead of continually postponing captures.
+- Before choosing to end a turn, prefer an available uncontested capture or
+  a legal advance toward a capturable building. Check participating units against
+  the enemy's next-turn movement and attack ranges; waiting remains available
+  when those units would be exposed. This prevents repeatedly borrowing the same
+  future captures in the lookahead without ever starting them.
 
 ## Scope and limits
 
