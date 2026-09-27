@@ -19,8 +19,7 @@
 	let copied = $state(false)
 	let error = $state('')
 	let supported = $state(true)
-	let timeout: ReturnType<typeof setTimeout> | undefined
-	const errors = { invalid: messages.online_error_invalid, incompatible: messages.online_error_incompatible, wrong_map: messages.online_error_map, unsupported: messages.online_error_unsupported, failed: messages.online_error_failed, service: messages.online_error_service, unavailable: messages.online_error_unavailable }
+	const errors = { invalid: messages.online_error_invalid, incompatible: messages.online_error_incompatible, wrong_map: messages.online_error_map, unsupported: messages.online_error_unsupported, failed: messages.online_error_failed, service: messages.online_error_service, unavailable: messages.online_error_unavailable, network: messages.online_error_network, no_candidates: messages.online_error_no_candidates }
 
 	onMount(() => {
 		supported = typeof RTCPeerConnection !== 'undefined'
@@ -31,7 +30,6 @@
 		if (invitation && supported && !connected && !busy) {
 			peer?.close()
 			peer = undefined
-			clearTimeout(timeout)
 			output = error = ''
 			joining = false
 			role = 'join'
@@ -40,7 +38,6 @@
 		}
 	}
 	onDestroy(() => {
-		clearTimeout(timeout)
 		peer?.close()
 	})
 
@@ -53,27 +50,16 @@
 		connection.onStatus((status) => {
 			if (peer !== connection) return
 			if (status === 'connected') {
-				clearTimeout(timeout)
 				connected = true
 				error = ''
-			} else if (status === 'disconnected' && !connected) error = translate(messages.online_error_failed)
+			} else if (status === 'connecting' && !connected) error = ''
 		})
 		connection.onError((failure) => {
 			if (peer !== connection || connected) return
-			clearTimeout(timeout)
 			error = translate(errors[failure.message as keyof typeof errors] ?? errors.failed)
 			joining = false
 		})
 		return connection
-	}
-	function connectionTimeout() {
-		clearTimeout(timeout)
-		timeout = setTimeout(() => {
-			if (!connected) {
-				error = translate(messages.online_error_failed)
-				joining = false
-			}
-		}, 35000)
 	}
 	async function perform(action: () => Promise<void>) {
 		busy = true
@@ -107,8 +93,6 @@
 			const connection = createPeer(false)
 			joining = true
 			await connection.acceptInvitation(input)
-			if (peer !== connection) return
-			connectionTimeout()
 		})
 	}
 	async function copy() {

@@ -20,27 +20,66 @@ test.afterEach(() => {
 	signalServer?.close()
 })
 
-async function localIce(page: Page) {
+async function localIce(page: Page, withoutCandidates = false) {
 	// Real PeerServer and WebRTC, with local signaling/ICE to keep CI independent of public services.
-	await page.addInitScript((port) => {
-		const NativeSocket = window.WebSocket
-		window.WebSocket = class extends NativeSocket {
-			constructor(address: string | URL, protocols?: string | string[]) {
-				const url = new URL(address)
-				if (url.hostname === '0.peerjs.com') {
-					url.protocol = 'ws:'
-					url.host = `127.0.0.1:${port}`
+	await page.addInitScript(
+		({ port, withoutCandidates }) => {
+			const NativeSocket = window.WebSocket
+			window.WebSocket = class extends NativeSocket {
+				constructor(address: string | URL, protocols?: string | string[]) {
+					const url = new URL(address)
+					if (url.hostname === '0.peerjs.com') {
+						url.protocol = 'ws:'
+						url.host = `127.0.0.1:${port}`
+					}
+					super(url, protocols)
 				}
-				super(url, protocols)
 			}
-		}
-		const NativeConnection = window.RTCPeerConnection
-		window.RTCPeerConnection = class extends NativeConnection {
-			constructor(configuration?: RTCConfiguration) {
-				super({ ...configuration, iceServers: [] })
+			const NativeConnection = window.RTCPeerConnection
+			window.RTCPeerConnection = class extends NativeConnection {
+				constructor(configuration?: RTCConfiguration) {
+					super({ ...configuration, iceServers: [], ...(withoutCandidates ? { iceTransportPolicy: 'relay' } : {}) })
+					if (withoutCandidates) {
+						this.addEventListener('icegatheringstatechange', () => {
+							Reflect.set(window, 'onlineIceGatheringComplete', this.iceGatheringState === 'complete')
+						})
+					}
+				}
 			}
+		},
+		{ port: signalPort, withoutCandidates }
+	)
+}
+
+for (const blockedSide of ['host', 'guest'] as const) {
+	test(`missing local candidates show browser guidance on the ${blockedSide} only`, async ({ page, browser }) => {
+		const guestContext = await browser.newContext({ bypassCSP: true })
+		const guest = await guestContext.newPage()
+		try {
+			await page.clock.install()
+			await guest.clock.install()
+			// Relay-only ICE with no relay configured produces a real, empty candidate search.
+			await localIce(page, blockedSide === 'host')
+			await localIce(guest, blockedSide === 'guest')
+			await page.goto('/play/1/?online=1')
+			await page.getByRole('button', { name: 'Create a game' }).click()
+			const invitation = page.getByLabel('Invitation link', { exact: true })
+			await expect(invitation).toHaveValue(/#invite=PW2\./)
+			await guest.goto(await invitation.inputValue())
+			await guest.getByRole('button', { name: 'Join', exact: true }).click()
+			const blocked = blockedSide === 'host' ? page : guest
+			const other = blockedSide === 'host' ? guest : page
+			await expect.poll(() => blocked.evaluate(() => Reflect.get(window, 'onlineIceGatheringComplete'))).toBe(true)
+			await blocked.clock.fastForward(36000)
+			await expect(blocked.getByRole('alert')).toContainText('Check its WebRTC settings and any VPN or privacy extensions')
+			await expect(blocked.getByRole('alert')).toContainText('recommended WebRTC setting')
+			await expect(blocked.getByRole('button', { name: blockedSide === 'host' ? 'Create a game' : 'Join', exact: true })).toBeEnabled()
+			await other.clock.fastForward(36000)
+			await expect(other.getByRole('alert')).toContainText('could not connect directly')
+		} finally {
+			await guestContext.close()
 		}
-	}, signalPort)
+	})
 }
 
 test('two devices connect, synchronize a match and pause when a player leaves', async ({ page, browser, isMobile }) => {
@@ -178,4 +217,47 @@ test('invalid invitations show a recoverable error', async ({ page }) => {
 	await expect(page).toHaveURL('/')
 	await page.goto('/play/1/?online=1')
 	await expect(page.getByRole('button', { name: 'Create a game' })).toBeVisible()
+})
+
+test('an incomplete connection times out on both devices and the invitation can be retried', async ({ page, browser, isMobile }) => {
+	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
+	const guest = await guestContext.newPage()
+	try {
+		await page.clock.install()
+		for (const device of [page, guest]) {
+			await localIce(device)
+			await device.addInitScript(() => {
+				// Suppress the initial exchange while keeping real signaling and WebRTC.
+				Object.assign(window, { dropOnlinePackets: true, onlinePacketAttempted: false })
+				const send = RTCDataChannel.prototype.send
+				RTCDataChannel.prototype.send = function (data: string | Blob | ArrayBuffer | ArrayBufferView) {
+					if (Reflect.get(window, 'dropOnlinePackets')) {
+						Reflect.set(window, 'onlinePacketAttempted', true)
+						return
+					}
+					return send.call(this, data as ArrayBufferView<ArrayBuffer>)
+				}
+			})
+		}
+		await page.goto('/play/1/?online=1')
+		await page.getByRole('button', { name: 'Create a game' }).click()
+		const invitation = page.getByLabel('Invitation link', { exact: true })
+		await expect(invitation).toHaveValue(/#invite=PW2\./)
+		await guest.goto(await invitation.inputValue())
+		await guest.getByRole('button', { name: 'Join', exact: true }).click()
+		for (const device of [page, guest]) {
+			await expect.poll(() => device.evaluate(() => Reflect.get(window, 'onlinePacketAttempted'))).toBe(true)
+		}
+		await page.clock.fastForward(36000)
+		for (const device of [page, guest]) {
+			await expect(device.getByRole('alert')).toContainText('could not connect directly')
+			await expect(device.getByText('Waiting for the other device…', { exact: true })).toHaveCount(0)
+			await device.evaluate(() => Reflect.set(window, 'dropOnlinePackets', false))
+		}
+		await guest.getByRole('button', { name: 'Join', exact: true }).click()
+		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
+		await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+	} finally {
+		await guestContext.close()
+	}
 })

@@ -45,6 +45,7 @@ export class PeerConnection implements MatchConnection {
 	private errors = new Set<(error: PeerError) => void>()
 	private pending: unknown[] = []
 	private heartbeat?: ReturnType<typeof setInterval>
+	private connectionTimeout?: ReturnType<typeof setTimeout>
 	private lastSeen = Date.now()
 	private hasConnected = false
 	private map: GameMap
@@ -94,10 +95,17 @@ export class PeerConnection implements MatchConnection {
 			this.attach(connection)
 		})
 		peer.on('error', (error) => {
-			if (!this.hasConnected) this.fail(error.type === 'peer-unavailable' ? 'unavailable' : 'service')
+			if (!this.hasConnected) {
+				const reason = error.type === 'peer-unavailable' ? 'unavailable' : error.type === 'webrtc' ? 'network' : 'service'
+				if (this.channel) this.failConnection(this.channel, reason)
+				else this.fail(reason)
+			}
 		})
 		peer.on('disconnected', () => {
-			if (!this.hasConnected) this.fail('service')
+			if (!this.hasConnected) {
+				if (this.channel) this.failConnection(this.channel, 'service')
+				else this.fail('service')
+			}
 		})
 		await new Promise<void>((resolve, reject) => {
 			const finish = (error?: PeerError) => {
@@ -117,34 +125,61 @@ export class PeerConnection implements MatchConnection {
 		})
 		return peer
 	}
+	private failConnection(connection: DataConnection, reason: string) {
+		if (this.channel !== connection || this.hasConnected) return
+		const transport = connection.peerConnection
+		// Only diagnose an empty search once gathering has actually finished.
+		if (reason === 'network' && transport?.iceGatheringState === 'complete' && transport.localDescription && !/^a=candidate:/m.test(transport.localDescription.sdp)) reason = 'no_candidates'
+		clearTimeout(this.connectionTimeout)
+		this.channel = undefined
+		connection.close()
+		this.setStatus('disconnected')
+		this.fail(reason)
+	}
 	private attach(connection: DataConnection) {
 		this.channel = connection
+		this.setStatus('connecting')
+		// Both sides stop waiting if an offered connection never completes.
+		this.connectionTimeout = setTimeout(() => this.failConnection(connection, 'network'), 35000)
+		connection.peerConnection?.addEventListener('iceconnectionstatechange', () => {
+			if (connection.peerConnection?.iceConnectionState === 'failed') this.failConnection(connection, 'network')
+		})
 		connection.on('open', () => {
+			if (this.channel !== connection) return
 			connection.send({ type: 'hello', version: protocolVersion, map: this.map.id, fingerprint: matchFingerprint(this.map) })
 		})
 		connection.on('close', () => {
+			if (this.channel !== connection) return
+			if (!this.hasConnected) {
+				this.failConnection(connection, 'network')
+				return
+			}
 			this.setStatus('disconnected')
-			if (!this.hasConnected) this.fail('unavailable')
 		})
 		connection.on('error', () => {
+			if (this.channel !== connection) return
+			if (!this.hasConnected) {
+				this.failConnection(connection, 'network')
+				return
+			}
 			this.setStatus('disconnected')
-			if (!this.hasConnected) this.fail('failed')
 		})
 		connection.on('data', (input) => {
+			if (this.channel !== connection) return
 			if (!input || typeof input !== 'object' || JSON.stringify(input).length > 262144) return
 			const message = input as Record<string, unknown>
 			if (message.type === 'rejected') {
-				this.fail(['incompatible', 'wrong_map', 'unavailable'].includes(String(message.reason)) ? String(message.reason) : 'failed')
+				this.failConnection(connection, ['incompatible', 'wrong_map', 'unavailable'].includes(String(message.reason)) ? String(message.reason) : 'failed')
 				return
 			}
 			if (!this.hasConnected) {
 				if (message.type !== 'hello') return
 				if (message.version !== protocolVersion || message.map !== this.map.id || message.fingerprint !== matchFingerprint(this.map)) {
-					this.fail('incompatible')
-					connection.close()
+					this.failConnection(connection, 'incompatible')
 					return
 				}
 				this.hasConnected = true
+				clearTimeout(this.connectionTimeout)
 				this.heartbeat = setInterval(() => {
 					if (Date.now() - this.lastSeen > 10000) this.setStatus('disconnected')
 					this.send({ type: 'heartbeat' })
@@ -211,6 +246,7 @@ export class PeerConnection implements MatchConnection {
 		this.setStatus('closed')
 		this.abort.abort()
 		clearInterval(this.heartbeat)
+		clearTimeout(this.connectionTimeout)
 		this.channel?.close()
 		this.peer?.destroy()
 		this.messages.clear()

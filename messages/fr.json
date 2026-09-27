@@ -259,5 +259,7 @@
 	"legal_github": "Politique de confidentialité de GitHub",
 	"legal_peerjs": "À propos de PeerJS Cloud",
 	"legal_google": "Politique de confidentialité de Google",
-	"online_challenge": "Un ami vous défie"
+	"online_challenge": "Un ami vous défie",
+	"online_error_network": "Les appareils n’arrivent pas à se connecter directement. Essayez un autre réseau, puis rejoignez à nouveau la partie.",
+	"online_error_no_candidates": "Votre navigateur n’a trouvé aucune connexion réseau utilisable pour cette partie. Vérifiez ses réglages WebRTC et vos extensions VPN ou de confidentialité. Dans Opera, essayez le réglage WebRTC recommandé. Rechargez ensuite la page et réessayez."
 }

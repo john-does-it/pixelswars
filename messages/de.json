@@ -259,5 +259,7 @@
 	"legal_github": "GitHubs Datenschutzerklärung",
 	"legal_peerjs": "Über PeerJS Cloud",
 	"legal_google": "Googles Datenschutzerklärung",
-	"online_challenge": "Ein Freund fordert dich heraus"
+	"online_challenge": "Ein Freund fordert dich heraus",
+	"online_error_network": "Die Geräte konnten keine direkte Verbindung herstellen. Versuche es mit einem anderen Netzwerk und tritt erneut bei.",
+	"online_error_no_candidates": "Dein Browser hat keine nutzbare Netzwerkverbindung für dieses Spiel gefunden. Prüfe die WebRTC-Einstellungen und deine VPN- oder Datenschutz-Erweiterungen. Probiere in Opera die empfohlene WebRTC-Einstellung. Lade danach die Seite neu und versuche es erneut."
 }

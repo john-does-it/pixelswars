@@ -259,5 +259,7 @@
 	"legal_github": "GitHub privacy statement",
 	"legal_peerjs": "About PeerJS Cloud",
 	"legal_google": "Google privacy policy",
-	"online_challenge": "A friend challenges you"
+	"online_challenge": "A friend challenges you",
+	"online_error_network": "The devices could not connect directly. Try another network, then join the game again.",
+	"online_error_no_candidates": "Your browser could not find a network connection for this game. Check its WebRTC settings and any VPN or privacy extensions. In Opera, try the recommended WebRTC setting. Then reload the page and try again."
 }
