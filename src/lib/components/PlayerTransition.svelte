@@ -7,12 +7,18 @@
 	let dialog = $state<HTMLDialogElement>()
 
 	onMount(() => {
+		dialog?.showModal()
 		if (persistent) {
-			dialog?.showModal()
 			return () => dialog?.close()
 		}
-		const timeout = setTimeout(() => (visible = false), 2200)
-		return () => clearTimeout(timeout)
+		const timeout = setTimeout(() => {
+			dialog?.close()
+			visible = false
+		}, 2200)
+		return () => {
+			clearTimeout(timeout)
+			dialog?.close()
+		}
 	})
 </script>
 
@@ -24,14 +30,10 @@
 	</div>
 {/snippet}
 
-{#if persistent}
+{#if visible}
 	<dialog bind:this={dialog} class="turn-transition" aria-label={label} oncancel={(event) => event.preventDefault()}>
 		{@render content()}
 	</dialog>
-{:else if visible}
-	<div class="turn-transition">
-		{@render content()}
-	</div>
 {/if}
 
 <style>
@@ -48,10 +50,6 @@
 		border: 0;
 		overflow: hidden;
 		background: transparent;
-		pointer-events: none;
-	}
-
-	dialog.turn-transition {
 		pointer-events: auto;
 
 		&::backdrop {

@@ -5,7 +5,7 @@
 	let { player, message }: { player: Player; message: string } = $props()
 </script>
 
-<PlayerTransition {player}>
+<PlayerTransition {player} label={message}>
 	<div class="turn-announcement" role="status" aria-live="polite" aria-atomic="true">
 		{message}
 	</div>

@@ -1,4 +1,63 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+async function endRound(page: Page) {
+	await page.getByRole('button', { name: 'End round', exact: true }).click()
+	await expect(page.locator('dialog.turn-transition')).toBeVisible()
+	await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+}
+
+test('turn transitions block unit selection, production and keyboard input until they finish', async ({ page, isMobile }) => {
+	await page.clock.install()
+	await page.clock.pauseAt(new Date())
+	await page.goto('/play/1/')
+	const transition = page.locator('dialog.turn-transition')
+	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
+	const tapCell = async (index: number) => {
+		const bounds = (await cell(index).boundingBox())!
+		const x = bounds.x + bounds.width / 2
+		const y = bounds.y + bounds.height / 2
+		if (isMobile) await page.touchscreen.tap(x, y)
+		else await page.mouse.click(x, y)
+	}
+	const finishTransition = async () => {
+		await expect(transition).toBeVisible()
+		await page.clock.runFor(2300)
+		await expect(transition).toHaveCount(0)
+	}
+	const endTurn = async () => {
+		await page.getByRole('button', { name: 'End round', exact: true }).click()
+		await finishTransition()
+	}
+	await expect(transition).toBeVisible()
+	await tapCell(1)
+	await page.keyboard.press('Tab')
+	await page.keyboard.press('Enter')
+	await page.keyboard.press('ArrowDown')
+	await page.keyboard.press('Escape')
+	await expect(cell(1)).toHaveAttribute('aria-pressed', 'false')
+	await expect(cell(1).locator('[data-unit="1"]')).toHaveCount(1)
+	await finishTransition()
+	await cell(1).click()
+	await expect(cell(1)).toHaveAttribute('aria-pressed', 'true')
+	await cell(9).click()
+	await cell(8).click()
+	await page.getByRole('button', { name: 'Capture', exact: true }).click()
+	await endTurn()
+	await endTurn()
+	await cell(8).click()
+	await page.getByRole('button', { name: 'Capture', exact: true }).click()
+	await cell(9).click()
+	await page.getByRole('button', { name: 'Confirm move', exact: true }).click()
+	await endTurn()
+	await page.getByRole('button', { name: 'End round', exact: true }).click()
+	await expect(transition).toBeVisible()
+	await expect(cell(8)).toHaveClass(/-capturedby1/)
+	await tapCell(8)
+	await expect(page.getByRole('dialog', { name: 'Army base', exact: true })).toHaveCount(0)
+	await finishTransition()
+	await cell(8).click()
+	await expect(page.getByRole('dialog', { name: 'Army base', exact: true })).toBeVisible()
+})
 
 for (const [mapId, columns, rows, name] of [
 	[10, 16, 14, 'The Shattered Reach'],
@@ -244,12 +303,13 @@ test('visual assets preload once and are reused when opening another map', async
 })
 
 test('capture city and factory, earn income and purchase through the dialog', async ({ page }) => {
+	test.setTimeout(60000)
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/play/1/')
 	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
 	const capture = () => page.getByRole('button', { name: 'Capture', exact: true }).click()
-	const end = () => page.getByRole('button', { name: 'End round', exact: true }).click()
+	const end = () => endRound(page)
 	await cell(2).click()
 	await cell(10).click()
 	await capture()
@@ -315,11 +375,11 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await cell(10).click()
 	await cell(18).click()
 	await cell(26).click()
-	await end.click()
+	await endRound(page)
 	await cell(58).click()
 	await cell(50).click()
 	await cell(42).click()
-	await end.click()
+	await endRound(page)
 	await cell(26).click()
 	await cell(34).click()
 	await expect(cell(42).getByAltText('Attack target')).toBeVisible()
@@ -348,12 +408,12 @@ test('ranged combat keeps its exact target visible through the last shot and ret
 	await cell(0).click()
 	await cell(8).click()
 	await cell(16).click()
-	await end.click()
-	await end.click()
+	await endRound(page)
+	await endRound(page)
 	await cell(16).click()
 	for (const index of [17, 18, 19, 20]) await cell(index).click()
-	await end.click()
-	await end.click()
+	await endRound(page)
+	await endRound(page)
 	await cell(20).click()
 	await cell(28).click()
 	// Dispatch without Playwright scrolling the target into view for us.
@@ -422,9 +482,16 @@ test('Escape cancels movement while a non-modal control has focus', async ({ pag
 })
 
 test('captured airport offers aircraft and buys a plane after the tile is freed', async ({ page }) => {
+	await page.clock.install()
 	await page.goto('/play/2/')
 	const cell = (cellIndex: number) => page.locator('[data-cell="' + cellIndex + '"]')
-	const end = () => page.getByRole('button', { name: 'End round', exact: true }).click()
+	const end = async () => {
+		await page.getByRole('button', { name: 'End round', exact: true }).click()
+		await expect(page.locator('dialog.turn-transition')).toBeVisible()
+		// Skip the animation while accumulating enough income to buy a plane.
+		await page.clock.fastForward(2300)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+	}
 	const next = async () => {
 		await end()
 		await end()
