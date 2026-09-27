@@ -76,6 +76,7 @@ export interface MoveOrigin {
 }
 
 export interface GameState {
+	network: { player: Player; phase: 'waiting' | 'playing' | 'paused'; pending: boolean; rematchRequested: boolean; opponentRematchRequested: boolean } | null
 	mapId: string
 	cols: number
 	rows: number
@@ -111,12 +112,16 @@ export interface PurchaseStatus {
 }
 
 export interface ControllerOptions {
+	onChange?: () => void
+	onSound?: (name: string) => void
 	aiDifficulty?: AiDifficulty | null
 	sound?: (name: string) => void
 	delay?: (milliseconds: number) => Promise<void>
 }
 
 export interface GameController {
+	closeProduction(): void
+	requestRematch?(): void
 	state: GameState
 	start?(): void
 	dispose(): void

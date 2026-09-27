@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte'
+	import { resolve } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import { preloadGameAssets } from '$lib/game/preload.js'
@@ -13,11 +14,15 @@
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
 	import TurnAnnouncement from './TurnAnnouncement.svelte'
+	import Modal from './Modal.svelte'
+	import type { MatchConnection } from '$lib/game/peer.js'
 	import type { AiDifficulty, AudioController, GameController, GameMap } from '$lib/game/types.js'
 
-	let { map, difficulty = null }: { map: GameMap; difficulty?: AiDifficulty | null } = $props()
+	let { map, difficulty = null, connection }: { map: GameMap; difficulty?: AiDifficulty | null; connection?: MatchConnection } = $props()
 	let audio = $state<AudioController>()
-	let game = $state<GameController>(untrack(() => createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) })))
+	let game = $state<GameController>(untrack(() => createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) }, connection)))
+	const network = $derived(game.state.network)
+	const localTurn = $derived(!network || network.player === game.state.player)
 	let preferencesLoaded = $state(false)
 	let showHelp = $state(false)
 	let controlsHeight = $state(0)
@@ -48,6 +53,10 @@
 	})
 
 	function restart() {
+		if (connection) {
+			game.requestRematch?.()
+			return
+		}
 		const { keyboardLayout, sound, music } = game.state
 		game.dispose()
 		game = createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) })
@@ -71,12 +80,15 @@
 	<main class="game-shell" style:--controls-height={`${controlsHeight}px`}>
 		{#key game}
 			{#key game.state.round}
-				{#if game.state.winner === null && (!difficulty || (game.state.player === 2 && !game.state.aiThinking))}
-					<TurnAnnouncement player={game.state.player} message={difficulty ? translate(messages.your_turn) : translate(messages.player_turn, { player: game.state.player })} />
+				{#if game.state.winner === null && localTurn && (!network || network.phase === 'playing') && (!difficulty || (game.state.player === 2 && !game.state.aiThinking))}
+					<TurnAnnouncement player={game.state.player} message={difficulty || network ? translate(messages.your_turn) : translate(messages.player_turn, { player: game.state.player })} />
 				{/if}
 			{/key}
 		{/key}
 		<GameHeader aiMode={!!difficulty} state={game.state} name={mapName(map.id)} onhelp={() => (showHelp = true)} />
+		{#if network}
+			<p class="match-mode" role="status">{translate(network.player === 1 ? messages.online_blue : messages.online_red)}{!localTurn ? ` · ${translate(messages.online_opponent_turn)}` : ''}</p>
+		{/if}
 		{#if difficulty}
 			<p class="match-mode" role="status">{translate(messages.ai_match, { level: translate(messages[`ai_${difficulty}`]) })}{game.state.aiThinking ? ` · ${translate(messages.ai_thinking)}` : ''}</p>
 		{/if}
@@ -87,11 +99,17 @@
 			</div>
 			<StatsPanel aiMode={!!difficulty} state={game.state} />
 		</div>
-		{#if game.state.productionIndex !== null && !game.state.aiThinking}
+		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
 			<ProductionModal {game} />
 		{/if}
-		{#if game.state.winner !== null}
-			<VictoryModal aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} />
+		{#if game.state.winner !== null && (!network || network.phase === 'playing')}
+			<VictoryModal aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} rematchRequested={network?.rematchRequested} opponentRematchRequested={network?.opponentRematchRequested} />
+		{/if}
+		{#if network && network.phase !== 'playing'}
+			<Modal title={translate(network.phase === 'waiting' ? messages.online_waiting : messages.online_paused)}>
+				<p>{translate(network.phase === 'waiting' ? messages.online_waiting_detail : messages.online_paused_detail)}</p>
+				<a class="button primary" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
+			</Modal>
 		{/if}
 	</main>
 {/await}

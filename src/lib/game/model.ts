@@ -6,6 +6,7 @@ const buildingIds = ['city', 'factory', 'hospital', 'airport'] as const
 
 export function initialState(map: GameMap): GameState {
 	return {
+		network: null,
 		mapId: map.id,
 		cols: map.cols,
 		rows: map.rows,
@@ -40,7 +41,7 @@ export function initialState(map: GameMap): GameState {
 }
 
 export const selectedUnit = (state: GameState): Unit | undefined => state.units.find((unit) => unit.id === state.selectedId)
-export const inspectedEnemy = (state: GameState): Unit | undefined => (!locked(state) && !state.aiThinking ? state.units.find((unit) => unit.id === state.inspectedEnemyId && unit.player !== state.player && unit.health > 0) : undefined)
+export const inspectedEnemy = (state: GameState): Unit | undefined => (!locked(state) && !state.aiThinking ? state.units.find((unit) => unit.id === state.inspectedEnemyId && unit.player !== (state.network?.player ?? state.player) && unit.health > 0) : undefined)
 export const unitAt = (state: GameState, index: number): Unit | undefined => state.units.find((unit) => unit.cell === index && unit.health > 0)
 export const locked = (state: GameState): boolean => state.fighting || state.winner !== null
 

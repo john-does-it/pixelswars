@@ -12,7 +12,8 @@
 	let { game, showHelp = $bindable(false), controlsHeight = $bindable(0) }: { game: GameController; showHelp?: boolean; controlsHeight?: number } = $props()
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
-	const inputLocked = $derived(locked(gameState) || gameState.aiThinking)
+	const inputLocked = $derived(locked(gameState) || gameState.aiThinking || !!gameState.network?.pending)
+	const waiting = $derived(gameState.aiThinking || (gameState.network && (gameState.network.phase !== 'playing' || gameState.player !== gameState.network.player)))
 
 	function setKeyboardLayout(layout: KeyboardLayout) {
 		gameState.keyboardLayout = layout
@@ -24,7 +25,7 @@
 	}
 </script>
 
-<nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight} hidden={gameState.aiThinking}>
+<nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight} hidden={!!waiting}>
 	<div class="action-controls">
 		{#if selected}
 			<button disabled={inputLocked} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>

@@ -25,6 +25,7 @@
 		"@sveltejs/kit": "^2.70.3",
 		"@sveltejs/vite-plugin-svelte": "^5.1.1",
 		"@types/node": "^22.20.2",
+		"peer": "^1.0.2",
 		"prettier": "^3.9.6",
 		"prettier-plugin-svelte": "^4.1.1",
 		"svelte": "^5.57.0",
@@ -36,6 +37,7 @@
 		"node": ">=22.14.0"
 	},
 	"dependencies": {
+		"peerjs": "^1.5.5",
 		"playwright-chromium": "^1.63.0"
 	}
 }

@@ -14,7 +14,7 @@
 </script>
 
 {#if definition}
-	<Modal title={buildingName(building as ProductionBuildingId)} onclose={() => (game.state.productionIndex = null)}>
+	<Modal title={buildingName(building as ProductionBuildingId)} onclose={() => game.closeProduction()}>
 		<p role="status">{translate(messages.available_money, { player: game.state.player, money: game.state.money[game.state.player] })}</p>
 		{#each offers as [id, type] (id)}
 			{@const status = purchaseStatus(game.state, id)}
@@ -25,7 +25,7 @@
 					<p>{type.cost}$</p>
 					<small id="availability-{id}">{status.occupied ? translate(messages.free_building) : status.missing ? translate(messages.need_more, { money: status.missing }) : translate(messages.available)}</small>
 				</div>
-				<button disabled={!status.available} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>{translate(messages.buy_unit, { unit: unitName(id) })}</button>
+				<button disabled={!status.available || !!game.state.network?.pending} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>{translate(messages.buy_unit, { unit: unitName(id) })}</button>
 			</div>
 		{/each}
 	</Modal>

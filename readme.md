@@ -12,6 +12,7 @@ secure its economy and combine infantry, armor and air power to win.
 - **12 battlefields:** roads, forests, mountain positions and narrow water crossings.
 - **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
+- **Online duels:** invite a friend on another device through a direct WebRTC connection.
 - **Desktop and mobile:** keyboard, mouse and touch controls, with interactive minimaps on narrow screens.
 - **English, French and German:** language, audio and keyboard settings in Options and help.
 
@@ -52,9 +53,42 @@ is selected.
 
 On mobile, use the contextual action buttons, swipe the battlefield horizontally,
 or tap/drag either minimap to reposition the view. Minimap navigation appears
-when the board overflows its container. The camera follows AI actions.
+when the board overflows its container. The camera follows AI and online opponent actions.
 Settings are stored in browser session cookies; English is the default language.
 Turning sound off also disables music.
+
+### Play with a friend online
+
+Choose a map, then **Play 1v1 online**:
+
+1. The host creates an invitation and sends its link to a friend.
+2. The friend opens the link and clicks **Join**. The connection is automatic; there is no response code to send back.
+3. The host commands blue and plays first; the guest commands red.
+
+Keep both game pages open. A temporary connection loss pauses play and reconnecting
+resynchronizes the match. Closing or refreshing either page ends the session;
+matches are not saved. After victory, both players must agree to a rematch.
+
+The browsers exchange game data directly through WebRTC. The host validates
+actions and supplies the shared game state. This is intended for friends: the host
+can technically alter that state. No account or game server is required.
+[PeerJS Cloud](https://peerjs.com/server/cloud) exchanges the connection details
+automatically, and Google's public STUN service helps establish a direct connection.
+Only creating or joining a game contacts these services; browsing maps or opening
+an invitation does not. There is no TURN relay, so some networks cannot connect
+directly. Service outages may prevent new connections.
+
+The invitation contains a random session identifier, map and game fingerprint;
+it no longer contains the full WebRTC session description. Share it only with your
+opponent. A session accepts one guest, and expired, occupied or incompatible
+invitations show a recoverable error. Existing manual `PW1` invitations must be recreated.
+
+The [terms, privacy and cookies page](https://john-does-it.github.io/pixelswars/terms/)
+explains session cookies, third-party services and connection limits in all three
+languages. The invitation screen focuses on creating or joining a game.
+
+Use the published site when inviting someone on another device. A development
+link containing `127.0.0.1` points to the recipient's own computer.
 
 ### Buildings and economy
 
@@ -173,7 +207,8 @@ npm run dev
 
 Open the Vite address. The home route is `/`; games use `/play/1/` through
 `/play/12/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
-to play against the AI. Without that parameter, the game is local two-player.
+to play against the AI, or `?online=1` for online setup. Without either parameter,
+the game is local two-player.
 
 ```sh
 npm run check
@@ -197,7 +232,12 @@ npm run test:e2e
 ```
 
 Playwright covers desktop/mobile play, map navigation, movement, combat, capture,
-economy, settings, minimaps and AI. To use installed Chrome, set
+economy, settings, minimaps, AI and real WebRTC matches between two browser contexts.
+Online browser tests start a real local PeerServer and use local ICE candidates;
+they do not depend on the public signaling service or verify connectivity across
+different internet connections. Their browser contexts bypass CSP only to allow
+the temporary local signaling port. Production CSP allows the PeerJS Cloud
+WebSocket endpoint explicitly. To use installed Chrome, set
 `PW_CHANNEL=chrome` (PowerShell: `$env:PW_CHANNEL = 'chrome'`).
 
 ### Project layout
@@ -210,6 +250,7 @@ economy, settings, minimaps and AI. To use installed Chrome, set
 | `src/lib/game/actions.ts`, `controller.ts`   | Actions, input and asynchronous combat                   |
 | `src/lib/game/catalog.ts`, `combat-rules.ts` | Statistics, terrain, attack geometry and damage          |
 | `src/lib/game/ai*.ts`, `expert-ai.ts`        | AI decisions, economy and bounded lookahead              |
+| `src/lib/game/peer.ts`, `online.ts`          | WebRTC invitations, authoritative commands and snapshots |
 | `src/lib/data/board-N.json`                  | Explicit, editable map layouts                           |
 | `messages/`                                  | English, French and German source translations           |
 | `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
@@ -218,6 +259,10 @@ economy, settings, minimaps and AI. To use installed Chrome, set
 Components use Svelte runes. Each game owns its state; navigation disposes pending
 combat and audio. The DOM displays state rather than storing game rules. Board
 measurements control scrolling, focus and minimap positioning.
+
+Online peers check a fingerprint of the map, unit statistics, terrain and protocol
+version before connecting. Bump `protocolVersion` in `peer.ts` when changing command
+semantics or combat rules so incompatible clients cannot start a match together.
 
 To add a unit, extend the catalog, provide sprites and translations, and define
 non-neutral matchups. Production menus enumerate the catalog automatically.

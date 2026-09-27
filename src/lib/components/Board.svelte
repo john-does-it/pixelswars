@@ -70,16 +70,17 @@
 		return segments.join(' ')
 	})
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
+	const opponentTurn = $derived(gameState.aiThinking || !!(gameState.network && gameState.network.player !== gameState.player))
 
 	$effect(() => {
-		const followAi = gameState.aiThinking && mobileView && scrollable
-		const target = gameState.combatTargetIndex ?? (followAi ? selected?.cell : null)
+		const followOpponent = opponentTurn && mobileView && scrollable
+		const target = gameState.combatTargetIndex ?? (followOpponent ? selected?.cell : null)
 		if (target === null || target === undefined || !boardElement || !viewport) return
 		const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + target + '"]')
 		if (!cell) return
 		const cellBounds = cell.getBoundingClientRect()
 		const viewportBounds = viewport.getBoundingClientRect()
-		if (followAi) {
+		if (followOpponent) {
 			const center = cellBounds.left - viewportBounds.left + viewport.scrollLeft + cellBounds.width / 2
 			viewport.scrollTo({ left: center - viewport.clientWidth / 2, behavior: gameState.fighting || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
 			return
@@ -91,7 +92,7 @@
 
 	$effect(() => {
 		const index = selected?.cell
-		if (!gameState.aiThinking && boardElement?.contains(document.activeElement)) {
+		if (!opponentTurn && boardElement?.contains(document.activeElement)) {
 			if (index !== undefined) {
 				const cell = boardElement.querySelector<HTMLElement>('[data-cell="' + index + '"]')
 				cell?.focus({ preventScroll: true })

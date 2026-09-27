@@ -172,6 +172,7 @@
 	<footer>
 		<p>{translate(messages.programming)}: <a href="https://johndoesit.be">John Does it</a> · {translate(messages.graphics)}: <a href="https://www.kenney.nl">Kenney</a> · {translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects">Pixabay</a> · {translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack">Monolith</a> · {translate(messages.quality_assurance)}: Gauthier Miessen</p>
 		<p>{translate(messages.feedback)}: <a href="mailto:hello@johndoesit.be">hello@johndoesit.be</a></p>
+		<p><a href={resolve('/terms/', {})}>{translate(messages.legal_title)}</a></p>
 	</footer>
 </main>
 

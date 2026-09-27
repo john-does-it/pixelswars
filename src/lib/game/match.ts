@@ -44,6 +44,7 @@ export function createMatchController(state: GameState, options: ControllerOptio
 		capture: guard(controller.capture.bind(controller)),
 		buy: guard(controller.buy.bind(controller)),
 		openProduction: guard(controller.openProduction.bind(controller)),
+		closeProduction: guard(controller.closeProduction.bind(controller)),
 		keydown: guard(controller.keydown.bind(controller)),
 		async fight(defender) {
 			if (!disposed && !aiTurn()) await controller.fight(defender)

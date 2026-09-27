@@ -4,10 +4,12 @@ import * as actions from './actions.ts'
 import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 // A controller belongs to one mounted game. No DOM, global state or audio objects.
-export function createController(state: GameState, { sound = () => {}, delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)) }: ControllerOptions = {}): GameController {
+export function createController(state: GameState, { sound = () => {}, onSound = () => {}, onChange = () => {}, delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)) }: ControllerOptions = {}): GameController {
 	let disposed = false
 	const play = (name: string): void => {
-		if (!disposed && state.sound) sound(name)
+		if (disposed) return
+		onSound(name)
+		if (state.sound) sound(name)
 	}
 	async function fight(defender: Unit): Promise<void> {
 		const attacker = selectedUnit(state)
@@ -20,12 +22,14 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			play(unitTypes[attacker.type].fightSound)
 			applyDamage(state, attacker, defender)
 			attacker.attacks--
+			onChange()
 			await delay(unitTypes[attacker.type].delay)
 			if (disposed) return
 			if (defender.health > 0 && canAttack(state, defender, attacker)) {
 				state.combatTargetIndex = attacker.cell
 				play(unitTypes[defender.type].fightSound)
 				applyDamage(state, defender, attacker)
+				onChange()
 				await delay(unitTypes[defender.type].delay)
 				if (disposed) return
 			}
@@ -43,6 +47,7 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 				if (!state.units.some((unit) => unit.player === player)) state.winner = player === 1 ? 2 : 1
 			}
 			if (dead) {
+				onChange()
 				await delay(500)
 				if (!disposed) state.explosion = null
 			}
@@ -50,11 +55,15 @@ export function createController(state: GameState, { sound = () => {}, delay = (
 			if (!disposed) {
 				state.fighting = false
 				state.combatTargetIndex = null
+				onChange()
 			}
 		}
 	}
 	return {
 		state,
+		closeProduction() {
+			state.productionIndex = null
+		},
 		dispose() {
 			disposed = true
 			state.combatTargetIndex = null

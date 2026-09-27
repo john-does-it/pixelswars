@@ -30,6 +30,7 @@
 			</section>
 		{/if}
 		<a class="button primary" href={mapUrl}>{translate(messages.play_local)}</a>
+		<a class="button primary" href={`${mapUrl}?online=1`}>{translate(messages.play_online)}</a>
 	</div>
 </Modal>
 

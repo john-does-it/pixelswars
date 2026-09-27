@@ -23,7 +23,7 @@ export const terrainTypes: Record<TerrainId, TerrainDefinition> = {
 }
 
 export function isUnitTypeId(value: string): value is UnitTypeId {
-	return value in unitTypes
+	return Object.hasOwn(unitTypes, value)
 }
 
 export function createUnit(type: UnitTypeId, player: Player, cell: number, id: number): Unit {

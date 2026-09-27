@@ -9,6 +9,7 @@ export default {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
+				'connect-src': ['self', 'wss://0.peerjs.com'],
 				'script-src': ['self'],
 				'style-src': ['self', 'unsafe-inline'],
 				'img-src': ['self', 'data:'],
