@@ -1,5 +1,6 @@
 import type { DataConnection, Peer } from 'peerjs'
 import { terrainTypes, unitTypes } from './catalog.ts'
+import { iceConfiguration } from './ice.ts'
 import type { GameMap, Player } from './types.ts'
 
 export type PeerStatus = 'connecting' | 'connected' | 'disconnected' | 'closed'
@@ -66,11 +67,17 @@ export class PeerConnection implements MatchConnection {
 		for (const listener of this.errors) listener(new PeerError(reason))
 	}
 	private async initialize() {
+		let configuration: RTCConfiguration
+		try {
+			configuration = await iceConfiguration({ app: import.meta.env.VITE_METERED_APP, apiKey: import.meta.env.VITE_METERED_TURN_API_KEY, relayOnly: import.meta.env.VITE_TURN_RELAY_ONLY }, this.abort.signal)
+		} catch {
+			throw new PeerError('relay')
+		}
 		const { Peer } = await import('peerjs')
 		if (this.abort.signal.aborted) throw new PeerError('failed')
 		const peer = new Peer('pw-' + crypto.randomUUID(), {
 			secure: true,
-			config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+			config: configuration
 		})
 		this.peer = peer
 		peer.on('connection', (connection) => {

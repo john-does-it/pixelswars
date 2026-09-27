@@ -37,6 +37,7 @@
 			<li><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">{translate(messages.legal_github)}</a></li>
 			<li><a href="https://peerjs.com/server/cloud">{translate(messages.legal_peerjs)}</a></li>
 			<li><a href="https://policies.google.com/privacy">{translate(messages.legal_google)}</a></li>
+			<li><a href="https://www.metered.ca/privacy">{translate(messages.legal_metered)}</a></li>
 		</ul>
 	</section>
 	<section>

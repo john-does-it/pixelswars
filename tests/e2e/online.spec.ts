@@ -1,6 +1,11 @@
 import { test, expect, type Page } from '@playwright/test'
 import { PeerServer } from 'peer'
 import type { Server } from 'node:http'
+import { loadEnv } from 'vite'
+
+const relayConfigured = Boolean(loadEnv('development', process.cwd(), 'VITE_').VITE_METERED_APP)
+const relayEndpoint = 'https://*.metered.live/api/v1/turn/credentials**'
+const relayResponse = [{ urls: 'turn:standard.relay.metered.ca:80', username: 'e2e-user', credential: 'e2e-password' }]
 
 // Local signaling runs on a random test port, outside the production CSP allowlist.
 test.use({ bypassCSP: true })
@@ -21,6 +26,7 @@ test.afterEach(() => {
 })
 
 async function localIce(page: Page, withoutCandidates = false) {
+	await page.route(relayEndpoint, (route) => route.fulfill({ json: relayResponse }))
 	// Real PeerServer and WebRTC, with local signaling/ICE to keep CI independent of public services.
 	await page.addInitScript(
 		({ port, withoutCandidates }) => {
@@ -38,6 +44,7 @@ async function localIce(page: Page, withoutCandidates = false) {
 			const NativeConnection = window.RTCPeerConnection
 			window.RTCPeerConnection = class extends NativeConnection {
 				constructor(configuration?: RTCConfiguration) {
+					Reflect.set(window, 'onlineIceConfiguration', configuration)
 					super({ ...configuration, iceServers: [], ...(withoutCandidates ? { iceTransportPolicy: 'relay' } : {}) })
 					if (withoutCandidates) {
 						this.addEventListener('icegatheringstatechange', () => {
@@ -50,6 +57,28 @@ async function localIce(page: Page, withoutCandidates = false) {
 		{ port: signalPort, withoutCandidates }
 	)
 }
+
+test('relay lookup starts only on request and a provider outage allows retry', async ({ page }) => {
+	test.skip(!relayConfigured, 'Build with Metered settings to exercise the credential API')
+	await localIce(page)
+	let unavailable = true
+	let requests = 0
+	await page.route(relayEndpoint, (route) => {
+		requests++
+		return unavailable ? route.fulfill({ status: 503 }) : route.fulfill({ json: relayResponse })
+	})
+	await page.goto('/play/1/?online=1')
+	await expect(page.getByRole('button', { name: 'Create a game' })).toBeVisible()
+	expect(requests).toBe(0)
+	await page.getByRole('button', { name: 'Create a game' }).click()
+	await expect(page.getByRole('alert')).toContainText('connection relay is unavailable')
+	expect(requests).toBe(1)
+	unavailable = false
+	await page.getByRole('button', { name: 'Create a game' }).click()
+	await expect(page.getByLabel('Invitation link', { exact: true })).toHaveValue(/#invite=PW2\./)
+	await expect(page.getByRole('alert')).toHaveCount(0)
+	expect(requests).toBe(2)
+})
 
 for (const blockedSide of ['host', 'guest'] as const) {
 	test(`missing local candidates show browser guidance on the ${blockedSide} only`, async ({ page, browser }) => {
@@ -75,7 +104,7 @@ for (const blockedSide of ['host', 'guest'] as const) {
 			await expect(blocked.getByRole('alert')).toContainText('recommended WebRTC setting')
 			await expect(blocked.getByRole('button', { name: blockedSide === 'host' ? 'Create a game' : 'Join', exact: true })).toBeEnabled()
 			await other.clock.fastForward(36000)
-			await expect(other.getByRole('alert')).toContainText('could not connect directly')
+			await expect(other.getByRole('alert')).toContainText('devices could not connect')
 		} finally {
 			await guestContext.close()
 		}
@@ -111,6 +140,11 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
 		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
 		await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+		if (relayConfigured) {
+			for (const device of [page, guest]) {
+				expect(await device.evaluate(() => Reflect.get(window, 'onlineIceConfiguration'))).toEqual({ iceServers: [{ ...relayResponse[0], urls: [relayResponse[0].urls] }], iceTransportPolicy: 'all' })
+			}
+		}
 		await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
 		await expect(guest.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
 		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
@@ -250,7 +284,7 @@ test('an incomplete connection times out on both devices and the invitation can 
 		}
 		await page.clock.fastForward(36000)
 		for (const device of [page, guest]) {
-			await expect(device.getByRole('alert')).toContainText('could not connect directly')
+			await expect(device.getByRole('alert')).toContainText('devices could not connect')
 			await expect(device.getByText('Waiting for the other device…', { exact: true })).toHaveCount(0)
 			await device.evaluate(() => Reflect.set(window, 'dropOnlinePackets', false))
 		}

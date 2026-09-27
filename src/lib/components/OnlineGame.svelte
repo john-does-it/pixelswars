@@ -19,7 +19,7 @@
 	let copied = $state(false)
 	let error = $state('')
 	let supported = $state(true)
-	const errors = { invalid: messages.online_error_invalid, incompatible: messages.online_error_incompatible, wrong_map: messages.online_error_map, unsupported: messages.online_error_unsupported, failed: messages.online_error_failed, service: messages.online_error_service, unavailable: messages.online_error_unavailable, network: messages.online_error_network, no_candidates: messages.online_error_no_candidates }
+	const errors = { invalid: messages.online_error_invalid, incompatible: messages.online_error_incompatible, wrong_map: messages.online_error_map, unsupported: messages.online_error_unsupported, failed: messages.online_error_failed, service: messages.online_error_service, unavailable: messages.online_error_unavailable, network: messages.online_error_network, no_candidates: messages.online_error_no_candidates, relay: messages.online_error_relay }
 
 	onMount(() => {
 		supported = typeof RTCPeerConnection !== 'undefined'

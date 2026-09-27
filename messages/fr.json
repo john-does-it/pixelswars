@@ -248,9 +248,9 @@
 	"legal_cookie": "Le cookie pixelswars-settings mémorise la langue, la disposition du clavier, le son et la musique lorsque vous modifiez ces réglages. Il ne contient pas d’identifiant de compte et ne sert ni à la publicité ni à la mesure d’audience. C’est un cookie de session sans date d’expiration. Un navigateur qui restaure les sessions peut le conserver après sa fermeture.",
 	"legal_cookie_manage": "Modifiez ces réglages dans Options et aide, ou supprimez le cookie depuis les paramètres de données des sites de votre navigateur. Bloquer les cookies empêche de conserver vos préférences entre les visites. Le code du jeu ne contient aucun traceur publicitaire ou de mesure d’audience.",
 	"legal_online_title": "Parties en ligne",
-	"legal_online": "Créer ou rejoindre une partie contacte PeerJS Cloud pour échanger un identifiant de session aléatoire et les informations de connexion WebRTC. Un service STUN de Google aide les navigateurs à établir une connexion directe. Ces services reçoivent des données techniques de connexion, dont les adresses IP. Ouvrir une invitation ne les contacte pas. Rejoindre la partie le fait.",
-	"legal_shared": "Une fois connectés, les navigateurs échangent les actions et l’état du jeu. Le navigateur adverse peut connaître votre adresse IP dans le cadre de cette connexion. Partagez vos invitations avec des personnes de confiance. L’hôte valide les actions et conserve l’état de référence : ce mode convient aux parties entre amis, sans garantie contre la triche.",
-	"legal_limits": "Certains réseaux bloquent les connexions directes. Aucun relais TURN ne permet de contourner ces restrictions. Une interruption temporaire met la partie en pause. Elle reprend si la connexion revient. Recharger ou fermer une page termine la session. Une revanche nécessite l’accord des deux joueurs.",
+	"legal_online": "Créer ou rejoindre une partie contacte PeerJS Cloud pour échanger un identifiant de session aléatoire et les informations de connexion WebRTC. Lorsqu’il est configuré, Metered fournit les serveurs de connexion et un relais TURN. Sinon, le service STUN de Google aide à établir une connexion directe. Ces fournisseurs reçoivent des données techniques de connexion, dont les adresses IP. Ouvrir une invitation ne les contacte pas.",
+	"legal_shared": "Les navigateurs échangent les actions et l’état du jeu directement ou par une connexion chiffrée via un relais. Le navigateur adverse peut connaître votre adresse IP. Partagez vos invitations avec des personnes de confiance. L’hôte valide les actions et conserve l’état de référence. Ce mode convient aux parties entre amis, sans garantie contre la triche.",
+	"legal_limits": "Certains réseaux ou réglages du navigateur peuvent empêcher la connexion, même avec un relais. Sa disponibilité dépend aussi du service et du quota du fournisseur. Une interruption temporaire met la partie en pause. Elle reprend si la connexion revient. Recharger ou fermer une page termine la session. Une revanche nécessite l’accord des deux joueurs.",
 	"legal_hosting_title": "Hébergement et services tiers",
 	"legal_hosting": "Le site publié est hébergé sur GitHub Pages. Les fournisseurs d’hébergement et de connexion peuvent traiter des journaux techniques pour faire fonctionner leurs services, selon leurs propres politiques. Pixel’s War ne contrôle pas leurs durées de conservation. Les liens externes des crédits ouvrent les sites de leurs auteurs.",
 	"legal_contact_title": "Contact et crédits",
@@ -260,6 +260,8 @@
 	"legal_peerjs": "À propos de PeerJS Cloud",
 	"legal_google": "Politique de confidentialité de Google",
 	"online_challenge": "Un ami vous défie",
-	"online_error_network": "Les appareils n’arrivent pas à se connecter directement. Essayez un autre réseau, puis rejoignez à nouveau la partie.",
-	"online_error_no_candidates": "Votre navigateur n’a trouvé aucune connexion réseau utilisable pour cette partie. Vérifiez ses réglages WebRTC et vos extensions VPN ou de confidentialité. Dans Opera, essayez le réglage WebRTC recommandé. Rechargez ensuite la page et réessayez."
+	"online_error_network": "Les appareils n’arrivent pas à se connecter. Vérifiez les deux réseaux, puis réessayez de rejoindre la partie.",
+	"online_error_no_candidates": "Votre navigateur n’a trouvé aucune connexion réseau utilisable pour cette partie. Vérifiez ses réglages WebRTC et vos extensions VPN ou de confidentialité. Dans Opera, essayez le réglage WebRTC recommandé. Rechargez ensuite la page et réessayez.",
+	"online_error_relay": "Le relais de connexion est indisponible. Réessayez dans un instant. Si le problème persiste, contactez le responsable du jeu.",
+	"legal_metered": "Politique de confidentialité de Metered"
 }

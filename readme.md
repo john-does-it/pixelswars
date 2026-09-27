@@ -69,14 +69,15 @@ Keep both game pages open. A temporary connection loss pauses play and reconnect
 resynchronizes the match. Closing or refreshing either page ends the session;
 matches are not saved. After victory, both players must agree to a rematch.
 
-The browsers exchange game data directly through WebRTC. The host validates
+The browsers exchange game data through WebRTC, directly or through a TURN relay. The host validates
 actions and supplies the shared game state. This is intended for friends: the host
 can technically alter that state. No account or game server is required.
 [PeerJS Cloud](https://peerjs.com/server/cloud) exchanges the connection details
-automatically, and Google's public STUN service helps establish a direct connection.
-Only creating or joining a game contacts these services; browsing maps or opening
-an invitation does not. There is no TURN relay, so some networks cannot connect
-directly. Service outages may prevent new connections.
+automatically. When configured, Metered supplies STUN/TURN servers so WebRTC can
+use a relay when a direct path is unavailable. Without Metered settings, development
+uses Google's public STUN service only. Creating or joining contacts these services,
+but browsing maps or opening an invitation does not. Network restrictions, provider
+outages and exhausted relay quotas can still prevent connections.
 
 The invitation contains a random session identifier, map and game fingerprint;
 it no longer contains the full WebRTC session description. Share it only with your
@@ -294,6 +295,43 @@ single outline-colored pixel blocks, with darker red wounds for contrast.
 Synchronize public assets afterward. Do not commit generated static assets.
 
 ## GitHub Pages deployment
+
+### Metered TURN setup
+
+Create a TURN credential in the Metered dashboard. Copy `.env.example` to `.env.local`
+and set `VITE_METERED_APP` to the app name (or its `.metered.live` hostname) and
+`VITE_METERED_TURN_API_KEY` to that credential's API key. Restart Vite after changes.
+Use the credential-scoped key, **never the account Secret Key or Project API Key**.
+This integration needs no additional SDK or backend. See the
+[Metered TURN reference](https://www.metered.ca/docs/llms-turn-server.txt).
+
+The browser retrieves ICE servers when creating or joining a game. It keeps the
+provider's UDP, TCP and TLS endpoints, so the dashboard controls the available
+relay region. A failed credential request shows an error instead of silently
+turning the relay off. Keep the credential enabled and valid throughout your tests.
+
+In GitHub **Settings → Secrets and variables → Actions**, add:
+
+| Type                | Name                   | Value                          |
+| ------------------- | ---------------------- | ------------------------------ |
+| Repository variable | `METERED_APP`          | Metered app name or hostname   |
+| Repository secret   | `METERED_TURN_API_KEY` | Credential-scoped TURN API key |
+
+The workflow passes these values to Vite at build time. `.env` files on your PC
+are not uploaded by Git. The Pages workflow stops if either setting is missing.
+The TURN key is intentionally included in the public
+browser bundle, even when supplied through a GitHub secret. Anyone can extract
+and use the relay credential, so monitor its quota and revoke/replace it if abused.
+For wider distribution, consider issuing rotating credentials from a backend.
+
+For a local connectivity check, run `npm run test:turn`. It uses the `.env` values
+and two browser peers forced through TURN, exchanges a small payload and verifies
+the selected relay candidates. It consumes a small amount of relay bandwidth.
+Alternatively, set `VITE_TURN_RELAY_ONLY=true` locally and restart Vite to test a
+full game through TURN. Keep it `false` for normal play to allow direct connections.
+Provider quotas and credential expiry can interrupt or prevent relayed games.
+
+### Publish the site
 
 1. In **Settings → Pages**, choose **GitHub Actions** as the source.
 2. In **Actions → Deploy GitHub Pages → Run workflow**, select the branch to publish.

@@ -9,7 +9,7 @@ export default {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
-				'connect-src': ['self', 'wss://0.peerjs.com'],
+				'connect-src': ['self', 'wss://0.peerjs.com', 'https://*.metered.live'],
 				'script-src': ['self'],
 				'style-src': ['self', 'unsafe-inline'],
 				'img-src': ['self', 'data:'],

@@ -15,9 +15,20 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
+      - name: Check TURN configuration
+        env:
+          METERED_APP: ${{ vars.METERED_APP }}
+          METERED_TURN_API_KEY: ${{ secrets.METERED_TURN_API_KEY }}
+        run: |
+          if [ -z "$METERED_APP" ] || [ -z "$METERED_TURN_API_KEY" ]; then
+            echo "Configure the METERED_APP Actions variable and METERED_TURN_API_KEY Actions secret before deploying."
+            exit 1
+          fi
       - run: npm run build
         env:
           BASE_PATH: '/pixelswars'
+          VITE_METERED_APP: ${{ vars.METERED_APP }}
+          VITE_METERED_TURN_API_KEY: ${{ secrets.METERED_TURN_API_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build

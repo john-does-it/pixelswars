@@ -248,9 +248,9 @@
 	"legal_cookie": "The pixelswars-settings cookie remembers your language, keyboard layout, sound and music settings when you change them. It contains no account identifier and is not used for advertising or analytics. It is a session cookie with no expiry date; a browser that restores sessions may retain it after closing.",
 	"legal_cookie_manage": "Change these settings in Options and help, or remove the cookie using your browser’s site-data controls. Blocking cookies prevents preferences from being saved between visits. The game code includes no advertising or analytics trackers.",
 	"legal_online_title": "Online games",
-	"legal_online": "Creating or joining a game contacts PeerJS Cloud to exchange a random session identifier and WebRTC connection details. A Google STUN service helps the browsers establish a direct connection. These services receive technical connection data, including IP addresses. Opening an invitation alone does not contact them; joining does.",
-	"legal_shared": "Once connected, actions and game state travel between the browsers. Your opponent’s browser can learn your IP address as part of this connection. Share invitation links only with people you trust. The host validates actions and holds the reference state; this mode is intended for friendly games, not cheat-proof competition.",
-	"legal_limits": "Some networks block direct connections. There is no TURN relay to bypass those restrictions. Temporary interruptions pause play; it resumes if the connection returns. Reloading or closing a page ends the session, and both players must agree to a rematch.",
+	"legal_online": "Creating or joining a game contacts PeerJS Cloud to exchange a random session identifier and WebRTC connection details. When configured, Metered provides connection servers and a TURN relay. Otherwise, Google’s STUN service helps establish a direct connection. These providers receive technical connection data, including IP addresses. Opening an invitation alone does not contact them.",
+	"legal_shared": "Actions and game state travel between the browsers, directly or through an encrypted relay connection. Your opponent’s browser can learn your IP address. Share invitations only with people you trust. The host validates actions and holds the reference state. This mode is intended for friendly games, without guaranteed protection against cheating.",
+	"legal_limits": "Some networks or browser settings can prevent a connection even with a relay. Relay availability also depends on the provider’s service and quota. Temporary interruptions pause play. It resumes if the connection returns. Reloading or closing a page ends the session, and both players must agree to a rematch.",
 	"legal_hosting_title": "Hosting and third-party services",
 	"legal_hosting": "The published site is hosted by GitHub Pages. Hosting and connection providers may process technical logs to operate their services, under their own policies. Pixel’s War does not control their retention periods. External credit links open the respective providers’ websites.",
 	"legal_contact_title": "Contact and credits",
@@ -260,6 +260,8 @@
 	"legal_peerjs": "About PeerJS Cloud",
 	"legal_google": "Google privacy policy",
 	"online_challenge": "A friend challenges you",
-	"online_error_network": "The devices could not connect directly. Try another network, then join the game again.",
-	"online_error_no_candidates": "Your browser could not find a network connection for this game. Check its WebRTC settings and any VPN or privacy extensions. In Opera, try the recommended WebRTC setting. Then reload the page and try again."
+	"online_error_network": "The devices could not connect. Check both networks, then try joining again.",
+	"online_error_no_candidates": "Your browser could not find a network connection for this game. Check its WebRTC settings and any VPN or privacy extensions. In Opera, try the recommended WebRTC setting. Then reload the page and try again.",
+	"online_error_relay": "The connection relay is unavailable. Please try again shortly. If the problem continues, contact the game owner.",
+	"legal_metered": "Metered privacy policy"
 }
