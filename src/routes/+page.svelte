@@ -287,6 +287,10 @@
 		}
 	}
 
+	.catalog {
+		grid-auto-rows: auto;
+	}
+
 	.group-description {
 		max-width: 720px;
 		margin: 0 0 14px;
@@ -294,8 +298,10 @@
 	}
 
 	article {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-row: span 4;
+		grid-template-rows: subgrid;
+		row-gap: 0;
 		min-width: 0;
 
 		h4 {
@@ -318,7 +324,7 @@
 	.description {
 		padding-top: 14px;
 		border-top: 1px solid var(--color-border);
-		margin-top: auto;
+		margin-top: 0;
 	}
 
 	footer {

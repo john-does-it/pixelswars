@@ -91,7 +91,7 @@
 	"building_factory": "Army base",
 	"building_airport": "Airport",
 	"building_city_description": "Makes 200$ each turn. War is expensive.",
-	"building_hospital_description": "Restores 50 health per turn. Better than the wilderness.",
+	"building_hospital_description": "Restores 50 health per turn. Better to die here than out in the wilderness.",
 	"building_factory_description": "This is where ground units can be trained or built.",
 	"building_airport_description": "Builds flying units. Please mind the propellers.",
 	"map_1": "Emberfall",

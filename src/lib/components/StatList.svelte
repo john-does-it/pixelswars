@@ -23,6 +23,7 @@
 	dl {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
+		align-content: start;
 		align-items: start;
 		gap: 8px 12px;
 		margin: 1em 0;
