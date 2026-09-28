@@ -38,7 +38,7 @@
 		inset-block: 7.5svh auto;
 		margin: 0 auto;
 		width: calc(100% - 2em);
-		max-width: 640px;
+		max-width: var(--modal-max-width, 640px);
 		max-height: 85svh;
 		overflow: hidden;
 		padding: 8px;

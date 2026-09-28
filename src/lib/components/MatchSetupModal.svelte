@@ -11,7 +11,7 @@
 	const mapUrl = $derived(`${resolve('/play/[map]', { map: String(map) })}/`)
 </script>
 
-<Modal title={translate(messages.choose_mode)} {onclose}>
+<Modal title={translate(messages.choose_mode)} {onclose} --modal-max-width="480px">
 	<div class="choices">
 		<button class="primary" aria-expanded={chooseDifficulty} onclick={() => (chooseDifficulty = !chooseDifficulty)}>{translate(messages.play_ai)}</button>
 		{#if chooseDifficulty}
