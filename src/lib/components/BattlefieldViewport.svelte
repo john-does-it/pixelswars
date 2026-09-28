@@ -215,7 +215,11 @@
 			onpointermove={pointerMove}
 			onpointerup={pointerEnd}
 			onpointercancel={pointerEnd}
-			onlostpointercapture={pointerEnd}
+			onlostpointercapture={(event) => {
+				// Touch starts with implicit capture on the cell. Transferring it to
+				// the viewport releases that cell, but the drag is still in progress.
+				if (event.target === viewport) pointerEnd(event)
+			}}
 			onclickcapture={(event) => {
 				if (suppressClick && event.detail !== 0) {
 					event.preventDefault()

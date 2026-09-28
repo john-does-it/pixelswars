@@ -187,6 +187,37 @@ test('minimap seeks vertically and horizontal scrolling never moves a selected u
 	expect(await page.locator('.board [aria-pressed="true"]').getAttribute('data-cell')).toBe(selected)
 })
 
+test('touch swipes keep following the finger in all four directions without selecting a cell', async ({ page, context }) => {
+	await page.setViewportSize({ width: 390, height: 844 })
+	await page.goto('/play/12/')
+	await zoomToReadableTiles(page)
+	const viewport = page.locator('.board-viewport')
+	await viewport.evaluate((element) => element.scrollTo({ left: 250, top: 250, behavior: 'instant' }))
+	const frame = (await viewport.boundingBox())!
+	const start = { x: frame.x + frame.width / 2, y: frame.y + frame.height / 2 }
+	const beforeUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => unit.parentElement?.dataset.cell))
+	const pageScroll = await page.evaluate(() => window.scrollY)
+	const session = await context.newCDPSession(page)
+	for (const [dx, dy] of [
+		[-120, 0],
+		[120, 0],
+		[0, -120],
+		[0, 120]
+	]) {
+		const before = await viewport.evaluate((element) => ({ x: element.scrollLeft, y: element.scrollTop }))
+		await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...start, id: 1 }] })
+		for (let step = 1; step <= 8; step++) {
+			await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: start.x + (dx * step) / 8, y: start.y + (dy * step) / 8, id: 1 }] })
+		}
+		await expect.poll(() => viewport.evaluate((element) => ({ x: element.scrollLeft, y: element.scrollTop }))).toEqual({ x: before.x - dx, y: before.y - dy })
+		await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+	}
+	await expect(page.locator('.board [aria-pressed="true"]')).toHaveCount(0)
+	expect(await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => unit.parentElement?.dataset.cell))).toEqual(beforeUnits)
+	expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll)
+	await session.detach()
+})
+
 test('touch pinch zooms without issuing a cell action', async ({ page, context }) => {
 	await page.setViewportSize({ width: 390, height: 844 })
 	await page.goto('/play/12/')
@@ -204,8 +235,9 @@ test('touch pinch zooms without issuing a cell action', async ({ page, context }
 	]
 	await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: fingers(40) })
 	await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: fingers(70) })
+	await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: fingers(90) })
 	await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
-	await expect.poll(async () => (await cell.boundingBox())!.width).toBeGreaterThan(before * 1.5)
+	await expect.poll(async () => (await cell.boundingBox())!.width).toBeCloseTo(Math.min(112, (before * 90) / 40), 0)
 	await expect(page.locator('.board [aria-pressed="true"]')).toHaveCount(0)
 	await session.detach()
 })
