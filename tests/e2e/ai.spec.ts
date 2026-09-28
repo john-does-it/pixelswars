@@ -15,15 +15,16 @@ test('Expert develops The Long Front across three opening turns instead of passi
 	}
 })
 
-test('AI hides actions but keeps settings available and follows its active unit on mobile', async ({ page }) => {
+test('AI hides all actions including settings, preserves their space and follows its active unit on mobile', async ({ page }) => {
 	await page.setViewportSize({ width: 360, height: 800 })
 	await page.goto('/play/7/?ai=easy')
 	await zoomToReadableTiles(page)
 	await expect(page.locator('.action-controls')).toBeHidden()
 	await expect(page.locator('.minimap')).toHaveCount(1)
-	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
-	await expect(page.getByRole('dialog', { name: 'Options and help' })).toBeVisible()
-	await page.keyboard.press('Escape')
+	await expect(page.locator('.options-button')).toBeHidden()
+	const controls = page.getByRole('navigation', { name: 'Game controls', includeHidden: true })
+	await expect(controls).toHaveAttribute('inert', '')
+	const controlsHeight = (await controls.boundingBox())!.height
 	await page.locator('.board-viewport').evaluate((viewport) => viewport.scrollTo({ left: viewport.scrollWidth }))
 	await expect
 		.poll(
@@ -42,6 +43,9 @@ test('AI hides actions but keeps settings available and follows its active unit 
 		)
 		.toBeLessThan(2)
 	await expect(page.locator('.scroll-hint')).toHaveCount(0)
+	await expect(page.getByText('Round 2', { exact: true })).toBeVisible({ timeout: 30000 })
+	await expect(page.locator('.options-button')).toBeVisible()
+	expect((await controls.boundingBox())!.height).toBeCloseTo(controlsHeight, 1)
 })
 
 for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
