@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte'
+	import { turnTransitionDuration } from '$lib/game/timing.js'
 	import type { Player } from '$lib/game/types.js'
 
 	let { player, persistent = false, label, children }: { player: Player; persistent?: boolean; label?: string; children: Snippet } = $props()
@@ -14,7 +15,7 @@
 		const timeout = setTimeout(() => {
 			dialog?.close()
 			visible = false
-		}, 2200)
+		}, turnTransitionDuration)
 		return () => {
 			clearTimeout(timeout)
 			dialog?.close()
@@ -23,7 +24,7 @@
 </script>
 
 {#snippet content()}
-	<div class="turn-sweep" class:red={player === 2} class:persistent>
+	<div class="turn-sweep" class:red={player === 2} class:persistent style:--turn-duration={`${turnTransitionDuration}ms`}>
 		<div class="transition-content">
 			{@render children()}
 		</div>
@@ -58,20 +59,22 @@
 	}
 
 	.turn-sweep {
+		--transition-color: #174a70;
 		width: 100%;
 		height: 100%;
 		display: grid;
 		place-items: center;
 		overflow: auto;
-		background: #174a70;
+		background: color-mix(in srgb, var(--transition-color) 72%, transparent);
 		color: #ffffff;
-		animation: turn-sweep 2200ms ease-in-out forwards;
+		animation: turn-sweep var(--turn-duration) cubic-bezier(0.45, 0, 0.55, 1) forwards;
 
 		&.red {
-			background: #792d3a;
+			--transition-color: #792d3a;
 		}
 
 		&.persistent {
+			background: var(--transition-color);
 			animation: victory-sweep 440ms ease-in-out forwards;
 		}
 
@@ -97,13 +100,16 @@
 	@keyframes turn-sweep {
 		0% {
 			transform: translateX(-100%);
+			opacity: 0;
 		}
-		20%,
-		75% {
+		28%,
+		72% {
 			transform: translateX(0);
+			opacity: 1;
 		}
 		100% {
 			transform: translateX(100%);
+			opacity: 0;
 		}
 	}
 

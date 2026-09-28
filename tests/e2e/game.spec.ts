@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
 async function endRound(page: Page) {
 	await page.getByRole('button', { name: 'End round', exact: true }).click()
@@ -51,7 +52,7 @@ test('turn transitions block unit selection, production and keyboard input until
 	}
 	const finishTransition = async () => {
 		await expect(transition).toBeVisible()
-		await page.clock.runFor(2300)
+		await page.clock.runFor(turnTransitionDuration + 100)
 		await expect(transition).toHaveCount(0)
 	}
 	const endTurn = async () => {
@@ -519,7 +520,7 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 		await page.getByRole('button', { name: 'End round', exact: true }).click()
 		await expect(page.locator('dialog.turn-transition')).toBeVisible()
 		// Skip the animation while accumulating enough income to buy a plane.
-		await page.clock.fastForward(2300)
+		await page.clock.fastForward(turnTransitionDuration + 100)
 		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
 	}
 	const next = async () => {

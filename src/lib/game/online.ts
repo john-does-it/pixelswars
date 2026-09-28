@@ -1,4 +1,5 @@
 import { createController } from './controller.ts'
+import { turnTransitionDuration } from './timing.ts'
 import { initialState, selectedUnit, unitAt, canAttack, locked } from './model.ts'
 import { isUnitTypeId } from './catalog.ts'
 import type { MatchConnection } from './peer.ts'
@@ -70,7 +71,7 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 	})
 	function ready() {
 		if (!started || !remoteReady || connection.status !== 'connected') return
-		if (network.phase !== 'playing') blockedUntil = now() + 2200
+		if (network.phase !== 'playing') blockedUntil = now() + turnTransitionDuration
 		network.phase = 'playing'
 		publish()
 	}
@@ -106,7 +107,7 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 				break
 			case 'end':
 				controller.endTurn()
-				blockedUntil = now() + 2200
+				blockedUntil = now() + turnTransitionDuration
 				break
 		}
 	}
@@ -134,7 +135,7 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 			state.inspectedEnemyId = null
 			rematch = { 1: false, 2: false }
 			network.rematchRequested = network.opponentRematchRequested = false
-			blockedUntil = now() + 2200
+			blockedUntil = now() + turnTransitionDuration
 		}
 		publish()
 	}
