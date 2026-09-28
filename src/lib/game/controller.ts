@@ -1,6 +1,8 @@
 import { unitTypes } from './catalog.ts'
 import { selectedUnit, unitAt, canAttack, applyDamage, locked } from './model.ts'
 import * as actions from './actions.ts'
+import { pathsFrom } from './movement.ts'
+import { movementStepDuration } from './timing.ts'
 import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 // A controller belongs to one mounted game. No DOM, global state or audio objects.
@@ -10,6 +12,25 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		if (disposed) return
 		onSound(name)
 		if (state.sound) sound(name)
+	}
+	const playImpact = (unit: Unit): void => {
+		const sound = unitTypes[unit.type].impactSound
+		if (sound) play(sound)
+	}
+	async function followPath(unit: Unit, path: number[]): Promise<void> {
+		state.moving = true
+		try {
+			for (const [step, index] of path.entries()) {
+				if (disposed || selectedUnit(state)?.id !== unit.id || (state.network && state.network.phase !== 'playing')) break
+				if (!actions.move(state, index, true)) break
+				if (step === 0) play('woosh-movement')
+				onChange()
+				if (step < path.length - 1) await delay(movementStepDuration)
+			}
+		} finally {
+			state.moving = false
+			if (!disposed) onChange()
+		}
 	}
 	async function fight(defender: Unit): Promise<void> {
 		const attacker = selectedUnit(state)
@@ -25,6 +46,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			onChange()
 			await delay(unitTypes[attacker.type].delay)
 			if (disposed) return
+			playImpact(attacker)
 			if (defender.health > 0 && canAttack(state, defender, attacker)) {
 				state.combatTargetIndex = attacker.cell
 				play(unitTypes[defender.type].fightSound)
@@ -32,6 +54,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 				onChange()
 				await delay(unitTypes[defender.type].delay)
 				if (disposed) return
+				playImpact(defender)
 			}
 			const dead = state.units.find((unit) => unit.health <= 0)
 			if (dead) {
@@ -66,6 +89,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		},
 		dispose() {
 			disposed = true
+			state.moving = false
 			state.combatTargetIndex = null
 		},
 		fight,
@@ -89,12 +113,20 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 					else state.inspectedEnemyId = state.inspectedEnemyId === unit.id ? null : unit.id
 				}
 			} else if (state.inspectedEnemyId !== null) state.inspectedEnemyId = null
-			else if (selectedUnit(state) && actions.move(state, index)) play('woosh-movement')
-			else actions.openProduction(state, index)
-			state.hoveredIndex = index
+			else {
+				const selected = selectedUnit(state)
+				const path = selected ? pathsFrom(state, selected, selected.movement).get(index)?.path : undefined
+				if (selected && path?.length) void followPath(selected, path)
+				else actions.openProduction(state, index)
+			}
+			state.previewIndex = index
 		},
 		move(index: number) {
-			if (actions.move(state, index)) play('woosh-movement')
+			if (disposed || locked(state)) return
+			if (actions.move(state, index)) {
+				state.previewIndex = index
+				play('woosh-movement')
+			}
 		},
 		cancel() {
 			actions.cancelMove(state)

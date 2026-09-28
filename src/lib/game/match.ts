@@ -1,5 +1,6 @@
 import { createController } from './controller.ts'
 import { runAiTurn } from './ai.ts'
+import { turnTransitionDuration } from './timing.ts'
 import type { ControllerOptions, GameController, GameState } from './types.ts'
 
 export function createMatchController(state: GameState, options: ControllerOptions = {}): GameController {
@@ -21,6 +22,8 @@ export function createMatchController(state: GameState, options: ControllerOptio
 		running = true
 		state.aiThinking = true
 		try {
+			await delay(turnTransitionDuration)
+			if (disposed) return
 			await runAiTurn(controller, difficulty!, () => !disposed, delay)
 		} catch (error) {
 			// Keep a failed AI turn from trapping the match; report the cause for diagnostics.

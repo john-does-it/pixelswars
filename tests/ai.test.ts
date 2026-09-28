@@ -1,3 +1,4 @@
+import { pathsFrom } from '../src/lib/game/movement.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -6,7 +7,7 @@ import { initialState } from '../src/lib/game/model.ts'
 import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
 import { createController } from '../src/lib/game/controller.ts'
 import { createMatchController } from '../src/lib/game/match.ts'
-import { pathsFrom, chooseAttack, chooseMovement, choosePurchase, runAiTurn, isAiDifficulty } from '../src/lib/game/ai.ts'
+import { chooseAttack, chooseMovement, choosePurchase, runAiTurn, isAiDifficulty } from '../src/lib/game/ai.ts'
 import type { GameMap, GameState, UnitTypeId, Player } from '../src/lib/game/types.ts'
 
 function fixture(cols = 8, rows = 5): GameState {

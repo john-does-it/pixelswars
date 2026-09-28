@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
-	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
+	import { asset, resolve } from '$app/paths'
+	import { selectedUnit, unitAt, canCapture, locked } from '$lib/game/model.js'
+	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import { updatePreferences } from '$lib/preferences.svelte.js'
@@ -8,12 +9,23 @@
 	import HowToPlayModal from './HowToPlayModal.svelte'
 	import LanguageSelect from './LanguageSelect.svelte'
 	import SettingSelect from './SettingSelect.svelte'
+	import TerrainIcon from './TerrainIcon.svelte'
+	import StatsPanel from './StatsPanel.svelte'
+	import Modal from './Modal.svelte'
 
-	let { game, showHelp = $bindable(false), controlsHeight = $bindable(0) }: { game: GameController; showHelp?: boolean; controlsHeight?: number } = $props()
+	let { game, aiMode = false, showHelp = $bindable(false), controlsHeight = $bindable(0), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; controlsHeight?: number; onrestart?: () => void } = $props()
+	let showPreview = $state(false)
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
+	const previewCell = $derived(gameState.previewIndex === null ? undefined : gameState.cells[gameState.previewIndex])
+	const previewUnit = $derived(previewCell && unitAt(gameState, previewCell.index))
+
 	const inputLocked = $derived(locked(gameState) || gameState.aiThinking || !!gameState.network?.pending)
 	const waiting = $derived(gameState.aiThinking || (gameState.network && (gameState.network.phase !== 'playing' || gameState.player !== gameState.network.player)))
+	const captureLabel = $derived(translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture))
+	$effect(() => {
+		if (waiting || !previewCell) showPreview = false
+	})
 
 	function setKeyboardLayout(layout: KeyboardLayout) {
 		gameState.keyboardLayout = layout
@@ -25,20 +37,57 @@
 	}
 </script>
 
-<nav aria-label={translate(messages.game_controls)} bind:clientHeight={controlsHeight} hidden={!!waiting}>
+<nav aria-label={translate(messages.game_controls)} bind:offsetHeight={controlsHeight} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
+		<button class="options-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={() => (showHelp = true)}><span aria-hidden="true">⚙</span></button>
+		{#if previewCell}
+			<button class="inspect-action" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={translate(messages.preview_expand)} aria-haspopup="dialog" onclick={() => (showPreview = true)}>
+				<span class="tile-thumbnail" aria-hidden="true">
+					<TerrainIcon cell={previewCell} size="fill" />
+					{#if previewUnit}<img src={asset(unitSprite(previewUnit))} alt="" />{/if}
+					<span class="info-badge">i</span>
+				</span>
+			</button>
+		{/if}
 		{#if selected}
-			<button disabled={inputLocked} onclick={() => game.cancel()}>{translate(messages.cancel_move)}</button>
-			<button disabled={inputLocked} onclick={() => game.confirm()}>{translate(messages.confirm_move)}</button>
+			<button disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
+				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 4-5 5 5 5M4 9h10a6 6 0 0 1 0 12h-3" /></svg>
+			</button>
+			<button disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
+				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+			</button>
 		{/if}
 		{#if canCapture(gameState)}
-			<button disabled={inputLocked} onclick={() => game.capture()}>{translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture)}</button>
+			<button disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
+				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14l-3 5 3 5H5" /></svg>
+			</button>
 		{/if}
-		<button class="primary" disabled={inputLocked} onclick={() => game.endTurn()}>{translate(messages.end_round)}</button>
+		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} title={translate(messages.end_round)} onclick={() => game.endTurn()}>
+			{translate(messages.end_round)}
+		</button>
 	</div>
 </nav>
+{#if showPreview && previewCell}
+	<Modal title={translate(messages.cell_statistics)} alwaysShowScrollbar={false} onclose={() => (showPreview = false)}>
+		<StatsPanel state={gameState} {aiMode} />
+	</Modal>
+{/if}
 {#if showHelp}
 	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)}>
+		{#snippet actions()}
+			<div class="match-actions">
+				<a class="button map-selection" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
+				{#if onrestart}
+					<button
+						onclick={() => {
+							showHelp = false
+							showPreview = false
+							onrestart?.()
+						}}>{translate(messages.restart_game)}</button
+					>
+				{/if}
+			</div>
+		{/snippet}
 		{#snippet settings()}
 			<div class="settings-controls">
 				<button class="audio" aria-label={translate(gameState.sound ? messages.sound_on : messages.sound_off)} title={translate(gameState.sound ? messages.sound_on : messages.sound_off)} aria-pressed={gameState.sound} onclick={() => (gameState.sound = !gameState.sound)}>
@@ -64,11 +113,25 @@
 		{/snippet}
 	</HowToPlayModal>
 {/if}
-{#if gameState.fighting && !gameState.aiThinking}
-	<p role="status">{translate(messages.combat_in_progress)}</p>
-{/if}
 
 <style>
+	.match-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+		margin-bottom: 24px;
+		a,
+		button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+		}
+	}
+	.options-button {
+		font-size: 24px;
+	}
 	.settings-controls {
 		display: flex;
 		flex-wrap: wrap;
@@ -95,8 +158,8 @@
 		justify-content: flex-end;
 		gap: 8px;
 
-		&[hidden] {
-			display: none;
+		&.waiting {
+			visibility: hidden;
 		}
 	}
 
@@ -105,6 +168,60 @@
 		flex-wrap: wrap;
 		justify-content: flex-end;
 		gap: 8px;
+		button {
+			display: grid;
+			place-items: center;
+			flex: 0 0 48px;
+			width: 48px;
+			height: 48px;
+			padding: 0;
+		}
+		.primary {
+			flex-basis: auto;
+			flex-shrink: 1;
+			min-width: 0;
+			width: auto;
+			padding-inline: 14px;
+			white-space: nowrap;
+		}
+	}
+	.tile-thumbnail {
+		position: relative;
+		display: block;
+		width: 34px;
+		height: 34px;
+		pointer-events: none;
+		img {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			image-rendering: pixelated;
+		}
+	}
+	.info-badge {
+		position: absolute;
+		right: -3px;
+		bottom: -3px;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		color: var(--color-background);
+		font-size: 12px;
+		font-weight: bold;
+		line-height: 16px;
+		text-align: center;
+	}
+	.action-icon {
+		display: block;
+		width: 24px;
+		height: 24px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
 	@media (max-width: 900px) {
@@ -116,22 +233,42 @@
 			border-top: 1px solid var(--color-border);
 			background: color-mix(in srgb, var(--color-surface) 96%, transparent);
 			box-shadow: 0 -4px 16px #0005;
-			justify-content: center;
+			justify-content: flex-end;
 		}
 
 		.action-controls {
-			width: min(100%, 600px);
-			justify-content: center;
-
-			button {
-				flex: 1 1 auto;
-				min-height: 44px;
+			width: min(100%, 480px);
+			flex-wrap: nowrap;
+			justify-content: flex-end;
+			.primary {
+				white-space: normal;
 			}
 		}
 	}
-
-	[role='status'] {
-		text-align: center;
-		color: var(--color-accent);
+	@media (max-width: 480px) {
+		.action-controls {
+			gap: 4px;
+			button:not(.primary) {
+				flex-basis: 40px;
+				width: 40px;
+			}
+		}
+		.tile-thumbnail {
+			width: 28px;
+			height: 28px;
+		}
+	}
+	@media (max-width: 360px) {
+		.action-controls {
+			gap: 4px;
+			button:not(.primary) {
+				flex-basis: 36px;
+				width: 36px;
+			}
+			.primary {
+				padding-inline: 6px;
+				font-size: 13px;
+			}
+		}
 	}
 </style>

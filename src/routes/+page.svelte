@@ -3,6 +3,7 @@
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
 	import StatList from '$lib/components/StatList.svelte'
+	import mapPreviews from '$lib/data/map-previews.json'
 	import LanguageSelect from '$lib/components/LanguageSelect.svelte'
 	import HowToPlayModal from '$lib/components/HowToPlayModal.svelte'
 	import MatchSetupModal from '$lib/components/MatchSetupModal.svelte'
@@ -50,18 +51,18 @@
 		{ id: 'airport', description: messages.building_airport_description }
 	]
 	const maps = [
-		{ id: 1, title: messages.map_1, size: '8 × 8', text: messages.map_1_description },
-		{ id: 2, title: messages.map_2, size: '12 × 8', text: messages.map_2_description },
-		{ id: 3, title: messages.map_3, size: '10 × 10', text: messages.map_3_description },
-		{ id: 4, title: messages.map_4, size: '14 × 7', text: messages.map_4_description },
-		{ id: 5, title: messages.map_5, size: '12 × 9', text: messages.map_5_description },
-		{ id: 6, title: messages.map_6, size: '9 × 11', text: messages.map_6_description },
-		{ id: 7, title: messages.map_7, size: '16 × 7', text: messages.map_7_description },
-		{ id: 8, title: messages.map_8, size: '10 × 13', text: messages.map_8_description },
-		{ id: 9, title: messages.map_9, size: '12 × 10', text: messages.map_9_description },
-		{ id: 10, title: messages.map_10, size: '16 × 14', text: messages.map_10_description },
-		{ id: 11, title: messages.map_11, size: '18 × 14', text: messages.map_11_description },
-		{ id: 12, title: messages.map_12, size: '18 × 18', text: messages.map_12_description }
+		{ id: 1, title: messages.map_1, text: messages.map_1_description },
+		{ id: 2, title: messages.map_2, text: messages.map_2_description },
+		{ id: 3, title: messages.map_3, text: messages.map_3_description },
+		{ id: 4, title: messages.map_4, text: messages.map_4_description },
+		{ id: 5, title: messages.map_5, text: messages.map_5_description },
+		{ id: 6, title: messages.map_6, text: messages.map_6_description },
+		{ id: 7, title: messages.map_7, text: messages.map_7_description },
+		{ id: 8, title: messages.map_8, text: messages.map_8_description },
+		{ id: 9, title: messages.map_9, text: messages.map_9_description },
+		{ id: 10, title: messages.map_10, text: messages.map_10_description },
+		{ id: 11, title: messages.map_11, text: messages.map_11_description },
+		{ id: 12, title: messages.map_12, text: messages.map_12_description }
 	]
 	let showHelp = $state(false)
 	let selectedMap = $state<number | null>(null)
@@ -85,6 +86,8 @@
 		<h2 id="maps">{translate(messages.choose_battlefield)}</h2>
 		<div class="maps">
 			{#each maps as map}
+				{@const preview = mapPreviews[String(map.id) as keyof typeof mapPreviews]}
+				{@const sizeLabels = { small: messages.map_small, medium: messages.map_medium, large: messages.map_large }}
 				<a
 					class="panel map"
 					href={`${resolve('/play/[map]', { map: String(map.id) })}/`}
@@ -95,7 +98,8 @@
 						selectedMap = map.id
 					}}
 				>
-					<span>{map.size}</span>
+					<div class="map-thumbnail" aria-hidden="true"><img src={asset(`/assets/map-previews/map-${map.id}.png`)} alt="" width={preview.cols * 16} height={preview.rows * 16} loading="lazy" decoding="async" /></div>
+					<span class="map-metadata">{translate(sizeLabels[preview.size as keyof typeof sizeLabels])} · {preview.cols} × {preview.rows}</span>
 					<h3>{translate(map.title)}</h3>
 					<p>{translate(map.text)}</p>
 					<strong>{translate(messages.start_game)}</strong>
@@ -268,6 +272,25 @@
 	.map span,
 	.map strong {
 		color: var(--color-accent);
+	}
+	.map-thumbnail {
+		border: 1px solid var(--color-accent);
+		aspect-ratio: 16 / 10;
+		width: 100%;
+		margin-bottom: 16px;
+		background: var(--color-background);
+		border-radius: 4px;
+		overflow: hidden;
+		img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			image-rendering: pixelated;
+		}
+	}
+	.map-metadata {
+		font-size: 13px;
 	}
 
 	.map p {

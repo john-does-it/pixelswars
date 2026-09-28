@@ -25,11 +25,13 @@
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-content: start;
 		align-items: start;
-		gap: 8px 12px;
-		margin: 1em 0;
+		gap: var(--stat-gap, 8px 12px);
+		margin: var(--stat-margin, 1em 0);
 	}
 
 	dt {
+		min-width: 0;
+		overflow-wrap: anywhere;
 		display: flex;
 		align-items: flex-start;
 		gap: 7px;
@@ -43,8 +45,8 @@
 
 	img,
 	.symbol {
-		width: 18px;
-		height: 18px;
+		width: var(--stat-icon-size, 18px);
+		height: var(--stat-icon-size, 18px);
 		flex: none;
 	}
 

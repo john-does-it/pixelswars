@@ -78,6 +78,15 @@ body {
 	margin: 0;
 }
 
+html:has(.game-shell),
+body:has(.game-shell),
+.game-shell aside {
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 a {
 	color: inherit;
 	text-decoration: underline;

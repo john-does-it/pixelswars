@@ -6,21 +6,22 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state: gameState, visibleLeft, visibleWidth, onseek }: { state: GameState; visibleLeft: number; visibleWidth: number; onseek: (fraction: number) => void } = $props()
+	let { state: gameState, visibleLeft, visibleTop, visibleWidth, visibleHeight, onseek }: { state: GameState; visibleLeft: number; visibleTop: number; visibleWidth: number; visibleHeight: number; onseek: (left: number, top: number) => void } = $props()
 	const unitsByCell = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 	let dragging = $state(false)
 
 	function seekAtPointer(event: PointerEvent) {
 		const bounds = event.currentTarget instanceof HTMLElement ? event.currentTarget.getBoundingClientRect() : null
-		if (bounds) onseek(Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width)))
+		if (bounds) onseek(Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width)), Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height)))
 	}
 
 	function navigateWithKeyboard(event: KeyboardEvent) {
-		const center = visibleLeft + visibleWidth / 2
-		const positions: Record<string, number> = { ArrowLeft: center - 1 / gameState.cols, ArrowRight: center + 1 / gameState.cols, Home: 0, End: 1 }
+		const center = { left: visibleLeft + visibleWidth / 2, top: visibleTop + visibleHeight / 2 }
+		const positions: Record<string, [number, number]> = { ArrowLeft: [center.left - 1 / gameState.cols, center.top], ArrowRight: [center.left + 1 / gameState.cols, center.top], ArrowUp: [center.left, center.top - 1 / gameState.rows], ArrowDown: [center.left, center.top + 1 / gameState.rows], Home: [0, 0], End: [1, 1] }
 		if (event.key in positions) {
 			event.preventDefault()
-			onseek(positions[event.key])
+			event.stopPropagation()
+			onseek(...positions[event.key])
 		}
 	}
 </script>
@@ -29,7 +30,7 @@
 	<button
 		class="overview"
 		aria-label={translate(messages.minimap_navigation)}
-		style:width={`min(220px, 100%, ${(150 * gameState.cols) / gameState.rows}px)`}
+		style:width={`min(110px, ${(72 * gameState.cols) / gameState.rows}px)`}
 		onpointerdown={(event) => {
 			if (event.button !== 0) return
 			dragging = true
@@ -44,7 +45,7 @@
 		onlostpointercapture={() => (dragging = false)}
 		onkeydown={navigateWithKeyboard}
 		onclick={(event) => {
-			if (event.detail === 0) onseek(0.5)
+			if (event.detail === 0) onseek(0.5, 0.5)
 		}}
 	>
 		<span class="terrain-grid" style:grid-template-columns={`repeat(${gameState.cols}, minmax(0, 1fr))`} aria-hidden="true">
@@ -59,23 +60,22 @@
 			{/each}
 		</span>
 		<svg viewBox={`0 0 ${gameState.cols * 10} ${gameState.rows * 10}`} aria-hidden="true">
-			<rect class="visible-area" x={visibleLeft * gameState.cols * 10 + 0.75} y="0.75" width={Math.max(0, visibleWidth * gameState.cols * 10 - 1.5)} height={gameState.rows * 10 - 1.5} fill="#ffe98518" stroke="#ffe985" stroke-width="1.5" />
+			<rect class="visible-area" x={visibleLeft * gameState.cols * 10 + 0.75} y={visibleTop * gameState.rows * 10 + 0.75} width={Math.max(0, Math.min(visibleWidth, 1 - visibleLeft) * gameState.cols * 10 - 1.5)} height={Math.max(0, Math.min(visibleHeight, 1 - visibleTop) * gameState.rows * 10 - 1.5)} fill="#ffe98518" stroke="#ffe985" stroke-width="1.5" />
 		</svg>
 	</button>
 </div>
 
 <style>
 	.minimap {
-		display: none;
-		@media (max-width: 900px) {
-			display: grid;
-			justify-items: center;
-		}
+		display: grid;
+		place-items: center;
+		flex: none;
 	}
 	.overview {
 		position: relative;
 		display: block;
 		padding: 0;
+		min-height: 0;
 		border: 1px solid var(--color-border-strong);
 		border-radius: 0;
 		touch-action: none;

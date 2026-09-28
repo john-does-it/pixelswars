@@ -1,11 +1,11 @@
 import { createController } from './controller.ts'
 import { turnTransitionDuration } from './timing.ts'
-import { initialState, selectedUnit, unitAt, canAttack, locked } from './model.ts'
+import { initialState, selectedUnit, unitAt, canAttack, locked, reachableCells } from './model.ts'
 import { isUnitTypeId } from './catalog.ts'
 import type { MatchConnection } from './peer.ts'
 import type { ControllerOptions, GameController, GameMap, GameState, Player } from './types.ts'
 
-const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'combatTargetIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
+const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'moving', 'combatTargetIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
 type Snapshot = Pick<GameState, (typeof sharedKeys)[number]> & { ownership: { owner: number; capturePoints: number }[] }
 export function matchSnapshot(state: GameState): Snapshot {
 	return JSON.parse(JSON.stringify({ ...Object.fromEntries(sharedKeys.map((key) => [key, state[key]])), ownership: state.cells.map(({ owner, capturePoints }) => ({ owner, capturePoints })) }))
@@ -21,7 +21,7 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 	if (!Array.isArray(snapshot.units) || snapshot.units.length > state.cells.length || !snapshot.units.every((unit) => unit && Number.isInteger(unit.id) && unit.id >= 0 && isUnitTypeId(unit.type) && [1, 2].includes(unit.player) && cellIndex(unit.cell) && [unit.health, unit.movement, unit.attacks, unit.capture].every(amount))) return false
 	if (new Set(snapshot.units.map((unit) => unit.id)).size !== snapshot.units.length || new Set(snapshot.units.map((unit) => unit.cell)).size !== snapshot.units.length) return false
 	if (!Array.isArray(snapshot.ownership) || snapshot.ownership.length !== state.cells.length || !snapshot.ownership.every((cell) => cell && [0, 1, 2].includes(cell.owner) && amount(cell.capturePoints) && cell.capturePoints <= 20)) return false
-	if (![snapshot.productionIndex, snapshot.combatTargetIndex, snapshot.explosion].every(nullableCell) || typeof snapshot.fighting !== 'boolean' || ![null, 1, 2].includes(snapshot.winner)) return false
+	if (![snapshot.productionIndex, snapshot.combatTargetIndex, snapshot.explosion].every(nullableCell) || typeof snapshot.fighting !== 'boolean' || typeof snapshot.moving !== 'boolean' || ![null, 1, 2].includes(snapshot.winner)) return false
 	if (snapshot.selectedId !== null && !snapshot.units.some((unit) => unit.id === snapshot.selectedId && unit.player === snapshot.player)) return false
 	if (snapshot.origin !== null && (!snapshot.origin || !cellIndex(snapshot.origin.cell) || !amount(snapshot.origin.movement))) return false
 	if (![snapshot.incomeCells, snapshot.capturedCells, snapshot.securedCells].every((cells) => Array.isArray(cells) && cells.length <= state.cells.length && cells.every(cellIndex))) return false
@@ -184,7 +184,7 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 			request({ action: 'select', value: id })
 		},
 		clickCell(index) {
-			state.hoveredIndex = index
+			state.previewIndex = index
 			if (locked(state) || network.phase !== 'playing') return
 			const unit = unitAt(state, index)
 			const attacker = selectedUnit(state)
@@ -201,6 +201,7 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 		},
 		move(index) {
 			state.inspectedEnemyId = null
+			if (!locked(state) && !network.pending && network.phase === 'playing' && state.player === connection.player && reachableCells(state).includes(index)) state.previewIndex = index
 			request({ action: 'move', value: index })
 		},
 		cancel() {

@@ -24,8 +24,9 @@ export function initialState(map: GameMap): GameState {
 		inspectedEnemyId: null,
 		origin: null,
 		productionIndex: null,
-		hoveredIndex: null,
+		previewIndex: null,
 		fighting: false,
+		moving: false,
 		combatTargetIndex: null,
 		winner: null,
 		explosion: null,
@@ -43,7 +44,7 @@ export function initialState(map: GameMap): GameState {
 export const selectedUnit = (state: GameState): Unit | undefined => state.units.find((unit) => unit.id === state.selectedId)
 export const inspectedEnemy = (state: GameState): Unit | undefined => (!locked(state) && !state.aiThinking ? state.units.find((unit) => unit.id === state.inspectedEnemyId && unit.player !== (state.network?.player ?? state.player) && unit.health > 0) : undefined)
 export const unitAt = (state: GameState, index: number): Unit | undefined => state.units.find((unit) => unit.cell === index && unit.health > 0)
-export const locked = (state: GameState): boolean => state.fighting || state.winner !== null
+export const locked = (state: GameState): boolean => state.fighting || state.moving || state.winner !== null
 
 export function neighbors(state: GameState, index: number): number[] {
 	const column = index % state.cols

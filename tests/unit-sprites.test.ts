@@ -42,7 +42,7 @@ test('every selected board and preview sprite has a source asset', () => {
 
 test('every unit sound references an available audio asset', () => {
 	for (const [type, definition] of Object.entries(unitTypes)) {
-		for (const sound of [definition.selectSound, definition.fightSound]) {
+		for (const sound of [definition.selectSound, definition.fightSound, definition.impactSound].filter(Boolean)) {
 			assert.ok(existsSync(new URL(`../assets/mp3/${sound}.mp3`, import.meta.url)), `${type}: ${sound}`)
 		}
 	}

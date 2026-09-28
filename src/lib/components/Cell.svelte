@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
+	import DamageIndicator from './DamageIndicator.svelte'
+	import CellFeedback from './CellFeedback.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
@@ -21,9 +23,8 @@
 		captured: boolean
 		secured: boolean
 		onclick: () => void
-		onpreview: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const label = $derived(
 		translate(messages.cell_label, {
@@ -33,31 +34,28 @@
 			unit: unit ? `, ${playerName(unit.player, aiMode)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}` : ''
 		})
 	)
-
-	function previewOnHover() {
-		if (matchMedia('(hover: hover)').matches) onpreview()
-	}
 </script>
 
-<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(messages.move)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick} onpointerenter={previewOnHover} onfocus={onpreview}>
+<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
 	{#if reachable}
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
 	{#if unit}
 		<Unit {unit} {target} />
 	{/if}
+	<DamageIndicator {unit} />
 	{#if explosion}
 		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt={translate(messages.explosion)} />
 	{/if}
 	{#if secured}
-		<span class="income">{translate(messages.secured)}</span>
+		<CellFeedback text={translate(messages.secured)} />
 	{:else if captured}
-		<span class="income">{translate(messages.captured)}</span>
+		<CellFeedback text={translate(messages.captured)} />
 	{:else if income}
-		<span class="income">+200$</span>
+		<CellFeedback text="+200$" />
 	{/if}
 	{#if recoveredHealth > 0}
-		<span class="income healing" role="status">{translate(messages.health_recovered, { health: recoveredHealth })}</span>
+		<CellFeedback text={translate(messages.health_recovered, { health: recoveredHealth })} tone="healing" announce />
 	{/if}
 </button>
 
@@ -94,22 +92,16 @@
 
 	.movement-marker {
 		position: absolute;
+		z-index: 1;
 		top: 50%;
 		left: 50%;
-		width: clamp(10px, 20%, 18px);
+		width: clamp(5px, 12%, 9px);
 		aspect-ratio: 1;
-		transform: translate(-50%, -50%) rotate(45deg);
-		border: 2px solid var(--range-color);
-		background: var(--color-surface);
+		border-radius: 50%;
+		transform: translate(-50%, -50%);
+		background: var(--range-color);
 		box-shadow: 0 0 0 1px var(--color-background);
 		pointer-events: none;
-
-		&::after {
-			content: '';
-			position: absolute;
-			inset: 30%;
-			background: #ffffff;
-		}
 	}
 
 	.explosion {
@@ -130,30 +122,5 @@
 			inset 0 0 0 2px #521c24;
 		z-index: 3;
 		pointer-events: none;
-	}
-
-	.income {
-		position: absolute;
-		z-index: 3;
-		left: 0;
-		right: 0;
-		top: 0;
-		color: white;
-		text-shadow: 1px 1px black;
-		pointer-events: none;
-		animation: income 4s forwards;
-	}
-
-	@keyframes income {
-		to {
-			transform: translateY(-30px);
-			opacity: 0;
-		}
-	}
-
-	.healing {
-		color: #b7f59b;
-		white-space: nowrap;
-		font-size: clamp(10px, 1.2vw, 14px);
 	}
 </style>

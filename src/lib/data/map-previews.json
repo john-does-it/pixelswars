@@ -1,0 +1,62 @@
+{
+	"1": {
+		"cols": 8,
+		"rows": 8,
+		"size": "small"
+	},
+	"2": {
+		"cols": 12,
+		"rows": 8,
+		"size": "small"
+	},
+	"3": {
+		"cols": 10,
+		"rows": 10,
+		"size": "small"
+	},
+	"4": {
+		"cols": 14,
+		"rows": 7,
+		"size": "small"
+	},
+	"5": {
+		"cols": 12,
+		"rows": 9,
+		"size": "medium"
+	},
+	"6": {
+		"cols": 9,
+		"rows": 11,
+		"size": "small"
+	},
+	"7": {
+		"cols": 16,
+		"rows": 7,
+		"size": "medium"
+	},
+	"8": {
+		"cols": 10,
+		"rows": 13,
+		"size": "medium"
+	},
+	"9": {
+		"cols": 12,
+		"rows": 10,
+		"size": "medium"
+	},
+	"10": {
+		"cols": 16,
+		"rows": 14,
+		"size": "large"
+	},
+	"11": {
+		"cols": 18,
+		"rows": 14,
+		"size": "large"
+	},
+	"12": {
+		"cols": 18,
+		"rows": 18,
+		"size": "large"
+	}
+}

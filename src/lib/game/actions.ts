@@ -19,8 +19,9 @@ export function select(state: GameState, id: number): void {
 	state.productionIndex = null
 }
 
-export function move(state: GameState, index: number): boolean {
-	if (locked(state)) return false
+export function move(state: GameState, index: number, continuingPath = false): boolean {
+	// Only the controller's active route may advance while movement locks other actions.
+	if (state.fighting || state.winner !== null || (state.moving && !continuingPath)) return false
 	const unit = selectedUnit(state)
 	if (!unit || !reachableCells(state, unit).includes(index)) return false
 	unit.movement -= movementCost(unit, state.cells[index])

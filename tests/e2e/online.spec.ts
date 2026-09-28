@@ -203,7 +203,7 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await expect(extra.getByRole('alert')).toContainText('already has two players', { timeout: 10000 })
 		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
 		await extra.close()
-		await guest.getByRole('link', { name: '← Pixel’s War' }).click()
+		await guest.goto('/')
 		await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeVisible({ timeout: 15000 })
 		await expect(end(page)).toBeHidden()
 		expect(errors).toEqual([])

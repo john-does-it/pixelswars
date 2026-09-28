@@ -3,6 +3,8 @@ import { asset } from '$app/paths'
 
 import type { AudioController, Player } from './types.ts'
 
+const infantrySelectionSounds = ['infantry', 'infantry-2', 'infantry-3', 'infantry-4', 'infantry-5', 'infantry-6', 'infantry-7', 'infantry-8', 'infantry-9', 'infantry-10']
+
 export function createAudio(): AudioController {
 	const tracks = new Map<string, HTMLAudioElement>()
 	const getTrack = (name: string): HTMLAudioElement => {
@@ -20,7 +22,7 @@ export function createAudio(): AudioController {
 	}
 	return {
 		sound(name: string) {
-			if (name === 'infantry') name = ['infantry', 'infantry-2', 'infantry-3'][Math.floor(Math.random() * 3)]!
+			if (name === 'infantry') name = infantrySelectionSounds[Math.floor(Math.random() * infantrySelectionSounds.length)]!
 			playTrack(getTrack(name), 0.5)
 		},
 		music(enabled: boolean, player: Player) {

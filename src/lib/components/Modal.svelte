@@ -3,7 +3,7 @@
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 
-	let { title, onclose, children }: { title: string; onclose?: () => void; children: Snippet } = $props()
+	let { title, onclose, children, alwaysShowScrollbar = true }: { title: string; onclose?: () => void; children: Snippet; alwaysShowScrollbar?: boolean } = $props()
 	let dialog = $state<HTMLDialogElement>()
 	onMount(() => {
 		dialog?.showModal()
@@ -22,7 +22,7 @@
 		if (event.target === dialog) onclose?.()
 	}}
 >
-	<div class="dialog-content">
+	<div class="dialog-content" class:auto-scrollbar={!alwaysShowScrollbar}>
 		<div class="heading">
 			<h2>{title}</h2>
 			{#if onclose}
@@ -35,6 +35,8 @@
 
 <style>
 	dialog {
+		inset-block: 7.5svh auto;
+		margin: 0 auto;
 		width: calc(100% - 2em);
 		max-width: 640px;
 		max-height: 85svh;
@@ -52,8 +54,15 @@
 
 	.dialog-content {
 		max-height: calc(85svh - 20px);
-		overflow: auto;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		scrollbar-gutter: stable;
 		padding: 16px;
+
+		&.auto-scrollbar {
+			overflow-y: auto;
+			scrollbar-gutter: auto;
+		}
 	}
 
 	.heading {

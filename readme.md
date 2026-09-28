@@ -13,7 +13,7 @@ secure its economy and combine infantry, armor and air power to win.
 - **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
-- **Desktop and mobile:** keyboard, mouse and touch controls, with interactive minimaps on narrow screens.
+- **Desktop and mobile:** keyboard, mouse and touch controls, with a zoomable battlefield and an interactive minimap.
 - **English, French and German:** language, audio and keyboard settings in Options and help.
 
 ![A battlefield with the selected unit’s actions and statistics](docs/screenshots/battlefield.png)
@@ -27,14 +27,21 @@ secure its economy and combine infantry, armor and air power to win.
 Destroy every opposing unit to win. During your turn, you can move and use the
 available actions of **all your units**, in any order. End the turn when finished.
 Blue plays first; in AI matches, the AI commands blue and you command red.
+The same team-colored transition announces both players’ turns, including the AI.
+AI actions begin after its transition finishes.
 
-Select a unit, then click or tap diamond-marked neighboring cells to move, or an
+Select a unit, then click or tap a dot-marked cell to move there, or an
 eligible enemy to attack. Confirm finishes the selection; cancel restores movement
 to the last committed position. Attacking or capturing commits that position,
 so cancelling cannot undo those actions.
 
 Both friendly and enemy attack ranges use the same striped overlay, in the
-unit's team color. Movement diamonds remain visible on cells within that range.
+unit's team color. Small dots mark all cells reachable with the unit's remaining movement via the cheapest
+path, accounting for terrain and occupied cells. The indication updates after each step and
+after cancelling a move. Click or tap a dot to follow the cheapest path, with each intermediate
+cell shown in sequence. Other actions wait until the unit arrives. Confirm keeps the move,
+while cancel restores the selection's starting position and movement budget. Keyboard controls
+still move one neighboring cell at a time. Online matches synchronize every step from the host.
 
 With no friendly unit selected, click or tap an enemy to inspect its attack range.
 Striped cells show the range from its **current position**, including mountain
@@ -51,11 +58,34 @@ is selected.
 | Cancel / close   | Escape                                        |
 | Capture / secure | Space                                         |
 
-On mobile, use the contextual action buttons, swipe the battlefield horizontally,
-or tap/drag either minimap to reposition the view. Minimap navigation appears
-when the board overflows its container. The camera follows AI and online opponent actions.
-Settings are stored in browser session cookies; English is the default language.
-Turning sound off also disables music.
+Maps open with the whole battlefield visible. Drag the battlefield to pan in any direction.
+Use the mouse wheel over map tiles, pinch with two fingers, or use the +/− buttons to zoom.
+Scrolling over the surrounding space scrolls normally. The overview button fits the whole map on screen.
+The minimap stays visible at every zoom level, including when the whole map fits, and shows the visible
+area on both axes. Tap, drag or use its arrow keys to reposition the view.
+Edge scroll buttons hide while the AI or online opponent plays, when the camera follows their
+active unit, and return on your turn. Local shared-device games keep them available to each player.
+
+On desktop, zoom and action buttons share the bar below the map. On mobile, zoom stays
+above the map and actions stay at the bottom of the screen. The player and budget header stays
+visible at the top when scrolling, showing only the player, round and budgets. Settings are the first
+action button, before the tile thumbnail. Open Options to choose another map.
+Both layouts use icons for cancel (undo arrow), confirm (checkmark)
+and capture or secure (flag). End round keeps its text and yellow background. Every action has an
+accessible label and tooltip. Mobile actions stay on one right-aligned row, with 48px-high buttons
+that become narrower on small screens to keep all six actions visible.
+During the opponent's turn, the entire action bar, including settings, becomes invisible and inactive while retaining its
+height, so hiding it does not resize the battlefield.
+Mobile maps reserve the action panel's full height plus an
+8px gap, and keep the selected unit in view when the panel grows. Click or tap a tile to show its
+terrain and unit thumbnail in the action bar. Activate that thumbnail to open the tile statistics
+in a dialog, on both desktop and mobile. Closing the dialog or pressing Escape keeps the current
+unit selection and pending movement. No floating panel covers the battlefield. Movement dots,
+the pulsing heart and damaged sprites continue to provide feedback directly on the map.
+Zoom and camera position are local to each device, including online matches.
+End round remains the primary action. Hits and retaliation briefly display the actual
+health lost above the affected unit, while the pulsing heart remains its health indicator.
+The map chooser shows lightweight battlefield thumbnails, dimensions and small/medium/large labels.
 
 ### Play with a friend online
 
@@ -220,6 +250,9 @@ npm run preview
 ```
 
 The production site is generated in `build/`; serve it over HTTP.
+After changing a map or its sprites, run `npm run generate:map-previews` with the dev server running.
+This refreshes the static thumbnails and their dimension/size metadata. Set `PREVIEW_BASE_URL`
+if the server uses an address other than `http://127.0.0.1:5173`.
 `npm run check` generates Paraglide messages and declarations before checking
 Svelte. `npm run generate:i18n` runs generation separately. Both generation and
 Vite use `paraglide.config.js`; generated `src/lib/paraglide/` files are ignored.

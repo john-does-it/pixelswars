@@ -92,22 +92,62 @@ async function session(options: ControllerOptions = {}) {
 	}
 }
 
+test('guest destination clicks synchronize intermediate steps and lock actions until arrival', async () => {
+	let resume = () => {}
+	const match = await session({
+		delay: () =>
+			new Promise<void>((resolve) => {
+				resume = resolve
+			})
+	})
+	try {
+		const { host, guest, hostState, guestState } = match
+		host.endTurn()
+		await flush()
+		match.advance()
+		guest.select(1)
+		await flush()
+		guest.clickCell(23)
+		await flush()
+		assert.equal(hostState.units[1].cell, 29)
+		assert.equal(guestState.units[1].cell, 29)
+		assert.equal(guestState.moving, true)
+		guest.endTurn()
+		guest.cancel()
+		await flush()
+		assert.equal(hostState.round, 2)
+		assert.equal(hostState.units[1].cell, 29)
+		resume()
+		await flush()
+		assert.equal(guestState.units[1].cell, 23)
+		assert.equal(guestState.units[1].movement, 1)
+		assert.equal(guestState.moving, false)
+		guest.cancel()
+		await flush()
+		assert.equal(hostState.units[1].cell, 35)
+		assert.equal(guestState.units[1].cell, 35)
+		assert.equal(guestState.units[1].movement, 5)
+	} finally {
+		match.dispose()
+	}
+})
+
 test('host and guest synchronize legal turns, selection, movement and cancellation without sharing preferences or previews', async () => {
 	const match = await session()
 	try {
 		const { host, guest, hostState, guestState } = match
 		guestState.sound = false
 		guestState.keyboardLayout = 'qwerty'
-		guestState.hoveredIndex = 30
+		guestState.previewIndex = 30
 		guest.clickCell(35)
 		await flush()
 		assert.equal(hostState.selectedId, null)
-		guestState.hoveredIndex = 30
+		guestState.previewIndex = 30
 		host.select(0)
 		host.move(6)
 		await flush()
 		assert.equal(guestState.units[0].cell, 6)
-		assert.equal(guestState.hoveredIndex, 30)
+		assert.equal(guestState.previewIndex, 30)
 		assert.equal(guestState.sound, false)
 		assert.equal(guestState.keyboardLayout, 'qwerty')
 		host.cancel()

@@ -34,6 +34,7 @@
 	<ul>
 		<li>{translate(messages.touch_step_1)}</li>
 		<li>{translate(messages.touch_step_2)}</li>
+		<li>{translate(messages.movement_range_hint)}</li>
 		<li>{translate(messages.touch_step_3)}</li>
 		<li>{translate(messages.inspect_enemy_hint)}</li>
 	</ul>

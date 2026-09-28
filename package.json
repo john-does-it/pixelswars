@@ -17,7 +17,8 @@
 		"test:e2e": "node node_modules/@playwright/test/cli.js test",
 		"test:turn": "node --experimental-strip-types scripts/test-turn.mjs",
 		"format": "prettier --write .",
-		"format:check": "prettier --check ."
+		"format:check": "prettier --check .",
+		"generate:map-previews": "node scripts/generate-map-previews.mjs && node --experimental-strip-types scripts/sync-assets.ts"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.25.2",

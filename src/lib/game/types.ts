@@ -24,6 +24,7 @@ export interface UnitDefinition {
 	delay: number
 	selectSound: string
 	fightSound: string
+	impactSound?: string
 }
 
 export interface TerrainDefinition {
@@ -90,8 +91,9 @@ export interface GameState {
 	inspectedEnemyId: number | null
 	origin: MoveOrigin | null
 	productionIndex: number | null
-	hoveredIndex: number | null
+	previewIndex: number | null
 	fighting: boolean
+	moving: boolean
 	combatTargetIndex: number | null
 	winner: Player | null
 	explosion: number | null
