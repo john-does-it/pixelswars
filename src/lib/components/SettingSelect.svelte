@@ -21,20 +21,20 @@
 		min-height: 46px;
 		flex: 0 0 auto;
 		padding-left: 10px;
-		color: #dce6eb;
-		background: #19242c;
-		border: 1px solid #78909f;
+		color: var(--color-text);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
 		border-radius: 5px;
 		overflow: hidden;
 
 		&:has(select:focus-visible) {
-			outline: 3px solid #ffe985;
+			outline: 3px solid var(--color-accent);
 			outline-offset: 3px;
 		}
 	}
 
 	span {
-		font-size: 13px;
+		font-size: 14px;
 		font-weight: bold;
 		white-space: nowrap;
 	}
@@ -46,12 +46,12 @@
 		align-self: center;
 		margin-left: 8px;
 		font: inherit;
-		font-size: 13px;
+		font-size: 14px;
 		line-height: normal;
 		color: inherit;
-		background: #2b3d49;
+		background: var(--color-control);
 		border: 0;
-		border-left: 1px solid #78909f;
+		border-left: 1px solid var(--color-border);
 		border-radius: 0;
 		padding: 0 9px;
 		cursor: pointer;

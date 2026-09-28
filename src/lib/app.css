@@ -1,13 +1,55 @@
+@font-face {
+	font-family: 'Pixelify Sans';
+	src: url('./fonts/PixelifySans.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('./fonts/ibm-plex-mono/Regular.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('./fonts/ibm-plex-mono/Bold.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+}
+
 :root {
-	font-family: ui-monospace, 'Cascadia Code', monospace;
-	color: #ffffff;
-	background: #0d1216;
+	--color-background: #111a14;
+	--color-surface: #243226;
+	--color-control: #34472f;
+	--color-border: #738568;
+	--color-border-strong: #a5b58b;
+	--color-text: #fffdf2;
+	--color-muted: #d6ddc5;
+	--color-accent: #f4d879;
+	--font-body: 'IBM Plex Mono', ui-monospace, monospace;
+	--font-display: 'Pixelify Sans', ui-monospace, monospace;
+	font-family: var(--font-body);
+	font-size: 16px;
+	line-height: 1.5;
+	color: var(--color-text);
+	background: var(--color-background);
 	font-synthesis: none;
+	color-scheme: dark;
+}
+
+h1,
+h2 {
+	font-family: var(--font-display);
 }
 
 * {
 	box-sizing: border-box;
-	scrollbar-color: #91a6b4 #19242c;
+	scrollbar-color: var(--color-border-strong) var(--color-surface);
 	scrollbar-width: auto;
 }
 
@@ -19,17 +61,17 @@
 
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
-	background: #19242c;
+	background: var(--color-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #91a6b4;
-	border: 3px solid #19242c;
+	background: var(--color-border-strong);
+	border: 3px solid var(--color-surface);
 	border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #ffe985;
+	background: var(--color-accent);
 }
 
 body {
@@ -48,16 +90,24 @@ a {
 
 button,
 .button {
-	--button-background: #2b3d49;
+	--button-background: var(--color-control);
 	font: inherit;
-	font-size: 14px;
+	font-size: 16px;
 	color: inherit;
 	background: var(--button-background);
-	border: 1px solid #91a6b4;
+	border: 1px solid var(--color-border-strong);
 	border-radius: 5px;
 	padding: 10px 14px;
 	cursor: pointer;
 	display: inline-block;
+	transition:
+		background-color 150ms ease,
+		border-color 150ms ease;
+}
+
+button:not(.cell-container),
+.button {
+	min-height: 44px;
 }
 
 .button,
@@ -72,8 +122,8 @@ button:hover:not(:disabled):not(.cell-container),
 
 button.primary,
 .button.primary {
-	--button-background: #f0d780;
-	color: #202a32;
+	--button-background: var(--color-accent);
+	color: var(--color-background);
 	border-color: var(--button-background);
 	font-weight: bold;
 
@@ -83,20 +133,20 @@ button.primary,
 }
 
 button:disabled {
-	color: #aebbc4;
-	background: #202a31;
-	border-color: #536673;
+	color: var(--color-muted);
+	background: var(--color-surface);
+	border-color: var(--color-border);
 	cursor: not-allowed;
 }
 
 :focus-visible {
-	outline: 3px solid #ffe985;
+	outline: 3px solid var(--color-accent);
 	outline-offset: 3px;
 }
 
 .panel {
-	background: #19242c;
-	border: 1px solid #78909f;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
 	padding: 18px;
 }

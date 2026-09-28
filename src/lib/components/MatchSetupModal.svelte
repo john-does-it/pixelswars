@@ -47,17 +47,17 @@
 
 	h3 {
 		font-size: 16px;
-		color: #ffe985;
+		color: var(--color-accent);
 		margin: 0 0 12px;
 	}
 
 	.level {
 		padding: 12px 0;
-		border-top: 1px solid #78909f;
+		border-top: 1px solid var(--color-border);
 	}
 
 	ul {
-		font-size: 12px;
+		font-size: 14px;
 		line-height: 1.6;
 	}
 

@@ -68,7 +68,7 @@
 		font-size: 14px;
 		margin: 0;
 		font-weight: normal;
-		color: #e5edf1;
+		color: var(--color-text);
 	}
 	.turn {
 		display: flex;
@@ -83,7 +83,7 @@
 			image-rendering: pixelated;
 		}
 		span {
-			color: #ffe985;
+			color: var(--color-accent);
 		}
 	}
 	.budgets {
@@ -108,12 +108,12 @@
 			gap: 4px 12px;
 		}
 		h1 {
-			font-size: 12px;
+			font-size: 14px;
 			line-height: 1.5;
 		}
 		.turn,
 		.budgets {
-			font-size: 12px;
+			font-size: 14px;
 		}
 		.budgets {
 			justify-content: flex-start;

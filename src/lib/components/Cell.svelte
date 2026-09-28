@@ -100,8 +100,8 @@
 		aspect-ratio: 1;
 		transform: translate(-50%, -50%) rotate(45deg);
 		border: 2px solid var(--range-color);
-		background: #19242c;
-		box-shadow: 0 0 0 1px #0d1216;
+		background: var(--color-surface);
+		box-shadow: 0 0 0 1px var(--color-background);
 		pointer-events: none;
 
 		&::after {

@@ -38,7 +38,7 @@
 		gap: 12px;
 		align-items: center;
 		padding: 14px;
-		border: 1px solid #91a6b4;
+		border: 1px solid var(--color-border-strong);
 		border-radius: 5px;
 		margin: 10px 0;
 
@@ -53,7 +53,7 @@
 	}
 
 	.unavailable {
-		color: #dce6eb;
+		color: var(--color-text);
 
 		img {
 			opacity: 0.45;
@@ -76,7 +76,7 @@
 
 	small {
 		display: block;
-		font-size: 12px;
+		font-size: 14px;
 	}
 
 	@media (max-width: 430px) {

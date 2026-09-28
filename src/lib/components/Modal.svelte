@@ -40,10 +40,10 @@
 		max-height: 85svh;
 		overflow: hidden;
 		padding: 8px;
-		border: 2px solid #a9bbc6;
+		border: 2px solid var(--color-border-strong);
 		border-radius: 10px;
-		background: #19242c;
-		color: #ffffff;
+		background: var(--color-surface);
+		color: var(--color-text);
 
 		&::backdrop {
 			background: #000a;

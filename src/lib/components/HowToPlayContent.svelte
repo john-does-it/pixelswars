@@ -66,7 +66,7 @@
 	section + section {
 		margin-top: 20px;
 		padding-top: 18px;
-		border-top: 1px solid #78909f;
+		border-top: 1px solid var(--color-border);
 	}
 
 	.section-title,
@@ -78,7 +78,7 @@
 
 	.section-title {
 		margin-bottom: 10px;
-		color: #e5edf1;
+		color: var(--color-text);
 		font-size: 16px;
 	}
 

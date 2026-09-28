@@ -76,7 +76,7 @@
 		position: relative;
 		display: block;
 		padding: 0;
-		border: 1px solid #91a6b4;
+		border: 1px solid var(--color-border-strong);
 		border-radius: 0;
 		touch-action: none;
 		cursor: crosshair;
@@ -110,6 +110,6 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		border: 1px solid #ffe985;
+		border: 1px solid var(--color-accent);
 	}
 </style>

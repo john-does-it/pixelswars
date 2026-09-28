@@ -113,8 +113,8 @@
 			inset: auto 0 0;
 			z-index: 10;
 			padding: 10px max(12px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-			border-top: 1px solid #78909f;
-			background: #19242cf5;
+			border-top: 1px solid var(--color-border);
+			background: color-mix(in srgb, var(--color-surface) 96%, transparent);
 			box-shadow: 0 -4px 16px #0005;
 			justify-content: center;
 		}
@@ -132,6 +132,6 @@
 
 	[role='status'] {
 		text-align: center;
-		color: #ffe985;
+		color: var(--color-accent);
 	}
 </style>

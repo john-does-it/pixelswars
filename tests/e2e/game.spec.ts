@@ -683,7 +683,7 @@ test('home map cards share the tallest height across rows in every language', as
 	await expect(page.locator('.maps')).toHaveCSS('grid-auto-rows', 'auto')
 })
 
-test('catalog cards stack at desktop width and mountain lists its ranged ground bonus', async ({ page }) => {
+test('catalog cards share a desktop grid and mountain lists its ranged ground bonus', async ({ page }) => {
 	await page.setViewportSize({ width: 1200, height: 900 })
 	await page.goto('/')
 	const mountain = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Mountain', exact: true }) })
@@ -696,11 +696,12 @@ test('catalog cards stack at desktop width and mountain lists its ranged ground 
 		.evaluateAll((cards) =>
 			cards.map((card) => {
 				const rectangle = card.getBoundingClientRect()
-				return { top: rectangle.top, bottom: rectangle.bottom, width: rectangle.width }
+				return { top: rectangle.top, height: rectangle.height, width: rectangle.width }
 			})
 		)
 	for (let index = 1; index < cards.length; index++) {
-		expect(cards[index].top).toBeGreaterThan(cards[index - 1].bottom)
+		expect(cards[index].top).toBe(cards[0].top)
+		expect(cards[index].height).toBe(cards[0].height)
 		expect(cards[index].width).toBe(cards[0].width)
 	}
 	const select = page.getByRole('combobox')

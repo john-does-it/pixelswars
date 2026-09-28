@@ -116,8 +116,8 @@
 
 <style>
 	.match-mode {
-		font-size: 12px;
-		color: #ffe985;
+		font-size: 14px;
+		color: var(--color-accent);
 		margin: 0 0 12px;
 	}
 	.game-shell {
@@ -133,7 +133,7 @@
 		display: grid;
 		place-items: center;
 		min-height: 100svh;
-		color: #ffe985;
+		color: var(--color-accent);
 		text-align: center;
 	}
 

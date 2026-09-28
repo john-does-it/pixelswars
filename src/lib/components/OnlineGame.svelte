@@ -129,7 +129,9 @@
 				{#if output}
 					<label for="connection-output">{translate(messages.online_invitation)}</label>
 					<textarea id="connection-output" readonly value={output} rows="3" onfocus={(event) => event.currentTarget.select()}></textarea>
-					<button onclick={copy}>{translate(copied ? messages.online_copied : messages.online_copy)}</button>
+					<div class="invitation-actions">
+						<button onclick={copy}>{translate(copied ? messages.online_copied : messages.online_copy)}</button>
+					</div>
 					<p>{translate(messages.online_host_steps)}</p>
 				{/if}
 				{#if role === 'join'}
@@ -173,7 +175,7 @@
 	}
 	h2 {
 		font-size: 18px;
-		color: #ffe985;
+		color: var(--color-accent);
 	}
 	p {
 		line-height: 1.6;
@@ -191,14 +193,21 @@
 	textarea {
 		box-sizing: border-box;
 		width: 100%;
+		min-height: 124px;
 		padding: 12px;
-		border: 1px solid #a9bbc6;
+		border: 1px solid var(--color-border-strong);
 		border-radius: 4px;
-		background: #0d1216;
-		color: #ffffff;
+		background: var(--color-background);
+		color: var(--color-text);
 		font: inherit;
-		font-size: 12px;
+		font-size: 16px;
+		line-height: 1.5;
 		resize: vertical;
+	}
+	.invitation-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 8px;
 	}
 	button {
 		min-height: 44px;
@@ -208,13 +217,13 @@
 		color: #ffb3b1;
 	}
 	[role='status'] {
-		color: #ffe985;
+		color: var(--color-accent);
 	}
 	.connection-note {
-		border-top: 1px solid #78909f;
+		border-top: 1px solid var(--color-border);
 		padding-top: 16px;
 		margin-top: 24px;
-		font-size: 12px;
-		color: #e1e9ed;
+		font-size: 14px;
+		color: var(--color-text);
 	}
 </style>

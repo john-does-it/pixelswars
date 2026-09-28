@@ -190,7 +190,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #ffe985;
+		color: var(--color-accent);
 		text-shadow: 0 1px 3px #000;
 		font-size: 28px;
 		transition: opacity 120ms ease;
@@ -204,11 +204,11 @@
 
 		&.left {
 			left: 0;
-			background: linear-gradient(to right, #0d1216bb, transparent);
+			background: linear-gradient(to right, color-mix(in srgb, var(--color-background) 74%, transparent), transparent);
 		}
 		&.right {
 			right: 0px;
-			background: linear-gradient(to left, #0d1216bb, transparent);
+			background: linear-gradient(to left, color-mix(in srgb, var(--color-background) 74%, transparent), transparent);
 		}
 
 		button {
@@ -216,9 +216,9 @@
 			padding: 0;
 			width: 28px;
 			min-height: 44px;
-			color: #ffe985;
-			background: #19242cdd;
-			border-color: #91a6b4;
+			color: var(--color-accent);
+			background: color-mix(in srgb, var(--color-surface) 87%, transparent);
+			border-color: var(--color-border-strong);
 			font-size: 28px;
 		}
 		button:disabled {

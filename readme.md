@@ -355,6 +355,8 @@ Pushing or merging does not automatically deploy the site.
 
 Programming: [John Does it](https://johndoesit.be).
 Sprites: [Kenney](https://www.kenney.nl).
+Typography: [Pixelify Sans](https://github.com/google/fonts/tree/main/ofl/pixelifysans), hosted locally under the [SIL Open Font License](src/lib/fonts/OFL.txt).
+Body text and controls: [IBM Plex Mono](https://github.com/google/fonts/tree/main/ofl/ibmplexmono), hosted locally under the [SIL Open Font License](src/lib/fonts/ibm-plex-mono/OFL.txt).
 Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
 Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
 QA: Gauthier Miessen.

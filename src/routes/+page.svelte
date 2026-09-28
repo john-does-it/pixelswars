@@ -178,7 +178,7 @@
 
 <style>
 	main {
-		max-width: 1180px;
+		max-width: 1320px;
 		padding: 32px 20px;
 		margin: auto;
 	}
@@ -191,7 +191,7 @@
 	h1 {
 		font-size: clamp(26px, 6vw, 76px);
 		margin: 0;
-		color: #ffe985;
+		color: var(--color-accent);
 	}
 
 	.title {
@@ -214,27 +214,37 @@
 	}
 
 	.eyebrow {
-		font-size: 12px;
+		font-size: 14px;
 		letter-spacing: 0.12em;
-		color: #c7dce8;
+		color: var(--color-muted);
 	}
 
 	p {
 		line-height: 1.7;
-		color: #e1e9ed;
+		color: var(--color-text);
 	}
 
 	section {
 		margin: 28px 0;
 	}
 
-	.maps {
+	.maps,
+	.catalog {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		grid-auto-rows: 1fr;
 		gap: 18px;
 
-		@media (max-width: 557px) {
+		@media (max-width: 1150px) {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		@media (max-width: 880px) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		@media (max-width: 580px) {
+			grid-template-columns: minmax(0, 1fr);
 			grid-auto-rows: auto;
 		}
 	}
@@ -242,18 +252,22 @@
 	.map {
 		display: flex;
 		flex-direction: column;
-		padding: 28px;
+		padding: 22px;
+		min-width: 0;
 		text-decoration: none;
-		transition: border-color 0.2s;
+		transition:
+			border-color 0.2s,
+			background-color 0.2s;
 
 		&:hover {
-			border-color: #ffe985;
+			border-color: var(--color-accent);
+			background: color-mix(in srgb, var(--color-surface) 92%, var(--color-accent));
 		}
 	}
 
 	.map span,
 	.map strong {
-		color: #ffe985;
+		color: var(--color-accent);
 	}
 
 	.map p {
@@ -264,18 +278,12 @@
 		margin-top: auto;
 	}
 
-	.catalog {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: 18px;
-	}
-
 	.catalog-group {
 		margin-top: 24px;
 
 		h3 {
 			margin-bottom: 6px;
-			color: #c7dce8;
+			color: var(--color-muted);
 		}
 	}
 
@@ -286,6 +294,10 @@
 	}
 
 	article {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+
 		h4 {
 			font-size: 18px;
 			margin: 16px 0 0;
@@ -300,17 +312,17 @@
 	}
 
 	article p {
-		font-size: 13px;
+		font-size: 16px;
 	}
 
 	.description {
 		padding-top: 14px;
-		border-top: 1px solid #78909f;
-		margin-top: 14px;
+		border-top: 1px solid var(--color-border);
+		margin-top: auto;
 	}
 
 	footer {
-		font-size: 12px;
+		font-size: 14px;
 		margin-top: 40px;
 
 		a {

@@ -100,7 +100,7 @@
 
 	h3 {
 		font-size: 16px;
-		color: #ffe985;
+		color: var(--color-accent);
 		margin: 0;
 	}
 
@@ -111,7 +111,7 @@
 	}
 
 	p {
-		color: #e1e9ed;
+		color: var(--color-text);
 		line-height: 1.5;
 	}
 

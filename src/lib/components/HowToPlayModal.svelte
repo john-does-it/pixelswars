@@ -26,13 +26,13 @@
 <style>
 	h3 {
 		margin: 0 0 18px;
-		color: #ffe985;
+		color: var(--color-accent);
 		font-size: 20px;
 		line-height: 1.4;
 	}
 	.rules-section {
 		margin-top: 28px;
 		padding-top: 24px;
-		border-top: 1px solid #78909f;
+		border-top: 1px solid var(--color-border);
 	}
 </style>
