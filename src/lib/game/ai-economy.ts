@@ -11,13 +11,13 @@ export interface RecruitmentPlan {
 	affordable: boolean
 }
 
-function distance(state: GameState, left: number, right: number): number {
-	return Math.abs((left % state.cols) - (right % state.cols)) + Math.abs(Math.floor(left / state.cols) - Math.floor(right / state.cols))
+function cellDistance(state: GameState, originCellIndex: number, targetCellIndex: number): number {
+	return Math.abs((originCellIndex % state.cols) - (targetCellIndex % state.cols)) + Math.abs(Math.floor(originCellIndex / state.cols) - Math.floor(targetCellIndex / state.cols))
 }
 
-function attackCapacity(attacker: UnitTypeId, defender: UnitTypeId, healthRatio = 1): number {
-	const definition = unitTypes[attacker]
-	return rules.damage(definition.attack, definition.maxHealth * healthRatio, definition.maxHealth, unitTypes[defender].defense, 0, attacker, defender) * definition.attacks
+function estimatedTurnDamage(attackerType: UnitTypeId, defenderType: UnitTypeId, healthRatio = 1): number {
+	const definition = unitTypes[attackerType]
+	return rules.damage(definition.attack, definition.maxHealth * healthRatio, definition.maxHealth, unitTypes[defenderType].defense, 0, attackerType, defenderType) * definition.attacks
 }
 
 export function economicObjectiveValue(state: GameState, cell: Cell): number {
@@ -44,7 +44,7 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 	const uncovered = enemies.map((enemy) => {
 		const threatValue = (unitTypes[enemy.type].cost * enemy.health) / unitTypes[enemy.type].maxHealth
 		// Allocate existing firepower across the whole opposing army, not once per enemy.
-		const coverage = allies.reduce((total, ally) => total + (attackCapacity(ally.type, enemy.type, ally.health / unitTypes[ally.type].maxHealth) * threatValue) / Math.max(1, enemyValue), 0)
+		const coverage = allies.reduce((total, ally) => total + (estimatedTurnDamage(ally.type, enemy.type, ally.health / unitTypes[ally.type].maxHealth) * threatValue) / Math.max(1, enemyValue), 0)
 		return { enemy, threatValue, deficit: Math.max(0, 1 - coverage / Math.max(1, enemy.health * 1.3)) }
 	})
 	const offers: RecruitmentPlan[] = []
@@ -54,9 +54,9 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 			if (productionBuilding(type) !== building.building || definition.cost > budget + income * 2) continue
 			let combatValue = 0
 			for (const { enemy, threatValue, deficit } of uncovered) {
-				const dealt = Math.min(enemy.health, attackCapacity(type, enemy.type))
-				const reach = 1 / (1 + distance(state, building.index, enemy.cell) / Math.max(1, definition.movement * 3))
-				combatValue += (dealt / unitTypes[enemy.type].maxHealth) * threatValue * deficit * reach
+				const damageDealt = Math.min(enemy.health, estimatedTurnDamage(type, enemy.type))
+				const reach = 1 / (1 + cellDistance(state, building.index, enemy.cell) / Math.max(1, definition.movement * 3))
+				combatValue += (damageDealt / unitTypes[enemy.type].maxHealth) * threatValue * deficit * reach
 			}
 			const rangedSafety = definition.range > 1 ? 1.3 : 1
 			let score = (combatValue * rangedSafety) / Math.sqrt(definition.cost / 200)
@@ -66,12 +66,12 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 			offers.push({ buildingIndex: building.index, type, cost: definition.cost, score, affordable: definition.cost <= budget })
 		}
 	}
-	offers.sort((left, right) => right.score - left.score || left.cost - right.cost)
+	offers.sort((firstOffer, secondOffer) => secondOffer.score - firstOffer.score || firstOffer.cost - secondOffer.cost)
 	const best = offers[0]
 	if (!best || best.score <= 0) return null
 	const affordable = offers.find((offer) => offer.affordable && offer.score > 0)
 	if (best.affordable || !affordable) return best
-	const emergency = allies.length <= 2 || buildings.some((building) => enemies.some((enemy) => distance(state, building.index, enemy.cell) <= unitTypes[enemy.type].movement / 2 + unitTypes[enemy.type].range))
+	const emergency = allies.length <= 2 || buildings.some((building) => enemies.some((enemy) => cellDistance(state, building.index, enemy.cell) <= unitTypes[enemy.type].movement / 2 + unitTypes[enemy.type].range))
 	// Wait at most two income payments, and only for a materially better reinforcement.
 	return !emergency && best.score > affordable.score * 1.3 ? best : affordable
 }

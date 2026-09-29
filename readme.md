@@ -1,5 +1,7 @@
 # Pixel’s War
 
+![Pixel’s War — blue and red armies facing off across a battlefield](docs/artwork/pixels-war-banner.png)
+
 **Capture cities. Build your army. Outsmart the AI or a friend.**
 
 A pixel-art, turn-based strategy game for desktop and mobile. Choose your battlefield,
@@ -18,10 +20,6 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![A battlefield with the selected unit’s actions and statistics](docs/screenshots/battlefield.png)
 
-<p align="center">
-  <img src="docs/screenshots/mobile.png" width="360" alt="Mobile battlefield with minimap navigation and touch controls">
-</p>
-
 ## How to play
 
 Destroy every opposing unit to win. During your turn, you can move and use the
@@ -35,21 +33,18 @@ eligible enemy to attack. Confirm finishes the selection; cancel restores moveme
 to the last committed position. Attacking or capturing commits that position,
 so cancelling cannot undo those actions.
 
-Both friendly and enemy attack ranges use the same striped overlay, in the
-unit's team color. Small dots mark all cells reachable with the unit's remaining movement via the cheapest
-path, accounting for terrain and occupied cells. The indication updates after each step and
-after cancelling a move. Click or tap a dot to follow the cheapest path, with each intermediate
-cell shown in sequence. Other actions wait until the unit arrives. Confirm keeps the move,
-while cancel restores the selection's starting position and movement budget. Keyboard controls
-still move one neighboring cell at a time. Online matches synchronize every step from the host.
+### Controls and battlefield feedback
 
-With no friendly unit selected, click or tap an enemy to inspect its attack range.
-Striped cells show the range from its **current position**, including mountain
-bonuses and minimum-range exclusions. Unit targeting restrictions still apply;
-the overlay does not predict movement or damage. Click the enemy again, an empty cell, or
-press Escape to dismiss. Inspecting an out-of-range enemy preserves any pending
-friendly movement; an eligible attack still takes priority when a friendly unit
-is selected.
+- **Move:** select a unit, then click or tap a reachable dot. The unit follows the cheapest legal path.
+- **Attack range:** striped tiles show the selected unit's range. Select an enemy to inspect its current range.
+- **Camera:** drag to pan, use the mouse wheel over the map or pinch to zoom. The overview button fits the map,
+  and the always-visible minimap lets you reposition the camera.
+- **Tile details:** select a tile and open its thumbnail in the action bar. Statistics appear in a dialog on desktop and mobile.
+- **Unit indicators:** the heart and damaged sprite show health. Bottom-left bullets show attacks, the bottom-right
+  fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
+- **Turn changes:** both players get the same team-colored transition. During AI or remote turns, the camera follows
+  the active unit and the action bar is hidden without resizing the battlefield.
+- **Options:** change language, sound, music and keyboard layout, restart a local/AI match, or choose another map.
 
 | Action           | Keyboard                                      |
 | ---------------- | --------------------------------------------- |
@@ -58,41 +53,8 @@ is selected.
 | Cancel / close   | Escape                                        |
 | Capture / secure | Space                                         |
 
-Maps open with the whole battlefield visible. Drag the battlefield to pan in any direction.
-Use the mouse wheel over map tiles, pinch with two fingers, or use the +/− buttons to zoom.
-Scrolling over the surrounding space scrolls normally. The overview button fits the whole map on screen.
-The minimap stays visible at every zoom level, including when the whole map fits, and shows the visible
-area on both axes. Tap, drag or use its arrow keys to reposition the view.
-Edge scroll buttons hide while the AI or online opponent plays, when the camera follows their
-active unit, and return on your turn. Local shared-device games keep them available to each player.
-
-On desktop, zoom and action buttons share the bar below the map. On mobile, zoom stays
-above the map and actions stay at the bottom of the screen. The player and budget header stays
-visible at the top when scrolling, showing only the player, round and budgets. Settings are the first
-action button, before the tile thumbnail. Open Options to choose another map.
-Both layouts use icons for cancel (undo arrow), confirm (checkmark)
-and capture or secure (flag). End round keeps its text and yellow background. Every action has an
-accessible label and tooltip. Mobile actions stay on one right-aligned row, with 48px-high buttons
-that become narrower on small screens to keep all six actions visible.
-During the opponent's turn, the entire action bar, including settings, becomes invisible and inactive while retaining its
-height, so hiding it does not resize the battlefield.
-Mobile maps reserve the action panel's full height plus an
-8px gap, and keep the selected unit in view when the panel grows. Click or tap a tile to show its
-terrain and unit thumbnail in the action bar. Activate that thumbnail to open the tile statistics
-in a dialog, on both desktop and mobile. Closing the dialog or pressing Escape keeps the current
-unit selection and pending movement. No floating panel covers the battlefield. Movement dots,
-the pulsing heart and damaged sprites continue to provide feedback directly on the map.
-On your turn, your units show one bullet per attack, stacked tightly at the bottom-left of the tile. Steady bullets
-are ready to fire. Bullets are spent from top to bottom and continuously fade in and out together across units until attacks reset. Reduced-motion mode
-shows spent bullets dimmed instead. Opponent units do not display these ammo indicators.
-The original movement icon sits at the bottom-right. Its colored fill drains in four levels over a dimmed
-version of the same icon as movement is spent. Its empty state fades with spent ammo.
-Infantry has a top-right capture flag that also fades once used. These indicators are visible on your turn,
-and exact remaining movement and capture availability are included in each tile's accessible label.
-Zoom and camera position are local to each device, including online matches.
-End round remains the primary action. Hits and retaliation briefly display the actual
-health lost above the affected unit, while the pulsing heart remains its health indicator.
-The map chooser shows lightweight battlefield thumbnails, dimensions and small/medium/large labels.
+All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
+and uses a static turn announcement. Damage, healing and income also have floating feedback on the map.
 
 ### Play with a friend online
 
@@ -295,6 +257,9 @@ WebSocket endpoint explicitly. To use installed Chrome, set
 | `src/lib/data/board-N.json`                  | Explicit, editable map layouts                           |
 | `messages/`                                  | English, French and German source translations           |
 | `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
+| `distribution/itch/`                         | itch.io launcher source and bundled fonts                |
+| `docs/`                                      | Screenshots, cover artwork and technical guides          |
+| `scripts/`                                   | Asset generation and connectivity checks                 |
 | `tests/`                                     | Node rule tests and Playwright browser tests             |
 
 Components use Svelte runes. Each game owns its state; navigation disposes pending
@@ -311,7 +276,9 @@ non-neutral matchups. Production menus enumerate the catalog automatically.
 Use tabs, single quotes, no JavaScript semicolons and no trailing commas. Keep
 Svelte script, markup and style sections distinct. Nest CSS variants and relevant
 media queries under their selector, with blank lines between rules.
-Run `npm run format` before committing; CI checks formatting.
+Use descriptive function and parameter names, such as `revealCell`, `attackerType` and `damageDealt`.
+Avoid single-letter placeholders for game entities. Coordinate properties `x` and `y` keep their standard meaning.
+Run `npm run format` before committing. CI checks formatting.
 
 ### Assets
 
@@ -328,11 +295,20 @@ To refresh generated assets after editing sources:
 node --experimental-strip-types scripts/sync-assets.ts
 ```
 
-All units have a healthy sprite and four damage stages for both teams. Sniper
-vectors live in `assets/temp/`; `node scripts/export-sniper-sprites.mjs`
-regenerates their sprites and `docs/sniper-damage-variants.png`. Scratches use
-single outline-colored pixel blocks, with darker red wounds for contrast.
-Synchronize public assets afterward. Do not commit generated static assets.
+All nine unit types have a healthy sprite and four damage stages for both teams.
+See [asset sources and regeneration](assets/README.md) and [unit damage artwork](docs/unit-damage.md).
+Sprite generators write Base64 sources without redundant PNG copies. Synchronization removes stale
+public files when their source is removed. Do not commit generated static assets.
+
+### itch.io launcher and artwork
+
+The itch.io upload is a small launcher, not a second game build. It opens the current GitHub Pages game.
+See [launcher packaging and upload instructions](distribution/itch/README.md). The ready-to-upload archive
+is `distribution/itch.zip`, with `index.html` at its root and the same locally bundled fonts as the game.
+
+The [wide banner](docs/artwork/pixels-war-banner.png), [650 × 500 cover](docs/artwork/pixels-war-cover-650x500.png)
+and [generation prompts](docs/artwork/cover-prompt.md) live in `docs/artwork/`. Temporary exports belong in
+ignored `output/` or `tmp/` folders. Browser traces and verification screenshots belong in ignored `test-results/`.
 
 ## GitHub Pages deployment
 
@@ -395,6 +371,7 @@ Pushing or merging does not automatically deploy the site.
 
 Programming: [John Does it](https://johndoesit.be).
 Sprites: [Kenney](https://www.kenney.nl).
+Cover and banner: AI-generated promotional artwork. See [prompts](docs/artwork/cover-prompt.md).
 Typography: [Pixelify Sans](https://github.com/google/fonts/tree/main/ofl/pixelifysans), hosted locally under the [SIL Open Font License](src/lib/fonts/OFL.txt).
 Body text and controls: [IBM Plex Mono](https://github.com/google/fonts/tree/main/ofl/ibmplexmono), hosted locally under the [SIL Open Font License](src/lib/fonts/ibm-plex-mono/OFL.txt).
 Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).

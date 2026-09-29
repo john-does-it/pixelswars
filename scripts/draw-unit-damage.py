@@ -66,16 +66,15 @@ MARKS = {
 }
 
 
-def read(name):
-    return Image.open(io.BytesIO(base64.b64decode((ASSETS / f'{name}.png.base64').read_text()))).convert('RGBA')
+def read_sprite(sprite_name):
+    return Image.open(io.BytesIO(base64.b64decode((ASSETS / f'{sprite_name}.png.base64').read_text()))).convert('RGBA')
 
 
-def save(image, name):
+def save_sprite(image, sprite_name):
     data = io.BytesIO()
     image.save(data, format='PNG', optimize=True)
     encoded = base64.b64encode(data.getvalue()).decode()
-    OUTPUTS[f'assets/units/{name}.png'] = encoded
-    OUTPUTS[f'assets/units/{name}.png.base64'] = encoded + '\n'
+    OUTPUTS[f'assets/units/{sprite_name}.png.base64'] = encoded + '\n'
 
 
 MARKS['infantry-rocket'] = [
@@ -112,8 +111,8 @@ selected_marks = {only: MARKS[only]} if only else MARKS
 # Cropped originals for the supplied new units.
 for kind in selected_marks:
     for player in (1, 2):
-        original = read(f'{kind}-{player}')
-        save(original.crop(original.getbbox()), f'{kind}-{player}-fit')
+        original = read_sprite(f'{kind}-{player}')
+        save_sprite(original.crop(original.getbbox()), f'{kind}-{player}-fit')
 
 sheet = Image.new('RGB', (1060, len(selected_marks) * 2 * 190 + 55), '#20232c')
 labels = ImageDraw.Draw(sheet)
@@ -121,10 +120,10 @@ for stage, label in enumerate(['Healthy', 'Light damage', 'Moderate damage', 'He
     labels.text((75 + stage * 200, 18), label, fill='#ffffff')
 for row, (kind, player) in enumerate((kind, player) for kind in selected_marks for player in (1, 2)):
     name = f'{kind}-{player}'
-    original = read(name)
+    original = read_sprite(name)
     image = original.copy()
     # Match the small vertical offsets already present in the team sprites.
-    offset = original.getbbox()[1] - read(f'{kind}-1').getbbox()[1]
+    offset = original.getbbox()[1] - read_sprite(f'{kind}-1').getbbox()[1]
     for stage in range(5):
         if stage:
             draw = ImageDraw.Draw(image)
@@ -136,13 +135,13 @@ for row, (kind, player) in enumerate((kind, player) for kind in selected_marks f
                 draw.rectangle((left, top + offset, right - 1, bottom - 1 + offset), fill=color)
             # Keep every original silhouette/transparent pixel, even at critical health.
             image.putalpha(original.getchannel('A'))
-            save(image, f'{name}-damage-{stage}')
-            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air') else read(f'{name}-fit')
+            save_sprite(image, f'{name}-damage-{stage}')
+            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air') else read_sprite(f'{name}-fit')
             fitted = Image.new('RGBA', fit.size)
             box = fit.getbbox()
             crop = image.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)
             fitted.paste(crop, (box[0], box[1]))
-            save(fitted, f'{name}-damage-{stage}-fit')
+            save_sprite(fitted, f'{name}-damage-{stage}-fit')
         sheet.paste(image, (45 + stage * 200, 40 + row * 190), image)
     labels.text((10, 55 + row * 190), name, fill='#ffffff')
 if not only:

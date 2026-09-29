@@ -7,11 +7,12 @@ and restart. Existing map links without an `ai` parameter still open local play.
 
 All difficulties use the normal movement, damage, retaliation, capture, income,
 healing and production rules. There are no bonus resources or hidden stat boosts.
-The AI only reads the visible board. Scrolling, previews and options remain
-available during its turn; human game actions are blocked until it finishes.
-Each human turn is announced with a left-to-right sweep in the player's color.
-Reduced-motion preferences use a static announcement. Local multiplayer announces
-the current player at the start of every turn.
+The AI only reads the visible board. During its turn the action bar, including
+preview and settings, is hidden while retaining its space. The camera follows the
+AI's active unit. Human game actions remain blocked until it finishes.
+Both AI and human turns use staggered left-to-right bands in the player's color.
+Reduced-motion preferences use a static announcement. Local and online multiplayer
+use the same transition.
 
 ## Easy
 

@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { chromium } from 'playwright'
+import { chromium } from '@playwright/test'
 
 // Run against the dev server after changing maps or their sprites.
 const baseUrl = process.env.PREVIEW_BASE_URL ?? 'http://127.0.0.1:5173'

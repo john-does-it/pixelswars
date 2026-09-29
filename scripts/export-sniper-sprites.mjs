@@ -31,7 +31,7 @@ try {
 	const page = await browser.newPage({ viewport: { width: 1000, height: 456 }, deviceScaleFactor: 1 })
 	const previewImages = []
 	for (const player of [1, 2]) {
-		const original = readFileSync(new URL(`../assets/temp/infantry-sniper-${player}.svg`, import.meta.url), 'utf8')
+		const original = readFileSync(new URL(`infantry-sniper-${player}.svg`, outputDirectory), 'utf8')
 		const colors = { outline: '#3f2631', wound: player === 2 ? '#76031c' : '#ba343c', darkWound: player === 2 ? '#380211' : '#8f1d31' }
 		for (let stage = 0; stage <= damageStages.length; stage++) {
 			const marks = damageStages
@@ -75,7 +75,6 @@ try {
 			for (const [variant, dataUrl] of Object.entries(exported)) {
 				const encoded = dataUrl.split(',')[1]
 				const basename = `${filename}${variant === 'fit' ? '-fit' : ''}.png`
-				writeFileSync(new URL(basename, outputDirectory), Buffer.from(encoded, 'base64'))
 				writeFileSync(new URL(`${basename}.base64`, outputDirectory), `${encoded}\n`)
 			}
 			previewImages.push(exported.full)

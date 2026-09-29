@@ -3,8 +3,8 @@ Unit damage art
 
 ![All unit damage stages](unit-damage-variants.png)
 
-Each team has four hand-authored damage variants for infantry, jeep, tank, and
-artillery, rocket infantry, planes and helicopters, plus matching cropped stat-panel images. The healthy sprites remain
+Each team has four hand-authored damage variants for all nine unit types,
+plus matching cropped stat-panel images. The healthy sprites remain
 the originals. All variants preserve the original canvas and alpha silhouette.
 Infantry wounds progress across the face, arm, and leg, following the reference.
 Red infantry uses dark crimson blood so wounds remain visible against its uniform.
@@ -15,7 +15,11 @@ Health determines the appearance in five equal bands: above 80% uses the origina
 automatically restores the appropriate appearance. Factory icons remain healthy.
 
 The pixel rectangles and palette are editable in `scripts/draw-unit-damage.py`.
-Regenerate with `python scripts/draw-unit-damage.py` (requires Pillow), then run
-`node scripts/sync-assets.js`. Generated base64 assets are committed so ordinary
+Regenerate the eight bitmap-based unit types with `python scripts/draw-unit-damage.py`
+(requires Pillow). For snipers, edit the healthy vectors in `assets/units/` and run
+`node scripts/export-sniper-sprites.mjs` with Playwright Chromium installed.
+The exporter adds the damage stages and refreshes the [sniper contact sheet](sniper-damage-variants.png).
+
+Then run `node --experimental-strip-types scripts/sync-assets.ts`. Generated Base64 assets are committed so ordinary
 builds need no Python dependencies. `--stdout` emits a JSON asset map for runtimes
 that cannot write directly to the workspace.

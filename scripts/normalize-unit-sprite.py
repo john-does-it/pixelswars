@@ -37,7 +37,6 @@ def normalize(source: Path, destination: Path) -> None:
     canvas.save(output, format='PNG', optimize=True)
     content = output.getvalue()
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(content)
     destination.with_suffix(destination.suffix + '.base64').write_text(base64.b64encode(content).decode() + '\n')
 
 

@@ -6,6 +6,8 @@ static/favicon.png
 .npm-cache/
 test-results/
 playwright-report/
+/output/
+/tmp/
 .env
 .env.*
 !.env.example

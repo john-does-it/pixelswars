@@ -5,19 +5,89 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Pixel’s War</title>
 		<style>
-			@font-face { font-family: 'Pixelify Sans'; src: url('./fonts/PixelifySans.ttf') format('truetype'); font-style: normal; font-weight: 400 700; font-display: swap; }
-			@font-face { font-family: 'IBM Plex Mono'; src: url('./fonts/ibm-plex-mono/Regular.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: swap; }
-			@font-face { font-family: 'IBM Plex Mono'; src: url('./fonts/ibm-plex-mono/Bold.ttf') format('truetype'); font-style: normal; font-weight: 700; font-display: swap; }
-			:root { color-scheme: dark; font-family: 'IBM Plex Mono', ui-monospace, monospace; background: #111a14; color: #f2f2df; }
-			* { box-sizing: border-box; }
-			body { margin: 0; min-height: 100svh; display: grid; place-items: center; padding: 24px; }
-			main { width: 100%; max-width: 480px; padding: clamp(24px, 6vw, 48px); text-align: center; background: #243226; border: 1px solid #eeda80; border-radius: 8px; }
-			h1 { margin: 0 0 24px; font-family: 'Pixelify Sans', ui-monospace, monospace; font-size: clamp(28px, 7vw, 44px); line-height: 1.15; color: #f3dc80; text-shadow: 3px 3px #111a14; }
-			p { line-height: 1.6; }
-			a { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 28px; padding: 14px 18px; background: #f3dc80; color: #111a14; font: inherit; font-weight: bold; text-decoration: none; border-radius: 4px; }
-			a:hover { background: #dcc570; }
-			a:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-			.note { margin: 16px 0 0; font-size: 13px; color: #d6ddc5; }
+			@font-face {
+				font-family: 'Pixelify Sans';
+				src: url('./fonts/PixelifySans.ttf') format('truetype');
+				font-style: normal;
+				font-weight: 400 700;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: 'IBM Plex Mono';
+				src: url('./fonts/ibm-plex-mono/Regular.ttf') format('truetype');
+				font-style: normal;
+				font-weight: 400;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: 'IBM Plex Mono';
+				src: url('./fonts/ibm-plex-mono/Bold.ttf') format('truetype');
+				font-style: normal;
+				font-weight: 700;
+				font-display: swap;
+			}
+			:root {
+				color-scheme: dark;
+				font-family: 'IBM Plex Mono', ui-monospace, monospace;
+				background: #111a14;
+				color: #f2f2df;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				min-height: 100svh;
+				display: grid;
+				place-items: center;
+				padding: 24px;
+			}
+			main {
+				width: 100%;
+				max-width: 480px;
+				padding: clamp(24px, 6vw, 48px);
+				text-align: center;
+				background: #243226;
+				border: 1px solid #eeda80;
+				border-radius: 8px;
+			}
+			h1 {
+				margin: 0 0 24px;
+				font-family: 'Pixelify Sans', ui-monospace, monospace;
+				font-size: clamp(28px, 7vw, 44px);
+				line-height: 1.15;
+				color: #f3dc80;
+				text-shadow: 3px 3px #111a14;
+			}
+			p {
+				line-height: 1.6;
+			}
+			a {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 48px;
+				margin-top: 28px;
+				padding: 14px 18px;
+				background: #f3dc80;
+				color: #111a14;
+				font: inherit;
+				font-weight: bold;
+				text-decoration: none;
+				border-radius: 4px;
+			}
+			a:hover {
+				background: #dcc570;
+			}
+			a:focus-visible {
+				outline: 3px solid #fff;
+				outline-offset: 4px;
+			}
+			.note {
+				margin: 16px 0 0;
+				font-size: 13px;
+				color: #d6ddc5;
+			}
 		</style>
 	</head>
 	<body>

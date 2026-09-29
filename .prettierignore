@@ -10,4 +10,6 @@ static/favicon.png
 assets/
 test-results/
 playwright-report/
+output/
+tmp/
 package-lock.json

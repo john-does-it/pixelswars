@@ -1,6 +1,6 @@
 # itch.io launcher
 
-Upload `output/itch/pixels-war-itch.zip` as an HTML project and mark it as the file to play in the browser.
+Upload [`../itch.zip`](../itch.zip) as an HTML project and mark it as the file to play in the browser.
 Select **Click to launch in fullscreen** and **Mobile friendly** in the embed options.
 
 The ZIP contains `index.html` at its root and a `fonts` folder with the game's fonts and their licenses.
@@ -19,11 +19,16 @@ needed for ordinary game updates, only if the destination URL or launcher itself
 To rebuild the ZIP from the repository root in PowerShell:
 
 ```powershell
-New-Item -ItemType Directory -Path output/itch -Force | Out-Null
 New-Item -ItemType Directory -Path distribution/itch/fonts/ibm-plex-mono -Force | Out-Null
 Copy-Item src/lib/fonts/PixelifySans.ttf, src/lib/fonts/OFL.txt distribution/itch/fonts/ -Force
 Copy-Item src/lib/fonts/ibm-plex-mono/Regular.ttf, src/lib/fonts/ibm-plex-mono/Bold.ttf, src/lib/fonts/ibm-plex-mono/OFL.txt distribution/itch/fonts/ibm-plex-mono/ -Force
-Compress-Archive -LiteralPath distribution/itch/index.html, distribution/itch/fonts -DestinationPath output/itch/pixels-war-itch.zip -Force
+Compress-Archive -LiteralPath distribution/itch/index.html, distribution/itch/fonts -DestinationPath distribution/itch.zip -Force
 ```
+
+Do not ZIP the enclosing `itch` directory. The entry point must be `index.html`, not `itch/index.html`.
+Refresh the archive after changing the HTML or bundled fonts.
+
+The [650 × 500 cover](../../docs/artwork/pixels-war-cover-650x500.png) and
+[wide banner](../../docs/artwork/pixels-war-banner.png) are available for the project page.
 
 Reference: https://itch.io/docs/creators/html5

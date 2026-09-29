@@ -39,7 +39,6 @@
 		"node": ">=22.14.0"
 	},
 	"dependencies": {
-		"peerjs": "^1.5.5",
-		"playwright-chromium": "^1.63.0"
+		"peerjs": "^1.5.5"
 	}
 }
