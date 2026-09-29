@@ -1,5 +1,6 @@
 import { zoomToReadableTiles } from './map-view'
 import { test, expect } from '@playwright/test'
+import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
 test('Expert develops The Long Front across three opening turns instead of passing', async ({ page }) => {
 	test.setTimeout(90000)
@@ -16,8 +17,14 @@ test('Expert develops The Long Front across three opening turns instead of passi
 })
 
 test('AI hides all actions including settings, preserves their space and follows its active unit on mobile', async ({ page }) => {
+	// Keep the AI from finishing its short selections while CI prepares the viewport.
+	await page.clock.install()
+	await page.clock.pauseAt(new Date())
 	await page.setViewportSize({ width: 360, height: 800 })
 	await page.goto('/play/7/?ai=easy')
+	await expect(page.locator('.turn-announcement')).toBeVisible()
+	await page.clock.runFor(turnTransitionDuration + 100)
+	await expect(page.locator('.turn-announcement')).toHaveCount(0)
 	await zoomToReadableTiles(page)
 	await expect(page.locator('.action-controls')).toBeHidden()
 	await expect(page.locator('.minimap')).toHaveCount(1)
@@ -27,13 +34,23 @@ test('AI hides all actions including settings, preserves their space and follows
 	await expect(controls).toHaveAttribute('inert', '')
 	const controlsHeight = (await controls.boundingBox())!.height
 	await page.locator('.board-viewport').evaluate((viewport) => viewport.scrollTo({ left: viewport.scrollWidth }))
+	const selectedUnit = page.locator('.board [aria-pressed="true"]')
+	await expect
+		.poll(
+			async () => {
+				await page.clock.runFor(50)
+				return selectedUnit.count()
+			},
+			{ timeout: 10000, intervals: [0] }
+		)
+		.toBe(1)
+	// Leave the selected action paused while the browser's smooth scroll settles.
 	await expect
 		.poll(
 			() =>
 				page.evaluate(() => {
 					const viewport = document.querySelector('.board-viewport')!
-					const unit = document.querySelector('.board [aria-pressed="true"]')
-					if (!unit) return Infinity
+					const unit = document.querySelector('.board [aria-pressed="true"]')!
 					const bounds = unit.getBoundingClientRect()
 					const frame = viewport.getBoundingClientRect()
 					const center = bounds.left - frame.left + viewport.scrollLeft + bounds.width / 2
@@ -44,6 +61,7 @@ test('AI hides all actions including settings, preserves their space and follows
 		)
 		.toBeLessThan(2)
 	await expect(page.locator('.scroll-hint')).toHaveCount(0)
+	await page.clock.resume()
 	await expect(page.getByText('Round 2', { exact: true })).toBeVisible({ timeout: 30000 })
 	await expect(page.locator('.options-button')).toBeVisible()
 	await expect(page.locator('.unit-container.-two .ammo')).toHaveCount(5)
