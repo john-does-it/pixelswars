@@ -1,7 +1,7 @@
 # Computer opponent
 
-Choose a map on the home page, then choose **Play against AI** and a difficulty,
-or **Play with someone on this device**. The AI is blue (Player 1) and plays first;
+Choose a map on the home page, then choose **Play against AI** and a difficulty.
+The AI is blue (Player 1) and plays first;
 the human is red (Player 2). The selected difficulty is kept in the URL, including on reload
 and restart. Existing map links without an `ai` parameter still open local play.
 

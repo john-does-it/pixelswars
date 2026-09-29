@@ -38,7 +38,7 @@ for (const map of additionalMaps) {
 			const bottom = state.cells.slice(Math.ceil(state.cells.length / 2)).filter((cell) => cell.building === building).length
 			assert.equal(top, bottom, building)
 		}
-		const expectedAirports = ['5', '7'].includes(map.id) ? 0 : ['6', '8'].includes(map.id) ? 2 : 1
+		const expectedAirports = ['5', '7'].includes(map.id) ? 0 : ['3', '6', '8'].includes(map.id) ? 2 : 1
 		const airports = state.cells.filter((cell) => cell.building === 'airport')
 		assert.equal(airports.length, expectedAirports)
 		if (expectedAirports === 2) {

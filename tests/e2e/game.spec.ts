@@ -161,7 +161,7 @@ for (const [id, cols, count] of [
 }
 
 for (const [id, cols, rows] of [
-	[3, 10, 10],
+	[3, 11, 11],
 	[4, 14, 7],
 	[5, 12, 9],
 	[6, 9, 11],

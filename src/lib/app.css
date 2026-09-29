@@ -207,6 +207,10 @@ button:disabled {
 	background-image: url('/assets/cells/cell-road-h.png');
 }
 
+.cell-container.-road.-cross {
+	background-image: url('/assets/cells/cell-road-cross.svg');
+}
+
 .cell-container.-road.-corner.-top {
 	background-image: url('/assets/cells/cell-road-corner-top.png');
 }

@@ -9,7 +9,10 @@
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>
 	<div class="match-summary">
-		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite"><img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{playerName(state.player, aiMode)} <span>{translate(messages.round, { round: state.round })}</span></div>
+		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
+			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{playerName(state.player, aiMode)}
+			<span>{translate(messages.round, { round: state.round })}</span>
+		</div>
 		<div class="budgets">
 			<span><span class="player-one">{playerName(1, aiMode)}</span> <b>{state.money[1]}$</b></span>
 			<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
