@@ -190,6 +190,7 @@
 	"cancel_close": "Cancel / close",
 	"capture_secure": "Capture / secure",
 	"no_attacks_left": "No attacks left",
+	"attacks_remaining": "{remaining}/{total} attacks remaining",
 	"no_movement_left": "No movement left",
 	"capture_used": "Capture used",
 	"attack_target": "Attack target",
@@ -277,5 +278,7 @@
 	"preview_collapse": "Hide details",
 	"ai_turn": "AI’s turn to play",
 	"movement_range_hint": "Small dots show cells you can reach with your remaining movement. Click or tap a dot to follow the cheapest path, one cell at a time.",
-	"reachable_this_turn": "Reachable with remaining movement"
+	"reachable_this_turn": "Reachable with remaining movement",
+	"movement_remaining": "{remaining}/{total} movement points remaining",
+	"capture_available": "Capture available"
 }

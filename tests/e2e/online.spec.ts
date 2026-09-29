@@ -157,8 +157,13 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 			await expect(to.locator('dialog.turn-transition')).toHaveCount(0)
 			await expect(end(to)).toBeVisible()
 			await expect(end(from)).toBeHidden()
+			await expect(from.locator('.ammo')).toHaveCount(0)
+			await expect(to.locator('.ammo').first()).toBeVisible()
 		}
 		await expect(end(guest)).toBeHidden()
+		await expect(guest.locator('.ammo')).toHaveCount(0)
+		await expect(page.locator('.unit-container.-one .ammo')).toHaveCount(5)
+		await expect(page.locator('.unit-container.-two .ammo')).toHaveCount(0)
 		await cell(guest, 61).click()
 		await expect(guest.locator('.reachable')).toHaveCount(0)
 		await cell(page, 1).click()

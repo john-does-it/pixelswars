@@ -22,6 +22,7 @@ test('AI hides all actions including settings, preserves their space and follows
 	await expect(page.locator('.action-controls')).toBeHidden()
 	await expect(page.locator('.minimap')).toHaveCount(1)
 	await expect(page.locator('.options-button')).toBeHidden()
+	await expect(page.locator('.ammo')).toHaveCount(0)
 	const controls = page.getByRole('navigation', { name: 'Game controls', includeHidden: true })
 	await expect(controls).toHaveAttribute('inert', '')
 	const controlsHeight = (await controls.boundingBox())!.height
@@ -45,6 +46,8 @@ test('AI hides all actions including settings, preserves their space and follows
 	await expect(page.locator('.scroll-hint')).toHaveCount(0)
 	await expect(page.getByText('Round 2', { exact: true })).toBeVisible({ timeout: 30000 })
 	await expect(page.locator('.options-button')).toBeVisible()
+	await expect(page.locator('.unit-container.-two .ammo')).toHaveCount(5)
+	await expect(page.locator('.unit-container.-one .ammo')).toHaveCount(0)
 	expect((await controls.boundingBox())!.height).toBeCloseTo(controlsHeight, 1)
 })
 

@@ -82,6 +82,13 @@ terrain and unit thumbnail in the action bar. Activate that thumbnail to open th
 in a dialog, on both desktop and mobile. Closing the dialog or pressing Escape keeps the current
 unit selection and pending movement. No floating panel covers the battlefield. Movement dots,
 the pulsing heart and damaged sprites continue to provide feedback directly on the map.
+On your turn, your units show one bullet per attack, stacked tightly at the bottom-left of the tile. Steady bullets
+are ready to fire. Bullets are spent from top to bottom and continuously fade in and out together across units until attacks reset. Reduced-motion mode
+shows spent bullets dimmed instead. Opponent units do not display these ammo indicators.
+The original movement icon sits at the bottom-right. Its colored fill drains in four levels over a dimmed
+version of the same icon as movement is spent. Its empty state fades with spent ammo.
+Infantry has a top-right capture flag that also fades once used. These indicators are visible on your turn,
+and exact remaining movement and capture availability are included in each tile's accessible label.
 Zoom and camera position are local to each device, including online matches.
 End round remains the primary action. Hits and retaliation briefly display the actual
 health lost above the affected unit, while the pulsing heart remains its health indicator.

@@ -190,6 +190,7 @@
 	"cancel_close": "Abbrechen / schließen",
 	"capture_secure": "Erobern / sichern",
 	"no_attacks_left": "Keine Angriffe übrig",
+	"attacks_remaining": "{remaining}/{total} Angriffe übrig",
 	"no_movement_left": "Keine Bewegung übrig",
 	"capture_used": "Eroberung verbraucht",
 	"attack_target": "Angriffsziel",
@@ -277,5 +278,7 @@
 	"preview_collapse": "Details ausblenden",
 	"ai_turn": "Die KI ist am Zug",
 	"movement_range_hint": "Kleine Punkte zeigen die Felder, die du mit deinen verbleibenden Bewegungspunkten erreichen kannst. Klicke oder tippe auf einen Punkt, um dem günstigsten Weg Feld für Feld zu folgen.",
-	"reachable_this_turn": "Mit verbleibenden Bewegungspunkten erreichbar"
+	"reachable_this_turn": "Mit verbleibenden Bewegungspunkten erreichbar",
+	"movement_remaining": "{remaining}/{total} Bewegungspunkte übrig",
+	"capture_available": "Eroberung verfügbar"
 }

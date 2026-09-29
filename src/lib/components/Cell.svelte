@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
+	import { unitTypes } from '$lib/game/catalog.js'
 	import DamageIndicator from './DamageIndicator.svelte'
 	import CellFeedback from './CellFeedback.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
@@ -12,6 +13,7 @@
 		aiMode?: boolean
 		unit?: GameUnit
 		selected?: boolean
+		showResources?: boolean
 		reachable: boolean
 		attackable: boolean
 		target?: boolean
@@ -24,14 +26,15 @@
 		secured: boolean
 		onclick: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, showResources = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
+	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
 	const label = $derived(
 		translate(messages.cell_label, {
 			cell: cell.index + 1,
 			terrain: cell.building ? buildingName(cell.building) : terrainName(cell.terrain),
 			owner: cell.owner ? `, ${playerName(cell.owner, aiMode)}` : '',
-			unit: unit ? `, ${playerName(unit.player, aiMode)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}` : ''
+			unit: unit ? `, ${playerName(unit.player, aiMode)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}${resources ? `, ${resources}` : ''}` : ''
 		})
 	)
 </script>
@@ -41,7 +44,7 @@
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
 	{#if unit}
-		<Unit {unit} {target} />
+		<Unit {unit} {target} {showResources} />
 	{/if}
 	<DamageIndicator {unit} />
 	{#if explosion}

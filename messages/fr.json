@@ -190,6 +190,7 @@
 	"cancel_close": "Annuler / fermer",
 	"capture_secure": "Capturer / sécuriser",
 	"no_attacks_left": "Plus d’attaques",
+	"attacks_remaining": "{remaining}/{total} attaques restantes",
 	"no_movement_left": "Plus de déplacement",
 	"capture_used": "Capture utilisée",
 	"attack_target": "Cible d’attaque",
@@ -277,5 +278,7 @@
 	"preview_collapse": "Masquer les détails",
 	"ai_turn": "Au tour de l’IA",
 	"movement_range_hint": "Les petits points indiquent les cases atteignables avec vos déplacements restants. Cliquez ou touchez un point pour suivre le chemin le moins coûteux, case par case.",
-	"reachable_this_turn": "Atteignable avec les déplacements restants"
+	"reachable_this_turn": "Atteignable avec les déplacements restants",
+	"movement_remaining": "{remaining}/{total} points de déplacement restants",
+	"capture_available": "Capture disponible"
 }

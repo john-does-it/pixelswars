@@ -54,6 +54,7 @@
 					{cell}
 					{unit}
 					{aiMode}
+					showResources={!!unit && unit.player === gameState.player && !opponentTurn && (!gameState.network || gameState.network.phase === 'playing')}
 					selected={!!unit && selected?.id === unit.id}
 					inspected={!!unit && inspected?.id === unit.id}
 					reachable={movementRange.has(cell.index)}
