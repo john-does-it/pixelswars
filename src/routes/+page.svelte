@@ -62,8 +62,14 @@
 		{ id: 9, title: messages.map_9, text: messages.map_9_description },
 		{ id: 10, title: messages.map_10, text: messages.map_10_description },
 		{ id: 11, title: messages.map_11, text: messages.map_11_description },
-		{ id: 12, title: messages.map_12, text: messages.map_12_description }
-	]
+		{ id: 12, title: messages.map_12, text: messages.map_12_description },
+		{ id: 13, title: messages.map_13, text: messages.map_13_description },
+		{ id: 14, title: messages.map_14, text: messages.map_14_description }
+	].sort((firstMap, secondMap) => {
+		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
+		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
+		return firstSize.cols * firstSize.rows - secondSize.cols * secondSize.rows || firstMap.id - secondMap.id
+	})
 	let showHelp = $state(false)
 	let selectedMap = $state<number | null>(null)
 </script>

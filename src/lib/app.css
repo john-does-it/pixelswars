@@ -223,6 +223,42 @@ button:disabled {
 	background-image: url('/assets/cells/cell-road-end-top.png');
 }
 
+.cell-container.-road.-corner.-nw {
+	background-image: url('/assets/cells/cell-road-corner-nw.svg');
+}
+
+.cell-container.-road.-corner.-se {
+	background-image: url('/assets/cells/cell-road-corner-se.svg');
+}
+
+.cell-container.-road.-junction.-north {
+	background-image: url('/assets/cells/cell-road-junction-north.svg');
+}
+
+.cell-container.-road.-junction.-east {
+	background-image: url('/assets/cells/cell-road-junction-east.svg');
+}
+
+.cell-container.-road.-junction.-south {
+	background-image: url('/assets/cells/cell-road-junction-south.svg');
+}
+
+.cell-container.-road.-junction.-west {
+	background-image: url('/assets/cells/cell-road-junction-west.svg');
+}
+
+.cell-container.-road.-endbottom {
+	background-image: url('/assets/cells/cell-road-end-bottom.svg');
+}
+
+.cell-container.-road.-endleft {
+	background-image: url('/assets/cells/cell-road-end-left.svg');
+}
+
+.cell-container.-road.-endright {
+	background-image: url('/assets/cells/cell-road-end-right.svg');
+}
+
 .cell-container.-water {
 	background-image: url('/assets/cells/cell-water.png');
 

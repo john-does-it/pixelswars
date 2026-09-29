@@ -1,6 +1,6 @@
 {
 	"id": "2",
-	"name": "Iron Horizon",
+	"name": "A Little Stroll",
 	"cols": 12,
 	"rows": 8,
 	"cells": [
@@ -55,12 +55,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-moutain", "-ongrass"],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -115,17 +115,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-corner", "-bottom", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-road", "-h"],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -151,6 +146,11 @@
 		},
 		{
 			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -210,7 +210,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-forest", "-ongrass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -235,12 +235,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-forest", "-ongrass", "-variant"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -270,7 +270,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -330,7 +330,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -365,12 +365,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-grass", "-variant"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-moutain", "-ongrass"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -425,7 +425,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-grass", "-variant3"],
 			"owner": 0,
 			"capturePoints": 20
 		},

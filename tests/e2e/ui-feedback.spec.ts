@@ -3,7 +3,9 @@ import { test, expect } from '@playwright/test'
 test('map chooser shows lightweight terrain previews, dimensions and localized size labels', async ({ page }) => {
 	await page.goto('/')
 	const cards = page.locator('.maps .map')
-	await expect(cards).toHaveCount(12)
+	await expect(cards).toHaveCount(14)
+	const areas = await cards.locator('.map-thumbnail img').evaluateAll((images) => images.map((image) => Number(image.getAttribute('width')) * Number(image.getAttribute('height'))))
+	expect(areas).toEqual([...areas].sort((firstArea, secondArea) => firstArea - secondArea))
 	for (const image of await cards.locator('.map-thumbnail img').all()) {
 		await image.scrollIntoViewIfNeeded()
 		await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)

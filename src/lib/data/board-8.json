@@ -1,6 +1,6 @@
 {
 	"id": "8",
-	"name": "The Broken Crown",
+	"name": "Right of Way",
 	"cols": 10,
 	"rows": 13,
 	"cells": [
@@ -270,7 +270,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-city", "-ongrass"],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},

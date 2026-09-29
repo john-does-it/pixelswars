@@ -122,7 +122,7 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 	await localIce(guest)
 	try {
 		await page.goto('/')
-		await page.getByRole('link', { name: /Emberfall/ }).click()
+		await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 		await page.getByRole('link', { name: 'Play 1v1 online' }).click()
 		await page.getByRole('button', { name: 'Create a game' }).click()
 		await expect(page.getByLabel('Invitation link', { exact: true })).toHaveValue(/#invite=PW2\./)

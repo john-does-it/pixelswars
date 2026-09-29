@@ -1,6 +1,6 @@
 {
 	"id": "5",
-	"name": "The Split Valley",
+	"name": "The Scenic Route",
 	"cols": 12,
 	"rows": 9,
 	"cells": [
@@ -55,12 +55,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -115,7 +115,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-water", "-grass", "-corner", "-bottom", "-right"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -125,12 +130,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-endtop"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -190,7 +190,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -355,7 +355,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -415,7 +415,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-endbottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -425,12 +425,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-corner", "-top", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -485,12 +485,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},

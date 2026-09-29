@@ -1,6 +1,6 @@
 {
 	"id": "3",
-	"name": "The Crossroads",
+	"name": "After You",
 	"cols": 11,
 	"rows": 11,
 	"cells": [
@@ -50,12 +50,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-grass", "-variant"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -105,32 +105,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass", "-variant"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
 			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-forest", "-ongrass"],
+			"classes": ["-grass", "-variant3"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -140,7 +120,27 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-v"],
+			"classes": ["-road", "-endleft"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-junction", "-west"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -470,27 +470,27 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-v"],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-forest", "-ongrass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-forest", "-ongrass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-endright"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -500,12 +500,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-corner", "-top", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -555,12 +555,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},

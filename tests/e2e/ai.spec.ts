@@ -2,17 +2,20 @@ import { zoomToReadableTiles } from './map-view'
 import { test, expect } from '@playwright/test'
 import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
-test('Expert develops The Long Front across three opening turns instead of passing', async ({ page }) => {
-	test.setTimeout(90000)
+test('Expert develops Meet in the Middle across four opening turns instead of passing', async ({ page }) => {
+	test.setTimeout(120000)
 	await page.goto('/play/4/?ai=expert')
 	const endTurn = page.getByRole('button', { name: 'End round', exact: true })
-	for (const round of [2, 4, 6]) {
+	for (const round of [2, 4, 6, 8]) {
 		await expect(page.getByText(`Round ${round}`, { exact: true })).toBeVisible({ timeout: 30000 })
 		await expect(endTurn).toBeEnabled()
 		if (round === 2) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-halfcaptured/)
 		if (round >= 4) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-capturedby1/)
-		if (round === 6) await expect(page.locator('[data-cell="19"]')).toHaveClass(/-capturedby1/)
-		else await endTurn.click()
+		if (round === 6) await expect(page.locator('[data-cell="19"]')).toHaveClass(/-halfcaptured/)
+		if (round === 8) {
+			await expect(page.locator('[data-cell="19"]')).toHaveClass(/-capturedby1/)
+			await expect(page.locator('[data-cell="57"]')).toHaveClass(/-capturedby1/)
+		} else await endTurn.click()
 	}
 })
 
@@ -73,7 +76,7 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 	test(`${difficulty} AI starts from the map chooser, plays a turn and survives reload`, async ({ page }) => {
 		test.setTimeout(60000)
 		await page.goto('/')
-		await page.getByRole('link', { name: /Emberfall/ }).click()
+		await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 		const setup = page.getByRole('dialog', { name: 'Choose your opponent' })
 		await expect(setup).toBeVisible()
 		await setup.getByRole('button', { name: 'Play against AI', exact: true }).click()
@@ -111,10 +114,10 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 
 test('AI setup can be dismissed and local multiplayer remains available', async ({ page }) => {
 	await page.goto('/')
-	await page.getByRole('link', { name: /Emberfall/ }).click()
+	await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 	await page.keyboard.press('Escape')
 	await expect(page.getByRole('dialog')).toHaveCount(0)
-	await page.getByRole('link', { name: /Emberfall/ }).click()
+	await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 	await expect(page.locator('.turn-announcement')).toHaveText('Player 1, it’s your turn!')
 	await page.getByRole('button', { name: 'End round', exact: true }).click()

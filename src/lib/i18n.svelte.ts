@@ -23,6 +23,6 @@ export function buildingName(id: BuildingId): string {
 }
 
 export function mapName(id: string): string {
-	const names: Record<string, (...parameters: any[]) => string> = { 1: messages.map_1, 2: messages.map_2, 3: messages.map_3, 4: messages.map_4, 5: messages.map_5, 6: messages.map_6, 7: messages.map_7, 8: messages.map_8, 9: messages.map_9, 10: messages.map_10, 11: messages.map_11, 12: messages.map_12 }
+	const names: Record<string, (...parameters: any[]) => string> = { 1: messages.map_1, 2: messages.map_2, 3: messages.map_3, 4: messages.map_4, 5: messages.map_5, 6: messages.map_6, 7: messages.map_7, 8: messages.map_8, 9: messages.map_9, 10: messages.map_10, 11: messages.map_11, 12: messages.map_12, 13: messages.map_13, 14: messages.map_14 }
 	return names[id] ? translate(names[id]) : id
 }

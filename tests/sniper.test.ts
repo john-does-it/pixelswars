@@ -39,7 +39,7 @@ test('sniper specializes against all infantry and inherits infantry target restr
 	assert.equal(rules.canTarget('anti-air', 'infantry-sniper'), false)
 	assert.equal(rules.typeModifier('helicopter', 'infantry-sniper'), 2)
 	assert.equal(rules.typeModifier('infantry-sniper', 'artillery'), 1)
-	assert.equal(rules.typeModifier('infantry', 'artillery'), 1.5)
+	assert.equal(rules.typeModifier('infantry', 'artillery'), 0.8)
 	assert.equal(unitTypes.artillery.defense, 30)
 	assert.equal(unitTypes['anti-air'].defense, 30)
 })

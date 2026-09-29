@@ -92,9 +92,9 @@ test('turn transitions block unit selection, production and keyboard input until
 })
 
 for (const [mapId, columns, rows, name] of [
-	[10, 16, 14, 'The Shattered Reach'],
-	[11, 18, 14, 'Thunder Ridge'],
-	[12, 18, 18, 'The Iron Estuary']
+	[10, 16, 14, 'Watch the Puddles'],
+	[11, 18, 14, 'Nice View Up Here'],
+	[12, 18, 18, 'The Other Bank']
 ] as const) {
 	test(`${name}: opens from home with reinforced armies and a playable sniper`, async ({ page }, testInfo) => {
 		await page.goto('/')
@@ -150,7 +150,7 @@ for (const [id, cols, count] of [
 		await expect(page.getByText('Round 2', { exact: true })).toBeVisible()
 		await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 		await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
-		await page.getByRole('link', { name: new RegExp(id === 1 ? 'Iron Horizon' : 'Emberfall') }).click()
+		await page.getByRole('link', { name: new RegExp(id === 1 ? 'A Little Stroll' : 'Neighbor Trouble') }).click()
 		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
 		await expect(page.locator('[data-cell]')).toHaveCount(id === 1 ? 96 : 64)
@@ -337,7 +337,7 @@ test('visual assets preload once and are reused when opening another map', async
 	await expect(page.locator('[data-cell]')).toHaveCount(64)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
-	await page.getByRole('link', { name: /Iron Horizon/ }).click()
+	await page.getByRole('link', { name: /A Little Stroll/ }).click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 	await expect(page.locator('[data-cell]')).toHaveCount(96)
 	expect(manifestRequests).toBe(1)

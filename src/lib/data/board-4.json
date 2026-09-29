@@ -1,6 +1,6 @@
 {
 	"id": "4",
-	"name": "The Long Front",
+	"name": "Meet in the Middle",
 	"cols": 14,
 	"rows": 7,
 	"cells": [
@@ -245,7 +245,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-airport", "-ongrass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},

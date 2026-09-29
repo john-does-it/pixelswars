@@ -1,7 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { assertConnectedRoads, assertWaterShores } from './map-assertions.ts'
 import { readFileSync } from 'node:fs'
-import { initialState, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain, applyDamage } from '../src/lib/game/model.ts'
+import { initialState, neighbors, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain, applyDamage } from '../src/lib/game/model.ts'
 import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
@@ -28,17 +29,25 @@ test('water costs two for ships, one for aircraft and is impassable to ground un
 })
 
 for (const map of additionalMaps) {
-	test(`${map.name}: balanced objectives with an asymmetric layout`, () => {
+	test(`${map.name}: balanced armies and reachable objectives with an asymmetric layout`, () => {
 		const state = initialState(map)
 		const armies = [1, 2].map((player) => state.units.filter((unit) => unit.player === player))
 		assert.equal(armies[0].length, armies[1].length)
 		assert.deepEqual(armies[0].map((unit) => unit.type).sort(), armies[1].map((unit) => unit.type).sort())
 		for (const building of ['city', 'factory', 'hospital'] as const) {
+			if (map.id === '8' && building === 'city') {
+				// Two cities near each deployment, plus the shared inland city.
+				assert.deepEqual(
+					state.cells.filter((cell) => cell.building === 'city').map((cell) => cell.index),
+					[16, 28, 74, 101, 113]
+				)
+				continue
+			}
 			const top = state.cells.slice(0, Math.floor(state.cells.length / 2)).filter((cell) => cell.building === building).length
 			const bottom = state.cells.slice(Math.ceil(state.cells.length / 2)).filter((cell) => cell.building === building).length
 			assert.equal(top, bottom, building)
 		}
-		const expectedAirports = ['5', '7'].includes(map.id) ? 0 : ['3', '6', '8'].includes(map.id) ? 2 : 1
+		const expectedAirports = ['4', '5', '7'].includes(map.id) ? 0 : ['3', '6', '8'].includes(map.id) ? 2 : 1
 		const airports = state.cells.filter((cell) => cell.building === 'airport')
 		assert.equal(airports.length, expectedAirports)
 		if (expectedAirports === 2) {
@@ -46,20 +55,18 @@ for (const map of additionalMaps) {
 			assert.equal(airports.filter((cell) => cell.index > state.cells.length / 2).length, 1)
 		}
 		if (Number(map.id) >= 5 && Number(map.id) <= 8) {
-			assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
-			const isRoad = (index: number) => state.cells[index]?.terrain === 'road'
-			for (const cell of state.cells.filter((candidate) => candidate.terrain === 'road')) {
-				const left = cell.index % state.cols > 0 && isRoad(cell.index - 1)
-				const right = cell.index % state.cols < state.cols - 1 && isRoad(cell.index + 1)
-				const above = isRoad(cell.index - state.cols)
-				const below = isRoad(cell.index + state.cols)
-				if (cell.classes.includes('-corner') && cell.classes.includes('-bottom')) assert.ok(left && below)
-				else if (cell.classes.includes('-corner') && cell.classes.includes('-top')) assert.ok(above && right)
-				else if (cell.classes.includes('-v')) assert.ok(above && below)
-				else assert.ok((left || cell.index % state.cols === 0) && (right || cell.index % state.cols === state.cols - 1))
-			}
+			if (map.id !== '5') assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
+			assertConnectedRoads(state, map.id === '6')
 		}
 		if (map.id === '9') assert.ok(state.cells.filter((cell) => cell.terrain === 'water').length >= 40)
+		if (map.id === '7') {
+			for (const building of state.cells.filter((cell) => cell.building)) {
+				assert.ok(
+					neighbors(state, building.index).some((index) => state.cells[index].terrain === 'road'),
+					`building ${building.index} must have road access`
+				)
+			}
+		}
 		assert.ok(state.cells.some((cell, index) => cell.classes.join(' ') !== state.cells.at(-index - 1)?.classes.join(' ')))
 
 		for (const army of armies) {
@@ -121,7 +128,7 @@ test('rectangular map keeps equal armies, terrain budgets and symmetric reachabl
 		if (cell.building !== 'airport' && opposite.building !== 'airport') assert.equal(cell.building, opposite.building)
 		assert.equal(cell.owner, 0)
 	}
-	assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
+	assert.equal(state.cells.filter((cell) => cell.terrain === 'water').length, 4)
 	for (const terrain of ['moutain', 'road', 'forest']) {
 		const count = (cells: Cell[]) => cells.filter((cell) => cell.terrain === terrain).length
 		assert.ok(Math.abs(count(state.cells.slice(0, 48)) - count(state.cells.slice(48))) <= (terrain === 'forest' ? 1 : 0))
@@ -135,7 +142,7 @@ test('rectangular map keeps equal armies, terrain budgets and symmetric reachabl
 	while (pending.length) {
 		const index = pending.pop()!
 		for (const next of [index - 12, index + 12, ...(index % 12 ? [index - 1] : []), ...(index % 12 < 11 ? [index + 1] : [])]) {
-			if (state.cells[next]?.cost <= 3 && !visited.has(next)) {
+			if (state.cells[next] && movementCostForDomain('ground', state.cells[next]) <= 3 && !visited.has(next)) {
 				visited.add(next)
 				pending.push(next)
 			}
@@ -143,6 +150,46 @@ test('rectangular map keeps equal armies, terrain budgets and symmetric reachabl
 	}
 	assert.equal(state.cells.filter((cell) => cell.building).length, 9)
 	assert.ok(state.cells.filter((cell) => cell.building).every((cell) => visited.has(cell.index)))
+})
+
+test('map 4 has a continuous central road without an airport', () => {
+	const state = initialState(maps[3])
+	assert.equal(state.cells[48].terrain, 'road')
+	assert.equal(state.cells[48].building, null)
+	assertConnectedRoads(state)
+})
+
+test('map 6 buildings follow the sketched moves and keep their new roadside access', () => {
+	const state = initialState(maps[5])
+	for (const [index, building] of [
+		[19, 'factory'],
+		[21, 'hospital'],
+		[32, 'city'],
+		[66, 'city'],
+		[77, 'hospital'],
+		[79, 'factory']
+	] as const)
+		assert.equal(state.cells[index].building, building)
+	for (const index of [10, 12, 14, 84, 86, 88]) assert.equal(state.cells[index].building, null)
+	assert.equal(state.cells[61].terrain, 'moutain')
+	assert.equal(state.cells[60].terrain, 'grass')
+	for (const index of [26, 52, 53, 45, 46, 72]) assert.equal(state.cells[index].terrain, 'road')
+	assertConnectedRoads(state, true)
+})
+
+test('small corner ponds preserve deployment cells and secondary roads connect on maps 2, 3 and 5', () => {
+	for (const map of maps.filter((candidate) => ['2', '3', '5'].includes(candidate.id))) {
+		const state = initialState(map)
+		assert.equal(state.cells.filter((cell) => cell.terrain === 'water').length, map.id === '5' ? 8 : 4)
+		if (map.id === '2') for (const index of [72, 73, 84, 85]) assert.notEqual(state.cells[index].terrain, 'water')
+		if (map.id === '3') for (const index of [9, 10, 20, 21]) assert.notEqual(state.cells[index].terrain, 'water')
+		assertWaterShores(state)
+		assertConnectedRoads(state)
+		for (const unit of state.units) {
+			assert.ok(Number.isFinite(movementCost(unit, state.cells[unit.cell])))
+			assert.ok(reachableCells(state, unit).length > 0)
+		}
+	}
 })
 
 test('capture requires infantry on an enemy/neutral building; two turns transfer ownership', () => {
@@ -341,6 +388,28 @@ test('artillery leaves all infantry equally wounded and healthy vehicles alive a
 		assert.equal(artillery.health, 120)
 		assert.equal(artillery.attacks, 0)
 		assert.ok(state.units.includes(defender))
+		game.dispose()
+	}
+})
+
+test('full-health infantry leaves artillery at 60 HP after two shots and rockets leave 40 HP after one', async () => {
+	for (const [attackerType, remainingHealthAfterShots] of [
+		['infantry', [90, 60]],
+		['infantry-rocket', [40]]
+	] as const) {
+		const state = fixture()
+		state.units = []
+		const attacker = spawn(state, attackerType, 1, 18)
+		const artillery = spawn(state, 'artillery', 2, 19)
+		state.cells[artillery.cell].defense = 0
+		const game = createController(state, { delay: async () => {} })
+		game.select(attacker.id)
+		for (const remainingHealth of remainingHealthAfterShots) {
+			await game.fight(artillery)
+			assert.equal(artillery.health, remainingHealth, attackerType)
+			assert.equal(attacker.health, 100, 'adjacent artillery cannot retaliate')
+		}
+		assert.equal(attacker.attacks, 0)
 		game.dispose()
 	}
 })

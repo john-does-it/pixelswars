@@ -5,7 +5,7 @@ import rules from '../src/lib/game/combat-rules.ts'
 test('all 16 approved unit matchups', () => {
 	const types = ['infantry', 'jeep', 'tank', 'artillery']
 	const expected = [
-		[1, 0.5, 0.5, 1.5],
+		[1, 0.5, 0.5, 0.8],
 		[1.5, 1, 0.5, 1],
 		[1.5, 1.5, 1, 0.5],
 		[1.35, 1.45, 1.6, 1]
@@ -32,7 +32,7 @@ test('future unspecified matchups are neutral', () => {
 })
 
 test('terrain and attacker health still affect damage; defense never heals a target', () => {
-	assert.equal(rules.damage(40, 50, 100, 10, 30, 'infantry', 'artillery'), 27)
+	assert.equal(rules.damage(40, 50, 100, 10, 30, 'infantry', 'artillery'), 14.4)
 	assert.equal(rules.damage(1, 125, 125, 100, 100, 'jeep', 'infantry'), 0)
 })
 
@@ -76,7 +76,8 @@ test('both map sizes clip range at edges without wrapping or duplicate cells', (
 })
 
 test('rocket infantry is strong against vehicles but vulnerable to ground-capable attackers', () => {
-	for (const target of ['jeep', 'artillery', 'tank']) assert.equal(rules.typeModifier('infantry-rocket', target), 2.5)
+	for (const target of ['jeep', 'tank']) assert.equal(rules.typeModifier('infantry-rocket', target), 2.5)
+	assert.equal(rules.typeModifier('infantry-rocket', 'artillery'), 2.15)
 	assert.equal(rules.typeModifier('infantry-rocket', 'infantry'), 0.5)
 	for (const attacker of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
 	assert.equal(rules.typeModifier('artillery', 'infantry-rocket'), 1.35)

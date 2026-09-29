@@ -29,7 +29,7 @@ test('Expert is accepted as a difficulty', () => {
 })
 
 test('Expert starts developing instead of passing its opening turn on every map', async () => {
-	for (let mapId = 1; mapId <= 12; mapId++) {
+	for (let mapId = 1; mapId <= 14; mapId++) {
 		const state = initialState(JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')))
 		const positions = state.units.filter((unit) => unit.player === 1).map((unit) => unit.cell)
 		const game = createController(state, { delay: async () => {} })
@@ -56,12 +56,12 @@ test('Expert starts developing instead of passing its opening turn on every map'
 	}
 })
 
-test('The Long Front: Expert captures a base and a city over three turns, then recruits from its income', async () => {
+test('Meet in the Middle: Expert captures a base and two cities over four turns, then recruits from its income', async () => {
 	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-4.json', import.meta.url), 'utf8')))
 	const game = createController(state, { delay: async () => {} })
 	const startingArmySize = state.units.filter((unit) => unit.player === 1).length
 	try {
-		for (let turn = 0; turn < 3; turn++) {
+		for (let turn = 0; turn < 4; turn++) {
 			const before = JSON.stringify({ units: state.units, cells: state.cells })
 			await runAiTurn(
 				game,
@@ -74,8 +74,8 @@ test('The Long Front: Expert captures a base and a city over three turns, then r
 			game.endTurn()
 		}
 		assert.ok(state.cells.some((cell) => cell.building === 'factory' && cell.owner === 1))
-		assert.ok(state.cells.some((cell) => cell.building === 'city' && cell.owner === 1))
-		assert.ok(state.money[1] >= 200)
+		assert.equal(state.cells.filter((cell) => cell.building === 'city' && cell.owner === 1).length, 2)
+		assert.ok(state.money[1] >= 400)
 		await runAiTurn(
 			game,
 			'expert',
@@ -258,7 +258,7 @@ test('Expert waits for income without spending its reserved funds or getting stu
 	controller.dispose()
 })
 
-test('Expert develops its economy and beats Hard from either side of Emberfall', async () => {
+test('Expert develops its economy and beats Hard from either side of Neighbor Trouble', async () => {
 	for (const expertPlayer of [1, 2] as const) {
 		const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-1.json', import.meta.url), 'utf8')))
 		const controller = createController(state, { delay: async () => {} })

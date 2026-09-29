@@ -11,14 +11,22 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
-- **12 battlefields:** roads, forests, mountain positions and narrow water crossings.
+- **14 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
 - **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
 - **Desktop and mobile:** keyboard, mouse and touch controls, with a zoomable battlefield and an interactive minimap.
 - **English, French and German:** language, audio and keyboard settings in Options and help.
 
-![A battlefield with the selected unit’s actions and statistics](docs/screenshots/battlefield.png)
+![Nice View Up Here with connected building access roads and a selected infantry unit](docs/screenshots/battlefield.png)
+
+Side roads connect the outlying buildings on Are We There Yet?, Nice View Up Here
+and The Other Bank. Several smaller maps also feature secondary routes
+and corner ponds, with asymmetric shorelines on A Little Stroll and After You.
+
+Two river maps offer narrow grass crossings instead of bridges: **Not the Shoes!**
+(10 × 8, small) and **Which Way Across?** (12 × 12, medium). Both banks remain
+accessible to ground units, with two crossings to defend or contest.
 
 ## How to play
 
@@ -184,6 +192,11 @@ Terrain protection and damage to the attacker reduce these losses. Artillery
 cannot destroy any of these full-health targets with one shot; its single attack,
 price and adjacent blind spot leave room for faster units to close in.
 
+Against full-health artillery on grass or road, full-health basic infantry deals
+30 HP per attack, leaving 60 of its 120 HP after two attacks. Rocket infantry deals
+80 HP in one attack, leaving 40 HP. Their respective matchup multipliers are ×0.8
+and ×2.15. Terrain cover and injured attackers reduce these losses.
+
 The complete matchup table lives in [combat-rules.ts](src/lib/game/combat-rules.ts).
 Unit and terrain statistics live in [catalog.ts](src/lib/game/catalog.ts).
 
@@ -206,7 +219,7 @@ npm run dev
 ```
 
 Open the Vite address. The home route is `/`; games use `/play/1/` through
-`/play/12/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
+`/play/14/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
 to play against the AI, or `?online=1` for online setup. Without either parameter,
 the game is local two-player.
 
