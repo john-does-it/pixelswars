@@ -58,6 +58,14 @@ async function localIce(page: Page, withoutCandidates = false) {
 	)
 }
 
+async function expectOnlineBattlefields(host: Page, guest: Page) {
+	// Each browser preloads its own sprites before rendering the board and team label.
+	// A connected host does not imply that the guest has finished loading its assets.
+	for (const device of [host, guest]) await expect(device.locator('.board [data-cell]').first()).toBeVisible({ timeout: 15000 })
+	await expect(host.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
+	await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+}
+
 test('relay lookup starts only on request and a provider outage allows retry', async ({ page }) => {
 	test.skip(!relayConfigured, 'Build with Metered settings to exercise the credential API')
 	await localIce(page)
@@ -138,8 +146,7 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await expect(guest.getByRole('button', { name: 'Start over' })).toHaveCount(0)
 		await expect(guest.locator('textarea')).toHaveCount(0)
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
-		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
-		await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+		await expectOnlineBattlefields(page, guest)
 		if (relayConfigured) {
 			for (const device of [page, guest]) {
 				expect(await device.evaluate(() => Reflect.get(window, 'onlineIceConfiguration'))).toEqual({ iceServers: [{ ...relayResponse[0], urls: [relayResponse[0].urls] }], iceTransportPolicy: 'all' })
@@ -213,6 +220,41 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await expect(end(page)).toBeHidden()
 		expect(errors).toEqual([])
 	} finally {
+		await guestContext.close()
+	}
+})
+
+test('a guest can finish loading its sprites after the host has connected', async ({ page, browser, isMobile }) => {
+	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
+	const guest = await guestContext.newPage()
+	let releaseAssets!: () => void
+	const assetsHeld = new Promise<void>((resolve) => (releaseAssets = resolve))
+	let releaseTimer: ReturnType<typeof setTimeout> | undefined
+	await localIce(page)
+	await localIce(guest)
+	await guest.route('**/assets/preload-manifest.json', async (route) => {
+		await assetsHeld
+		await route.continue()
+	})
+	try {
+		await page.goto('/play/1/?online=1')
+		await page.getByRole('button', { name: 'Create a game' }).click()
+		const invitation = page.getByLabel('Invitation link', { exact: true })
+		await expect(invitation).toHaveValue(/#invite=PW2\./)
+		await guest.goto(await invitation.inputValue())
+		await guest.getByRole('button', { name: 'Join', exact: true }).click()
+		await expect(guest.locator('.game-shell[aria-busy="true"]')).toBeVisible()
+		await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toBeVisible()
+		await expect(guest.locator('.board')).toHaveCount(0)
+		// Keep the guest loading beyond the default five-second assertion timeout.
+		releaseTimer = setTimeout(releaseAssets, 6000)
+		await expectOnlineBattlefields(page, guest)
+		for (const device of [page, guest]) await expect(device.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+		await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
+		await expect(guest.getByRole('button', { name: 'End round', exact: true })).toBeHidden()
+	} finally {
+		clearTimeout(releaseTimer)
+		releaseAssets()
 		await guestContext.close()
 	}
 })

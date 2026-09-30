@@ -127,12 +127,24 @@ for (const [mapId, columns, rows, name] of [
 		await page.locator(`[data-cell="${columns + sniperColumn}"]`).click()
 		if (sniperColumn !== 7) {
 			await page.locator(`[data-cell="${columns + 7}"]`).click()
-			for (let turn = 0; turn < 2; turn++) await page.getByRole('button', { name: 'End round', exact: true }).click()
+			for (let turn = 0; turn < 2; turn++) await endRound(page)
 			await page.locator(`[data-cell="${columns + 7}"]`).click()
 		}
-		await page.locator(`[data-cell="${2 * columns + 7}"]`).click()
+		// Watch the Puddles now places this city two rows farther south.
+		// Spend one turn crossing the grass before approaching the actual building.
+		if (mapId === 10) {
+			const stagingCell = page.locator(`[data-cell="${2 * columns + 7}"]`)
+			await stagingCell.click()
+			await expect(stagingCell.locator('.unit-container.-infantry-sniper')).toBeVisible()
+			for (let turn = 0; turn < 2; turn++) await endRound(page)
+			await stagingCell.click()
+		}
+		const captureCell = page.locator(`[data-cell="${(mapId === 10 ? 4 : 2) * columns + 7}"]`)
+		await expect(captureCell).toHaveClass(/-building/)
+		await captureCell.click()
+		await expect(captureCell.locator('.unit-container.-infantry-sniper')).toBeVisible()
 		await page.getByRole('button', { name: 'Capture', exact: true }).click()
-		await expect(page.locator(`[data-cell="${2 * columns + 7}"]`)).toHaveClass(/-halfcaptured/)
+		await expect(captureCell).toHaveClass(/-halfcaptured/)
 		await page.setViewportSize({ width: 360, height: 800 })
 		await zoomToReadableTiles(page)
 		await expect(page.locator('.minimap').first().locator('[data-minimap-unit]')).toHaveCount(22)
