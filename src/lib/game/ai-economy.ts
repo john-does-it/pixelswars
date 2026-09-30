@@ -1,5 +1,5 @@
 import rules from './combat-rules.ts'
-import { unitTypes } from './catalog.ts'
+import { buildingIncome, unitTypes } from './catalog.ts'
 import { productionBuilding, unitAt } from './model.ts'
 import type { Cell, GameState, Unit, UnitTypeId } from './types.ts'
 
@@ -21,9 +21,9 @@ function estimatedTurnDamage(attackerType: UnitTypeId, defenderType: UnitTypeId,
 }
 
 export function economicObjectiveValue(state: GameState, cell: Cell): number {
-	const income = state.cells.filter((candidate) => candidate.owner === state.player && candidate.building === 'city').length * 200
+	const income = state.cells.reduce((total, candidate) => total + (candidate.owner === state.player ? buildingIncome(candidate.building) : 0), 0)
 	const production = state.cells.filter((candidate) => candidate.owner === state.player && (candidate.building === 'factory' || candidate.building === 'airport')).length
-	if (cell.building === 'city') return 380 + (income === 0 ? 120 : 0) + (cell.owner !== 0 && cell.owner !== state.player ? 120 : 0)
+	if (buildingIncome(cell.building)) return (380 * buildingIncome(cell.building)) / 200 + (income === 0 ? 120 : 0) + (cell.owner !== 0 && cell.owner !== state.player ? 120 : 0)
 	if (cell.building === 'factory') return production === 0 ? 500 : 300
 	if (cell.building === 'airport') return production === 0 ? 350 : 220
 	return 140
@@ -35,7 +35,7 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 	if (!buildings.length) return null
 	const enemies = state.units.filter((unit) => unit.player !== state.player)
 	const allies = state.units.filter((unit) => unit.player === state.player)
-	const income = state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).length * 200
+	const income = state.cells.reduce((total, cell) => total + (cell.owner === state.player ? buildingIncome(cell.building) : 0), 0)
 	const budget = state.money[state.player]
 	const enemyValue = enemies.reduce((total, enemy) => total + (unitTypes[enemy.type].cost * enemy.health) / unitTypes[enemy.type].maxHealth, 0)
 	const economicTargets = state.cells.filter((cell) => cell.building && cell.owner !== state.player).length

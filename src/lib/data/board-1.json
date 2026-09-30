@@ -185,7 +185,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-city", "-ongrass"],
+			"classes": ["-building", "-oil-field", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},

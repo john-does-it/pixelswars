@@ -46,6 +46,7 @@
 
 	const buildings: { id: BuildingId; description: (...parameters: any[]) => string }[] = [
 		{ id: 'city', description: messages.building_city_description },
+		{ id: 'oil-field', description: messages.building_oil_field_description },
 		{ id: 'hospital', description: messages.building_hospital_description },
 		{ id: 'factory', description: messages.building_factory_description },
 		{ id: 'airport', description: messages.building_airport_description }

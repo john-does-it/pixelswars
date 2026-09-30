@@ -12,6 +12,7 @@
 		airport: '-building -airport -ongrass',
 		hospital: '-building -hospital -ongrass',
 		city: '-building -city -ongrass',
+		'oil-field': '-building -oil-field -ongrass',
 		road: '-road -h',
 		forest: '-forest -ongrass'
 	}

@@ -2,7 +2,7 @@ import rules from './combat-rules.ts'
 import { createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
 import type { Cell, GameMap, GameState, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
 
-const buildingIds = ['city', 'factory', 'hospital', 'airport'] as const
+const buildingIds = ['city', 'oil-field', 'factory', 'hospital', 'airport'] as const
 
 export function initialState(map: GameMap): GameState {
 	return {

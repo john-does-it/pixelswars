@@ -11,6 +11,20 @@ function battlefield() {
 	return state
 }
 
+test('artillery targets only cells at range 3–4, with only the outer range extended on mountains', () => {
+	const state = battlefield()
+	const artillery = createUnit('artillery', 1, 27, 2)
+	state.units.push(artillery)
+	for (const mountain of [false, true]) {
+		if (mountain) Object.assign(state.cells[27], terrainTypes.moutain, { terrain: 'moutain' })
+		const targets = attackCells(state, artillery)
+		for (const cell of state.cells) {
+			const distance = Math.max(Math.abs((cell.index % 8) - 3), Math.abs(Math.floor(cell.index / 8) - 3))
+			assert.equal(targets.includes(cell.index), distance >= 3 && distance <= (mountain ? 5 : 4))
+		}
+	}
+})
+
 test('enemy inspection preserves a pending friendly move and its cancellation', () => {
 	const state = battlefield()
 	const controller = createController(state)

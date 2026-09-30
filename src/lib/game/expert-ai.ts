@@ -1,5 +1,5 @@
 import { pathsFrom } from './movement.ts'
-import { unitTypes } from './catalog.ts'
+import { buildingIncome, unitTypes } from './catalog.ts'
 import * as actions from './actions.ts'
 import { attackCells, canAttack, canCapture } from './model.ts'
 import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision } from './ai.ts'
@@ -69,13 +69,13 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 		const distanceTo = (cell: number) => Math.abs((unit.cell % state.cols) - (cell % state.cols)) + Math.abs(Math.floor(unit.cell / state.cols) - Math.floor(cell / state.cols))
 		const targets = state.units.filter((target) => target.player !== unit.player && rules.canTarget(unit.type, target.type))
 		const pressure = Math.max(0, ...targets.map((target) => (unitTypes[target.type].cost * 0.2 * unit.health) / definition.maxHealth / (1 + Math.max(0, distanceTo(target.cell) - definition.range))))
-		const expansion = definition.captures ? Math.max(0, ...state.cells.filter((cell) => cell.building && cell.owner !== unit.player).map((cell) => (cell.building === 'city' ? 150 : 90) / (1 + distanceTo(cell.index)))) : 0
+		const expansion = definition.captures ? Math.max(0, ...state.cells.filter((cell) => cell.building && cell.owner !== unit.player).map((cell) => (buildingIncome(cell.building) ? buildingIncome(cell.building) * 0.75 : 90) / (1 + distanceTo(cell.index)))) : 0
 		score += sign * (pressure + expansion)
 	}
 	for (const cell of state.cells) {
 		if (!cell.building) continue
 		// Three future income payments value growth and denying the opponent an income source.
-		const value = cell.building === 'city' ? 600 : cell.building === 'factory' ? 400 : cell.building === 'airport' ? 300 : 180
+		const value = buildingIncome(cell.building) ? buildingIncome(cell.building) * 3 : cell.building === 'factory' ? 400 : cell.building === 'airport' ? 300 : 180
 		if (cell.owner !== 0) score += (cell.owner === player ? 1 : -1) * value
 		if (cell.capturePoints < 20) {
 			const capturer = state.units.find((unit) => unit.cell === cell.index && unitTypes[unit.type].captures)

@@ -36,10 +36,10 @@ for (const map of additionalMaps) {
 		assert.deepEqual(armies[0].map((unit) => unit.type).sort(), armies[1].map((unit) => unit.type).sort())
 		for (const building of ['city', 'factory', 'hospital'] as const) {
 			if (map.id === '8' && building === 'city') {
-				// Two cities near each deployment, plus the shared inland city.
+				// Two cities near each deployment; the inland objectives are oil fields.
 				assert.deepEqual(
 					state.cells.filter((cell) => cell.building === 'city').map((cell) => cell.index),
-					[16, 28, 74, 101, 113]
+					[16, 28, 101, 113]
 				)
 				continue
 			}
@@ -173,7 +173,9 @@ test('map 6 buildings follow the sketched moves and keep their new roadside acce
 	for (const index of [10, 12, 14, 84, 86, 88]) assert.equal(state.cells[index].building, null)
 	assert.equal(state.cells[61].terrain, 'moutain')
 	assert.equal(state.cells[60].terrain, 'grass')
-	for (const index of [26, 52, 53, 45, 46, 72]) assert.equal(state.cells[index].terrain, 'road')
+	for (const index of [26, 46, 47, 48, 49, 50, 51, 52, 72]) assert.equal(state.cells[index].terrain, 'road')
+	for (const index of [45, 53]) assert.equal(state.cells[index].terrain, 'grass')
+	assert.deepEqual(state.cells[49].classes, ['-road', '-cross'])
 	assertConnectedRoads(state, true)
 })
 
@@ -335,7 +337,7 @@ for (const type of ['artillery', 'infantry-sniper', 'anti-air'] as const) {
 		const state = fixture()
 		state.units = []
 		const attacker = spawn(state, type, 1, 18)
-		const defender = spawn(state, type === 'anti-air' ? 'helicopter' : 'infantry', 2, 20)
+		const defender = spawn(state, type === 'anti-air' ? 'helicopter' : 'infantry', 2, type === 'artillery' ? 21 : 20)
 		attacker.attacks = 1
 		let release: () => void = () => {}
 		let firstDelay = true
@@ -486,7 +488,11 @@ test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	assert.equal(defender.health, 180)
 	assert.equal(attacker.attacks, 1)
 	defender.cell = 20
-	state.cells[20].defense = 0
+	await game.fight(defender)
+	assert.equal(defender.health, 180)
+	assert.equal(attacker.attacks, 1)
+	defender.cell = 21
+	state.cells[21].defense = 0
 	await game.fight(defender)
 	assert.equal(defender.health, 90)
 	assert.equal(attacker.health, 120)

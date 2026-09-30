@@ -3,7 +3,7 @@
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
 	import { unitAt, effectiveRange } from '$lib/game/model.js'
-	import { unitTypes } from '$lib/game/catalog.js'
+	import { buildingIncome, unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
@@ -14,10 +14,7 @@
 	const unit = $derived(cell && unitAt(state, cell.index))
 
 	function terrainStats(previewCell: Cell): StatItem[] {
-		return [
-			{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'water' ? `${previewCell.cost} (${translate(messages.ships_only)})` : previewCell.cost },
-			{ icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }
-		]
+		return [{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'water' ? `${previewCell.cost} (${translate(messages.ships_only)})` : previewCell.cost }, { icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }, ...(buildingIncome(previewCell.building) ? [{ icon: 'icon-money', label: translate(messages.stat_income), value: `${buildingIncome(previewCell.building)}$` }] : [])]
 	}
 	function statsFor(currentUnit: Unit): StatItem[] {
 		const definition = unitTypes[currentUnit.type]

@@ -81,7 +81,7 @@ test('artillery and sniper can spend their entire movement entering a mountain',
 test('sniper never retaliates at contact but can retaliate at distance two', async () => {
 	for (const distance of [1, 2]) {
 		const state = battlefield()
-		const attacker = createUnit(distance === 1 ? 'infantry' : 'artillery', 1, 27, 0)
+		const attacker = createUnit(distance === 1 ? 'infantry' : 'infantry-sniper', 1, 27, 0)
 		const defender = createUnit('infantry-sniper', 2, 27 + distance, 1)
 		state.units = [attacker, defender]
 		const controller = createController(state, { delay: async () => {} })

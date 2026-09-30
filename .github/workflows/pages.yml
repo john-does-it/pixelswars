@@ -26,7 +26,7 @@ jobs:
           fi
       - run: npm run build
         env:
-          BASE_PATH: '/pixelswars'
+          BASE_PATH: ''
           VITE_METERED_APP: ${{ vars.METERED_APP }}
           VITE_METERED_TURN_API_KEY: ${{ secrets.METERED_TURN_API_KEY }}
       - uses: actions/upload-pages-artifact@v3

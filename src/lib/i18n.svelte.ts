@@ -19,7 +19,7 @@ export function terrainName(id: TerrainId): string {
 }
 
 export function buildingName(id: BuildingId): string {
-	return translate({ city: messages.building_city, hospital: messages.building_hospital, factory: messages.building_factory, airport: messages.building_airport }[id])
+	return translate({ city: messages.building_city, 'oil-field': messages.building_oil_field, hospital: messages.building_hospital, factory: messages.building_factory, airport: messages.building_airport }[id])
 }
 
 export function mapName(id: string): string {

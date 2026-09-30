@@ -11,11 +11,25 @@
 	let { game, name, aiMode = false, camera = $bindable(), reservedBottom = 0, mapStatus }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; reservedBottom?: number; mapStatus?: Snippet } = $props()
 	let boardElement = $state<HTMLElement>()
 	let hadSelection = false
+	const rangeClipId = $props.id()
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
 	const inspected = $derived(inspectedEnemy(gameState))
 	const rangeUnit = $derived(inspected ?? selected)
 	const attackRange = $derived(new Set(rangeUnit ? attackCells(gameState, rangeUnit) : []))
+	const rangeClip = $derived(
+		[...attackRange]
+			.map((index) => {
+				const column = index % gameState.cols
+				const row = Math.floor(index / gameState.cols)
+				const left = column / gameState.cols
+				const right = (column + 1) / gameState.cols
+				const top = row / gameState.rows
+				const bottom = (row + 1) / gameState.rows
+				return `M${left},${top}H${right}V${bottom}H${left}Z`
+			})
+			.join(' ')
+	)
 	const rangeOutline = $derived.by(() => {
 		const segments: string[] = []
 		// Do not recreate a selection border around the unit itself.
@@ -32,7 +46,7 @@
 	})
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 	const opponentTurn = $derived(gameState.aiThinking || !!(gameState.network && gameState.network.player !== gameState.player))
-	const movementRange = $derived(new Set(selected && !inspected && !opponentTurn && !locked(gameState) && selected.movement > 0 ? [...pathsFrom(gameState, selected, selected.movement).keys()].filter((index) => index !== selected.cell) : []))
+	const movementRange = $derived(new Set(rangeUnit && !opponentTurn && !locked(gameState) && rangeUnit.movement > 0 ? [...pathsFrom(gameState, rangeUnit, rangeUnit.movement).keys()].filter((index) => index !== rangeUnit.cell) : []))
 
 	$effect(() => {
 		const index = selected?.cell
@@ -60,6 +74,7 @@
 					selected={!!unit && selected?.id === unit.id}
 					inspected={!!unit && inspected?.id === unit.id}
 					reachable={movementRange.has(cell.index)}
+					enemyReachable={!!inspected}
 					attackable={attackRange.has(cell.index)}
 					underFire={gameState.combatTargetIndex === cell.index}
 					target={gameState.fighting ? gameState.combatTargetIndex === cell.index : !inspected && (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)}
@@ -75,7 +90,11 @@
 				/>
 			{/each}
 			{#if rangeOutline}
-				<svg class="range-outline" aria-hidden="true" viewBox={`0 0 ${gameState.cols} ${gameState.rows}`} preserveAspectRatio="none"><path d={rangeOutline} /></svg>
+				<div class="range-hatching" aria-hidden="true" style:clip-path={`url(#${rangeClipId})`}></div>
+				<svg class="range-outline" aria-hidden="true" viewBox={`0 0 ${gameState.cols} ${gameState.rows}`} preserveAspectRatio="none">
+					<defs><clipPath id={rangeClipId} clipPathUnits="objectBoundingBox"><path d={rangeClip} /></clipPath></defs>
+					<path class="range-border" d={rangeOutline} />
+				</svg>
 			{/if}
 		</div>
 	</BattlefieldViewport>
@@ -94,6 +113,7 @@
 			--range-fill: #792d3a;
 		}
 	}
+	.range-hatching,
 	.range-outline {
 		position: absolute;
 		inset: 0;
@@ -102,12 +122,16 @@
 		overflow: visible;
 		pointer-events: none;
 
-		path {
+		.range-border {
 			fill: none;
 			stroke: var(--range-color);
 			stroke-width: 1px;
 			vector-effect: non-scaling-stroke;
 		}
+	}
+	.range-hatching {
+		/* A single painted layer avoids per-cell rounding seams at fractional zoom. */
+		background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--range-fill) 40%, transparent) 0 6px, color-mix(in srgb, var(--range-fill) 13%, transparent) 6px 12px);
 	}
 
 	.board {

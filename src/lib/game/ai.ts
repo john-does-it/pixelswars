@@ -1,6 +1,6 @@
 import { pathsFrom } from './movement.ts'
 import rules from './combat-rules.ts'
-import { unitTypes } from './catalog.ts'
+import { buildingIncome, unitTypes } from './catalog.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import { neighbors, effectiveRange, canAttack, applyDamage, canCapture, unitAt, productionBuilding } from './model.ts'
 import type { AiDifficulty, GameController, GameState, Unit, UnitTypeId } from './types.ts'
@@ -145,7 +145,7 @@ export function choosePurchase(state: GameState, buildingIndex: number, difficul
 	const allies = state.units.filter((unit) => unit.player === state.player)
 	const needsCapture = state.cells.some((candidate) => candidate.building && candidate.owner !== state.player) && allies.filter((unit) => unitTypes[unit.type].captures).length < 2
 	const airThreat = enemies.some((unit) => unitTypes[unit.type].domain === 'air') && !allies.some((unit) => unit.type === 'anti-air')
-	const hasIncome = state.cells.some((candidate) => candidate.building === 'city' && candidate.owner === state.player)
+	const hasIncome = state.cells.some((candidate) => buildingIncome(candidate.building) > 0 && candidate.owner === state.player)
 	// Do not spend every 200$ income tick on infantry when an important counter needs saving.
 	if (cell.building === 'factory' && hasIncome && allies.some((unit) => unitTypes[unit.type].captures)) {
 		if (airThreat && state.money[state.player] < unitTypes['anti-air'].cost) return null

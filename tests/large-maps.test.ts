@@ -14,7 +14,7 @@ for (const [id, cols, rows] of [
 	const map: GameMap = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8'))
 	test(`${map.name}: roads are continuous and every turn joins the correct neighboring tiles`, () => {
 		const state = initialState(map)
-		assertConnectedRoads(state)
+		assertConnectedRoads(state, id === 10)
 	})
 	test(`${map.name}: lake shores use the existing reversed horizontal naming and basin corners`, () => {
 		const state = initialState(map)
@@ -76,13 +76,15 @@ for (const [id, cols, rows] of [
 				)
 			}
 		}
-		assert.equal(objectives.filter((cell) => cell.building === 'city').length, 6)
+		assert.equal(objectives.filter((cell) => cell.building === 'city').length, id === 12 ? 2 : 4)
+		assert.equal(objectives.filter((cell) => cell.building === 'oil-field').length, id === 11 ? 3 : id === 12 ? 4 : 0)
 		assert.equal(objectives.filter((cell) => cell.building === 'factory').length, 4)
 		assert.equal(objectives.filter((cell) => cell.building === 'hospital').length, 2)
 		assert.equal(objectives.filter((cell) => cell.building === 'airport').length, 2)
 		for (const cell of state.cells) {
 			const opposite = state.cells[state.cells.length - 1 - cell.index]
-			assert.equal(cell.building, opposite.building)
+			// Map 11 has one additional contested oil field east of the central road.
+			if (id !== 11 || (cell.index !== 119 && opposite.index !== 119)) assert.equal(cell.building, opposite.building)
 			assert.equal(cell.owner, 0)
 		}
 		for (const player of [1, 2]) {

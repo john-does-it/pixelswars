@@ -11,7 +11,7 @@ standalone page, the launcher redirects automatically. The link also works witho
 
 Fullscreen is still an iframe, so this deliberately avoids automatically navigating that iframe
 to the game. The game continues to be deployed exclusively through GitHub Pages. Add a direct
-link to https://john-does-it.github.io/pixelswars/ in the itch.io description as an additional entry point.
+link to https://pixelswar.io/ in the itch.io description as an additional entry point.
 
 The launcher has no dependencies, tracking, cookies, or external resources. No new upload is
 needed for ordinary game updates, only if the destination URL or launcher itself changes.

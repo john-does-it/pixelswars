@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
 	import Unit from './Unit.svelte'
-	import { unitTypes } from '$lib/game/catalog.js'
+	import { buildingIncome, unitTypes } from '$lib/game/catalog.js'
 	import DamageIndicator from './DamageIndicator.svelte'
 	import CellFeedback from './CellFeedback.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
@@ -16,6 +16,7 @@
 		showResources?: boolean
 		animate?: boolean
 		reachable: boolean
+		enemyReachable?: boolean
 		attackable: boolean
 		target?: boolean
 		underFire?: boolean
@@ -27,7 +28,7 @@
 		secured: boolean
 		onclick: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
 	const label = $derived(
@@ -40,7 +41,7 @@
 	)
 </script>
 
-<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
+<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
 	{#if cell.terrain === 'water' && animate}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
 	{#if reachable}
 		<span class="movement-marker" aria-hidden="true"></span>
@@ -57,7 +58,7 @@
 	{:else if captured}
 		<CellFeedback text={translate(messages.captured)} />
 	{:else if income}
-		<CellFeedback text="+200$" />
+		<CellFeedback text={`+${buildingIncome(cell.building)}$`} />
 	{/if}
 	{#if recoveredHealth > 0}
 		<CellFeedback text={translate(messages.health_recovered, { health: recoveredHealth })} tone="healing" announce />
@@ -104,22 +105,11 @@
 		cursor: pointer;
 		image-rendering: pixelated;
 
-		&::before {
-			content: '';
-			position: absolute;
-			inset: 0;
-			pointer-events: none;
-		}
-
 		&:focus-visible {
 			z-index: 2;
 			outline: 3px solid white;
 			outline-offset: -3px;
 		}
-	}
-
-	.attackable::before {
-		background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--range-fill) 40%, transparent) 0 6px, color-mix(in srgb, var(--range-fill) 13%, transparent) 6px 12px);
 	}
 
 	.movement-marker {

@@ -7,7 +7,7 @@
 A pixel-art, turn-based strategy game for desktop and mobile. Choose your battlefield,
 secure its economy and combine infantry, armor and air power to win.
 
-**[Play in your browser](https://john-does-it.github.io/pixelswars/)** · No installation required
+**[Play in your browser](https://pixelswar.io/)** · No installation required
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
@@ -44,7 +44,7 @@ so cancelling cannot undo those actions.
 ### Controls and battlefield feedback
 
 - **Move:** select a unit, then click or tap a reachable dot. The unit follows the cheapest legal path.
-- **Attack range:** striped tiles show the selected unit's range. Select an enemy to inspect its current range.
+- **Enemy inspection:** select an enemy to see its current attack range as stripes and its remaining movement as dots. Terrain costs and occupied cells constrain movement; the preview does not move the enemy.
 - **Camera:** drag to pan, use the mouse wheel over the map or pinch to zoom. The overview button fits the map,
   and the always-visible minimap lets you reposition the camera.
 - **Tile details:** select a tile and open its thumbnail in the action bar. Statistics appear in a dialog on desktop and mobile.
@@ -92,7 +92,7 @@ it no longer contains the full WebRTC session description. Share it only with yo
 opponent. A session accepts one guest, and expired, occupied or incompatible
 invitations show a recoverable error. Existing manual `PW1` invitations must be recreated.
 
-The [terms, privacy and cookies page](https://john-does-it.github.io/pixelswars/terms/)
+The [terms, privacy and cookies page](https://pixelswar.io/terms/)
 explains session cookies, third-party services and connection limits in all three
 languages. The invitation screen focuses on creating or joining a game.
 
@@ -109,9 +109,14 @@ own restores all its capture points in one action.
 | Building  | Benefit                                                                              |
 | --------- | ------------------------------------------------------------------------------------ |
 | City      | Adds 200$ at the start of each owner's turn                                          |
+| Oil field | Adds 300$ at the start of each owner's turn                                          |
 | Hospital  | Heals a friendly unit standing on it by up to 50 HP at the start of the owner's turn |
 | Army base | Produces ground units                                                                |
 | Airport   | Produces helicopters and planes                                                      |
+
+Neutral oil fields form contested central objectives on maps 1, 3, 8, 11 and 12
+(respectively 1, 2, 2, 3 and 4 fields). Ten replace cities and two occupy former
+grass cells; roads, crossings and starting armies are unchanged.
 
 Healing never exceeds maximum health; a floating label shows the HP actually
 recovered at the start of the turn. To buy a unit, you must own the production
@@ -129,7 +134,7 @@ to the damage formula below; attack is not the final damage dealt.
 | Sniper     |  500$ | 100 |        4 |              1 |     60 |      10 | 2–3   |
 | Jeep       |  600$ | 125 |        8 |              2 |     50 |      20 | 1     |
 | Tank       | 1200$ | 180 |        6 |              2 |     70 |      40 | 1     |
-| Artillery  | 1600$ | 120 |        4 |              1 |     60 |      30 | 2–4   |
+| Artillery  | 1600$ | 120 |        4 |              1 |     60 |      30 | 3–4   |
 | Anti-air   | 1000$ | 120 |        6 |              2 |     70 |      30 | 1–2   |
 | Helicopter | 1800$ | 110 |        8 |              1 |     65 |      15 | 1     |
 | Plane      | 3000$ | 120 |       10 |              1 |     80 |      25 | 1     |
@@ -137,7 +142,7 @@ to the damage formula below; attack is not the final damage dealt.
 Infantry captures objectives. Rockets counter vehicles; snipers counter infantry.
 Jeeps are fast and effective against infantry, while tanks combine armor and two
 attacks. Artillery softens ground targets from a distance, but cannot fire at
-adjacent cells. Anti-air attacks only flying units. Helicopters hunt infantry;
+cells one or two steps away. Anti-air attacks only flying units. Helicopters hunt infantry;
 planes can attack both ground and air units. Other ground units cannot target
 flying units.
 
@@ -159,7 +164,7 @@ Flying units spend 1 movement point per cell regardless of terrain, and receive
 no terrain defense. There are no playable naval units yet.
 
 Ranged ground units on a mountain gain **+1 maximum range**, keeping their minimum
-range: sniper 2–4, artillery 2–5, anti-air 1–3. Melee and flying units gain no range.
+range: sniper 2–4, artillery 3–5, anti-air 1–3. Melee and flying units gain no range.
 
 On grass, infantry can cross two cells per turn, tanks three and jeeps four.
 Roads stretch these distances; forests and mountains shorten them.
@@ -366,14 +371,15 @@ Provider quotas and credential expiry can interrupt or prevent relayed games.
 1. In **Settings → Pages**, choose **GitHub Actions** as the source.
 2. In **Actions → Deploy GitHub Pages → Run workflow**, select the branch to publish.
 
-The manual workflow builds with `BASE_PATH=/pixelswars` and publishes the generated
-`build/` artifact. Publishing the source branch instead can display the README
-rather than the app. For a custom domain at its root, use an empty base path.
+The manual workflow builds with an empty `BASE_PATH` for the custom domain
+`https://pixelswar.io/` and publishes the generated `build/` artifact. Keep
+`pixelswar.io` configured as the custom domain in **Settings → Pages**.
+Publishing the source branch instead can display the README rather than the app.
 
-To test a repository-path build in PowerShell:
+To test the production base path in PowerShell:
 
 ```powershell
-$env:BASE_PATH = '/pixelswars'
+$env:BASE_PATH = ''
 npm run build
 Remove-Item Env:BASE_PATH
 ```

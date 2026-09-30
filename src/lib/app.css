@@ -402,6 +402,25 @@ button:disabled {
 	}
 }
 
+.cell-container.-building.-oil-field.-ongrass {
+	background-image: url('/assets/cells/cell-oil-field-on-grass.png');
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-oil-field-on-grass-captured-by-1.png');
+	}
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-oil-field-on-grass-captured-by-2.png');
+	}
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured.png');
+	}
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured-by-1.png');
+	}
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured-by-2.png');
+	}
+}
+
 .cell-container.-building.-city.-ongrass {
 	background-image: url('/assets/cells/cell-city-on-grass.png');
 

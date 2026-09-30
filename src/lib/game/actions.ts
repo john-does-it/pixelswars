@@ -1,4 +1,4 @@
-import { createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
+import { buildingIncome, createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
 import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.ts'
 import type { GameState } from './types.ts'
 
@@ -79,8 +79,8 @@ export function endTurn(state: GameState): boolean {
 	state.capturedCells = []
 	state.securedCells = []
 	state.healedCells = {}
-	state.incomeCells = state.cells.filter((cell) => cell.building === 'city' && cell.owner === state.player).map((cell) => cell.index)
-	state.money[state.player] += state.incomeCells.length * 200
+	state.incomeCells = state.cells.filter((cell) => buildingIncome(cell.building) > 0 && cell.owner === state.player).map((cell) => cell.index)
+	state.money[state.player] += state.incomeCells.reduce((income, index) => income + buildingIncome(state.cells[index].building), 0)
 	for (const unit of state.units) {
 		const definition = unitTypes[unit.type]
 		const cell = state.cells[unit.cell]
