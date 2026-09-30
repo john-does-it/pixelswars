@@ -4,7 +4,7 @@
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
-	import { updatePreferences } from '$lib/preferences.svelte.js'
+	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
 	import type { GameController, KeyboardLayout } from '$lib/game/types.js'
 	import HowToPlayModal from './HowToPlayModal.svelte'
 	import LanguageSelect from './LanguageSelect.svelte'
@@ -99,6 +99,9 @@
 					<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
 				</button>
 				<LanguageSelect compact />
+				<button aria-label={translate(preferences.animations ? messages.animations_on : messages.animations_off)} aria-pressed={preferences.animations} onclick={() => updatePreferences({ animations: !preferences.animations })}>
+					{translate(messages.animations)} · {translate(preferences.animations ? messages.setting_on : messages.setting_off)}
+				</button>
 				<SettingSelect
 					label={translate(messages.keyboard)}
 					ariaLabel={translate(messages.keyboard_movement_layout)}

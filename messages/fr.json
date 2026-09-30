@@ -249,7 +249,7 @@
 	"legal_use_title": "Utilisation du jeu",
 	"legal_use": "Jouez loyalement et respectez votre adversaire. Ne perturbez pas le service et ne tentez pas d’accéder à une partie sans y être invité. Le jeu peut évoluer ou être temporairement indisponible. La progression reste dans la page en cours : la recharger ou la fermer termine la partie.",
 	"legal_cookie_title": "Vos préférences",
-	"legal_cookie": "Le cookie pixelswars-settings mémorise la langue, la disposition du clavier, le son et la musique lorsque vous modifiez ces réglages. Il ne contient pas d’identifiant de compte et ne sert ni à la publicité ni à la mesure d’audience. C’est un cookie de session sans date d’expiration. Un navigateur qui restaure les sessions peut le conserver après sa fermeture.",
+	"legal_cookie": "Le cookie pixelswars-settings mémorise la langue, la disposition du clavier, le son, la musique et les animations du plateau lorsque vous modifiez ces réglages. Il ne contient pas d’identifiant de compte et ne sert ni à la publicité ni à la mesure d’audience. C’est un cookie de session sans date d’expiration. Un navigateur qui restaure les sessions peut le conserver après sa fermeture.",
 	"legal_cookie_manage": "Modifiez ces réglages dans Options et aide, ou supprimez le cookie depuis les paramètres de données des sites de votre navigateur. Bloquer les cookies empêche de conserver vos préférences entre les visites. Le code du jeu ne contient aucun traceur publicitaire ou de mesure d’audience.",
 	"legal_online_title": "Parties en ligne",
 	"legal_online": "Créer ou rejoindre une partie contacte PeerJS Cloud pour échanger un identifiant de session aléatoire et les informations de connexion WebRTC. Lorsqu’il est configuré, Metered fournit les serveurs de connexion et un relais TURN. Sinon, le service STUN de Google aide à établir une connexion directe. Ces fournisseurs reçoivent des données techniques de connexion, dont les adresses IP. Ouvrir une invitation ne les contacte pas.",
@@ -284,5 +284,8 @@
 	"movement_range_hint": "Les petits points indiquent les cases atteignables avec vos déplacements restants. Cliquez ou touchez un point pour suivre le chemin le moins coûteux, case par case.",
 	"reachable_this_turn": "Atteignable avec les déplacements restants",
 	"movement_remaining": "{remaining}/{total} points de déplacement restants",
-	"capture_available": "Capture disponible"
+	"capture_available": "Capture disponible",
+	"animations": "Animations",
+	"animations_on": "Animations activées",
+	"animations_off": "Animations désactivées"
 }

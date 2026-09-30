@@ -52,7 +52,8 @@ so cancelling cannot undo those actions.
   fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
 - **Turn changes:** both players get the same team-colored transition. During AI or remote turns, the camera follows
   the active unit and the action bar is hidden without resizing the battlefield.
-- **Options:** change language, sound, music and keyboard layout, restart a local/AI match, or choose another map.
+- **Idle animations:** infantry glance back for two seconds after a fresh random wait of 12–24 seconds, aircraft hover gently and water ripples shimmer. Ground vehicles stay still. Only the sprite moves, keeping status indicators in their corners.
+- **Options:** change language, sound, music, board animations and keyboard layout, restart a local/AI match, or choose another map. The animation setting is saved locally in the existing preferences cookie.
 
 | Action           | Keyboard                                      |
 | ---------------- | --------------------------------------------- |
@@ -62,7 +63,7 @@ so cancelling cannot undo those actions.
 | Capture / secure | Space                                         |
 
 All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
-and uses a static turn announcement. Damage, healing and income also have floating feedback on the map.
+and uses a static turn announcement. It also disables idle sprite and water animations. The Animations switch controls these ambient effects, while combat and status feedback remain available. Damage, healing and income also have floating feedback on the map.
 
 ### Play with a friend online
 

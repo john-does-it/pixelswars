@@ -7,10 +7,11 @@ export interface Preferences {
 	keyboardLayout: KeyboardLayout
 	sound: boolean
 	music: boolean
+	animations: boolean
 }
 
 const cookieName = 'pixelswars-settings'
-const defaults: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, music: false }
+const defaults: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, music: false, animations: true }
 export const preferences = $state<Preferences>({ ...defaults })
 let initialized = false
 
@@ -31,6 +32,7 @@ export function initializePreferences(): Preferences {
 		if (saved.keyboardLayout === 'azerty' || saved.keyboardLayout === 'qwerty') preferences.keyboardLayout = saved.keyboardLayout
 		if (typeof saved.sound === 'boolean') preferences.sound = saved.sound
 		if (typeof saved.music === 'boolean') preferences.music = saved.music
+		if (typeof saved.animations === 'boolean') preferences.animations = saved.animations
 	} catch {
 		// Ignore malformed client cookies and keep safe defaults.
 	}
@@ -42,6 +44,6 @@ export function updatePreferences(changes: Partial<Preferences>): void {
 	Object.assign(preferences, changes)
 	if (!browser) return
 	document.documentElement.lang = preferences.locale
-	const value = encodeURIComponent(JSON.stringify({ locale: preferences.locale, keyboardLayout: preferences.keyboardLayout, sound: preferences.sound, music: preferences.music }))
+	const value = encodeURIComponent(JSON.stringify({ locale: preferences.locale, keyboardLayout: preferences.keyboardLayout, sound: preferences.sound, music: preferences.music, animations: preferences.animations }))
 	document.cookie = `${cookieName}=${value}; Path=/; SameSite=Lax`
 }

@@ -43,7 +43,7 @@ try {
 				const top = Math.floor(index / cols) * tileSize
 				context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
 				const unit = cell.querySelector('[data-unit]')
-				if (unit) context.drawImage(await sprite(unit), left + 1, top + 1, tileSize - 2, tileSize - 2)
+				if (unit) context.drawImage(await sprite(unit.querySelector('.unit-sprite')), left + 1, top + 1, tileSize - 2, tileSize - 2)
 			}
 			return canvas.toDataURL('image/png').split(',')[1]
 		}, map)

@@ -400,7 +400,7 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	await cell(8).click()
 	await expect(page.getByRole('button', { name: 'Buy Sniper', exact: true })).toBeEnabled()
 	await page.getByRole('button', { name: 'Buy Sniper', exact: true }).click()
-	await expect(cell(8).locator('[data-unit]')).toHaveCSS('background-image', /infantry-sniper-1\.png/)
+	await expect(cell(8).locator('.unit-sprite')).toHaveCSS('background-image', /infantry-sniper-1\.png/)
 	await cell(8).click()
 	await expect(page.getByRole('dialog', { name: 'Cell statistics', exact: true })).toHaveCount(0)
 	await page.getByRole('button', { name: 'Show details', exact: true }).click()
@@ -667,6 +667,8 @@ test('captured airport offers aircraft and buys a plane after the tile is freed'
 	await page.getByRole('button', { name: 'Buy Plane', exact: true }).click()
 	await expect(page.getByRole('dialog')).toHaveCount(0)
 	await expect(cell(42)).toHaveAttribute('aria-label', /plane/i)
+	await expect(cell(42).locator('.unit-sprite')).toHaveClass(/airborne/)
+	await expect(cell(42).locator('.unit-sprite')).toHaveCSS('animation-name', /idle-hover/)
 })
 
 test('scroll arrows navigate a bounded map viewport', async ({ page }) => {
@@ -754,7 +756,7 @@ test('minimap uses the board terrain variants and each team’s actual unit spri
 		.evaluateAll((cells) => cells.map((cell) => getComputedStyle(cell).backgroundImage))
 	expect(minimapTerrain).toEqual(terrainSprites)
 	expect(minimapTerrain.every((sprite) => sprite !== 'none')).toBe(true)
-	const boardUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => ({ cell: unit.parentElement?.dataset.cell, sprite: getComputedStyle(unit).backgroundImage })))
+	const boardUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => ({ cell: unit.parentElement?.dataset.cell, sprite: getComputedStyle(unit.querySelector('.unit-sprite')!).backgroundImage })))
 	const minimapUnits = await page
 		.locator('.minimap')
 		.first()

@@ -14,6 +14,7 @@
 		unit?: GameUnit
 		selected?: boolean
 		showResources?: boolean
+		animate?: boolean
 		reachable: boolean
 		attackable: boolean
 		target?: boolean
@@ -26,7 +27,7 @@
 		secured: boolean
 		onclick: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, showResources = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, reachable, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
 	const label = $derived(
@@ -40,11 +41,12 @@
 </script>
 
 <button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={reachable ? `${label}, ${translate(messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
+	{#if cell.terrain === 'water' && animate}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
 	{#if reachable}
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
 	{#if unit}
-		<Unit {unit} {target} {showResources} />
+		<Unit {unit} {target} {showResources} {animate} />
 	{/if}
 	<DamageIndicator {unit} />
 	{#if explosion}
@@ -63,6 +65,33 @@
 </button>
 
 <style>
+	.water-shimmer {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: #64d5f5;
+		mask-image: var(--water-shimmer-mask);
+		mask-size: 100% 100%;
+		animation: water-shimmer 2s steps(1, end) infinite;
+	}
+	@keyframes water-shimmer {
+		0%,
+		100% {
+			opacity: 0;
+		}
+		25%,
+		75% {
+			opacity: 0.15;
+		}
+		50% {
+			opacity: 0.35;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.water-shimmer {
+			display: none;
+		}
+	}
 	button {
 		position: relative;
 		display: block;

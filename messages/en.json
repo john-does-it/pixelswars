@@ -249,7 +249,7 @@
 	"legal_use_title": "Playing the game",
 	"legal_use": "Play fairly and respect your opponent. Do not disrupt the service or try to access someone else’s game without their invitation. The game may change or be temporarily unavailable. Progress is kept in the current page only; refreshing or closing it ends the match.",
 	"legal_cookie_title": "Your preferences",
-	"legal_cookie": "The pixelswars-settings cookie remembers your language, keyboard layout, sound and music settings when you change them. It contains no account identifier and is not used for advertising or analytics. It is a session cookie with no expiry date; a browser that restores sessions may retain it after closing.",
+	"legal_cookie": "The pixelswars-settings cookie remembers your language, keyboard layout, sound, music and board animation settings when you change them. It contains no account identifier and is not used for advertising or analytics. It is a session cookie with no expiry date; a browser that restores sessions may retain it after closing.",
 	"legal_cookie_manage": "Change these settings in Options and help, or remove the cookie using your browser’s site-data controls. Blocking cookies prevents preferences from being saved between visits. The game code includes no advertising or analytics trackers.",
 	"legal_online_title": "Online games",
 	"legal_online": "Creating or joining a game contacts PeerJS Cloud to exchange a random session identifier and WebRTC connection details. When configured, Metered provides connection servers and a TURN relay. Otherwise, Google’s STUN service helps establish a direct connection. These providers receive technical connection data, including IP addresses. Opening an invitation alone does not contact them.",
@@ -284,5 +284,8 @@
 	"movement_range_hint": "Small dots show cells you can reach with your remaining movement. Click or tap a dot to follow the cheapest path, one cell at a time.",
 	"reachable_this_turn": "Reachable with remaining movement",
 	"movement_remaining": "{remaining}/{total} movement points remaining",
-	"capture_available": "Capture available"
+	"capture_available": "Capture available",
+	"animations": "Animations",
+	"animations_on": "Animations on",
+	"animations_off": "Animations off"
 }

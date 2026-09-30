@@ -249,7 +249,7 @@
 	"legal_use_title": "Das Spiel nutzen",
 	"legal_use": "Spiele fair und respektiere deinen Gegner. Störe den Dienst nicht und greife nicht ohne Einladung auf fremde Partien zu. Das Spiel kann sich ändern oder vorübergehend nicht verfügbar sein. Der Fortschritt bleibt nur auf der aktuellen Seite erhalten; Neuladen oder Schließen beendet die Partie.",
 	"legal_cookie_title": "Deine Einstellungen",
-	"legal_cookie": "Das Cookie pixelswars-settings speichert Sprache, Tastaturlayout, Ton und Musik, wenn du diese Einstellungen änderst. Es enthält keine Kontokennung und dient weder Werbung noch Reichweitenmessung. Es ist ein Sitzungscookie ohne Ablaufdatum; Browser mit Sitzungswiederherstellung können es nach dem Schließen behalten.",
+	"legal_cookie": "Das Cookie pixelswars-settings speichert Sprache, Tastaturlayout, Ton, Musik und Spielfeldanimationen, wenn du diese Einstellungen änderst. Es enthält keine Kontokennung und dient weder Werbung noch Reichweitenmessung. Es ist ein Sitzungscookie ohne Ablaufdatum; Browser mit Sitzungswiederherstellung können es nach dem Schließen behalten.",
 	"legal_cookie_manage": "Ändere die Einstellungen unter Optionen und Hilfe oder lösche das Cookie über die Website-Daten deines Browsers. Wenn du Cookies blockierst, werden deine Einstellungen nicht für spätere Besuche gespeichert. Der Spielcode enthält keine Werbe- oder Analyse-Tracker.",
 	"legal_online_title": "Onlinepartien",
 	"legal_online": "Beim Erstellen oder Beitreten einer Partie wird PeerJS Cloud kontaktiert, um eine zufällige Sitzungskennung und WebRTC-Verbindungsdaten auszutauschen. Wenn eingerichtet, stellt Metered Verbindungsserver und einen TURN-Relay bereit. Andernfalls hilft Googles STUN-Dienst beim Aufbau einer direkten Verbindung. Diese Anbieter erhalten technische Verbindungsdaten einschließlich IP-Adressen. Das bloße Öffnen einer Einladung kontaktiert sie noch nicht.",
@@ -284,5 +284,8 @@
 	"movement_range_hint": "Kleine Punkte zeigen die Felder, die du mit deinen verbleibenden Bewegungspunkten erreichen kannst. Klicke oder tippe auf einen Punkt, um dem günstigsten Weg Feld für Feld zu folgen.",
 	"reachable_this_turn": "Mit verbleibenden Bewegungspunkten erreichbar",
 	"movement_remaining": "{remaining}/{total} Bewegungspunkte übrig",
-	"capture_available": "Eroberung verfügbar"
+	"capture_available": "Eroberung verfügbar",
+	"animations": "Animationen",
+	"animations_on": "Animationen an",
+	"animations_off": "Animationen aus"
 }

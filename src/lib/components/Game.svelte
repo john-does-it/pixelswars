@@ -121,6 +121,10 @@
 {/await}
 
 <style>
+	.game-shell:has(:global(.turn-sweep)) :global(.unit-sprite),
+	.game-shell:has(:global(.turn-sweep)) :global(.water-shimmer) {
+		animation-play-state: paused;
+	}
 	.match-status {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);

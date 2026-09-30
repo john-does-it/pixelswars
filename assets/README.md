@@ -3,6 +3,7 @@
 This directory contains the game's source assets. `static/assets/` is generated and ignored by Git.
 
 - `cells/`: terrain and building art. Water-tile provenance is documented in [WATER_TILE_MAPPING.md](cells/WATER_TILE_MAPPING.md).
+	`cells/water-shimmer/` contains ripple-only masks derived from the existing water sprites. Regenerate them with `node scripts/generate-water-shimmer.mjs`, then run asset synchronization. They leave shorelines untouched.
   Road connections and junction variants are documented in [ROAD_TILE_MAPPING.md](cells/ROAD_TILE_MAPPING.md).
 - `units/`: healthy and damaged sprites for both armies, plus cropped `-fit` variants used in previews and production menus.
 - `icons/`: shared interface and resource icons.

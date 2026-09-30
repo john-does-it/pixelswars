@@ -2,12 +2,26 @@
 	import { asset } from '$app/paths'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
+	import { aircraftIdleTiming, infantryIdleWait } from '$lib/game/idle-animation.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { Unit as GameUnit } from '$lib/game/types.js'
 
-	let { unit, target = false, showResources = false }: { unit: GameUnit; target?: boolean; showResources?: boolean } = $props()
+	let { unit, target = false, showResources = false, animate = false }: { unit: GameUnit; target?: boolean; showResources?: boolean; animate?: boolean } = $props()
 	const unitDefinition = $derived(unitTypes[unit.type])
+	const airborne = $derived(unitDefinition.domain === 'air')
+	const infantry = $derived(unit.type.startsWith('infantry'))
+	const idleTiming = $derived(aircraftIdleTiming(unit.id))
+	let lookWait = $state(12000)
+	let alternateLook = $state(false)
+	$effect(() => {
+		if (animate && infantry) lookWait = infantryIdleWait()
+	})
+	function scheduleNextLook() {
+		if (!animate || !infantry) return
+		lookWait = infantryIdleWait()
+		alternateLook = !alternateLook
+	}
 	const fuelLevel = $derived(Math.ceil(4 * Math.max(0, Math.min(1, unit.movement / unitDefinition.movement))))
 
 	function synchronizeStatus(event: AnimationEvent & { currentTarget: HTMLElement }) {
@@ -16,7 +30,22 @@
 	}
 </script>
 
-<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)} style:background-image={`url('${asset(unitSprite(unit))}')`}>
+<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)}>
+	<span
+		class="unit-sprite"
+		class:idle={animate && (airborne || infantry)}
+		class:airborne
+		class:alternate-look={alternateLook}
+		aria-hidden="true"
+		style:background-image={`url('${asset(unitSprite(unit))}')`}
+		style:--idle-duration={`${idleTiming.duration}ms`}
+		style:--idle-delay={`${idleTiming.delay}ms`}
+		style:--look-wait={`${lookWait}ms`}
+		onanimationstart={(event) => {
+			if (airborne) synchronizeStatus(event)
+		}}
+		onanimationend={scheduleNextLook}
+	></span>
 	<img class="health" src={asset('/assets/icons/icon-health.png')} alt="" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s" />
 	{#if showResources}
 		<span class="ammo" aria-hidden="true" data-remaining={unit.attacks}>
@@ -42,10 +71,54 @@
 		position: absolute;
 		inset: 0;
 		display: block;
+		pointer-events: none;
+	}
+	.unit-sprite {
+		position: absolute;
+		inset: 0;
 		background-size: 90%;
 		background-position: center;
 		background-repeat: no-repeat;
-		pointer-events: none;
+		transform-origin: center;
+	}
+	.unit-sprite.idle {
+		animation: idle-look 2s steps(1, end) var(--look-wait);
+	}
+	.unit-sprite.idle.alternate-look {
+		animation-name: idle-look-again;
+	}
+	.unit-sprite.idle.airborne {
+		animation: idle-hover var(--idle-duration) steps(1, end) var(--idle-delay) infinite;
+	}
+	@keyframes idle-look {
+		0%,
+		99% {
+			transform: scaleX(-1);
+		}
+		100% {
+			transform: scaleX(1);
+		}
+	}
+	@keyframes idle-look-again {
+		0%,
+		99% {
+			transform: scaleX(-1);
+		}
+		100% {
+			transform: scaleX(1);
+		}
+	}
+	@keyframes idle-hover {
+		0%,
+		24%,
+		76%,
+		100% {
+			transform: translateY(0);
+		}
+		25%,
+		75% {
+			transform: translateY(-3%);
+		}
 	}
 
 	.health {
@@ -125,6 +198,11 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.unit-sprite.idle,
+		.unit-sprite.idle.alternate-look,
+		.unit-sprite.idle.airborne {
+			animation: none;
+		}
 		.spent {
 			animation: none;
 		}

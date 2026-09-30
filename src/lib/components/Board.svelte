@@ -2,6 +2,7 @@
 	import BattlefieldViewport from './BattlefieldViewport.svelte'
 	import Cell from './Cell.svelte'
 	import { pathsFrom } from '$lib/game/movement.js'
+	import { preferences } from '$lib/preferences.svelte.js'
 	import { selectedUnit, inspectedEnemy, attackCells, canAttack, locked } from '$lib/game/model.js'
 	import type { GameController } from '$lib/game/types.js'
 	import type { MapCamera } from '$lib/game/map-camera.js'
@@ -54,6 +55,7 @@
 					{cell}
 					{unit}
 					{aiMode}
+					animate={preferences.animations && !locked(gameState) && !gameState.winner && (!gameState.network || gameState.network.phase === 'playing')}
 					showResources={!!unit && unit.player === gameState.player && !opponentTurn && (!gameState.network || gameState.network.phase === 'playing')}
 					selected={!!unit && selected?.id === unit.id}
 					inspected={!!unit && inspected?.id === unit.id}
