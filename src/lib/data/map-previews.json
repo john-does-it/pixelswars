@@ -68,5 +68,10 @@
 		"cols": 12,
 		"rows": 12,
 		"size": "medium"
+	},
+	"15": {
+		"cols": 14,
+		"rows": 7,
+		"size": "small"
 	}
 }

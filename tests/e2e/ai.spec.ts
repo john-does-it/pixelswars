@@ -19,7 +19,7 @@ test('Expert develops Meet in the Middle across four opening turns instead of pa
 	}
 })
 
-test('AI hides all actions including settings, preserves their space and follows its active unit on mobile', async ({ page }) => {
+test('AI keeps header settings accessible, hides game actions, preserves their space and follows its active unit on mobile', async ({ page }) => {
 	// Keep the AI from finishing its short selections while CI prepares the viewport.
 	await page.clock.install()
 	await page.clock.pauseAt(new Date())
@@ -31,7 +31,12 @@ test('AI hides all actions including settings, preserves their space and follows
 	await zoomToReadableTiles(page)
 	await expect(page.locator('.action-controls')).toBeHidden()
 	await expect(page.locator('.minimap')).toHaveCount(1)
-	await expect(page.locator('.options-button')).toBeHidden()
+	const settings = page.locator('header .options-button')
+	await expect(settings).toBeVisible()
+	await settings.click()
+	await expect(page.getByRole('dialog', { name: 'Options and help', exact: true })).toBeVisible()
+	await expect(page.locator('header .turn')).toContainText('AI')
+	await page.getByRole('button', { name: 'Close', exact: true }).click()
 	await expect(page.locator('.ammo')).toHaveCount(0)
 	const controls = page.getByRole('navigation', { name: 'Game controls', includeHidden: true })
 	await expect(controls).toHaveAttribute('inert', '')
@@ -132,8 +137,8 @@ test('AI navigation cancels pending actions and invalid levels use local multipl
 	await page.goto('/play/12/?ai=expert')
 	await expect(page.locator('.action-controls')).toBeHidden()
 	await expect(page.locator('header .turn')).toContainText('AI')
-	await expect(page.locator('.options-button')).toBeHidden()
-	await page.goto('/')
+	await page.locator('header .options-button').click()
+	await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
 	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
 	await page.goto('/play/1/?ai=invalid')
 	await page.getByRole('button', { name: 'End round', exact: true }).click()

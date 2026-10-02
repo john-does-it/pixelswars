@@ -259,7 +259,7 @@
 	"legal_hosting_title": "Hosting und externe Dienste",
 	"legal_hosting": "Die veröffentlichte Website wird auf GitHub Pages gehostet. Hosting- und Verbindungsanbieter können technische Protokolle nach ihren eigenen Richtlinien verarbeiten, um ihre Dienste zu betreiben. Pixel’s War bestimmt deren Speicherfristen nicht. Externe Links in den Credits führen zu den Websites der jeweiligen Anbieter.",
 	"legal_contact_title": "Kontakt und Credits",
-	"legal_contact": "Bei Fragen zum Spiel, deinen Daten oder diesen Bedingungen erreichst du John Does it unter der folgenden Adresse. Grafiken, Audio und andere Ressourcen unterliegen ihren jeweiligen Lizenzen; ihre Urheber sind auf der Startseite genannt.",
+	"legal_contact": "Bei Fragen zum Spiel, deinen Daten oder diesen Bedingungen öffne einen Issue im unten verlinkten GitHub-Repository. Grafiken, Audio und andere Ressourcen unterliegen ihren jeweiligen Lizenzen; ihre Urheber sind auf der Startseite genannt.",
 	"legal_updated": "Stand: 27. September 2026",
 	"legal_github": "GitHubs Datenschutzerklärung",
 	"legal_peerjs": "Über PeerJS Cloud",
@@ -291,5 +291,13 @@
 	"animations_off": "Animationen aus",
 	"building_oil_field": "Ölfeld",
 	"building_oil_field_description": "Bringt zu Beginn jedes eigenen Zuges 300$, solange es dir gehört. Schwarzes Gold, glänzende Aussichten.",
-	"stat_income": "Einkommen pro Zug"
+	"stat_income": "Einkommen pro Zug",
+	"map_15": "Wasserstadt",
+	"map_15_description": "Bahnt euch einen Weg zwischen Teichen und Straßen, um die beiden Ölfelder und die Gebäude der Stadt einzunehmen.",
+	"editor_title": "Erstelle deine Karte",
+	"editor_description": "Zeichne Gelände, platziere Gebäude und beide Armeen und exportiere die JSON-Datei. Du kannst auch mit einer vorhandenen Karte beginnen.",
+	"editor_open": "Karteneditor öffnen (Französisch)",
+	"editor_submit_help": "Öffne einen GitHub-Issue und füge den JSON-Inhalt als Codeblock ein, zusammen mit einem Namen, einer kurzen Beschreibung und optional einem Screenshot. Karten werden vor der Aufnahme ins Spiel geprüft.",
+	"editor_github": "Auf GitHub vorschlagen",
+	"legal_editor_storage": "Der Karteneditor speichert deinen letzten Entwurf im lokalen Speicher dieses Browsers. Er wird nicht automatisch gesendet. Exportiere die JSON-Datei, bevor du die Website-Daten löschst."
 }

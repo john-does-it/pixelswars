@@ -1,0 +1,31 @@
+import { test, expect } from '@playwright/test'
+
+test('public editor opens from home with working sprites, JSON export and submission links', async ({ page }, testInfo) => {
+	const errors: string[] = []
+	page.on('pageerror', (error) => errors.push(error.message))
+	await page.goto('/')
+	await expect(page.locator('footer a[href="https://github.com/john-does-it/pixelswars/issues"]')).toBeVisible()
+	await page.getByRole('link', { name: 'Open the map editor (French)', exact: true }).click()
+	await expect(page).toHaveURL(/\/map-editor\/index.html$/)
+	await expect(page.getByRole('heading', { name: 'Atelier de cartes' })).toBeVisible()
+	await expect(page.locator('#board [data-cell]')).toHaveCount(120)
+	const spriteUrl = await page
+		.locator('#board [data-cell]')
+		.first()
+		.evaluate((cell) => getComputedStyle(cell).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])
+	expect(spriteUrl).toBeTruthy()
+	expect((await page.request.get(spriteUrl!)).ok()).toBe(true)
+	await page.getByRole('button', { name: 'Infantry', exact: true }).click()
+	await page.locator('[data-cell="0"]').click()
+	await expect.poll(() => page.locator('[data-cell="0"] img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0)
+	const downloadReady = page.waitForEvent('download')
+	await page.getByRole('button', { name: '↓ Exporter le JSON', exact: true }).click()
+	await (await downloadReady).saveAs(testInfo.outputPath('exported-map.json'))
+	await expect(page.getByRole('link', { name: 'Proposer sur GitHub' })).toHaveAttribute('href', /github\.com\/john-does-it\/pixelswars\/issues\/new/)
+	await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0)
+	await page.getByRole('heading', { name: 'Proposer ta carte' }).scrollIntoViewIfNeeded()
+	await page.screenshot({ path: testInfo.outputPath('submission-guide.png') })
+	await page.locator('#back-to-game').click()
+	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
+	expect(errors).toEqual([])
+})

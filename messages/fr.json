@@ -259,7 +259,7 @@
 	"legal_hosting_title": "Hébergement et services tiers",
 	"legal_hosting": "Le site publié est hébergé sur GitHub Pages. Les fournisseurs d’hébergement et de connexion peuvent traiter des journaux techniques pour faire fonctionner leurs services, selon leurs propres politiques. Pixel’s War ne contrôle pas leurs durées de conservation. Les liens externes des crédits ouvrent les sites de leurs auteurs.",
 	"legal_contact_title": "Contact et crédits",
-	"legal_contact": "Pour toute question sur le jeu, vos données ou ces conditions, contactez John Does it à l’adresse ci-dessous. Les graphismes, sons et autres ressources restent soumis à leurs licences respectives. Leurs créateurs sont indiqués sur la page d’accueil.",
+	"legal_contact": "Pour toute question sur le jeu, vos données ou ces conditions, ouvrez une issue sur le dépôt GitHub ci-dessous. Les graphismes, sons et autres ressources restent soumis à leurs licences respectives. Leurs créateurs sont indiqués sur la page d’accueil.",
 	"legal_updated": "Mise à jour : 27 septembre 2026",
 	"legal_github": "Politique de confidentialité de GitHub",
 	"legal_peerjs": "À propos de PeerJS Cloud",
@@ -291,5 +291,13 @@
 	"animations_off": "Animations désactivées",
 	"building_oil_field": "Champ pétrolier",
 	"building_oil_field_description": "Rapporte 300$ au début de chacun de vos tours une fois capturé. De l’or noir pour voir la vie en rose.",
-	"stat_income": "Revenu par tour"
+	"stat_income": "Revenu par tour",
+	"map_15": "Ville d’eau",
+	"map_15_description": "Faufilez-vous entre les plans d’eau et les rues pour capturer les deux champs pétroliers et les bâtiments de la ville.",
+	"editor_title": "Créez votre carte",
+	"editor_description": "Dessinez les terrains, placez les bâtiments et les deux armées, puis exportez le JSON. Vous pouvez aussi partir d’une carte existante.",
+	"editor_open": "Ouvrir l’atelier de cartes",
+	"editor_submit_help": "Pour proposer votre carte, ouvrez une issue GitHub et collez le JSON dans un bloc de code, avec un nom, une courte description et éventuellement une capture. Les cartes sont revues avant leur ajout au jeu.",
+	"editor_github": "Proposer sur GitHub",
+	"legal_editor_storage": "L’atelier de cartes enregistre votre dernier brouillon dans le stockage local de ce navigateur. Il n’est pas envoyé automatiquement. Exportez le JSON pour le conserver avant d’effacer les données du site."
 }

@@ -4,7 +4,7 @@
 	import { playerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state, aiMode = false }: { state: GameState; aiMode?: boolean } = $props()
+	let { state, aiMode = false, onoptions }: { state: GameState; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
 
 <header class:blue={state.player === 1} class:red={state.player === 2}>
@@ -18,10 +18,14 @@
 			<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
 		</div>
 	</div>
+	<button class="options-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><span aria-hidden="true">⚙</span></button>
 </header>
 
 <style>
 	header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		position: sticky;
 		top: 0;
 		z-index: 20;
@@ -34,11 +38,22 @@
 		}
 	}
 	.match-summary {
+		flex: 1;
+		min-width: 0;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
 		gap: 8px 20px;
+	}
+	.options-button {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		font-size: 24px;
 	}
 	.turn {
 		display: flex;

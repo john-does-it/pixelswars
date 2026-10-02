@@ -87,7 +87,7 @@
 				{/if}
 			{/key}
 		{/key}
-		<GameHeader aiMode={!!difficulty} state={game.state} />
+		<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 		{#snippet mapStatus()}
 			<div class="match-status">
 				{#if network}

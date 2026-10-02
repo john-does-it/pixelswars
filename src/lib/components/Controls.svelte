@@ -39,7 +39,6 @@
 
 <nav aria-label={translate(messages.game_controls)} bind:offsetHeight={controlsHeight} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
-		<button class="options-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={() => (showHelp = true)}><span aria-hidden="true">⚙</span></button>
 		{#if previewCell}
 			<button class="inspect-action" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={translate(messages.preview_expand)} aria-haspopup="dialog" onclick={() => (showPreview = true)}>
 				<span class="tile-thumbnail" aria-hidden="true">
@@ -131,9 +130,6 @@
 			justify-content: center;
 			text-align: center;
 		}
-	}
-	.options-button {
-		font-size: 24px;
 	}
 	.settings-controls {
 		display: flex;

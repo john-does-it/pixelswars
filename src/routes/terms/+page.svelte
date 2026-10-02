@@ -23,6 +23,7 @@
 		<h2>{translate(messages.legal_cookie_title)}</h2>
 		<p>{translate(messages.legal_cookie)}</p>
 		<p>{translate(messages.legal_cookie_manage)}</p>
+		<p>{translate(messages.legal_editor_storage)}</p>
 	</section>
 	<section>
 		<h2>{translate(messages.legal_online_title)}</h2>
@@ -43,7 +44,7 @@
 	<section>
 		<h2>{translate(messages.legal_contact_title)}</h2>
 		<p>{translate(messages.legal_contact)}</p>
-		<a href="mailto:hello@johndoesit.be">hello@johndoesit.be</a>
+		<a href="https://github.com/john-does-it/pixelswars/issues">GitHub</a>
 	</section>
 </main>
 

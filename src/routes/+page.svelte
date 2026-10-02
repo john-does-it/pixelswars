@@ -65,7 +65,8 @@
 		{ id: 11, title: messages.map_11, text: messages.map_11_description },
 		{ id: 12, title: messages.map_12, text: messages.map_12_description },
 		{ id: 13, title: messages.map_13, text: messages.map_13_description },
-		{ id: 14, title: messages.map_14, text: messages.map_14_description }
+		{ id: 14, title: messages.map_14, text: messages.map_14_description },
+		{ id: 15, title: messages.map_15, text: messages.map_15_description }
 	].sort((firstMap, secondMap) => {
 		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
 		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
@@ -113,6 +114,11 @@
 				</a>
 			{/each}
 		</div>
+	</section>
+	<section class="panel map-editor-intro" aria-labelledby="editor-title">
+		<h2 id="editor-title">{translate(messages.editor_title)}</h2>
+		<p>{translate(messages.editor_description)}</p>
+		<a class="button primary" href={asset('/map-editor/index.html')} data-sveltekit-reload>{translate(messages.editor_open)}</a>
 	</section>
 	<section class="panel">
 		<h2>{translate(messages.how_to_play)}</h2>
@@ -182,12 +188,15 @@
 	</section>
 	<footer>
 		<p>{translate(messages.programming)}: <a href="https://johndoesit.be">John Does it</a> · {translate(messages.graphics)}: <a href="https://www.kenney.nl">Kenney</a> · {translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects">Pixabay</a> · {translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack">Monolith</a> · {translate(messages.quality_assurance)}: Gauthier Miessen</p>
-		<p>{translate(messages.feedback)}: <a href="mailto:hello@johndoesit.be">hello@johndoesit.be</a></p>
+		<p>{translate(messages.feedback)}: <a href="https://github.com/john-does-it/pixelswars/issues">GitHub</a></p>
 		<p><a href={resolve('/terms/', {})}>{translate(messages.legal_title)}</a></p>
 	</footer>
 </main>
 
 <style>
+	.map-editor-intro .button {
+		margin-top: 8px;
+	}
 	main {
 		max-width: 1320px;
 		padding: 32px 20px;

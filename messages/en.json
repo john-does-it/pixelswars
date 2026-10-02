@@ -259,7 +259,7 @@
 	"legal_hosting_title": "Hosting and third-party services",
 	"legal_hosting": "The published site is hosted by GitHub Pages. Hosting and connection providers may process technical logs to operate their services, under their own policies. Pixel’s War does not control their retention periods. External credit links open the respective providers’ websites.",
 	"legal_contact_title": "Contact and credits",
-	"legal_contact": "For questions about the game, your data or these terms, contact John Does it at the address below. The game’s artwork, audio and other resources remain subject to their respective licences; the home page lists their creators.",
+	"legal_contact": "For questions about the game, your data or these terms, open an issue on the GitHub repository below. The game’s artwork, audio and other resources remain subject to their respective licences; the home page lists their creators.",
 	"legal_updated": "Updated: 27 September 2026",
 	"legal_github": "GitHub privacy statement",
 	"legal_peerjs": "About PeerJS Cloud",
@@ -291,5 +291,13 @@
 	"animations_off": "Animations off",
 	"building_oil_field": "Oil field",
 	"building_oil_field_description": "Earns 300$ at the start of each turn you own it. Black gold, bright prospects.",
-	"stat_income": "Income per turn"
+	"stat_income": "Income per turn",
+	"map_15": "Water Town",
+	"map_15_description": "Thread your way between ponds and streets to capture the town’s two oil fields and buildings.",
+	"editor_title": "Create your own map",
+	"editor_description": "Draw terrain, place buildings and both armies, then export the JSON. You can also start from an existing map.",
+	"editor_open": "Open the map editor (French)",
+	"editor_submit_help": "To submit a map, open a GitHub issue and paste the JSON in a code block, with a name, a short description and optionally a screenshot. Maps are reviewed before being added to the game.",
+	"editor_github": "Submit on GitHub",
+	"legal_editor_storage": "The map editor saves your latest draft in this browser’s local storage. It is not sent automatically. Export the JSON to keep a copy before clearing site data."
 }

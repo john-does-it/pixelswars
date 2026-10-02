@@ -6,8 +6,8 @@ const baseUrl = process.env.PREVIEW_BASE_URL ?? 'http://127.0.0.1:5173'
 const output = new URL('../assets/map-previews/', import.meta.url)
 await mkdir(output, { recursive: true })
 const browser = await chromium.launch()
-const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Array.from({ length: 14 }, (_, index) => index + 1)
-if (mapIds.some((id) => !Number.isInteger(id) || id < 1 || id > 14)) throw new Error('Map IDs must be integers between 1 and 14')
+const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Array.from({ length: 15 }, (_, index) => index + 1)
+if (mapIds.some((id) => !Number.isInteger(id) || id < 1 || id > 15)) throw new Error('Map IDs must be integers between 1 and 15')
 const metadata = JSON.parse(await readFile(new URL('../src/lib/data/map-previews.json', import.meta.url), 'utf8'))
 try {
 	const page = await browser.newPage()

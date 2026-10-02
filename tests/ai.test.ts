@@ -246,8 +246,8 @@ test('local mode still hands the turn directly to the other player', () => {
 })
 
 for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
-	test(`${difficulty} completes legal turns on all fourteen maps`, async () => {
-		for (let mapId = 1; mapId <= 14; mapId++) {
+	test(`${difficulty} completes legal turns on all fifteen maps`, async () => {
+		for (let mapId = 1; mapId <= 15; mapId++) {
 			const map = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')) as GameMap
 			const state = initialState(map)
 			const controller = createController(state, { delay: noDelay })

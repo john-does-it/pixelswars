@@ -11,7 +11,7 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
-- **14 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
+- **15 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
 - **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
@@ -225,7 +225,7 @@ npm run dev
 ```
 
 Open the Vite address. The home route is `/`; games use `/play/1/` through
-`/play/14/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
+`/play/15/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
 to play against the AI, or `?online=1` for online setup. Without either parameter,
 the game is local two-player.
 
@@ -387,6 +387,18 @@ Remove-Item Env:BASE_PATH
 CI checks formatting, components, rules, the build and browser behavior separately.
 Pushing or merging does not automatically deploy the site.
 
+### Create and submit a map
+
+Open the map editor from the homepage, or run `npm run map:editor` and open
+http://127.0.0.1:5182/ for local editing. The editor interface is currently in French.
+Paint terrain and buildings with the game's sprites, place both armies, and download
+a JSON file ready for integration. Roads and shores connect automatically. Existing
+maps and JSON files can be imported; the current draft is saved locally in the browser.
+The editor is included in development and production builds. Submit your JSON in a
+[GitHub issue](https://github.com/john-does-it/pixelswars/issues/new), with a name,
+description and optional screenshot.
+Maps are reviewed before publication. See the [editor guide](tools/map-editor/README.md).
+
 ## Credits
 
 Programming: [John Does it](https://johndoesit.be).
@@ -398,4 +410,4 @@ Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
 Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
 QA: Gauthier Miessen.
 
-Feedback and contributions: hello@johndoesit.be.
+Feedback and contributions: [GitHub issues](https://github.com/john-does-it/pixelswars/issues).

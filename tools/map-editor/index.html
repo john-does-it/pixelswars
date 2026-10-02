@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pixel’s War · Atelier de cartes</title>
+	</head>
+	<body>
+		<header>
+			<div>
+				<a id="back-to-game" href="/">← Pixel’s War</a>
+				<h1>Atelier de cartes</h1>
+				<p>Dessine, place tes armées, exporte ton JSON.</p>
+			</div>
+			<div class="toolbar"><button id="undo" disabled>↶ Annuler</button><button id="export" class="primary">↓ Exporter le JSON</button></div>
+		</header>
+		<main>
+			<aside>
+				<section>
+					<h2>La carte</h2>
+					<label>Nom<input id="name" maxlength="100" /></label>
+					<div class="row">
+						<label>ID<input id="map-id" inputmode="numeric" /></label><label>Colonnes<input id="columns" type="number" min="2" max="32" value="12" /></label><label>Lignes<input id="rows" type="number" min="2" max="32" value="10" /></label>
+					</div>
+					<button id="new">Nouvelle grille</button>
+					<details>
+						<summary>Partir d’une carte</summary>
+						<label
+							>Carte du jeu<select id="existing">
+								<option value="">Choisir…</option>
+							</select></label
+						><button id="load">Charger cette carte</button><label class="file-label">Ou importer un JSON<input id="import" type="file" accept=".json,application/json" /></label>
+					</details>
+				</section>
+				<section>
+					<h2>Terrains & bâtiments</h2>
+					<div id="terrain-palette" class="palette"></div>
+					<label
+						>Propriétaire du bâtiment<select id="owner">
+							<option value="0">Neutre</option>
+							<option value="1">Bleu</option>
+							<option value="2">Rouge</option>
+						</select></label
+					>
+				</section>
+				<section>
+					<h2>Les unités</h2>
+					<label
+						>Équipe<select id="team">
+							<option value="1">Bleue</option>
+							<option value="2">Rouge</option>
+						</select></label
+					>
+					<div id="unit-palette" class="palette"></div>
+					<button id="erase-unit">Effacer une unité</button>
+				</section>
+			</aside>
+			<div class="workspace">
+				<div class="canvas-toolbar">
+					<strong id="brush-name">Pinceau : Herbe</strong><label>Taille des cases<input id="zoom" type="range" min="24" max="80" step="8" value="48" /></label><label class="check"><input id="grid" type="checkbox" checked /> Grille</label>
+				</div>
+				<div id="canvas-scroll"><div id="board" role="group" aria-label="Carte à dessiner" class="show-grid"></div></div>
+				<div class="canvas-footer"><span id="coordinates">Clic ou glisser pour peindre</span><span id="counts"></span></div>
+				<p id="status" role="status">Ton brouillon reste dans ce navigateur.</p>
+				<details id="json-panel">
+					<summary>JSON à copier</summary>
+					<textarea id="json-output" aria-label="JSON de la carte" readonly rows="10"></textarea><button id="copy">Copier le JSON</button>
+				</details>
+				<p class="hint">Routes et berges se raccordent automatiquement. Prévois au moins deux cases d’épaisseur pour les berges des petits plans d’eau. Clic droit : herbe ou gomme d’unité. Ctrl/Cmd + Z : annuler. Peindre de l’eau retire les unités terrestres de la case.</p>
+				<section class="submission" aria-labelledby="submit-map">
+					<h2 id="submit-map">Proposer ta carte</h2>
+					<ol>
+						<li>Donne un nom à ta carte et place une armée bleue et une armée rouge. Vérifie que les deux camps peuvent se rejoindre et accéder aux objectifs.</li>
+						<li>Clique sur « Exporter le JSON » pour télécharger le fichier, ou utilise « JSON à copier ».</li>
+						<li>Sur GitHub, ouvre une proposition et colle ton JSON dans un bloc de code. Ajoute le nom de la carte, ton idée de gameplay et, si possible, une capture.</li>
+					</ol>
+					<div class="submission-links"><a class="button" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D%20Nouvelle%20carte">Proposer sur GitHub</a></div>
+					<p>Les propositions sont revues avant d’être ajoutées au jeu. L’ID peut être ajusté lors de l’intégration.</p>
+					<p>Ton brouillon est enregistré uniquement dans ce navigateur, sans envoi automatique. Exporte-le avant de quitter ou d’effacer tes données de navigation.</p>
+				</section>
+			</div>
+		</main>
+		<script type="module" src="./main.ts"></script>
+	</body>
+</html>
