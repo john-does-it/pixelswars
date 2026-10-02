@@ -7,8 +7,10 @@ const relayConfigured = Boolean(loadEnv('development', process.cwd(), 'VITE_').V
 const relayEndpoint = 'https://*.metered.live/api/v1/turn/credentials**'
 const relayResponse = [{ urls: 'turn:standard.relay.metered.ca:80', username: 'e2e-user', credential: 'e2e-password' }]
 
-// Local signaling runs on a random test port, outside the production CSP allowlist.
-test.use({ bypassCSP: true })
+// Local signaling runs outside the production CSP allowlist. These same-machine,
+// relay-free tests use IP candidates directly so they do not depend on multicast
+// DNS discovery on the CI runner. Keep real WebRTC and signaling enabled.
+test.use({ bypassCSP: true, launchOptions: { args: ['--disable-features=WebRtcHideLocalIpsWithMdns'] } })
 
 let signalServer: Server
 let signalPort: number
@@ -30,6 +32,12 @@ async function localIce(page: Page, withoutCandidates = false) {
 	// Real PeerServer and WebRTC, with local signaling/ICE to keep CI independent of public services.
 	await page.addInitScript(
 		({ port, withoutCandidates }) => {
+			const events: Record<string, unknown>[] = []
+			Reflect.set(window, 'onlineConnectionEvents', events)
+			const record = (event: Record<string, unknown>) => {
+				events.push(event)
+				if (events.length > 100) events.shift()
+			}
 			const NativeSocket = window.WebSocket
 			window.WebSocket = class extends NativeSocket {
 				constructor(address: string | URL, protocols?: string | string[]) {
@@ -39,13 +47,23 @@ async function localIce(page: Page, withoutCandidates = false) {
 						url.host = `127.0.0.1:${port}`
 					}
 					super(url, protocols)
+					if (url.port === String(port)) {
+						for (const event of ['open', 'error', 'close']) this.addEventListener(event, () => record({ signaling: event }))
+					}
 				}
 			}
 			const NativeConnection = window.RTCPeerConnection
+			let connectionCount = 0
 			window.RTCPeerConnection = class extends NativeConnection {
 				constructor(configuration?: RTCConfiguration) {
 					Reflect.set(window, 'onlineIceConfiguration', configuration)
 					super({ ...configuration, iceServers: [], ...(withoutCandidates ? { iceTransportPolicy: 'relay' } : {}) })
+					const connection = ++connectionCount
+					for (const event of ['connectionstatechange', 'iceconnectionstatechange', 'icegatheringstatechange', 'signalingstatechange']) {
+						this.addEventListener(event, () => record({ connection, event, state: this.connectionState, ice: this.iceConnectionState, gathering: this.iceGatheringState, signaling: this.signalingState }))
+					}
+					this.addEventListener('icecandidate', ({ candidate }) => record({ connection, event: 'candidate', type: candidate?.type ?? 'complete', mdns: candidate?.address?.endsWith('.local') ?? false }))
+					this.addEventListener('icecandidateerror', ({ errorCode }) => record({ connection, event: 'candidate-error', errorCode }))
 					if (withoutCandidates) {
 						this.addEventListener('icegatheringstatechange', () => {
 							Reflect.set(window, 'onlineIceGatheringComplete', this.iceGatheringState === 'complete')
@@ -61,12 +79,27 @@ async function localIce(page: Page, withoutCandidates = false) {
 async function expectOnlineBattlefields(host: Page, guest: Page) {
 	// WebRTC allows 35 seconds to connect. Only then does each device preload sprites.
 	// Give those two stages separate deadlines instead of sharing 15 seconds.
-	await Promise.all(
-		[host, guest].map(async (device) => {
-			await expect(device.locator('.game-shell'), 'WebRTC handshake completes').toBeVisible({ timeout: 40000 })
-			await expect(device.locator('.board [data-cell]').first(), 'connected device finishes loading its sprites').toBeVisible({ timeout: 30000 })
-		})
-	)
+	try {
+		await Promise.all(
+			[host, guest].map(async (device) => {
+				await expect(device.locator('.game-shell'), 'WebRTC handshake completes').toBeVisible({ timeout: 40000 })
+				await expect(device.locator('.board [data-cell]').first(), 'connected device finishes loading its sprites').toBeVisible({ timeout: 30000 })
+			})
+		)
+	} catch (error) {
+		const diagnostics = await Promise.all(
+			[host, guest].map(async (device, index) => ({
+				player: index === 0 ? 'host' : 'guest',
+				alerts: await device
+					.getByRole('alert')
+					.allTextContents()
+					.catch(() => []),
+				events: await device.evaluate(() => Reflect.get(window, 'onlineConnectionEvents')).catch(() => 'Page unavailable')
+			}))
+		)
+		await test.info().attach('online-connection.json', { body: JSON.stringify(diagnostics, null, 2), contentType: 'application/json' })
+		throw error
+	}
 	await expect(host.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
 	await expect(guest.getByText(/Online · You play red/)).toBeVisible()
 }
