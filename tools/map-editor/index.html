@@ -7,20 +7,23 @@
 	</head>
 	<body>
 		<header>
-			<div>
-				<a id="back-to-game" href="/">← Pixel’s War</a>
-				<h1><span data-i18n="map_editor_title">Atelier de cartes</span></h1>
-				<p><span data-i18n="map_editor_tagline">Dessine, place tes armées, exporte ton JSON.</span></p>
-			</div>
-			<div class="toolbar">
-				<label class="language-select"
-					><span data-i18n="language">Langue</span
-					><select id="language">
-						<option value="en" data-i18n="language_english">English</option>
-						<option value="de" data-i18n="language_german">Deutsch</option>
-						<option value="fr" data-i18n="language_french">Français</option>
-					</select></label
-				><button id="undo" disabled><span data-i18n="map_editor_undo">↶ Annuler</span></button><button id="export" class="primary"><span data-i18n="map_editor_export">↓ Exporter le JSON</span></button>
+			<label class="language-select"
+				><span data-i18n="language">Langue</span
+				><select id="language">
+					<option value="en" data-i18n="language_english">English</option>
+					<option value="de" data-i18n="language_german">Deutsch</option>
+					<option value="fr" data-i18n="language_french">Français</option>
+				</select></label
+			>
+			<div class="header-content">
+				<div>
+					<a id="back-to-game" href="/">← Pixel’s War</a>
+					<h1><span data-i18n="map_editor_title">Atelier de cartes</span></h1>
+					<p><span data-i18n="map_editor_tagline">Dessine, place tes armées, exporte ton JSON.</span></p>
+				</div>
+				<div class="toolbar">
+					<button id="undo" disabled><span data-i18n="map_editor_undo">↶ Annuler</span></button><button id="export" class="primary"><span data-i18n="map_editor_export">↓ Exporter le JSON</span></button>
+				</div>
 			</div>
 		</header>
 		<main>

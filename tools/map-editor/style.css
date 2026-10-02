@@ -3,11 +3,13 @@ body {
 }
 header {
 	padding: 24px 28px;
+	border-bottom: 1px solid var(--color-border);
+}
+.header-content {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 24px;
-	border-bottom: 1px solid var(--color-border);
 }
 h1 {
 	margin: 0;
@@ -43,8 +45,41 @@ p {
 	align-items: center;
 }
 .language-select {
-	margin: 0;
-	flex: none;
+	display: inline-flex;
+	align-items: center;
+	height: 46px;
+	margin: 0 0 18px;
+	padding-left: 10px;
+	gap: 0;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 5px;
+	overflow: hidden;
+}
+.language-select span {
+	font-size: 14px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+.language-select select {
+	width: auto;
+	height: 44px;
+	min-height: 44px;
+	margin-left: 8px;
+	padding: 0 9px;
+	font-size: 14px;
+	background: var(--color-control);
+	border: 0;
+	border-left: 1px solid var(--color-border);
+	border-radius: 0;
+	cursor: pointer;
+}
+.language-select:has(select:focus-visible) {
+	outline: 3px solid var(--color-accent);
+	outline-offset: 3px;
+}
+.language-select select:focus-visible {
+	outline: none;
 }
 main {
 	display: grid;
@@ -239,9 +274,11 @@ input[type='file'] {
 }
 @media (max-width: 780px) {
 	header {
+		padding: 18px;
+	}
+	.header-content {
 		align-items: start;
 		flex-direction: column;
-		padding: 18px;
 	}
 	main {
 		grid-template-columns: 1fr;
