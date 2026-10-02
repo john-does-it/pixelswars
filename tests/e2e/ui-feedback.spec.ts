@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
+import mapPreviews from '../../src/lib/data/map-previews.json' with { type: 'json' }
 
 test('map chooser shows lightweight terrain previews, dimensions and localized size labels', async ({ page }) => {
 	await page.goto('/')
 	const cards = page.locator('.maps .map')
-	await expect(cards).toHaveCount(14)
+	await expect(cards).toHaveCount(Object.keys(mapPreviews).length)
 	const areas = await cards.locator('.map-thumbnail img').evaluateAll((images) => images.map((image) => Number(image.getAttribute('width')) * Number(image.getAttribute('height'))))
 	expect(areas).toEqual([...areas].sort((firstArea, secondArea) => firstArea - secondArea))
 	for (const image of await cards.locator('.map-thumbnail img').all()) {

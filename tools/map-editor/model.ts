@@ -1,28 +1,36 @@
 import { isUnitTypeId, unitTypes } from '../../src/lib/game/catalog.ts'
 import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '../../src/lib/game/types.ts'
 
+export class MapEditorError extends Error {
+	readonly key: string
+	constructor(key: string) {
+		super(key)
+		this.key = key
+	}
+}
+
 export const terrainBrushes = [
-	{ name: 'Herbe', classes: ['-grass'] },
-	{ name: 'Herbe fleurie', classes: ['-grass', '-variant'] },
-	{ name: 'Herbe claire', classes: ['-grass', '-variant2'] },
-	{ name: 'Herbe variée', classes: ['-grass', '-variant3'] },
-	{ name: 'Forêt', classes: ['-forest', '-ongrass'] },
-	{ name: 'Forêt dense', classes: ['-forest', '-ongrass', '-variant'] },
-	{ name: 'Montagne', classes: ['-moutain', '-ongrass'] },
-	{ name: 'Route', classes: ['-road', '-h'] },
-	{ name: 'Eau', classes: ['-water'] },
-	{ name: 'Ville', classes: ['-building', '-city', '-ongrass'] },
-	{ name: 'Pétrole', classes: ['-building', '-oil-field', '-ongrass'] },
-	{ name: 'Usine', classes: ['-building', '-factory', '-ongrass'] },
-	{ name: 'Hôpital', classes: ['-building', '-hospital', '-ongrass'] },
-	{ name: 'Aéroport', classes: ['-building', '-airport', '-ongrass'] }
+	{ name: 'terrain_grass', classes: ['-grass'] },
+	{ name: 'map_editor_grass_flowers', classes: ['-grass', '-variant'] },
+	{ name: 'map_editor_grass_light', classes: ['-grass', '-variant2'] },
+	{ name: 'map_editor_grass_varied', classes: ['-grass', '-variant3'] },
+	{ name: 'terrain_forest', classes: ['-forest', '-ongrass'] },
+	{ name: 'map_editor_forest_dense', classes: ['-forest', '-ongrass', '-variant'] },
+	{ name: 'terrain_moutain', classes: ['-moutain', '-ongrass'] },
+	{ name: 'terrain_road', classes: ['-road', '-h'] },
+	{ name: 'terrain_water', classes: ['-water'] },
+	{ name: 'building_city', classes: ['-building', '-city', '-ongrass'] },
+	{ name: 'building_oil_field', classes: ['-building', '-oil-field', '-ongrass'] },
+	{ name: 'building_factory', classes: ['-building', '-factory', '-ongrass'] },
+	{ name: 'building_hospital', classes: ['-building', '-hospital', '-ongrass'] },
+	{ name: 'building_airport', classes: ['-building', '-airport', '-ongrass'] }
 ]
 
 export type Brush = { kind: 'terrain'; classes: string[]; owner: Owner } | { kind: 'unit'; type: UnitTypeId; player: Player } | { kind: 'erase-unit' }
 const grass = (): MapCell => ({ classes: ['-grass'], owner: 0, capturePoints: 20 })
 
 export function newMap(cols: number, rows: number): GameMap {
-	if (![cols, rows].every((size) => Number.isInteger(size) && size >= 2 && size <= 32)) throw new Error('Les dimensions doivent être comprises entre 2 et 32 cases.')
+	if (![cols, rows].every((size) => Number.isInteger(size) && size >= 2 && size <= 32)) throw new MapEditorError('map_editor_error_dimensions')
 	return { id: '15', name: 'Nouvelle carte', cols, rows, cells: Array.from({ length: cols * rows }, grass), units: [] }
 }
 
@@ -75,7 +83,7 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 		return
 	}
 	if (brush.kind === 'unit') {
-		if (map.cells[index].classes.includes('-water') && unitTypes[brush.type].domain !== 'air') throw new Error('Les unités terrestres doivent être placées sur la terre ferme.')
+		if (map.cells[index].classes.includes('-water') && unitTypes[brush.type].domain !== 'air') throw new MapEditorError('map_editor_error_ground')
 		map.units = map.units.filter((unit) => unit.cell !== index)
 		map.units.push({ type: brush.type, player: brush.player, cell: index })
 		return
@@ -90,23 +98,23 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 
 export function readMap(text: string): GameMap {
 	const input = JSON.parse(text) as GameMap
-	if (!input || typeof input !== 'object') throw new Error('Le fichier doit contenir une carte JSON.')
+	if (!input || typeof input !== 'object') throw new MapEditorError('map_editor_error_json')
 	newMap(input.cols, input.rows)
-	if (typeof input.id !== 'string' || !/^\d+$/.test(input.id) || Number(input.id) < 1 || typeof input.name !== 'string' || !input.name.trim()) throw new Error('La carte doit avoir un identifiant numérique positif et un nom.')
-	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new Error('Le nombre de cases ne correspond pas aux dimensions.')
+	if (typeof input.id !== 'string' || !/^\d+$/.test(input.id) || Number(input.id) < 1 || typeof input.name !== 'string' || !input.name.trim()) throw new MapEditorError('map_editor_error_identity')
+	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
 	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building']
 	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-oil-field', '-factory', '-hospital', '-airport', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
 	const allowedClasses = new Set([...baseClasses, ...modifiers])
 	const cells = input.cells.map((cell) => {
-		if (!cell || !Array.isArray(cell.classes) || !cell.classes.some((name) => baseClasses.includes(name)) || cell.classes.some((name) => !allowedClasses.has(name)) || ![0, 1, 2].includes(cell.owner) || !Number.isInteger(cell.capturePoints) || cell.capturePoints < 0 || cell.capturePoints > 20) throw new Error('Une case contient un terrain, un propriétaire ou une capture invalide.')
-		if (cell.classes.includes('-building') && !['-city', '-oil-field', '-factory', '-hospital', '-airport'].some((name) => cell.classes.includes(name))) throw new Error('Un bâtiment doit avoir un type connu.')
+		if (!cell || !Array.isArray(cell.classes) || !cell.classes.some((name) => baseClasses.includes(name)) || cell.classes.some((name) => !allowedClasses.has(name)) || ![0, 1, 2].includes(cell.owner) || !Number.isInteger(cell.capturePoints) || cell.capturePoints < 0 || cell.capturePoints > 20) throw new MapEditorError('map_editor_error_cell')
+		if (cell.classes.includes('-building') && !['-city', '-oil-field', '-factory', '-hospital', '-airport'].some((name) => cell.classes.includes(name))) throw new MapEditorError('map_editor_error_building')
 		return { classes: [...cell.classes], owner: cell.owner, capturePoints: cell.capturePoints }
 	})
-	if (!Array.isArray(input.units)) throw new Error('La liste des unités est absente.')
+	if (!Array.isArray(input.units)) throw new MapEditorError('map_editor_error_units')
 	const occupied = new Set<number>()
 	const units = input.units.map((unit) => {
-		if (!unit || !isUnitTypeId(unit.type) || ![1, 2].includes(unit.player) || !Number.isInteger(unit.cell) || unit.cell < 0 || unit.cell >= cells.length || occupied.has(unit.cell)) throw new Error('Une unité est invalide ou plusieurs unités occupent la même case.')
-		if (cells[unit.cell].classes.includes('-water') && unitTypes[unit.type].domain !== 'air') throw new Error('Une unité terrestre est placée sur l’eau.')
+		if (!unit || !isUnitTypeId(unit.type) || ![1, 2].includes(unit.player) || !Number.isInteger(unit.cell) || unit.cell < 0 || unit.cell >= cells.length || occupied.has(unit.cell)) throw new MapEditorError('map_editor_error_unit')
+		if (cells[unit.cell].classes.includes('-water') && unitTypes[unit.type].domain !== 'air') throw new MapEditorError('map_editor_error_water')
 		occupied.add(unit.cell)
 		return { type: unit.type, player: unit.player, cell: unit.cell }
 	})

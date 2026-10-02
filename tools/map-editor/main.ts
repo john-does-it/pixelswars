@@ -1,8 +1,9 @@
 import '../../src/lib/app.css'
 import './style.css'
+import { translate as t, translatePage, changeLocale, locale } from './i18n.ts'
 import { unitTypes } from '../../src/lib/game/catalog.ts'
 import type { GameMap, Owner, Player, UnitTypeId } from '../../src/lib/game/types.ts'
-import { mapJson, newMap, paintCell, readMap, terrainBrushes, type Brush } from './model.ts'
+import { mapJson, newMap, paintCell, readMap, terrainBrushes, MapEditorError, type Brush } from './model.ts'
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 const input = (id: string) => element<HTMLInputElement>(id)
@@ -15,15 +16,17 @@ const existingMaps = Object.values(import.meta.glob<{ default: GameMap }>('../..
 	.map((module) => module.default)
 	.sort((first, second) => Number(first.id) - Number(second.id))
 let map = newMap(12, 10)
+map.name = t('map_editor_new_name')
 let brush: Brush = { kind: 'terrain', classes: ['-grass'], owner: 0 }
-let brushName = 'Herbe'
+let statusKey = 'map_editor_draft_local'
 const history: string[] = []
 let painting = false
 let lastPainted: number | null = null
 let strokeBrush: Brush = brush
 
-function notify(message: string, error = false) {
-	status.textContent = message
+function notify(key: string, error = false) {
+	statusKey = key
+	status.textContent = t(key)
 	status.classList.toggle('error', error)
 }
 function save() {
@@ -31,7 +34,7 @@ function save() {
 	try {
 		localStorage.setItem(savedDraftKey, JSON.stringify(map))
 	} catch {
-		notify('Sauvegarde locale indisponible : pense à exporter ton JSON.', true)
+		notify('map_editor_save_failed', true)
 	}
 }
 function showJson() {
@@ -49,11 +52,11 @@ element('copy').onclick = async () => {
 	if (!output.value) return
 	try {
 		await navigator.clipboard.writeText(output.value)
-		notify('JSON copié.')
+		notify('map_editor_copied')
 	} catch {
 		output.focus()
 		output.select()
-		notify('Sélectionne Copier dans le navigateur ou utilise Ctrl/Cmd + C.')
+		notify('map_editor_copy_fallback')
 	}
 }
 function remember() {
@@ -62,7 +65,7 @@ function remember() {
 	input('undo').disabled = false
 }
 function reportError(error: unknown) {
-	notify(error instanceof Error ? error.message : 'Impossible de charger cette carte.', true)
+	notify(error instanceof MapEditorError ? error.key : error instanceof SyntaxError ? 'map_editor_error_json' : 'map_editor_load_failed', true)
 }
 
 function renderBoard() {
@@ -74,8 +77,8 @@ function renderBoard() {
 		button.className = `cell-container ${cell.classes.join(' ')}${cell.owner ? ` -capturedby${cell.owner}` : ''}${cell.capturePoints < 20 ? ' -halfcaptured' : ''}`
 		button.dataset.cell = String(index)
 		const unit = units.get(index)
-		const terrain = cell.classes.includes('-water') ? 'Eau' : cell.classes.includes('-road') ? 'Route' : ([...terrainBrushes].reverse().find((terrain) => terrain.classes.every((name) => cell.classes.includes(name)))?.name ?? 'Terrain')
-		button.setAttribute('aria-label', `C${(index % map.cols) + 1} L${Math.floor(index / map.cols) + 1} · ${terrain}${unit ? ` · ${unitTypes[unit.type].name} ${unit.player === 1 ? 'bleu' : 'rouge'}` : ''}`)
+		const terrain = t(cell.classes.includes('-water') ? 'terrain_water' : cell.classes.includes('-road') ? 'terrain_road' : ([...terrainBrushes].reverse().find((terrain) => terrain.classes.every((name) => cell.classes.includes(name)))?.name ?? 'terrain_grass'))
+		button.setAttribute('aria-label', `${t('map_editor_coordinates', { column: (index % map.cols) + 1, row: Math.floor(index / map.cols) + 1 })} · ${terrain}${unit ? ` · ${unitName(unit.type)} ${teamName(unit.player)}` : ''}`)
 		if (unit) {
 			const sprite = document.createElement('img')
 			sprite.src = `${gameBase}/assets/units/${unit.type}-${unit.player}.png`
@@ -87,7 +90,7 @@ function renderBoard() {
 	})
 	board.style.gridTemplateColumns = `repeat(${map.cols}, var(--tile-size))`
 	board.replaceChildren(fragment)
-	element('counts').textContent = `${map.cols} × ${map.rows} · Bleus ${map.units.filter((unit) => unit.player === 1).length} / Rouges ${map.units.filter((unit) => unit.player === 2).length}`
+	element('counts').textContent = t('map_editor_counts', { cols: map.cols, rows: map.rows, blue: map.units.filter((unit) => unit.player === 1).length, red: map.units.filter((unit) => unit.player === 2).length })
 }
 function renderMap() {
 	input('name').value = map.name
@@ -99,8 +102,7 @@ function renderMap() {
 }
 function activateBrush(nextBrush: Brush, name: string, button: HTMLButtonElement) {
 	brush = nextBrush
-	brushName = name
-	element('brush-name').textContent = `Pinceau : ${name}`
+	element('brush-name').textContent = t('map_editor_brush', { name })
 	document.querySelectorAll<HTMLButtonElement>('[data-brush]').forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)))
 }
 function paletteButton(name: string, classes: string[], sprite?: string): HTMLButtonElement {
@@ -117,19 +119,30 @@ function paletteButton(name: string, classes: string[], sprite?: string): HTMLBu
 	button.append(icon, label)
 	return button
 }
-for (const terrain of terrainBrushes) {
-	const button = paletteButton(terrain.name, terrain.classes)
-	button.onclick = () => activateBrush({ kind: 'terrain', classes: terrain.classes, owner: Number(input('owner').value) as Owner }, terrain.name, button)
-	if (terrain.name === brushName) button.setAttribute('aria-pressed', 'true')
-	element('terrain-palette').append(button)
+function renderTerrainPalette() {
+	const palette = element('terrain-palette')
+	palette.replaceChildren()
+	for (const terrain of terrainBrushes) {
+		const name = t(terrain.name)
+		const button = paletteButton(name, terrain.classes)
+		button.onclick = () => activateBrush({ kind: 'terrain', classes: terrain.classes, owner: Number(input('owner').value) as Owner }, name, button)
+		palette.append(button)
+		if (brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')) activateBrush(brush, name, button)
+	}
+}
+function unitName(type: UnitTypeId): string {
+	return t('unit_' + type.replaceAll('-', '_'))
+}
+function teamName(player: Player): string {
+	return t(player === 1 ? 'map_editor_blue' : 'map_editor_red')
 }
 function renderUnitPalette() {
 	const team = Number(input('team').value) as Player
 	const palette = element('unit-palette')
 	palette.replaceChildren()
 	for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
-		const button = paletteButton(unitTypes[type].name, [], `${gameBase}/assets/units/${type}-${team}-fit.png`)
-		button.onclick = () => activateBrush({ kind: 'unit', type, player: team }, `${unitTypes[type].name} ${team === 1 ? 'bleu' : 'rouge'}`, button)
+		const button = paletteButton(unitName(type), [], `${gameBase}/assets/units/${type}-${team}-fit.png`)
+		button.onclick = () => activateBrush({ kind: 'unit', type, player: team }, `${unitName(type)} ${teamName(team)}`, button)
 		palette.append(button)
 		if (brush.kind === 'unit' && brush.type === type) button.click()
 	}
@@ -141,7 +154,7 @@ input('owner').onchange = () => {
 const eraser = element<HTMLButtonElement>('erase-unit')
 eraser.dataset.brush = 'erase-unit'
 eraser.setAttribute('aria-pressed', 'false')
-eraser.onclick = () => activateBrush({ kind: 'erase-unit' }, 'Gomme d’unité', eraser)
+eraser.onclick = () => activateBrush({ kind: 'erase-unit' }, t('map_editor_eraser'), eraser)
 
 function cellUnderPointer(event: PointerEvent): number | null {
 	const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>('[data-cell]')
@@ -157,7 +170,7 @@ function paintTo(index: number) {
 	const steps = Math.max(Math.abs(columnDistance), Math.abs(rowDistance), 1)
 	try {
 		for (let step = 1; step <= steps; step++) paintCell(map, (startRow + Math.round((rowDistance * step) / steps)) * map.cols + startColumn + Math.round((columnDistance * step) / steps), strokeBrush)
-		notify('Brouillon enregistré dans ce navigateur.')
+		notify('map_editor_saved')
 	} catch (error) {
 		reportError(error)
 	}
@@ -182,7 +195,7 @@ board.onpointermove = (event) => {
 		lastPainted = null
 		return
 	}
-	element('coordinates').textContent = `Colonne ${(index % map.cols) + 1} · Ligne ${Math.floor(index / map.cols) + 1}`
+	element('coordinates').textContent = t('map_editor_coordinates', { column: (index % map.cols) + 1, row: Math.floor(index / map.cols) + 1 })
 	if (painting) paintTo(index)
 }
 function finishStroke() {
@@ -213,7 +226,7 @@ function undo() {
 	if (previous) {
 		map = JSON.parse(previous)
 		renderMap()
-		notify('Dernière modification annulée.')
+		notify('map_editor_undone')
 	}
 	input('undo').disabled = history.length === 0
 }
@@ -234,38 +247,40 @@ for (const id of ['name', 'map-id'])
 element('new').onclick = () => {
 	try {
 		const next = newMap(Number(input('columns').value), Number(input('rows').value))
+		next.name = t('map_editor_new_name')
 		remember()
 		map = next
 		renderMap()
-		notify('Nouvelle grille. Annuler permet de retrouver la précédente.')
+		notify('map_editor_new_notice')
 	} catch (error) {
 		reportError(error)
 	}
 }
-for (const existing of existingMaps) {
-	const option = document.createElement('option')
-	option.value = existing.id
-	option.textContent = `${existing.id} · ${existing.name} (${existing.cols} × ${existing.rows})`
-	element('existing').append(option)
+function renderExistingMaps() {
+	const select = element<HTMLSelectElement>('existing')
+	const selected = select.value
+	select.replaceChildren(new Option(t('map_editor_choose'), ''))
+	for (const existing of existingMaps) select.add(new Option(`${existing.id} · ${t('map_' + existing.id)} (${existing.cols} × ${existing.rows})`, existing.id))
+	select.value = selected
 }
 element('load').onclick = () => {
 	const selected = existingMaps.find((candidate) => candidate.id === input('existing').value)
-	if (!selected) return notify('Choisis une carte à charger.')
+	if (!selected) return notify('map_editor_choose_map')
 	remember()
 	map = structuredClone(selected)
 	renderMap()
-	notify('Copie chargée : le fichier original reste intact.')
+	notify('map_editor_loaded')
 }
 input('import').onchange = async () => {
 	const file = input('import').files?.[0]
 	if (!file) return
 	try {
-		if (file.size > 2_000_000) throw new Error('Le fichier est trop volumineux (maximum 2 Mo).')
+		if (file.size > 2_000_000) throw new MapEditorError('map_editor_too_large')
 		const imported = readMap(await file.text())
 		remember()
 		map = imported
 		renderMap()
-		notify('Carte importée.')
+		notify('map_editor_imported')
 	} catch (error) {
 		reportError(error)
 	}
@@ -281,7 +296,7 @@ element('export').onclick = () => {
 		link.click()
 		setTimeout(() => URL.revokeObjectURL(url), 1000)
 		const hasBothTeams = [1, 2].every((player) => map.units.some((unit) => unit.player === player))
-		notify(hasBothTeams ? 'JSON exporté. Tu peux le transmettre pour intégrer la carte au jeu.' : 'JSON exporté comme brouillon : ajoute des unités des deux camps avant de jouer.')
+		notify(hasBothTeams ? 'map_editor_exported' : 'map_editor_exported_draft')
 	} catch (error) {
 		reportError(error)
 	}
@@ -292,10 +307,27 @@ try {
 	const saved = localStorage.getItem(savedDraftKey)
 	if (saved) {
 		map = readMap(saved)
-		notify('Ton dernier brouillon a été restauré.')
+		notify('map_editor_restored')
 	}
 } catch {
-	notify('Le brouillon précédent est indisponible. Tu peux importer un JSON.', true)
+	notify('map_editor_restore_failed', true)
 }
 renderMap()
-renderUnitPalette()
+renderLanguage()
+
+function renderLanguage() {
+	translatePage()
+	input('language').value = locale
+	renderTerrainPalette()
+	renderUnitPalette()
+	renderExistingMaps()
+	if (brush.kind === 'erase-unit') activateBrush(brush, t('map_editor_eraser'), eraser)
+	renderBoard()
+	element('coordinates').textContent = t('map_editor_paint_hint')
+	notify(statusKey, status.classList.contains('error'))
+}
+input('language').onchange = () => {
+	finishStroke()
+	changeLocale(input('language').value)
+	renderLanguage()
+}

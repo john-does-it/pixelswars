@@ -1,6 +1,6 @@
 # Map editor
 
-Open the map editor from the game homepage. The editor UI is currently in French.
+Open the map editor from the game homepage. The editor shares the game’s language preference (English, French or German).
 It uses the game's existing sprites and saves drafts only in the current browser.
 For local development, run `npm run map:editor` and open http://127.0.0.1:5182/.
 The same editor is bundled into `static/map-editor/` before `npm run dev` and

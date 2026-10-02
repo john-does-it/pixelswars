@@ -390,7 +390,7 @@ Pushing or merging does not automatically deploy the site.
 ### Create and submit a map
 
 Open the map editor from the homepage, or run `npm run map:editor` and open
-http://127.0.0.1:5182/ for local editing. The editor interface is currently in French.
+http://127.0.0.1:5182/ for local editing. The editor shares the game’s language preference (English, French or German).
 Paint terrain and buildings with the game's sprites, place both armies, and download
 a JSON file ready for integration. Roads and shores connect automatically. Existing
 maps and JSON files can be imported; the current draft is saved locally in the browser.

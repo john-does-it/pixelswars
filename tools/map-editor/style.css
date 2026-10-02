@@ -38,6 +38,14 @@ p {
 	display: flex;
 	gap: 8px;
 }
+.toolbar {
+	flex-wrap: wrap;
+	align-items: center;
+}
+.language-select {
+	margin: 0;
+	flex: none;
+}
 main {
 	display: grid;
 	grid-template-columns: 288px minmax(0, 1fr);

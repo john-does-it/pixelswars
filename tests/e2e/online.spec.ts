@@ -59,9 +59,14 @@ async function localIce(page: Page, withoutCandidates = false) {
 }
 
 async function expectOnlineBattlefields(host: Page, guest: Page) {
-	// Each browser preloads its own sprites before rendering the board and team label.
-	// A connected host does not imply that the guest has finished loading its assets.
-	for (const device of [host, guest]) await expect(device.locator('.board [data-cell]').first()).toBeVisible({ timeout: 15000 })
+	// WebRTC allows 35 seconds to connect. Only then does each device preload sprites.
+	// Give those two stages separate deadlines instead of sharing 15 seconds.
+	await Promise.all(
+		[host, guest].map(async (device) => {
+			await expect(device.locator('.game-shell'), 'WebRTC handshake completes').toBeVisible({ timeout: 40000 })
+			await expect(device.locator('.board [data-cell]').first(), 'connected device finishes loading its sprites').toBeVisible({ timeout: 30000 })
+		})
+	)
 	await expect(host.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
 	await expect(guest.getByText(/Online · You play red/)).toBeVisible()
 }
@@ -225,6 +230,7 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 })
 
 test('a guest can finish loading its sprites after the host has connected', async ({ page, browser, isMobile }) => {
+	test.setTimeout(60000)
 	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
 	const guest = await guestContext.newPage()
 	let releaseAssets!: () => void
@@ -246,8 +252,8 @@ test('a guest can finish loading its sprites after the host has connected', asyn
 		await expect(guest.locator('.game-shell[aria-busy="true"]')).toBeVisible()
 		await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toBeVisible()
 		await expect(guest.locator('.board')).toHaveCount(0)
-		// Keep the guest loading beyond the default five-second assertion timeout.
-		releaseTimer = setTimeout(releaseAssets, 6000)
+		// Reproduce a slow guest beyond the old combined 15-second readiness deadline.
+		releaseTimer = setTimeout(releaseAssets, 16000)
 		await expectOnlineBattlefields(page, guest)
 		for (const device of [page, guest]) await expect(device.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
 		await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
