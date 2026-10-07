@@ -30,8 +30,9 @@ const CombatRules = (() => {
 	}
 
 	function typeModifier(attackerType: string, defenderType: string): number {
+		if (attackerType === 'transport') return 0
 		// Snipers share infantry vulnerabilities, but have their own attack matchups.
-		const defenderMatchup = defenderType === 'infantry-sniper' ? 'infantry' : defenderType
+		const defenderMatchup = defenderType === 'infantry-sniper' ? 'infantry' : defenderType === 'transport' ? 'jeep' : defenderType
 		return modifiers[attackerType]?.[defenderMatchup] ?? 1
 	}
 

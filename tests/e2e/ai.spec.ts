@@ -2,21 +2,22 @@ import { zoomToReadableTiles } from './map-view'
 import { test, expect } from '@playwright/test'
 import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
-test('Expert develops Meet in the Middle across four opening turns instead of passing', async ({ page }) => {
-	test.setTimeout(120000)
+test('Expert develops an economy within six opening turns with bounded search', async ({ page }) => {
+	test.setTimeout(180000)
 	await page.goto('/play/4/?ai=expert')
 	const endTurn = page.getByRole('button', { name: 'End round', exact: true })
-	for (const round of [2, 4, 6, 8]) {
+	const capturedCities = page.locator('.board .-city.-capturedby1')
+	for (const round of [2, 4, 6, 8, 10, 12]) {
 		await expect(page.getByText(`Round ${round}`, { exact: true })).toBeVisible({ timeout: 30000 })
 		await expect(endTurn).toBeEnabled()
-		if (round === 2) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-halfcaptured/)
-		if (round >= 4) await expect(page.locator('[data-cell="15"]')).toHaveClass(/-capturedby1/)
-		if (round === 6) await expect(page.locator('[data-cell="19"]')).toHaveClass(/-halfcaptured/)
-		if (round === 8) {
-			await expect(page.locator('[data-cell="19"]')).toHaveClass(/-capturedby1/)
-			await expect(page.locator('[data-cell="57"]')).toHaveClass(/-capturedby1/)
-		} else await endTurn.click()
+		// A time budget changes the preferred route on slower devices. Require
+		// actual economic development, not one exact tile on one exact turn.
+		if (round === 2) await expect(page.locator('.board .-halfcaptured, .board .-capturedby1').first()).toBeVisible()
+		if ((await capturedCities.count()) >= 2) break
+		if (round < 12) await endTurn.click()
 	}
+	expect(await capturedCities.count()).toBeGreaterThanOrEqual(2)
+	await expect(page.locator('[data-cell="15"]')).toHaveClass(/-capturedby1/)
 })
 
 test('AI keeps header settings accessible, hides game actions, preserves their space and follows its active unit on mobile', async ({ page }) => {

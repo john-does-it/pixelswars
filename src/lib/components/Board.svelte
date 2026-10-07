@@ -1,6 +1,7 @@
 <script lang="ts">
 	import BattlefieldViewport from './BattlefieldViewport.svelte'
 	import Cell from './Cell.svelte'
+	import { boardingPaths, deploymentCells, selectedPassenger } from '$lib/game/transport.js'
 	import { pathsFrom } from '$lib/game/movement.js'
 	import { preferences } from '$lib/preferences.svelte.js'
 	import { selectedUnit, inspectedEnemy, attackCells, canAttack, locked } from '$lib/game/model.js'
@@ -14,9 +15,10 @@
 	const rangeClipId = $props.id()
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
+	const passenger = $derived(selectedPassenger(gameState))
 	const inspected = $derived(inspectedEnemy(gameState))
 	const rangeUnit = $derived(inspected ?? selected)
-	const attackRange = $derived(new Set(rangeUnit ? attackCells(gameState, rangeUnit) : []))
+	const attackRange = $derived(new Set(rangeUnit && !passenger ? attackCells(gameState, rangeUnit) : []))
 	const rangeClip = $derived(
 		[...attackRange]
 			.map((index) => {
@@ -46,7 +48,10 @@
 	})
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 	const opponentTurn = $derived(gameState.aiThinking || !!(gameState.network && gameState.network.player !== gameState.player))
-	const movementRange = $derived(new Set(rangeUnit && !opponentTurn && !locked(gameState) && rangeUnit.movement > 0 ? [...pathsFrom(gameState, rangeUnit, rangeUnit.movement).keys()].filter((index) => index !== rangeUnit.cell) : []))
+	const movementRange = $derived(new Set(rangeUnit && !passenger && !opponentTurn && !locked(gameState) && rangeUnit.movement > 0 ? [...pathsFrom(gameState, rangeUnit, rangeUnit.movement).keys()].filter((index) => index !== rangeUnit.cell) : []))
+
+	const boardingTargets = $derived(new Set(selected && !passenger && !inspected && !opponentTurn ? boardingPaths(gameState, selected).keys() : []))
+	const deploymentTargets = $derived(new Set(selected && passenger && !opponentTurn ? deploymentCells(gameState, selected, passenger) : []))
 
 	$effect(() => {
 		const index = selected?.cell
@@ -73,6 +78,8 @@
 					showResources={!!unit && unit.player === gameState.player && !opponentTurn && (!gameState.network || gameState.network.phase === 'playing')}
 					selected={!!unit && selected?.id === unit.id}
 					inspected={!!unit && inspected?.id === unit.id}
+					boardingTarget={boardingTargets.has(cell.index)}
+					deploymentTarget={deploymentTargets.has(cell.index)}
 					reachable={movementRange.has(cell.index)}
 					enemyReachable={!!inspected}
 					attackable={attackRange.has(cell.index)}

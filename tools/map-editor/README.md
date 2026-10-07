@@ -18,6 +18,8 @@ Run `npm run build:map-editor` to refresh that generated copy after editor chang
    complete banks. Unsupported narrow shapes keep plain water rather than broken corners.
 3. Choose a blue or red unit and place it. The eraser removes only units; painting
    water removes ground units from that cell. Aircraft can be placed over water.
+   Transport jeeps start empty; place their infantry separately. Players can load
+   up to three adjacent infantry units during the match.
 4. Set a name and numeric map ID, then **Exporter le JSON** to download `board-ID.json`.
    Submit it for review and integration into the game, translations and thumbnails.
    **JSON à copier** also provides the export as text if you prefer to copy and paste it.

@@ -117,7 +117,7 @@ for (const [mapId, columns, rows, name] of [
 		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 		await expect(page).toHaveURL(new RegExp(`/play/${mapId}/$`))
 		await expect(page.locator('[data-cell]')).toHaveCount(columns * rows)
-		await expect(page.locator('[data-unit]')).toHaveCount(22)
+		await expect(page.locator('[data-unit]')).toHaveCount(mapId === 10 ? 22 : 24)
 		await expect(page).toHaveTitle(`Pixel’s War · ${name}`)
 		await expect(page.getByRole('group', { name, exact: true })).toBeVisible()
 		await expect(page.locator('header h1')).toHaveCount(0)
@@ -147,7 +147,7 @@ for (const [mapId, columns, rows, name] of [
 		await expect(captureCell).toHaveClass(/-halfcaptured/)
 		await page.setViewportSize({ width: 360, height: 800 })
 		await zoomToReadableTiles(page)
-		await expect(page.locator('.minimap').first().locator('[data-minimap-unit]')).toHaveCount(22)
+		await expect(page.locator('.minimap').first().locator('[data-minimap-unit]')).toHaveCount(mapId === 10 ? 22 : 24)
 		await page
 			.locator('.minimap')
 			.first()

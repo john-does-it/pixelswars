@@ -106,6 +106,14 @@ MARKS['anti-air'] = [
     [(60, 119, 76, 127, DARK), (68, 127, 84, 135, SCORCH),
      (124, 111, 132, 119, '#e78146')],
 ]
+MARKS['transport'] = [
+    [(68, 78, 84, 86, SCORCH), (68, 78, 76, 82, METAL)],
+    [(108, 78, 116, 94, DARK), (116, 94, 124, 102, METAL)],
+    [(76, 110, 92, 118, DARK), (84, 118, 100, 126, SCORCH),
+     (76, 110, 84, 114, METAL)],
+    [(60, 126, 76, 134, DARK), (108, 110, 124, 118, SCORCH),
+     (116, 118, 132, 126, DARK), (116, 118, 124, 122, '#e78146')],
+]
 only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
 selected_marks = {only: MARKS[only]} if only else MARKS
 # Cropped originals for the supplied new units.
@@ -136,7 +144,7 @@ for row, (kind, player) in enumerate((kind, player) for kind in selected_marks f
             # Keep every original silhouette/transparent pixel, even at critical health.
             image.putalpha(original.getchannel('A'))
             save_sprite(image, f'{name}-damage-{stage}')
-            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air') else read_sprite(f'{name}-fit')
+            fit = original.crop(original.getbbox()) if kind in ('plane', 'infantry-rocket', 'helicopter', 'anti-air', 'transport') else read_sprite(f'{name}-fit')
             fitted = Image.new('RGBA', fit.size)
             box = fit.getbbox()
             crop = image.crop(original.getbbox()).resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)

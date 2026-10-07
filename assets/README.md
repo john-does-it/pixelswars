@@ -31,6 +31,7 @@ To regenerate artwork:
 | Bitmap unit damage | `python scripts/draw-unit-damage.py` | Python and Pillow |
 | One unit's damage | `python scripts/draw-unit-damage.py --only tank` | Python and Pillow |
 | Sniper sprites and contact sheet | `node scripts/export-sniper-sprites.mjs` | Playwright Chromium |
+| Transport sprites from supplied SVGs | `node scripts/export-transport-sprites.mjs`, then `python scripts/draw-unit-damage.py --only transport` | Playwright Chromium, Python and Pillow |
 | Normalize an imported unit | `python scripts/normalize-unit-sprite.py INPUT OUTPUT.png` | Python and Pillow, writes `OUTPUT.png.base64` |
 | Map thumbnails | `npm run generate:map-previews` | Running dev server and Playwright Chromium |
 

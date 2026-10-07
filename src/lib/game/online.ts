@@ -1,7 +1,8 @@
 import { createController } from './controller.ts'
 import { turnTransitionDuration } from './timing.ts'
 import { initialState, selectedUnit, unitAt, canAttack, locked, reachableCells } from './model.ts'
-import { isUnitTypeId } from './catalog.ts'
+import { isUnitTypeId, unitTypes } from './catalog.ts'
+import { isInfantry, selectedPassenger, selectPassenger } from './transport.ts'
 import type { MatchConnection } from './peer.ts'
 import type { ControllerOptions, GameController, GameMap, GameState, Player } from './types.ts'
 
@@ -20,6 +21,15 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 	if (![1, 2].includes(snapshot.player) || !Number.isInteger(snapshot.round) || snapshot.round < 1 || !amount(snapshot.money?.[1]) || !amount(snapshot.money?.[2]) || !Number.isInteger(snapshot.nextId) || snapshot.nextId < 0) return false
 	if (!Array.isArray(snapshot.units) || snapshot.units.length > state.cells.length || !snapshot.units.every((unit) => unit && Number.isInteger(unit.id) && unit.id >= 0 && isUnitTypeId(unit.type) && [1, 2].includes(unit.player) && cellIndex(unit.cell) && [unit.health, unit.movement, unit.attacks, unit.capture].every(amount))) return false
 	if (new Set(snapshot.units.map((unit) => unit.id)).size !== snapshot.units.length || new Set(snapshot.units.map((unit) => unit.cell)).size !== snapshot.units.length) return false
+	const identities = new Set(snapshot.units.map((unit) => unit.id))
+	for (const transport of snapshot.units) {
+		if (transport.cargo === undefined) continue
+		if (!Array.isArray(transport.cargo) || !unitTypes[transport.type].capacity || transport.cargo.length > unitTypes[transport.type].capacity!) return false
+		for (const passenger of transport.cargo) {
+			if (!passenger || !isInfantry(passenger) || passenger.cargo !== undefined || !Number.isInteger(passenger.id) || passenger.id < 0 || identities.has(passenger.id) || passenger.player !== transport.player || !cellIndex(passenger.cell) || ![passenger.health, passenger.movement, passenger.attacks, passenger.capture].every(amount) || passenger.health <= 0) return false
+			identities.add(passenger.id)
+		}
+	}
 	if (!Array.isArray(snapshot.ownership) || snapshot.ownership.length !== state.cells.length || !snapshot.ownership.every((cell) => cell && [0, 1, 2].includes(cell.owner) && amount(cell.capturePoints) && cell.capturePoints <= 20)) return false
 	if (![snapshot.productionIndex, snapshot.combatTargetIndex, snapshot.explosion].every(nullableCell) || typeof snapshot.fighting !== 'boolean' || typeof snapshot.moving !== 'boolean' || ![null, 1, 2].includes(snapshot.winner)) return false
 	if (snapshot.selectedId !== null && !snapshot.units.some((unit) => unit.id === snapshot.selectedId && unit.player === snapshot.player)) return false
@@ -30,13 +40,19 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 	for (const key of sharedKeys) Object.assign(state, { [key]: snapshot[key] })
 	snapshot.ownership.forEach(({ owner, capturePoints }, index) => Object.assign(state.cells[index], { owner, capturePoints }))
 	if (previousRound !== state.round || state.fighting || state.winner !== null) state.inspectedEnemyId = null
+	if (previousRound !== state.round || !selectedPassenger(state) || state.winner !== null || state.player !== state.network?.player) state.deployingPassengerId = null
 	return true
 }
 
-type Command = { action: 'select' | 'click' | 'move' | 'cancel' | 'confirm' | 'capture' | 'buy' | 'end' | 'open' | 'close'; value?: number | string }
+type Command = { action: 'select' | 'click' | 'move' | 'cancel' | 'confirm' | 'capture' | 'buy' | 'end' | 'open' | 'close' | 'embark' | 'deploy'; value?: number | string; destination?: number }
 export function validCommand(input: unknown, state: GameState): input is Command {
 	if (!input || typeof input !== 'object') return false
 	const command = input as Command
+	if (command.action === 'embark' || command.action === 'deploy') {
+		if (!Number.isInteger(command.value) || Number(command.value) < 0) return false
+		if (command.action === 'embark') return command.destination === undefined && state.units.some((unit) => unit.id === command.value && unit.player === state.player)
+		return Number.isInteger(command.destination) && Number(command.destination) >= 0 && Number(command.destination) < state.cells.length && !!selectedUnit(state)?.cargo?.some((unit) => unit.id === command.value)
+	}
 	if (['cancel', 'confirm', 'capture', 'end', 'close'].includes(command.action)) return command.value === undefined
 	if (command.action === 'buy') return typeof command.value === 'string' && isUnitTypeId(command.value)
 	if (!['select', 'click', 'move', 'open'].includes(command.action) || typeof command.value !== 'number' || !Number.isInteger(command.value) || command.value < 0) return false
@@ -78,6 +94,12 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 	function applyCommand(command: Command, player: Player) {
 		if (disposed || network.phase !== 'playing' || connection.status !== 'connected' || state.player !== player || locked(state) || now() < blockedUntil) return
 		switch (command.action) {
+			case 'embark':
+				controller.embark(command.value as number)
+				break
+			case 'deploy':
+				controller.deploy(command.value as number, command.destination!)
+				break
 			case 'select':
 				controller.select(command.value as number)
 				break
@@ -174,6 +196,15 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 	})
 	const game: GameController = {
 		state,
+		selectPassenger(passengerId) {
+			if (network.phase === 'playing' && state.player === connection.player && !network.pending) selectPassenger(state, passengerId)
+		},
+		embark(passengerId) {
+			request({ action: 'embark', value: passengerId })
+		},
+		deploy(passengerId, destination) {
+			request({ action: 'deploy', value: passengerId, destination })
+		},
 		start() {
 			started = true
 			connection.send({ type: 'ready' })
@@ -184,6 +215,11 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 			request({ action: 'select', value: id })
 		},
 		clickCell(index) {
+			const passenger = selectedPassenger(state)
+			if (passenger) {
+				request({ action: 'deploy', value: passenger.id, destination: index })
+				return
+			}
 			state.previewIndex = index
 			if (locked(state) || network.phase !== 'playing') return
 			const unit = unitAt(state, index)
@@ -200,11 +236,20 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 			request({ action: 'click', value: index })
 		},
 		move(index) {
+			const passenger = selectedPassenger(state)
+			if (passenger) {
+				request({ action: 'deploy', value: passenger.id, destination: index })
+				return
+			}
 			state.inspectedEnemyId = null
 			if (!locked(state) && !network.pending && network.phase === 'playing' && state.player === connection.player && reachableCells(state).includes(index)) state.previewIndex = index
 			request({ action: 'move', value: index })
 		},
 		cancel() {
+			if (state.deployingPassengerId !== null) {
+				state.deployingPassengerId = null
+				return
+			}
 			state.inspectedEnemyId = null
 			request({ action: 'cancel' })
 		},

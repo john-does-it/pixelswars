@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createOnlineController, matchSnapshot, applySnapshot, validCommand } from '../src/lib/game/online.ts'
 import { initialState } from '../src/lib/game/model.ts'
-import { decodeSignal, matchFingerprint, type MatchConnection, type PeerStatus } from '../src/lib/game/peer.ts'
+import { decodeSignal, matchFingerprint, protocolVersion, type MatchConnection, type PeerStatus } from '../src/lib/game/peer.ts'
 import { createUnit } from '../src/lib/game/catalog.ts'
 import type { ControllerOptions, GameMap, Player } from '../src/lib/game/types.ts'
 
@@ -91,6 +91,42 @@ async function session(options: ControllerOptions = {}) {
 		}
 	}
 }
+
+test('guest transport commands synchronize loading and deployment and reject occupied destinations', async () => {
+	const match = await session()
+	try {
+		const transport = createUnit('transport', 2, 34, match.hostState.nextId++)
+		match.hostState.units.push(transport)
+		match.host.endTurn()
+		await flush()
+		match.advance()
+		match.guest.select(1)
+		await flush()
+		match.guest.clickCell(34)
+		await flush()
+		assert.deepEqual(matchSnapshot(match.guestState), matchSnapshot(match.hostState))
+		assert.equal(match.hostState.units.find((unit) => unit.id === transport.id)?.cargo?.[0].id, 1)
+		match.guest.selectPassenger(1)
+		assert.equal(match.guestState.deployingPassengerId, 1)
+		assert.equal(match.hostState.deployingPassengerId, null)
+		match.guest.clickCell(34)
+		await flush()
+		assert.equal(
+			match.hostState.units.some((unit) => unit.id === 1),
+			false
+		)
+		assert.equal(match.guestState.deployingPassengerId, 1)
+		match.guest.clickCell(35)
+		await flush()
+		assert.deepEqual(matchSnapshot(match.guestState), matchSnapshot(match.hostState))
+		assert.equal(match.guestState.units.find((unit) => unit.id === 1)?.movement, 3)
+		assert.equal(match.guestState.units.find((unit) => unit.id === 1)?.capture, 1)
+		assert.equal(match.guestState.units.find((unit) => unit.id === transport.id)?.movement, 8)
+		assert.equal(match.guestState.units.find((unit) => unit.id === transport.id)?.cargo?.length, 0)
+	} finally {
+		match.dispose()
+	}
+})
 
 test('guest destination clicks synchronize intermediate steps and lock actions until arrival', async () => {
 	let resume = () => {}
@@ -321,10 +357,10 @@ test('invalid snapshots and invitations are rejected without mutating the match'
 	assert.equal(applySnapshot(state, invalid), false)
 	assert.deepEqual(matchSnapshot(state), before)
 	for (const input of ['', 'PW1.invalid', 'https://example.com/#invite=nope']) assert.throws(() => decodeSignal(input))
-	const code = `PW2.1.1.${matchFingerprint(map)}.12345678-1234-1234-1234-123456789abc`
+	const code = `PW2.${protocolVersion}.1.${matchFingerprint(map)}.12345678-1234-1234-1234-123456789abc`
 	assert.deepEqual(decodeSignal(code), decodeSignal(`https://example.com/pixelswars/play/1/?online=1#invite=${code}`))
 	assert.equal(decodeSignal(code).peer, 'pw-12345678-1234-1234-1234-123456789abc')
-	assert.throws(() => decodeSignal(code.replace('PW2.1.', 'PW2.2.')), /incompatible/)
+	assert.throws(() => decodeSignal(code.replace(`PW2.${protocolVersion}.`, `PW2.${protocolVersion + 1}.`)), /incompatible/)
 	assert.throws(() => decodeSignal(code + '.extra'), /invalid/)
 	assert.notEqual(matchFingerprint(map), matchFingerprint({ ...map, cols: 12 }))
 })

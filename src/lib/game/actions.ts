@@ -5,6 +5,7 @@ import type { GameState } from './types.ts'
 export function deselect(state: GameState): void {
 	if (locked(state)) return
 	state.selectedId = null
+	state.deployingPassengerId = null
 	state.inspectedEnemyId = null
 	state.origin = null
 }
@@ -13,6 +14,7 @@ export function select(state: GameState, id: number): void {
 	if (locked(state)) return
 	const unit = state.units.find((unit) => unit.id === id)
 	if (!unit || unit.player !== state.player || unit.health <= 0) return
+	state.deployingPassengerId = null
 	if (state.selectedId !== id) state.origin = { cell: unit.cell, movement: unit.movement }
 	state.selectedId = id
 	state.inspectedEnemyId = null

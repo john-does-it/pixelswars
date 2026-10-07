@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit'
+import { dev } from '$app/environment'
 import neighborTrouble from '$lib/data/neighbor-trouble.json'
 import aLittleStroll from '$lib/data/a-little-stroll.json'
 import afterYou from '$lib/data/after-you.json'
@@ -21,7 +22,11 @@ import type { GameMap } from '$lib/game/types.js'
 export const entries: EntryGenerator = () => {
 	return Array.from({ length: 16 }, (_, index) => ({ map: String(index + 1) }))
 }
-export const load: PageLoad = ({ params }) => {
+export const load: PageLoad = async ({ params }) => {
+	if (dev && params.map === 'dev') {
+		const { createDevMap } = await import('$lib/game/dev-map.js')
+		return { map: createDevMap() }
+	}
 	const maps: Record<string, GameMap> = {
 		1: neighborTrouble as GameMap,
 		2: aLittleStroll as GameMap,

@@ -214,7 +214,7 @@
 	.board-actions {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: 16px;
 		flex: none;
 		min-height: 46px;

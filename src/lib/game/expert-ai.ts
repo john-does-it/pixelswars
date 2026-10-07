@@ -1,6 +1,7 @@
 import { pathsFrom } from './movement.ts'
 import { buildingIncome, unitTypes } from './catalog.ts'
 import * as actions from './actions.ts'
+import * as transportActions from './transport.ts'
 import { attackCells, canAttack, canCapture } from './model.ts'
 import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision } from './ai.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
@@ -12,11 +13,12 @@ import type { GameState, Player } from './types.ts'
 const candidateLimit = 6
 const currentTurnActions = 4
 const projectedTurnActions = 8
+export const expertDecisionBudgetMs = 180
 
 function copyState(state: GameState): GameState {
 	return {
 		...state,
-		units: state.units.map((unit) => ({ ...unit })),
+		units: state.units.map((unit) => ({ ...unit, ...(unit.cargo ? { cargo: unit.cargo.map((passenger) => ({ ...passenger })) } : {}) })),
 		cells: state.cells.map((cell) => ({ ...cell, classes: [...cell.classes] })),
 		money: { ...state.money },
 		origin: state.origin ? { ...state.origin } : null,
@@ -50,6 +52,10 @@ function simulateDecision(state: GameState, decision: AiDecision, moved: Set<num
 		actions.openProduction(state, decision.buildingIndex)
 		actions.buy(state, decision.type)
 		produced.add(decision.buildingIndex)
+	} else if (decision.kind === 'embark' || decision.kind === 'deploy') {
+		actions.select(state, decision.unitId)
+		if (decision.kind === 'embark') transportActions.embark(state, decision.passengerId)
+		else if (transportActions.deploy(state, decision.passengerId, decision.destination)) moved.delete(decision.passengerId)
 	}
 	return state
 }
@@ -64,6 +70,10 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 		const healthValue = definition.cost * (0.25 + (0.75 * unit.health) / definition.maxHealth)
 		const cover = definition.domain === 'air' ? 0 : state.cells[unit.cell].defense
 		score += sign * (healthValue + cover + (definition.captures ? 80 : 0))
+		for (const passenger of unit.cargo ?? []) {
+			const passengerDefinition = unitTypes[passenger.type]
+			score += sign * (passengerDefinition.cost * (0.25 + (0.75 * passenger.health) / passengerDefinition.maxHealth) + 80)
+		}
 		// Reward deploying useful units rather than indefinitely delaying all progress
 		// until the simulated follow-up turn. Combat losses still dominate this bonus.
 		const distanceTo = (cell: number) => Math.abs((unit.cell % state.cols) - (cell % state.cols)) + Math.abs(Math.floor(unit.cell / state.cols) - Math.floor(cell / state.cols))
@@ -87,7 +97,7 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 
 async function rollout(state: GameState, moved: Set<number>, produced: Set<number>, limit: number, active: () => boolean, yieldControl: () => Promise<void>): Promise<GameState> {
 	for (let step = 0; step < limit && state.winner === null && active(); step++) {
-		const decision = chooseHeuristicDecision(state, 'expert', moved, produced)
+		const decision = chooseHeuristicDecision(state, 'expert', moved, produced, active)
 		if (decision.kind === 'end') break
 		state = simulateDecision(state, decision, moved, produced)
 		await yieldControl()
@@ -109,27 +119,31 @@ export async function projectExpertDecision(state: GameState, decision: AiDecisi
 	return rollout(projected, new Set(), new Set(), projectedTurnActions, active, yieldControl)
 }
 
-function candidates(state: GameState, moved: Set<number>, produced: Set<number>): AiDecision[] {
-	const choices: AiDecision[] = [chooseHeuristicDecision(state, 'expert', moved, produced)]
+function candidates(state: GameState, moved: Set<number>, produced: Set<number>, withinBudget: () => boolean): AiDecision[] {
+	const choices: AiDecision[] = [chooseHeuristicDecision(state, 'expert', moved, produced, withinBudget)]
+	if (!withinBudget()) return choices
 	const capturer = state.units.filter((unit) => canCapture({ ...state, selectedId: unit.id })).sort((left, right) => economicObjectiveValue(state, state.cells[right.cell]) - economicObjectiveValue(state, state.cells[left.cell]))[0]
 	if (capturer) choices.push({ kind: 'capture', unitId: capturer.id })
-	const attack = chooseAttack(state, 'expert')
+	if (!withinBudget()) return choices
+	const attack = chooseAttack(state, 'expert', withinBudget)
 	if (attack) {
 		choices.push({ kind: 'attack', attackerId: attack.attackerId, defenderId: attack.defenderId })
-		const alternativeTarget = chooseAttack({ ...state, units: state.units.filter((unit) => unit.id !== attack.defenderId) }, 'expert')
+		const alternativeTarget = chooseAttack({ ...state, units: state.units.filter((unit) => unit.id !== attack.defenderId) }, 'expert', withinBudget)
 		if (alternativeTarget) choices.push({ kind: 'attack', attackerId: alternativeTarget.attackerId, defenderId: alternativeTarget.defenderId })
 	}
-	const movement = chooseMovement(state, 'expert', moved)
+	if (!withinBudget()) return choices
+	const movement = chooseMovement(state, 'expert', moved, withinBudget)
 	if (movement) {
 		choices.push({ kind: 'move', unitId: movement.unitId, path: movement.path })
 		// Rejecting one unit's advance must not strand the rest of the army.
-		const alternativeMovement = chooseMovement(state, 'expert', new Set([...moved, movement.unitId]))
+		const alternativeMovement = chooseMovement(state, 'expert', new Set([...moved, movement.unitId]), withinBudget)
 		if (alternativeMovement) choices.push({ kind: 'move', unitId: alternativeMovement.unitId, path: alternativeMovement.path })
 	}
+	if (!withinBudget()) return choices
 	const plan = planExpertProduction(state, produced)
 	if (plan?.affordable) choices.push({ kind: 'buy', buildingIndex: plan.buildingIndex, type: plan.type })
 	if (attack) {
-		const alternative = chooseAttack({ ...state, units: state.units.map((unit) => (unit.id === attack.attackerId ? { ...unit, attacks: 0 } : unit)) }, 'expert')
+		const alternative = chooseAttack({ ...state, units: state.units.map((unit) => (unit.id === attack.attackerId ? { ...unit, attacks: 0 } : unit)) }, 'expert', withinBudget)
 		if (alternative) choices.push({ kind: 'attack', attackerId: alternative.attackerId, defenderId: alternative.defenderId })
 	}
 	const unique = [...new Map(choices.filter((choice) => choice.kind !== 'end').map((choice) => [JSON.stringify(choice), choice])).values()]
@@ -165,15 +179,24 @@ function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set
 	return true
 }
 
-export async function chooseExpertDecision(state: GameState, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}): Promise<AiDecision> {
-	const choices = candidates(state, moved, produced)
+export async function chooseExpertDecision(state: GameState, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}, budget: { milliseconds?: number; now?: () => number } = {}): Promise<AiDecision> {
+	if (!active()) return { kind: 'end' }
+	const now = budget.now ?? (() => performance.now())
+	const deadline = now() + (budget.milliseconds ?? expertDecisionBudgetMs)
+	const withinBudget = () => active() && now() < deadline
+	// Always prepare a legal heuristic fallback before spending time on rollouts.
+	const choices = candidates(state, moved, produced, withinBudget)
+	if (!active()) return { kind: 'end' }
 	if (choices.length === 1) return choices[0]
 	let best = choices[0]
 	let bestValue = -Infinity
 	const evaluated: { decision: AiDecision; value: number }[] = []
 	for (const decision of choices) {
 		if (!active()) return { kind: 'end' }
-		const projected = await projectExpertDecision(state, decision, moved, produced, active, yieldControl)
+		if (!withinBudget()) break
+		const projected = await projectExpertDecision(state, decision, moved, produced, withinBudget, yieldControl)
+		// An incomplete projection cannot be compared with a completed opponent reply.
+		if (!withinBudget()) break
 		const immediate = simulateDecision(copyState(state), decision, new Set(moved), new Set(produced))
 		// Discount speculative follow-up gains: owning a city now is better than
 		// repeatedly postponing its capture to the end of the search horizon.
@@ -185,9 +208,9 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 		}
 		await yieldControl()
 	}
-	if (active() && best.kind === 'end') {
+	if (withinBudget() && best.kind === 'end') {
 		const progress = evaluated.sort((left, right) => right.value - left.value).find(({ decision }) => safeEconomicProgress(state, decision, moved, produced))
 		if (progress) return progress.decision
 	}
-	return best
+	return active() ? best : { kind: 'end' }
 }

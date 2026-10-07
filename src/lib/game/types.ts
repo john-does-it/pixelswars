@@ -3,7 +3,7 @@ export type AiDifficulty = 'easy' | 'medium' | 'hard' | 'expert'
 export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
-export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'plane'
+export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'plane'
 export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest'
 export type BuildingId = 'city' | 'oil-field' | 'factory' | 'hospital' | 'airport'
 export type ProductionBuildingId = 'factory' | 'airport'
@@ -25,6 +25,7 @@ export interface UnitDefinition {
 	selectSound: string
 	fightSound: string
 	impactSound?: string
+	capacity?: number
 }
 
 export interface TerrainDefinition {
@@ -61,6 +62,7 @@ export interface Cell extends MapCell, TerrainDefinition {
 }
 
 export interface Unit {
+	cargo?: Unit[]
 	id: number
 	type: UnitTypeId
 	player: Player
@@ -88,6 +90,7 @@ export interface GameState {
 	round: number
 	money: Record<Player, number>
 	selectedId: number | null
+	deployingPassengerId: number | null
 	inspectedEnemyId: number | null
 	origin: MoveOrigin | null
 	productionIndex: number | null
@@ -122,6 +125,9 @@ export interface ControllerOptions {
 }
 
 export interface GameController {
+	selectPassenger(passengerId: number): void
+	embark(passengerId: number): void
+	deploy(passengerId: number, destination: number): void
 	closeProduction(): void
 	requestRematch?(): void
 	state: GameState

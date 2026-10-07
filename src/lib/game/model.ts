@@ -21,6 +21,7 @@ export function initialState(map: GameMap): GameState {
 		round: 1,
 		money: { 1: 0, 2: 0 },
 		selectedId: null,
+		deployingPassengerId: null,
 		inspectedEnemyId: null,
 		origin: null,
 		productionIndex: null,
@@ -72,7 +73,7 @@ export function effectiveRange(state: GameState, unit: Unit): { minimum: number;
 }
 
 export function attackCells(state: GameState, unit = selectedUnit(state)): number[] {
-	if (!unit) return []
+	if (!unit || unitTypes[unit.type].attack === 0) return []
 	const range = effectiveRange(state, unit)
 	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1)
 }

@@ -12,7 +12,7 @@ secure its economy and combine infantry, armor and air power to win.
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
 - **16 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
-- **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
+- **10 unit types:** capture with infantry, carry troops in transport jeeps, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
 - **Desktop and mobile:** keyboard, mouse and touch controls, with a zoomable battlefield and an interactive minimap.
@@ -40,6 +40,25 @@ Select a unit, then click or tap a dot-marked cell to move there, or an
 eligible enemy to attack. Confirm finishes the selection; cancel restores movement
 to the last committed position. Attacking or capturing commits that position,
 so cancelling cannot undo those actions.
+
+Transport jeeps cost **$600** and have the jeep’s **125 HP**, **20 defense** and
+**8 movement**, with no weapons or ammunition. Move friendly infantry onto a transport to board (up to three, including rockets
+and snipers). Select the jeep to see its passengers, choose one, then click a
+highlighted tile on the board to deploy. Boarding requires enough movement to enter the transport’s tile.
+Passengers deploy onto free adjacent land tiles, including bridges, never water.
+Deployment costs no movement to the transport. Passengers keep their remaining attacks
+and movement, minus the approach and the terrain cost of entering the transport’s
+tile. Deploying costs no additional passenger movement. They can move and fire
+immediately, and retain their available capture action without restoring a spent one. Loading and deployment commit positions;
+cancel cannot undo them. Destroying a transport also destroys all its passengers.
+Transport jeeps can be bought at army bases and placed in the map editor.
+Nice View Up Here and The Other Bank each start with one transport per side,
+aligned with the other units: 12 units per army.
+
+In development (`npm run dev`), the homepage links to `/play/dev/`: an 8 × 8 grass
+field containing every unit type for both teams. Infantry starts beside each
+transport for quick loading tests. The link and route data are gated by SvelteKit’s
+`dev` flag; this map is not prerendered or available in the production build.
 
 ### Controls and battlefield feedback
 
@@ -212,6 +231,9 @@ Easy, Medium, Hard and Expert use the same units, budgets and rules as the playe
 Higher levels improve targeting, positioning and purchases. Expert also evaluates
 short sequences of future actions and economic opportunities; it is a bounded
 search, not an exhaustive solution of the game.
+Transport decisions also scale by difficulty: simple delivery on Easy, immediate
+combat and purchase value on Medium, future threats and passenger protection on
+Hard, and economic/turn simulations on Expert.
 
 See [AI rules and implementation notes](docs/ai.md) for each difficulty's behavior.
 
@@ -319,7 +341,7 @@ To refresh generated assets after editing sources:
 node --experimental-strip-types scripts/sync-assets.ts
 ```
 
-All nine unit types have a healthy sprite and four damage stages for both teams.
+All ten unit types have a healthy sprite and four damage stages for both teams.
 See [asset sources and regeneration](assets/README.md) and [unit damage artwork](docs/unit-damage.md).
 Sprite generators write Base64 sources without redundant PNG copies. Synchronization removes stale
 public files when their source is removed. Do not commit generated static assets.

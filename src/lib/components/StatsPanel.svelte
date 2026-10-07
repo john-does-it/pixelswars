@@ -25,7 +25,7 @@
 			{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: `${currentUnit.attacks}/${definition.attacks}` },
 			{ icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: definition.attack },
 			{ icon: 'icon-defense', label: translate(messages.stat_defense), value: definition.defense },
-			{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: `${range.minimum}–${range.maximum}`, testId: 'preview-range' }
+			{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: definition.attack ? `${range.minimum}–${range.maximum}` : '—', testId: 'preview-range' }
 		]
 	}
 </script>

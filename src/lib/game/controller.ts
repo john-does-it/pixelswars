@@ -1,6 +1,7 @@
 import { unitTypes } from './catalog.ts'
 import { selectedUnit, unitAt, canAttack, applyDamage, locked } from './model.ts'
 import * as actions from './actions.ts'
+import * as transportActions from './transport.ts'
 import { pathsFrom } from './movement.ts'
 import { movementStepDuration } from './timing.ts'
 import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
@@ -22,6 +23,11 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		try {
 			for (const [step, index] of path.entries()) {
 				if (disposed || selectedUnit(state)?.id !== unit.id || (state.network && state.network.phase !== 'playing')) break
+				const transport = unitAt(state, index)
+				if (transport && step === path.length - 1) {
+					transportActions.embark(state, unit.id, transport.id, true)
+					break
+				}
 				if (!actions.move(state, index, true)) break
 				if (step === 0) play('woosh-movement')
 				onChange()
@@ -84,6 +90,15 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 	}
 	return {
 		state,
+		selectPassenger(passengerId) {
+			if (!disposed) transportActions.selectPassenger(state, passengerId)
+		},
+		embark(passengerId) {
+			if (!disposed && transportActions.embark(state, passengerId)) onChange()
+		},
+		deploy(passengerId, destination) {
+			if (!disposed && transportActions.deploy(state, passengerId, destination)) onChange()
+		},
 		closeProduction() {
 			state.productionIndex = null
 		},
@@ -101,9 +116,20 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		},
 		clickCell(index: number) {
 			if (disposed || locked(state)) return
+			const passenger = transportActions.selectedPassenger(state)
+			if (passenger) {
+				this.deploy(passenger.id, index)
+				return
+			}
 			const unit = unitAt(state, index)
 			if (unit) {
 				if (unit.player === state.player) {
+					const selected = selectedUnit(state)
+					const boardingPath = selected ? transportActions.boardingPaths(state, selected).get(index)?.path : undefined
+					if (selected && boardingPath) {
+						void followPath(selected, boardingPath)
+						return
+					}
 					state.inspectedEnemyId = null
 					if (state.selectedId === unit.id) actions.openProduction(state, index)
 					else this.select(unit.id)
@@ -123,12 +149,27 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		},
 		move(index: number) {
 			if (disposed || locked(state)) return
+			const passenger = transportActions.selectedPassenger(state)
+			if (passenger) {
+				this.deploy(passenger.id, index)
+				return
+			}
+			const selected = selectedUnit(state)
+			const transport = unitAt(state, index)
+			if (selected && transport && transportActions.embark(state, selected.id, transport.id)) {
+				onChange()
+				return
+			}
 			if (actions.move(state, index)) {
 				state.previewIndex = index
 				play('woosh-movement')
 			}
 		},
 		cancel() {
+			if (state.deployingPassengerId !== null) {
+				state.deployingPassengerId = null
+				return
+			}
 			actions.cancelMove(state)
 		},
 		openProduction(index: number) {

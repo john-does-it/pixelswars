@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import { assertConnectedRoads, assertWaterShores } from './map-assertions.ts'
 import { initialState, neighbors, movementCost, reachableCells, canAttack } from '../src/lib/game/model.ts'
 import { unitTypes } from '../src/lib/game/catalog.ts'
+import { boardingPaths } from '../src/lib/game/transport.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
 
 for (const [id, cols, rows] of [
@@ -30,9 +31,11 @@ for (const [id, cols, rows] of [
 		assert.equal(state.cols, cols)
 		assert.equal(state.rows, rows)
 		assert.equal(state.cells.length, cols * rows)
-		assert.equal(state.units.length, 22)
-		assert.equal(new Set(state.units.map((unit) => unit.cell)).size, 22)
+		assert.equal(state.units.length, id === 10 ? 22 : 24)
+		assert.equal(new Set(state.units.map((unit) => unit.cell)).size, state.units.length)
 		const expected = ['artillery', 'infantry', 'jeep', 'infantry-rocket', 'tank', 'infantry-sniper', 'helicopter', 'anti-air', 'infantry', 'infantry-rocket', 'jeep'].sort()
+		if (id !== 10) expected.push('transport')
+		expected.sort()
 		for (const player of [1, 2]) {
 			const positions = state.units
 				.filter((unit) => unit.player === player)
@@ -58,11 +61,17 @@ for (const [id, cols, rows] of [
 		for (const unit of state.units) {
 			assert.ok(unit.cell >= 0 && unit.cell < state.cells.length)
 			assert.ok(movementCost(unit, state.cells[unit.cell]) <= unitTypes[unit.type].movement)
-			assert.ok(reachableCells(state, unit).length > 0, `${unit.type} must be able to leave its starting cell`)
+			assert.ok(reachableCells(state, unit).length > 0 || boardingPaths({ ...state, player: unit.player }, unit).size > 0, `${unit.type} must be able to leave its starting cell or board a transport`)
 			assert.ok(
 				state.units.every((opponent) => !canAttack(state, unit, opponent)),
 				'no attacks before either army advances'
 			)
+		}
+		if (id !== 10) {
+			const transports = state.units.filter((unit) => unit.type === 'transport')
+			assert.equal(transports.length, 2)
+			assert.equal(transports[0].cell + transports[1].cell, state.cells.length - 1)
+			for (const transport of transports) assert.ok(state.units.some((unit) => unit.player === transport.player && boardingPaths({ ...state, player: unit.player }, unit).has(transport.cell)))
 		}
 	})
 	test(`${map.name}: neutral objectives and connected ground routes are balanced`, () => {

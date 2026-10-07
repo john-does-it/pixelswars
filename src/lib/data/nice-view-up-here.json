@@ -1317,7 +1317,7 @@
 			"player": 1
 		},
 		{
-			"cell": 13,
+			"cell": 14,
 			"type": "jeep",
 			"player": 1
 		},
@@ -1372,8 +1372,18 @@
 			"player": 2
 		},
 		{
-			"cell": 238,
+			"cell": 237,
 			"type": "jeep",
+			"player": 2
+		},
+		{
+			"cell": 13,
+			"type": "transport",
+			"player": 1
+		},
+		{
+			"cell": 238,
+			"type": "transport",
 			"player": 2
 		}
 	]

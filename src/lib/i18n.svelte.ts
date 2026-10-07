@@ -11,7 +11,7 @@ export function playerName(player: Player, aiMode = false): string {
 }
 
 export function unitName(id: UnitTypeId): string {
-	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, plane: messages.unit_plane }[id])
+	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, transport: messages.unit_transport, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, plane: messages.unit_plane }[id])
 }
 
 export function terrainName(id: TerrainId): string {
@@ -23,6 +23,7 @@ export function buildingName(id: BuildingId): string {
 }
 
 export function mapName(id: string): string {
+	if (id === 'dev') return translate(messages.dev_map_title)
 	const names: Record<string, (...parameters: any[]) => string> = { 1: messages.map_1, 2: messages.map_2, 3: messages.map_3, 4: messages.map_4, 5: messages.map_5, 6: messages.map_6, 7: messages.map_7, 8: messages.map_8, 9: messages.map_9, 10: messages.map_10, 11: messages.map_11, 12: messages.map_12, 13: messages.map_13, 14: messages.map_14, 15: messages.map_15, 16: messages.map_16 }
 	return names[id] ? translate(names[id]) : id
 }

@@ -14,7 +14,7 @@ export interface MatchConnection {
 }
 
 // Bump this when changing command semantics or combat rules.
-export const protocolVersion = 1
+export const protocolVersion = 2
 export function matchFingerprint(map: GameMap): string {
 	let hash = 2166136261
 	for (const character of JSON.stringify({ protocolVersion, map, unitTypes, terrainTypes })) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619)

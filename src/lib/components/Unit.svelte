@@ -48,11 +48,12 @@
 	></span>
 	<img class="health" src={asset('/assets/icons/icon-health.png')} alt="" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s" />
 	{#if showResources}
-		<span class="ammo" aria-hidden="true" data-remaining={unit.attacks}>
-			{#each Array(unitDefinition.attacks) as _, index}
-				<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} onanimationstart={synchronizeStatus} src={asset('/assets/icons/icon-attack-capacity.png')} alt="" /></span>
-			{/each}
-		</span>
+		{#if unitDefinition.attacks > 0}<span class="ammo" aria-hidden="true" data-remaining={unit.attacks}>
+				{#each Array(unitDefinition.attacks) as _, index}
+					<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} onanimationstart={synchronizeStatus} src={asset('/assets/icons/icon-attack-capacity.png')} alt="" /></span>
+				{/each}
+			</span>{/if}
+		{#if unitDefinition.capacity}<span class="cargo-count" aria-label={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })}>{unit.cargo?.length ?? 0}/{unitDefinition.capacity}</span>{/if}
 		<span class="fuel" class:spent={unit.movement === 0} onanimationstart={synchronizeStatus} data-level={fuelLevel} data-remaining={unit.movement} style:--empty-fuel={`${88 - fuelLevel * 19}%`} aria-hidden="true">
 			<img class="fuel-empty" src={asset('/assets/icons/icon-movement.png')} alt="" />
 			<img class="fuel-fill" src={asset('/assets/icons/icon-movement.png')} alt="" />
@@ -67,6 +68,17 @@
 </span>
 
 <style>
+	.cargo-count {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		color: white;
+		background: #18211ee6;
+		font-size: max(8px, calc(var(--cell-size, 40px) * 0.15));
+		line-height: 1.1;
+		padding: 1px 2px;
+		border-radius: 2px;
+	}
 	.unit-container {
 		position: absolute;
 		z-index: 1;

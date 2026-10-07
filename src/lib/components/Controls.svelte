@@ -12,6 +12,7 @@
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatsPanel from './StatsPanel.svelte'
 	import Modal from './Modal.svelte'
+	import CargoTray from './CargoTray.svelte'
 
 	let { game, aiMode = false, showHelp = $bindable(false), controlsHeight = $bindable(0), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; controlsHeight?: number; onrestart?: () => void } = $props()
 	let showPreview = $state(false)
@@ -76,6 +77,7 @@
 			{translate(messages.end_round)}
 		</button>
 	</div>
+	<div class="cargo-row"><CargoTray {game} disabled={inputLocked} /></div>
 </nav>
 {#if showPreview && previewCell}
 	<Modal title={translate(messages.cell_statistics)} alwaysShowScrollbar={false} onclose={() => (showPreview = false)}>
@@ -182,6 +184,7 @@
 	}
 
 	nav {
+		width: min(100%, 480px);
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
@@ -192,6 +195,12 @@
 		}
 	}
 
+	.cargo-row {
+		flex: 0 0 100%;
+		height: 48px;
+		display: flex;
+		justify-content: flex-end;
+	}
 	.action-controls {
 		display: flex;
 		flex-wrap: wrap;
@@ -255,6 +264,7 @@
 
 	@media (max-width: 900px) {
 		nav {
+			width: auto;
 			position: fixed;
 			inset: auto 0 0;
 			z-index: 10;

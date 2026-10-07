@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { asset, resolve } from '$app/paths'
+	import { dev } from '$app/environment'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
 	import StatList from '$lib/components/StatList.svelte'
@@ -17,6 +18,7 @@
 		'infantry-rocket': messages.unit_infantry_rocket_description,
 		'infantry-sniper': messages.unit_infantry_sniper_description,
 		jeep: messages.unit_jeep_description,
+		transport: messages.unit_transport_description,
 		artillery: messages.unit_artillery_description,
 		tank: messages.unit_tank_description,
 		'anti-air': messages.unit_anti_air_description,
@@ -26,7 +28,7 @@
 	const terrainDescriptions = { road: messages.terrain_road_description, grass: messages.terrain_grass_description, forest: messages.terrain_forest_description, moutain: messages.terrain_moutain_description, water: messages.terrain_water_description, building: messages.terrain_building_description }
 	const unitGroups: { name: (...parameters: any[]) => string; description: (...parameters: any[]) => string; ids: UnitTypeId[] }[] = [
 		{ name: messages.infantry_group, description: messages.infantry_group_description, ids: ['infantry', 'infantry-rocket', 'infantry-sniper'] },
-		{ name: messages.vehicles_group, description: messages.vehicles_group_description, ids: ['jeep', 'artillery', 'tank', 'anti-air'] },
+		{ name: messages.vehicles_group, description: messages.vehicles_group_description, ids: ['jeep', 'transport', 'artillery', 'tank', 'anti-air'] },
 		{ name: messages.aircraft_group, description: messages.aircraft_group_description, ids: ['helicopter', 'plane'] }
 	]
 	const terrainGroups: { name: (...parameters: any[]) => string; ids: TerrainId[] }[] = [
@@ -40,7 +42,7 @@
 		{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: unit.attacks },
 		{ icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: unit.attack },
 		{ icon: 'icon-defense', label: translate(messages.stat_defense), value: unit.defense },
-		{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: `${unit.exclusion + 1}–${unit.range}` }
+		{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: unit.attack ? `${unit.exclusion + 1}–${unit.range}` : '—' }
 	]
 	const terrainStats = (terrain: TerrainDefinition, rangeBonus = 0): StatItem[] => [{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain.cost }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }, ...(rangeBonus ? [{ icon: 'icon-attack-range', label: translate(messages.stat_range_bonus), value: `+${rangeBonus}` }] : [])]
 
@@ -93,6 +95,9 @@
 	</header>
 	<section aria-labelledby="maps">
 		<h2 id="maps">{translate(messages.choose_battlefield)}</h2>
+		{#if dev}
+			<p><a class="button" href={`${resolve('/play/[map]', { map: 'dev' })}/`}>{translate(messages.dev_map_open)}</a></p>
+		{/if}
 		<div class="maps">
 			{#each maps as map}
 				{@const preview = mapPreviews[String(map.id) as keyof typeof mapPreviews]}

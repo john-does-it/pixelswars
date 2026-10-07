@@ -40,6 +40,9 @@ export function createMatchController(state: GameState, options: ControllerOptio
 			void playAi()
 		},
 		select: guard(controller.select.bind(controller)),
+		selectPassenger: guard(controller.selectPassenger.bind(controller)),
+		embark: guard(controller.embark.bind(controller)),
+		deploy: guard(controller.deploy.bind(controller)),
 		clickCell: guard(controller.clickCell.bind(controller)),
 		move: guard(controller.move.bind(controller)),
 		cancel: guard(controller.cancel.bind(controller)),

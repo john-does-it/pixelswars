@@ -41,6 +41,11 @@
 </section>
 
 <section>
+	<svelte:element this={headingLevel === 3 ? 'h3' : 'h4'} class="section-title">{translate(messages.transport_title)}</svelte:element>
+	<p>{translate(messages.transport_rules)}</p>
+</section>
+
+<section>
 	<svelte:element this={headingLevel === 3 ? 'h3' : 'h4'} class="section-title">{translate(messages.keyboard)}</svelte:element>
 	<p class="keyboard-layout">{translate(messages.current_layout)} <strong>{keyboardLayout === 'azerty' ? 'AZERTY · ZQSD' : 'QWERTY · WASD'}</strong></p>
 	<dl>

@@ -2,6 +2,7 @@ import rules from './combat-rules.ts'
 import { buildingIncome, unitTypes } from './catalog.ts'
 import { productionBuilding, unitAt } from './model.ts'
 import type { Cell, GameState, Unit, UnitTypeId } from './types.ts'
+import { transportPurchaseScore } from './ai-transport.ts'
 
 export interface RecruitmentPlan {
 	buildingIndex: number
@@ -40,7 +41,10 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 	const enemyValue = enemies.reduce((total, enemy) => total + (unitTypes[enemy.type].cost * enemy.health) / unitTypes[enemy.type].maxHealth, 0)
 	const economicTargets = state.cells.filter((cell) => cell.building && cell.owner !== state.player).length
 	const desiredCapturers = Math.min(5, Math.max(2, Math.ceil(economicTargets / 3)))
-	const capturers = allies.filter((unit) => unitTypes[unit.type].captures).reduce((total, unit) => total + unit.health / unitTypes[unit.type].maxHealth, 0)
+	const capturers = allies
+		.flatMap((unit) => [unit, ...(unit.cargo ?? [])])
+		.filter((unit) => unitTypes[unit.type].captures)
+		.reduce((total, unit) => total + unit.health / unitTypes[unit.type].maxHealth, 0)
 	const uncovered = enemies.map((enemy) => {
 		const threatValue = (unitTypes[enemy.type].cost * enemy.health) / unitTypes[enemy.type].maxHealth
 		// Allocate existing firepower across the whole opposing army, not once per enemy.
@@ -52,6 +56,11 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 		for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
 			const definition = unitTypes[type]
 			if (productionBuilding(type) !== building.building || definition.cost > budget + income * 2) continue
+			if (type === 'transport') {
+				const score = transportPurchaseScore(state, building.index)
+				if (score > 0) offers.push({ buildingIndex: building.index, type, cost: definition.cost, score, affordable: definition.cost <= budget })
+				continue
+			}
 			let combatValue = 0
 			for (const { enemy, threatValue, deficit } of uncovered) {
 				const damageDealt = Math.min(enemy.health, estimatedTurnDamage(type, enemy.type))
