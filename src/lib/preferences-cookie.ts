@@ -5,12 +5,13 @@ export interface Preferences {
 	locale: Locale
 	keyboardLayout: KeyboardLayout
 	sound: boolean
+	volume: number
 	music: boolean
 	animations: boolean
 }
 
 export const preferencesCookieName = 'pixelswars-settings'
-export const defaultPreferences: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, music: false, animations: true }
+export const defaultPreferences: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, volume: 100, music: false, animations: true }
 
 export function isLocale(value: unknown): value is Locale {
 	return value === 'en' || value === 'de' || value === 'fr'
@@ -28,6 +29,8 @@ export function readPreferencesCookie(cookies: string): Preferences {
 		if (isLocale(saved.locale)) preferences.locale = saved.locale
 		if (saved.keyboardLayout === 'azerty' || saved.keyboardLayout === 'qwerty') preferences.keyboardLayout = saved.keyboardLayout
 		for (const key of ['sound', 'music', 'animations'] as const) if (typeof saved[key] === 'boolean') preferences[key] = saved[key]
+		preferences.volume = typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(100, saved.volume)) : preferences.sound ? 100 : 0
+		preferences.sound = preferences.volume > 0
 	} catch {
 		// Keep defaults for malformed browser cookies.
 	}

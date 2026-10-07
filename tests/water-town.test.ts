@@ -6,7 +6,7 @@ import { assertConnectedRoads } from './map-assertions.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
 
 test('Water Town: matching armies can reach every neutral objective through connected land', () => {
-	const map: GameMap = JSON.parse(readFileSync(new URL('../src/lib/data/board-15.json', import.meta.url), 'utf8'))
+	const map: GameMap = JSON.parse(readFileSync(new URL('../src/lib/data/water-town.json', import.meta.url), 'utf8'))
 	const state = initialState(map)
 	assert.equal(state.cells.length, 98)
 	assert.equal(state.units.length, 8)

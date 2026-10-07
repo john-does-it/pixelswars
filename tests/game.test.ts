@@ -1,14 +1,14 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assertConnectedRoads, assertWaterShores } from './map-assertions.ts'
-import { readFileSync } from 'node:fs'
 import { initialState, neighbors, reachableCells, canAttack, canCapture, purchaseStatus, movementCost, movementCostForDomain, applyDamage } from '../src/lib/game/model.ts'
 import { createUnit, unitTypes } from '../src/lib/game/catalog.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
 import type { Cell, GameMap, GameState, Player, Unit, UnitTypeId } from '../src/lib/game/types.ts'
 
-const maps: GameMap[] = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8')) as GameMap)
+const maps: GameMap[] = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => readMapFixture(id) as GameMap)
 const additionalMaps = maps.slice(2)
 const fixture = () => initialState(maps[0])
 const spawn = (state: GameState, type: UnitTypeId, player: Player, cell: number): Unit => {

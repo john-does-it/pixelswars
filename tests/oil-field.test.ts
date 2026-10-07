@@ -1,6 +1,6 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import { initialState, canCapture, purchaseStatus } from '../src/lib/game/model.ts'
 import { capture, endTurn, select } from '../src/lib/game/actions.ts'
 import { economicObjectiveValue } from '../src/lib/game/ai-economy.ts'
@@ -32,7 +32,7 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 		]
 	}
 	for (let mapId = 1; mapId <= 14; mapId++) {
-		const map = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')) as GameMap
+		const map = readMapFixture(mapId) as GameMap
 		const state = initialState(map)
 		const fields = state.cells.filter((cell) => cell.building === 'oil-field')
 		const expected = (placements[mapId] ?? []).map(([column, row]) => (row - 1) * map.cols + column - 1).sort((first, second) => first - second)

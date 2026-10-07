@@ -371,5 +371,9 @@
 	"map_editor_error_building": "A building must have a known type.",
 	"map_editor_error_units": "The unit list is missing.",
 	"map_editor_error_unit": "A unit is invalid or multiple units occupy the same tile.",
-	"map_editor_error_water": "A ground unit is placed on water."
+	"map_editor_error_water": "A ground unit is placed on water.",
+	"map_16": "Volcanic Lands",
+	"map_16_description": "Cross the mountainous terrain and passages between lakes to capture the four oil fields.",
+	"map_editor_bridge_horizontal": "Bridge ↔",
+	"map_editor_bridge_vertical": "Bridge ↕"
 }

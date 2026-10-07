@@ -11,6 +11,9 @@ Run `npm run build:map-editor` to refresh that generated copy after editor chang
    of an existing map / import a JSON file.
 2. Select a terrain or building and click or drag across the grid. Roads and
    water shores adapt to their neighbors. Choose an owner before painting buildings.
+   Horizontal and vertical bridge brushes keep their chosen orientation. Paint them
+   over water to create crossings, then connect roads at their ends. Bridges use
+   road movement and defense rules; neighboring water stays open beneath them.
    Water uses the existing shore sprites: use areas at least two cells thick for
    complete banks. Unsupported narrow shapes keep plain water rather than broken corners.
 3. Choose a blue or red unit and place it. The eraser removes only units; painting

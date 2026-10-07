@@ -1,7 +1,7 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assertConnectedRoads, assertWaterShores } from './map-assertions.ts'
-import { readFileSync } from 'node:fs'
 import { initialState, neighbors, movementCost, reachableCells, canAttack } from '../src/lib/game/model.ts'
 import { unitTypes } from '../src/lib/game/catalog.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
@@ -11,7 +11,7 @@ for (const [id, cols, rows] of [
 	[11, 18, 14],
 	[12, 18, 18]
 ]) {
-	const map: GameMap = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8'))
+	const map: GameMap = readMapFixture(id)
 	test(`${map.name}: roads are continuous and every turn joins the correct neighboring tiles`, () => {
 		const state = initialState(map)
 		assertConnectedRoads(state, id === 10)

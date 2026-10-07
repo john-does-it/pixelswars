@@ -60,6 +60,10 @@
 			<dt>{translate(messages.capture_secure)}</dt>
 			<dd>{translate(messages.key_space)}</dd>
 		</div>
+		<div>
+			<dt>{translate(messages.cell_statistics)}</dt>
+			<dd>I</dd>
+		</div>
 	</dl>
 </section>
 

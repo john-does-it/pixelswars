@@ -7,6 +7,8 @@ const infantrySelectionSounds = ['infantry', 'infantry-2', 'infantry-3', 'infant
 
 export function createAudio(): AudioController {
 	const tracks = new Map<string, HTMLAudioElement>()
+	let masterVolume = 1
+	const trackVolumes = new Map<HTMLAudioElement, number>()
 	const getTrack = (name: string): HTMLAudioElement => {
 		const existing = tracks.get(name)
 		if (existing) return existing
@@ -16,11 +18,16 @@ export function createAudio(): AudioController {
 		return track
 	}
 	const playTrack = (audio: HTMLAudioElement, volume: number): void => {
-		audio.volume = volume
+		trackVolumes.set(audio, volume)
+		audio.volume = volume * masterVolume
 		audio.currentTime = 0
 		void audio.play().catch(() => {}) // Autoplay restrictions must not interrupt a turn.
 	}
 	return {
+		setVolume(volume: number) {
+			masterVolume = Number.isFinite(volume) ? Math.max(0, Math.min(100, volume)) / 100 : 1
+			for (const [track, volume] of trackVolumes) track.volume = volume * masterVolume
+		},
 		sound(name: string) {
 			if (name === 'infantry') name = infantrySelectionSounds[Math.floor(Math.random() * infantrySelectionSounds.length)]!
 			playTrack(getTrack(name), 0.5)
@@ -40,6 +47,7 @@ export function createAudio(): AudioController {
 				track.load()
 			}
 			tracks.clear()
+			trackVolumes.clear()
 		}
 	}
 }

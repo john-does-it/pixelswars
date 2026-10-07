@@ -148,8 +148,9 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			if (actions.endTurn(state)) play('next-round')
 		},
 		keydown(event: KeyboardEvent) {
-			const target = event.target instanceof HTMLElement ? event.target : null
-			if (locked(state) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
+			const target = event.target instanceof Element ? event.target : null
+			if (locked(state) || event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
+			if (target?.closest('input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
 			if (event.key === 'Escape') {
 				if (state.productionIndex !== null) return
 				if (state.inspectedEnemyId !== null) {
@@ -163,7 +164,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 				}
 				return
 			}
-			if (state.productionIndex !== null || (target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) && target.dataset.cell === undefined)) return
+			if (state.productionIndex !== null) return
 			const unit = selectedUnit(state)
 			if (!unit) return
 			const letterOffsets: Record<string, number> = state.keyboardLayout === 'qwerty' ? { a: -1, d: 1, w: -state.cols, s: state.cols } : { q: -1, d: 1, z: -state.cols, s: state.cols }
@@ -173,7 +174,12 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			if (offset !== undefined) {
 				event.preventDefault()
 				this.move(unit.cell + offset)
-			} else if (event.key === 'Enter') {
+				return
+			}
+			// Closing settings and using zoom leave a button focused. Movement keys
+			// still control the unit; Enter and Space must retain native activation.
+			if (target?.closest('button:not([data-cell]), a, summary, [role="button"]')) return
+			if (event.key === 'Enter') {
 				event.preventDefault()
 				this.confirm()
 			} else if (event.key === ' ') {

@@ -6,7 +6,7 @@ import { pathsFrom } from '../src/lib/game/movement.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
 
-const map = JSON.parse(readFileSync(new URL('../src/lib/data/board-8.json', import.meta.url), 'utf8')) as GameMap
+const map = JSON.parse(readFileSync(new URL('../src/lib/data/right-of-way.json', import.meta.url), 'utf8')) as GameMap
 
 test('Right of Way has a centered, connected road network serving every building', () => {
 	const state = initialState(map)
@@ -26,7 +26,7 @@ test('Right of Way has a centered, connected road network serving every building
 	assert.equal(state.cells[65].terrain, 'road')
 })
 
-test('Right of Way gives both armies equal movement costs to paired objectives', () => {
+test('Right of Way keeps paired objectives accessible with the revised southern mountains', () => {
 	const state = initialState(map)
 	for (const unitType of ['infantry', 'infantry-rocket']) {
 		const blueUnit = state.units.find((unit) => unit.player === 1 && unit.type === unitType)!
@@ -36,7 +36,10 @@ test('Right of Way gives both armies equal movement costs to paired objectives',
 		for (const building of state.cells.filter((cell) => cell.building)) {
 			const oppositeIndex = state.cells.length - 1 - building.index
 			assert.ok(bluePaths.has(building.index))
-			assert.equal(bluePaths.get(building.index)!.cost, redPaths.get(oppositeIndex)?.cost, `${unitType}: equal access to ${building.building} at ${building.index}`)
+			assert.ok(redPaths.has(oppositeIndex))
+			// The revised southern terrain adds one infantry movement point to C2/L11.
+			const extraCost = unitType === 'infantry' && building.index === 101 ? 1 : 0
+			assert.equal(bluePaths.get(building.index)!.cost, redPaths.get(oppositeIndex)!.cost + extraCost, `${unitType}: access to ${building.building} at ${building.index}`)
 		}
 	}
 })

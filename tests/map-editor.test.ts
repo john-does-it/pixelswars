@@ -1,9 +1,28 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import { newMap, paintCell, readMap, mapJson } from '../tools/map-editor/model.ts'
 import { initialState } from '../src/lib/game/model.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
+
+test('bridges retain their axis, connect road ends and round-trip as passable roads', () => {
+	for (const axis of ['-h', '-v']) {
+		const map = newMap(7, 7)
+		for (let index = 0; index < map.cells.length; index++) paintCell(map, index, { kind: 'terrain', classes: ['-water'], owner: 0 })
+		paintCell(map, 24, { kind: 'terrain', classes: ['-road', '-bridge', axis], owner: 0 })
+		assert.deepEqual(map.cells[17].classes, ['-water'])
+		const approach = axis === '-h' ? 23 : 17
+		paintCell(map, approach, { kind: 'terrain', classes: ['-road', '-h'], owner: 0 })
+		assert.deepEqual(map.cells[approach].classes, ['-road', axis === '-h' ? '-endleft' : '-endtop'])
+		assert.deepEqual(map.cells[24].classes, ['-road', '-bridge', axis])
+		paintCell(map, 24, { kind: 'unit', type: 'tank', player: 1 })
+		const imported = readMap(mapJson(map))
+		assert.deepEqual(imported, map)
+		assert.equal(initialState(imported).cells[24].terrain, 'road')
+		paintCell(map, approach, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+		assert.deepEqual(map.cells[24].classes, ['-road', '-bridge', axis])
+	}
+})
 
 test('editor draws connected road junctions and repairs neighboring sprites when erasing', () => {
 	const map = newMap(7, 7)
@@ -52,8 +71,8 @@ test('editor exports owned buildings and armies in the actual game schema', () =
 })
 
 test('editor can round-trip all existing maps without changing their terrain or armies', () => {
-	for (let mapId = 1; mapId <= 15; mapId++) {
-		const source = readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')
+	for (let mapId = 1; mapId <= 16; mapId++) {
+		const source = JSON.stringify(readMapFixture(mapId))
 		assert.deepEqual(JSON.parse(mapJson(readMap(source))), JSON.parse(source), `map ${mapId}`)
 	}
 })

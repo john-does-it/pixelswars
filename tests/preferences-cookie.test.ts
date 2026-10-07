@@ -3,8 +3,18 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { defaultPreferences, readPreferencesCookie, serializePreferencesCookie } from '../src/lib/preferences-cookie.ts'
 
+test('volume migrates muted preferences and validates persisted levels', () => {
+	const read = (settings: object) => readPreferencesCookie(`pixelswars-settings=${encodeURIComponent(JSON.stringify(settings))}`)
+	assert.equal(read({ sound: false }).volume, 0)
+	assert.equal(read({ sound: true }).volume, 100)
+	assert.equal(read({ volume: 35 }).volume, 35)
+	assert.equal(read({ volume: -5 }).sound, false)
+	assert.equal(read({ volume: 150 }).volume, 100)
+	assert.equal(read({ volume: '35' }).volume, 100)
+})
+
 test('shared game/editor preferences validate cookies and preserve other settings when changing language', () => {
-	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, animations: false }
+	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, volume: 0, animations: false }
 	const cookie = serializePreferencesCookie(settings)
 	assert.deepEqual(readPreferencesCookie(`unrelated=1;${cookie}`), settings)
 	assert.deepEqual(readPreferencesCookie(serializePreferencesCookie({ ...settings, locale: 'de' })), { ...settings, locale: 'de' })

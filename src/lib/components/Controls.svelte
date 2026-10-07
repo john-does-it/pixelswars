@@ -35,12 +35,23 @@
 	function changeKeyboardLayout(layout: string) {
 		if (layout === 'azerty' || layout === 'qwerty') setKeyboardLayout(layout)
 	}
+
+	function openStatsWithKeyboard(event: KeyboardEvent) {
+		if (event.key.toLowerCase() !== 'i' || event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
+		if (!previewCell || inputLocked || waiting || showHelp || showPreview) return
+		const target = event.target instanceof Element ? event.target : null
+		if (target?.closest('dialog, input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
+		event.preventDefault()
+		showPreview = true
+	}
 </script>
+
+<svelte:window onkeydown={openStatsWithKeyboard} />
 
 <nav aria-label={translate(messages.game_controls)} bind:offsetHeight={controlsHeight} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
 		{#if previewCell}
-			<button class="inspect-action" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={translate(messages.preview_expand)} aria-haspopup="dialog" onclick={() => (showPreview = true)}>
+			<button class="inspect-action" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={`${translate(messages.preview_expand)} (I)`} aria-keyshortcuts="I" aria-haspopup="dialog" onclick={() => (showPreview = true)}>
 				<span class="tile-thumbnail" aria-hidden="true">
 					<TerrainIcon cell={previewCell} size="fill" />
 					{#if previewUnit}<img src={asset(unitSprite(previewUnit))} alt="" />{/if}
@@ -89,10 +100,11 @@
 		{/snippet}
 		{#snippet settings()}
 			<div class="settings-controls">
-				<button class="audio" aria-label={translate(gameState.sound ? messages.sound_on : messages.sound_off)} title={translate(gameState.sound ? messages.sound_on : messages.sound_off)} aria-pressed={gameState.sound} onclick={() => (gameState.sound = !gameState.sound)}>
-					{translate(messages.sound)}
-					<img src={asset(`/assets/icons/icon-${gameState.sound ? 'play' : 'mute'}-sound.png`)} alt="" />
-				</button>
+				<label class="audio volume-control">
+					<span>{translate(messages.sound)}</span>
+					<input type="range" min="0" max="100" step="5" value={preferences.volume} aria-label={translate(messages.sound)} aria-valuetext={`${preferences.volume}%`} oninput={(event) => updatePreferences({ volume: event.currentTarget.valueAsNumber, sound: event.currentTarget.valueAsNumber > 0 })} />
+					<output aria-hidden="true">{preferences.volume}%</output>
+				</label>
 				<button class="audio" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
 					{translate(messages.music)}
 					<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
@@ -149,6 +161,24 @@
 		height: 24px;
 		object-fit: contain;
 		image-rendering: pixelated;
+	}
+	.volume-control {
+		min-height: 44px;
+		max-width: 100%;
+		flex-wrap: wrap;
+		padding-inline: 10px;
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+	}
+	.volume-control input {
+		width: 110px;
+		min-height: 44px;
+		margin: 0;
+		accent-color: var(--color-accent);
+	}
+	.volume-control output {
+		min-width: 4ch;
+		text-align: right;
 	}
 
 	nav {

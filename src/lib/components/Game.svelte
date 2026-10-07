@@ -2,9 +2,10 @@
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
+	import { selectedUnit } from '$lib/game/model.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import { preloadGameAssets } from '$lib/game/preload.js'
-	import { initializePreferences, updatePreferences } from '$lib/preferences.svelte.js'
+	import { initializePreferences, updatePreferences, preferences } from '$lib/preferences.svelte.js'
 	import { mapName, translate } from '$lib/i18n.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import Board from './Board.svelte'
@@ -28,7 +29,19 @@
 	let showHelp = $state(false)
 	let controlsHeight = $state(0)
 	let camera = $state<MapCamera>()
+	let gameElement = $state<HTMLElement>()
 	const assetsReady = preloadGameAssets()
+
+	function handleKeydown(event: KeyboardEvent) {
+		const previousCell = selectedUnit(game.state)?.cell
+		game.keydown(event)
+		const currentCell = selectedUnit(game.state)?.cell
+		if (event.defaultPrevented && currentCell !== undefined && previousCell !== undefined && currentCell !== previousCell) {
+			// Let the board's selection effect focus the destination and follow it,
+			// including when keyboard movement starts from a toolbar button.
+			gameElement?.querySelector<HTMLElement>('.board')?.focus({ preventScroll: true })
+		}
+	}
 
 	onMount(() => {
 		let mounted = true
@@ -50,8 +63,17 @@
 	onDestroy(() => game.dispose())
 
 	$effect(() => {
+		audio?.setVolume(preferences.volume)
+		game.state.sound = preferences.volume > 0
+	})
+
+	$effect(() => {
 		audio?.music(game.state.sound && game.state.music, game.state.player)
-		if (preferencesLoaded) updatePreferences({ keyboardLayout: game.state.keyboardLayout, sound: game.state.sound, music: game.state.music })
+	})
+
+	$effect(() => {
+		const { keyboardLayout, sound, music } = game.state
+		if (preferencesLoaded) untrack(() => updatePreferences({ keyboardLayout, sound, music }))
 	})
 
 	function restart() {
@@ -69,7 +91,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={(event) => game.keydown(event)} />
+<svelte:window onkeydown={handleKeydown} />
 <svelte:head>
 	<title>Pixel’s War · {mapName(map.id)}</title>
 </svelte:head>
@@ -79,7 +101,7 @@
 		<p role="status">{translate(messages.loading_battlefield)}</p>
 	</main>
 {:then}
-	<main class="game-shell" style:--controls-height={`${controlsHeight}px`}>
+	<main bind:this={gameElement} class="game-shell" style:--controls-height={`${controlsHeight}px`}>
 		{#key game}
 			{#key game.state.round}
 				{#if game.state.winner === null && localTurn && (!network || network.phase === 'playing')}

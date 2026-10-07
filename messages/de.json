@@ -371,5 +371,9 @@
 	"map_editor_error_building": "Ein Gebäude muss einen bekannten Typ haben.",
 	"map_editor_error_units": "Die Einheitenliste fehlt.",
 	"map_editor_error_unit": "Eine Einheit ist ungültig oder mehrere Einheiten belegen dasselbe Feld.",
-	"map_editor_error_water": "Eine Bodeneinheit steht auf Wasser."
+	"map_editor_error_water": "Eine Bodeneinheit steht auf Wasser.",
+	"map_16": "Vulkanland",
+	"map_16_description": "Überquert das bergige Gelände und die Passagen zwischen den Seen, um die vier Ölfelder einzunehmen.",
+	"map_editor_bridge_horizontal": "Brücke ↔",
+	"map_editor_bridge_vertical": "Brücke ↕"
 }

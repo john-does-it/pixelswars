@@ -6,13 +6,14 @@ const baseUrl = process.env.PREVIEW_BASE_URL ?? 'http://127.0.0.1:5173'
 const output = new URL('../assets/map-previews/', import.meta.url)
 await mkdir(output, { recursive: true })
 const browser = await chromium.launch()
-const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Array.from({ length: 15 }, (_, index) => index + 1)
-if (mapIds.some((id) => !Number.isInteger(id) || id < 1 || id > 15)) throw new Error('Map IDs must be integers between 1 and 15')
+const mapFiles = JSON.parse(await readFile(new URL('../src/lib/data/map-files.json', import.meta.url), 'utf8'))
+const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Object.keys(mapFiles).map(Number)
+if (mapIds.some((id) => !Number.isInteger(id) || !mapFiles[id])) throw new Error('Unknown map ID')
 const metadata = JSON.parse(await readFile(new URL('../src/lib/data/map-previews.json', import.meta.url), 'utf8'))
 try {
 	const page = await browser.newPage()
 	for (const id of mapIds) {
-		const map = JSON.parse(await readFile(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8'))
+		const map = JSON.parse(await readFile(new URL(`../src/lib/data/${mapFiles[id]}`, import.meta.url), 'utf8'))
 		await page.goto(`${baseUrl}/play/${id}/`)
 		await page.locator('.board [data-cell]').first().waitFor()
 		const png = await page.locator('.board').evaluate(async (board, { cols, rows }) => {

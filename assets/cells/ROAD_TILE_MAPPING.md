@@ -12,6 +12,8 @@ Directions below describe **open road exits**, not the location of the curb.
 | --- | --- |
 | `-h` | East, west |
 | `-v` | North, south |
+| `-bridge -h` | East, west (bridge) |
+| `-bridge -v` | North, south (bridge) |
 | `-cross` | All four |
 | `-corner -top` | North, east |
 | `-corner -bottom` | South, west |
@@ -29,6 +31,10 @@ Directions below describe **open road exits**, not the location of the curb.
 Keep each opening connected to an adjacent road or the map boundary. Buildings
 remain separate terrain cells, with access roads beside them. The map tests check
 road connectivity, sprite orientation and building access on maps 7, 11 and 12.
+
+Bridges are straight road variants. The horizontal SVG contains the original 16 × 16 pixel artwork with nearest-neighbor
+scaling; the vertical SVG rotates it without rotating units or indicators.
+The editor preserves their selected axis and keeps water open beside the bridge.
 
 After changing a map, regenerate its thumbnail against the dev server:
 

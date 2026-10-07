@@ -15,6 +15,18 @@ test('public editor opens from home with working sprites, JSON export and submis
 		.evaluate((cell) => getComputedStyle(cell).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])
 	expect(spriteUrl).toBeTruthy()
 	expect((await page.request.get(spriteUrl!)).ok()).toBe(true)
+	for (const [label, axis, cell] of [
+		['Bridge ↔', '-h', '2'],
+		['Bridge ↕', '-v', '3']
+	]) {
+		await page.getByRole('button', { name: label, exact: true }).click()
+		const tile = page.locator(`#board [data-cell="${cell}"]`)
+		await tile.click()
+		await expect(tile).toHaveClass(new RegExp(`-bridge ${axis}`))
+		const imageUrl = await tile.evaluate((element) => getComputedStyle(element).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])
+		expect(imageUrl).toContain('cell-road-bridge-')
+		expect((await page.request.get(imageUrl!)).ok()).toBe(true)
+	}
 	await page.getByRole('button', { name: 'Infantry', exact: true }).click()
 	await page.locator('[data-cell="0"]').click()
 	await expect.poll(() => page.locator('[data-cell="0"] img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0)
@@ -67,5 +79,5 @@ test('editor shares all three languages with the game without changing the draft
 	await page.locator('#back-to-game').click()
 	await expect(page.getByRole('combobox')).toHaveValue('de')
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!
-	expect(JSON.parse(decodeURIComponent(cookie.value))).toEqual({ locale: 'de', sound: false, music: true, animations: false, keyboardLayout: 'qwerty' })
+	expect(JSON.parse(decodeURIComponent(cookie.value))).toEqual({ locale: 'de', sound: false, volume: 0, music: true, animations: false, keyboardLayout: 'qwerty' })
 })

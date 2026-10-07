@@ -1,6 +1,6 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import { initialState, neighbors, movementCostForDomain, canAttack, reachableCells } from '../src/lib/game/model.ts'
 import { assertConnectedRoads, assertWaterShores } from './map-assertions.ts'
 import type { GameMap, GameState } from '../src/lib/game/types.ts'
@@ -41,7 +41,7 @@ for (const [id, cols, rows, unitsPerSide, passages] of [
 		]
 	]
 ] as const) {
-	const map: GameMap = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${id}.json`, import.meta.url), 'utf8'))
+	const map: GameMap = readMapFixture(id)
 	test(`${map.name}: two one-cell-wide grass passages are the only routes between banks`, () => {
 		const state = initialState(map)
 		assert.equal(state.cols, cols)

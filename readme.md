@@ -11,7 +11,7 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
-- **15 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
+- **16 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
 - **9 unit types:** capture with infantry, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
@@ -225,7 +225,7 @@ npm run dev
 ```
 
 Open the Vite address. The home route is `/`; games use `/play/1/` through
-`/play/15/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
+`/play/16/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
 to play against the AI, or `?online=1` for online setup. Without either parameter,
 the game is local two-player.
 
@@ -273,7 +273,7 @@ WebSocket endpoint explicitly. To use installed Chrome, set
 | `src/lib/game/catalog.ts`, `combat-rules.ts` | Statistics, terrain, attack geometry and damage          |
 | `src/lib/game/ai*.ts`, `expert-ai.ts`        | AI decisions, economy and bounded lookahead              |
 | `src/lib/game/peer.ts`, `online.ts`          | WebRTC invitations, authoritative commands and snapshots |
-| `src/lib/data/board-N.json`                  | Explicit, editable map layouts                           |
+| `src/lib/data/neighbor-trouble.json`         | Explicit, editable map layouts                           |
 | `messages/`                                  | English, French and German source translations           |
 | `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
 | `distribution/itch/`                         | itch.io launcher source and bundled fonts                |
@@ -284,6 +284,11 @@ WebSocket endpoint explicitly. To use installed Chrome, set
 Components use Svelte runes. Each game owns its state; navigation disposes pending
 combat and audio. The DOM displays state rather than storing game rules. Board
 measurements control scrolling, focus and minimap positioning.
+
+Map JSON files use their English title in kebab case, such as `neighbor-trouble.json`.
+Their numeric IDs remain stable for game URLs and invitations. `src/lib/data/map-files.json`
+maps these IDs to filenames for preview generation and tests. When adding a map,
+register its route, translated title and description, then generate its thumbnail.
 
 Online peers check a fingerprint of the map, unit statistics, terrain and protocol
 version before connecting. Bump `protocolVersion` in `peer.ts` when changing command

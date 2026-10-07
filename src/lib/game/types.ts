@@ -141,6 +141,7 @@ export interface GameController {
 }
 
 export interface AudioController {
+	setVolume(volume: number): void
 	sound(name: string): void
 	music(enabled: boolean, player: Player): void
 	dispose(): void

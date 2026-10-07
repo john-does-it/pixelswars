@@ -117,6 +117,7 @@ button,
 button:not(.cell-container),
 .button {
 	min-height: 44px;
+	min-width: 44px;
 }
 
 .button,
@@ -462,4 +463,10 @@ button:disabled {
 	&.-halfcaptured.-capturedby2 {
 		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured-by-2.png');
 	}
+}
+.cell-container.-road.-bridge.-h {
+	background-image: url('/assets/cells/cell-road-bridge-h.svg');
+}
+.cell-container.-road.-bridge.-v {
+	background-image: url('/assets/cells/cell-road-bridge-v.svg');
 }

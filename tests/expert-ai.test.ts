@@ -1,3 +1,4 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -31,7 +32,7 @@ test('Expert is accepted as a difficulty', () => {
 
 test('Expert starts developing instead of passing its opening turn on every map', async () => {
 	for (let mapId = 1; mapId <= 14; mapId++) {
-		const state = initialState(JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')))
+		const state = initialState(readMapFixture(mapId))
 		const positions = state.units.filter((unit) => unit.player === 1).map((unit) => unit.cell)
 		const canCaptureOnOpening = state.units.filter((unit) => unit.player === 1 && unitTypes[unit.type].captures).some((unit) => [...pathsFrom(state, unit, unit.movement).keys()].some((index) => state.cells[index].building))
 		const game = createController(state, { delay: async () => {} })
@@ -70,7 +71,7 @@ test('Expert starts developing instead of passing its opening turn on every map'
 })
 
 test('Meet in the Middle: Expert captures a base and two cities over four turns, then recruits from its income', async () => {
-	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-4.json', import.meta.url), 'utf8')))
+	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/meet-in-the-middle.json', import.meta.url), 'utf8')))
 	const game = createController(state, { delay: async () => {} })
 	const startingArmySize = state.units.filter((unit) => unit.player === 1).length
 	try {
@@ -102,7 +103,7 @@ test('Meet in the Middle: Expert captures a base and two cities over four turns,
 })
 
 test('Expert completes the starting city with an infantry relay during the opening turn', async () => {
-	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-1.json', import.meta.url), 'utf8')))
+	const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/neighbor-trouble.json', import.meta.url), 'utf8')))
 	const relay = chooseCaptureRelay(state)!
 	assert.ok(relay)
 	const snapshot = JSON.stringify(state)
@@ -273,7 +274,7 @@ test('Expert waits for income without spending its reserved funds or getting stu
 
 test('Expert develops its economy and beats Hard from either side of Neighbor Trouble', async () => {
 	for (const expertPlayer of [1, 2] as const) {
-		const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/board-1.json', import.meta.url), 'utf8')))
+		const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/neighbor-trouble.json', import.meta.url), 'utf8')))
 		const controller = createController(state, { delay: async () => {} })
 		let peakIncome = 0
 		// Balance changes can lengthen a match; check development throughout play,

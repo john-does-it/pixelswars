@@ -1,3 +1,4 @@
+import { readMapFixture } from './map-fixtures.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -105,7 +106,7 @@ test('medium saves city income for missing air defense rather than buying infant
 })
 
 test('hard advances and clears production instead of stalling against a passive army', async () => {
-	const map = JSON.parse(readFileSync(new URL('../src/lib/data/board-1.json', import.meta.url), 'utf8')) as GameMap
+	const map = JSON.parse(readFileSync(new URL('../src/lib/data/neighbor-trouble.json', import.meta.url), 'utf8')) as GameMap
 	const state = initialState(map)
 	const controller = createController(state, { delay: noDelay })
 	for (let turn = 0; turn < 20 && !state.winner; turn++) {
@@ -246,9 +247,9 @@ test('local mode still hands the turn directly to the other player', () => {
 })
 
 for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
-	test(`${difficulty} completes legal turns on all fifteen maps`, async () => {
-		for (let mapId = 1; mapId <= 15; mapId++) {
-			const map = JSON.parse(readFileSync(new URL(`../src/lib/data/board-${mapId}.json`, import.meta.url), 'utf8')) as GameMap
+	test(`${difficulty} completes legal turns on all sixteen maps`, async () => {
+		for (let mapId = 1; mapId <= 16; mapId++) {
+			const map = readMapFixture(mapId) as GameMap
 			const state = initialState(map)
 			const controller = createController(state, { delay: noDelay })
 			controller.endTurn()

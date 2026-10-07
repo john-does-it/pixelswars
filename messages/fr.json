@@ -371,5 +371,9 @@
 	"map_editor_error_building": "Un bâtiment doit avoir un type connu.",
 	"map_editor_error_units": "La liste des unités est absente.",
 	"map_editor_error_unit": "Une unité est invalide ou plusieurs unités occupent la même case.",
-	"map_editor_error_water": "Une unité terrestre est placée sur l’eau."
+	"map_editor_error_water": "Une unité terrestre est placée sur l’eau.",
+	"map_16": "Terres volcaniques",
+	"map_16_description": "Traversez les reliefs montagneux et les passages entre les lacs pour capturer les quatre champs pétroliers.",
+	"map_editor_bridge_horizontal": "Pont ↔",
+	"map_editor_bridge_vertical": "Pont ↕"
 }
