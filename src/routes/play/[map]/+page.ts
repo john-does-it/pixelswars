@@ -16,11 +16,14 @@ import notTheShoes from '$lib/data/not-the-shoes.json'
 import whichWayAcross from '$lib/data/which-way-across.json'
 import waterTown from '$lib/data/water-town.json'
 import volcanicLands from '$lib/data/volcanic-lands.json'
+import delusionsOfGrandeur from '$lib/data/delusions-of-grandeur.json'
+import longIslandIcedTea from '$lib/data/long-island-iced-tea.json'
+import mapFiles from '$lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '$lib/game/types.js'
 
 export const entries: EntryGenerator = () => {
-	return Array.from({ length: 16 }, (_, index) => ({ map: String(index + 1) }))
+	return Object.keys(mapFiles).map((map) => ({ map }))
 }
 export const load: PageLoad = async ({ params }) => {
 	if (dev && params.map === 'dev') {
@@ -43,7 +46,9 @@ export const load: PageLoad = async ({ params }) => {
 		13: notTheShoes as GameMap,
 		14: whichWayAcross as GameMap,
 		15: waterTown as GameMap,
-		16: volcanicLands as GameMap
+		16: volcanicLands as GameMap,
+		17: delusionsOfGrandeur as GameMap,
+		18: longIslandIcedTea as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')

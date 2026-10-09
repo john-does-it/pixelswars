@@ -69,7 +69,9 @@
 		{ id: 13, title: messages.map_13, text: messages.map_13_description },
 		{ id: 14, title: messages.map_14, text: messages.map_14_description },
 		{ id: 15, title: messages.map_15, text: messages.map_15_description },
-		{ id: 16, title: messages.map_16, text: messages.map_16_description }
+		{ id: 16, title: messages.map_16, text: messages.map_16_description },
+		{ id: 17, title: messages.map_17, text: messages.map_17_description },
+		{ id: 18, title: messages.map_18, text: messages.map_18_description }
 	].sort((firstMap, secondMap) => {
 		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
 		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
@@ -101,7 +103,7 @@
 		<div class="maps">
 			{#each maps as map}
 				{@const preview = mapPreviews[String(map.id) as keyof typeof mapPreviews]}
-				{@const sizeLabels = { small: messages.map_small, medium: messages.map_medium, large: messages.map_large }}
+				{@const sizeLabels = { small: messages.map_small, medium: messages.map_medium, large: messages.map_large, xxl: messages.map_xxl }}
 				<a
 					class="panel map"
 					href={`${resolve('/play/[map]', { map: String(map.id) })}/`}
@@ -124,7 +126,7 @@
 	<section class="panel map-editor-intro" aria-labelledby="editor-title">
 		<h2 id="editor-title">{translate(messages.editor_title)}</h2>
 		<p>{translate(messages.editor_description)}</p>
-		<a class="button primary" href={asset('/map-editor/index.html')} data-sveltekit-reload>{translate(messages.editor_open)}</a>
+		<a class="button primary" href={resolve('/map-editor/', {})}>{translate(messages.editor_open)}</a>
 	</section>
 	<section class="panel">
 		<h2>{translate(messages.how_to_play)}</h2>

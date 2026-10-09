@@ -58,7 +58,7 @@ test('buy a transport, embark infantry and deploy through accessible controls', 
 })
 
 test('map editor offers both team transport sprites and exports transport units', async ({ page }) => {
-	await page.goto('/map-editor/index.html')
+	await page.goto('/map-editor/')
 	await page.getByRole('button', { name: 'Transport jeep', exact: true }).click()
 	await page.locator('#board [data-cell="0"]').click()
 	const image = page.locator('#board [data-cell="0"] img')

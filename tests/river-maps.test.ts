@@ -30,19 +30,10 @@ for (const [id, cols, rows, unitsPerSide, passages] of [
 			[37, 47]
 		]
 	],
-	[
-		14,
-		12,
-		12,
-		7,
-		[
-			[50, 62],
-			[81, 93]
-		]
-	]
+	[14, 12, 12, 7, []]
 ] as const) {
 	const map: GameMap = readMapFixture(id)
-	test(`${map.name}: two one-cell-wide grass passages are the only routes between banks`, () => {
+	test(`${map.name}: crossings connect both armies to every objective`, () => {
 		const state = initialState(map)
 		assert.equal(state.cols, cols)
 		assert.equal(state.rows, rows)
@@ -59,7 +50,15 @@ for (const [id, cols, rows, unitsPerSide, passages] of [
 			}
 			assert.ok(connectedLand(state, blue.cell, [...passage]).has(red.cell), 'either crossing can carry the whole army')
 		}
-		assert.equal(connectedLand(state, blue.cell, passages.flat()).has(red.cell), false, 'no unintended route bypasses the river')
+		if (id === 13) assert.equal(connectedLand(state, blue.cell, passages.flat()).has(red.cell), false, 'no unintended route bypasses the river')
+		else {
+			assert.deepEqual(
+				state.cells.filter((cell) => cell.classes.includes('-bridge')).map((cell) => cell.index),
+				[53, 65, 75, 76, 90]
+			)
+			for (const index of [53, 65, 90]) assert.deepEqual(state.cells[index].classes, ['-road', '-bridge', '-v'])
+			for (const index of [75, 76]) assert.deepEqual(state.cells[index].classes, ['-road', '-bridge', '-h'])
+		}
 		for (const army of [1, 2]) {
 			const start = state.units.find((unit) => unit.player === army)!
 			const reachable = connectedLand(state, start.cell)
@@ -77,7 +76,7 @@ for (const [id, cols, rows, unitsPerSide, passages] of [
 		}
 		for (const cell of state.cells) {
 			const opposite = state.cells.at(-cell.index - 1)!
-			assert.equal(cell.terrain, opposite.terrain)
+			if (id === 13) assert.equal(cell.terrain, opposite.terrain)
 			assert.equal(cell.building, opposite.building)
 			assert.equal(cell.owner, 0)
 			if (cell.building) assert.ok(neighbors(state, cell.index).some((index) => state.cells[index].terrain === 'road'))

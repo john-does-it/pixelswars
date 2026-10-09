@@ -9,7 +9,7 @@
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import type { Snippet } from 'svelte'
 
-	let { game, name, aiMode = false, camera = $bindable(), reservedBottom = 0, mapStatus }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; reservedBottom?: number; mapStatus?: Snippet } = $props()
+	let { game, name, aiMode = false, camera = $bindable(), boardDetails, mapStatus }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; mapStatus?: Snippet } = $props()
 	let boardElement = $state<HTMLElement>()
 	let hadSelection = false
 	const rangeClipId = $props.id()
@@ -66,7 +66,7 @@
 </script>
 
 <div class="board-layout" class:range-red={rangeUnit?.player === 2}>
-	<BattlefieldViewport state={gameState} {name} bind:camera {reservedBottom} {mapStatus}>
+	<BattlefieldViewport state={gameState} {name} bind:camera {boardDetails} {mapStatus}>
 		<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
 			{#each gameState.cells as cell (cell.index)}
 				{@const unit = units.get(cell.index)}

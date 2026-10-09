@@ -15,9 +15,17 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 			[4, 4],
 			[8, 8]
 		],
+		5: [
+			[9, 3],
+			[2, 7]
+		],
 		8: [
 			[6, 6],
 			[5, 8]
+		],
+		9: [
+			[1, 5],
+			[12, 6]
 		],
 		11: [
 			[10, 5],
@@ -29,6 +37,10 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 			[4, 9],
 			[15, 10],
 			[11, 11]
+		],
+		14: [
+			[3, 6],
+			[10, 7]
 		]
 	}
 	for (let mapId = 1; mapId <= 14; mapId++) {

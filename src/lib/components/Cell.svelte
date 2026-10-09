@@ -44,16 +44,16 @@
 </script>
 
 <button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:boarding-target={boardingTarget} class:deployment-target={deploymentTarget} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={boardingTarget ? `${label}, ${translate(messages.transport_load)}` : deploymentTarget ? `${label}, ${translate(messages.transport_deploy)}` : reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
-	{#if cell.terrain === 'water' && animate}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
-	{#if reachable}
+	{#if cell.terrain === 'water' && animate && !cell.classes.includes('-under-bridge')}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
+	{#if reachable || deploymentTarget}
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
 	{#if unit}
 		<Unit {unit} {target} {showResources} {animate} />
 	{/if}
-	{#if boardingTarget || deploymentTarget}
+	{#if boardingTarget}
 		<span class="transport-marker" aria-hidden="true">
-			{#if boardingTarget}<span class="boarding-symbol">+</span>{/if}
+			<img class="boarding-symbol" src={asset('/assets/icons/plus-zoom.svg')} alt="" />
 		</span>
 	{/if}
 	<DamageIndicator {unit} />
@@ -77,26 +77,16 @@
 		position: absolute;
 		inset: 0;
 		z-index: 4;
-		border: 2px solid var(--color-accent);
-		background: #f2d66d33;
 		display: grid;
-		place-items: center;
-		color: #fff;
+		container-type: inline-size;
+		place-items: start end;
 		pointer-events: none;
 	}
 	.boarding-symbol {
 		margin: 3%;
-		color: var(--color-accent);
-		font-family: var(--font-display);
-		font-size: min(22px, 30cqi);
-		line-height: 1;
-		text-shadow: 1px 1px var(--color-background);
-	}
-	.boarding-target .transport-marker {
-		container-type: inline-size;
-		place-items: start end;
-		border: 0;
-		background: transparent;
+		width: min(22px, 30cqi);
+		height: auto;
+		image-rendering: pixelated;
 	}
 	.water-shimmer {
 		position: absolute;

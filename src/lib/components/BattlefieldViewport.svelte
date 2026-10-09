@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount, tick, untrack, type Snippet } from 'svelte'
 	import Minimap from './Minimap.svelte'
-	import ZoomControls from './ZoomControls.svelte'
+	import UiIcon from './UiIcon.svelte'
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state: gameState, name, children, camera = $bindable(), reservedBottom = 0, mapStatus }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; reservedBottom?: number; mapStatus?: Snippet } = $props()
+	let { state: gameState, name, children, camera = $bindable(), boardDetails, mapStatus }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; mapStatus?: Snippet } = $props()
 	let viewport = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
 	let tileSize = $state(48)
@@ -19,7 +19,6 @@
 	let edges = $state({ left: 0, right: 0, up: 0, down: 0 })
 	const minimumSize = $derived(Math.min(32, fitSize))
 	const maximumSize = 112
-	const padding = 16
 	const directions = ['left', 'right', 'up', 'down'] as const
 	const directionLabels = { left: messages.scroll_left, right: messages.scroll_right, up: messages.scroll_up, down: messages.scroll_down }
 	const pointers = new Map<number, { x: number; y: number }>()
@@ -59,7 +58,7 @@
 
 	function updateViewportSize() {
 		if (!viewport) return
-		fitSize = Math.max(0.5, Math.min((viewport.clientWidth - padding * 2) / gameState.cols, (viewport.clientHeight - padding * 2) / gameState.rows, maximumSize))
+		fitSize = Math.max(0.5, Math.min(viewport.clientWidth / gameState.cols, viewport.clientHeight / gameState.rows, maximumSize))
 		if (!initialized) {
 			initialized = true
 			tileSize = fitSize
@@ -167,21 +166,6 @@
 	const selected = $derived(gameState.units.find((unit) => unit.id === gameState.selectedId))
 	const opponentTurn = $derived(gameState.aiThinking || !!(gameState.network && gameState.network.player !== gameState.player))
 	$effect(() => {
-		// Selection can grow the fixed action panel after the first camera update.
-		reservedBottom
-		let cancelled = false
-		untrack(() => {
-			void tick().then(() => {
-				if (cancelled || !selected || opponentTurn || !matchMedia('(max-width: 900px)').matches) return
-				viewport?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' })
-				revealCell(selected.cell)
-			})
-		})
-		return () => {
-			cancelled = true
-		}
-	})
-	$effect(() => {
 		const target = gameState.combatTargetIndex
 		const selectedCell = selected?.cell
 		const opponent = opponentTurn
@@ -194,13 +178,6 @@
 </script>
 
 <div class="camera">
-	<div class="map-toolbar">
-		<div class="toolbar-details">
-			{@render mapStatus?.()}
-			<div class="mobile-zoom"><ZoomControls {camera} /></div>
-		</div>
-		<Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} />
-	</div>
 	<div class="board-frame">
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
 		<div
@@ -240,17 +217,24 @@
 				}
 			}}
 		>
-			<div class="map-space" style:width={`${gameState.cols * tileSize + padding * 2}px`} style:height={`${gameState.rows * tileSize + padding * 2}px`}>
+			<div class="map-space" style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>
 				<div class="map-surface" bind:this={surface} style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>{@render children()}</div>
 			</div>
 		</div>
 		{#if !opponentTurn}
 			{#each directions as direction}
 				<div class="scroll-edge {direction}" style:opacity={Math.min(1, edges[direction] / 48)}>
-					<button aria-label={translate(directionLabels[direction])} disabled={edges[direction] <= 1} tabindex={edges[direction] <= 1 ? -1 : 0} onclick={() => scrollTowardEdge(direction)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg></button>
+					<button class="pixel-icon-button" aria-label={translate(directionLabels[direction])} disabled={edges[direction] <= 1} tabindex={edges[direction] <= 1 ? -1 : 0} onclick={() => scrollTowardEdge(direction)}><UiIcon name={`arrow-${direction}`} /></button>
 				</div>
 			{/each}
 		{/if}
+	</div>
+	{@render boardDetails?.()}
+	<div class="map-toolbar">
+		<div class="toolbar-details">
+			{@render mapStatus?.()}
+		</div>
+		<Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} />
 	</div>
 </div>
 
@@ -261,9 +245,9 @@
 		flex: 1;
 		min-height: 0;
 		min-width: 0;
-		gap: 8px;
 	}
 	.map-toolbar {
+		padding-inline: var(--game-gutter);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -275,35 +259,28 @@
 		}
 	}
 	.toolbar-details {
+		flex: 1;
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
 	}
-	.mobile-zoom {
-		display: none;
-		@media (max-width: 900px) {
-			display: block;
-		}
-	}
 
 	.board-frame {
-		border: 1px solid var(--color-accent);
 		position: relative;
+		isolation: isolate;
 		flex: 1;
-		min-height: 0;
+		min-height: 240px;
 		min-width: 0;
 		background: color-mix(in srgb, var(--color-surface) 45%, var(--color-background));
 	}
 	.board-viewport {
 		position: absolute;
+		z-index: 0;
 		inset: 0;
 		overflow: auto;
 		touch-action: pan-y;
 		scrollbar-width: none;
-		@media (max-width: 900px) {
-			scroll-margin-bottom: calc(var(--controls-height, 0px) + 8px);
-		}
 		&::-webkit-scrollbar {
 			display: none;
 		}
@@ -320,7 +297,6 @@
 		min-height: 100%;
 		display: grid;
 		place-items: center;
-		padding: 16px;
 	}
 	.map-surface {
 		touch-action: none;
@@ -328,6 +304,7 @@
 	}
 	.scroll-edge {
 		position: absolute;
+		z-index: 1;
 		pointer-events: none;
 		display: flex;
 		justify-content: center;
@@ -362,38 +339,11 @@
 			place-items: center;
 			pointer-events: auto;
 			padding: 0;
-			width: 32px;
-			min-height: 48px;
-			color: var(--color-accent);
-			font-size: 24px;
-			background: color-mix(in srgb, var(--color-surface) 87%, transparent);
+			width: 44px;
+			height: 44px;
 			&:disabled {
 				pointer-events: none;
 			}
-		}
-		&.up button,
-		&.down button {
-			width: 52px;
-			min-height: 32px;
-			height: 32px;
-		}
-		svg {
-			width: 20px;
-			height: 20px;
-			fill: none;
-			stroke: currentColor;
-			stroke-width: 3px;
-			stroke-linecap: round;
-			stroke-linejoin: round;
-		}
-		&.left svg {
-			transform: rotate(180deg);
-		}
-		&.up svg {
-			transform: rotate(-90deg);
-		}
-		&.down svg {
-			transform: rotate(90deg);
 		}
 	}
 </style>

@@ -64,7 +64,7 @@ export function assertConnectedRoads(state: GameState, allowSeparateBoundaryRoad
 		const row = Math.floor(cell.index / state.cols)
 		const roadAt = (index: number) => state.cells[index]?.terrain === 'road'
 		const expected = [(row === 0 || roadAt(cell.index - state.cols)) && 'N', (column === state.cols - 1 || roadAt(cell.index + 1)) && 'E', (row === state.rows - 1 || roadAt(cell.index + state.cols)) && 'S', (column === 0 || roadAt(cell.index - 1)) && 'W'].filter(Boolean).join('')
-		const sprite = cell.classes.filter((className) => className !== '-road').join(' ')
+		const sprite = cell.classes.filter((className) => className !== '-road' && className !== '-bridge').join(' ')
 		assert.equal(roadOpenings[sprite], expected, `map ${state.mapId}, cell ${cell.index}: sprite ${sprite} must match its neighbors`)
 	}
 }
@@ -73,7 +73,7 @@ export function assertWaterShores(state: GameState): void {
 	for (const cell of state.cells.filter((candidate) => candidate.terrain === 'water')) {
 		const column = cell.index % state.cols
 		const row = Math.floor(cell.index / state.cols)
-		const waterAt = (index: number) => state.cells[index]?.terrain === 'water'
+		const waterAt = (index: number) => state.cells[index]?.terrain === 'water' || state.cells[index]?.classes.includes('-bridge')
 		const expected = [...(row > 0 && !waterAt(cell.index - state.cols) ? ['-top'] : []), ...(row < state.rows - 1 && !waterAt(cell.index + state.cols) ? ['-bottom'] : []), ...(column > 0 && !waterAt(cell.index - 1) ? ['-right'] : []), ...(column < state.cols - 1 && !waterAt(cell.index + 1) ? ['-left'] : [])]
 		assert.deepEqual(cell.classes.filter((name) => ['-top', '-bottom', '-left', '-right'].includes(name)).sort(), expected.sort())
 		assert.equal(cell.classes.includes('-corner'), expected.length === 2)

@@ -33,7 +33,7 @@ test('small screens keep the selected unit above actions without a floating prev
 	}
 })
 
-test('mouse wheel zooms around its pointer and desktop zoom shares the action row', async ({ page }) => {
+test('mouse wheel zooms around its pointer and zoom controls stay centered below the board', async ({ page }) => {
 	await page.setViewportSize({ width: 1400, height: 900 })
 	await page.goto('/play/12/')
 	await expect(page.locator('dialog.turn-transition')).toBeVisible()
@@ -56,12 +56,12 @@ test('mouse wheel zooms around its pointer and desktop zoom shares the action ro
 	expect(after.y).toBeCloseTo(before.y, 2)
 	const zoom = await page.getByRole('button', { name: 'Zoom in', exact: true }).boundingBox()
 	const actions = await page.getByRole('button', { name: 'End round', exact: true }).boundingBox()
-	expect(Math.abs(zoom!.y - actions!.y)).toBeLessThan(4)
-	expect(zoom!.x + zoom!.width).toBeLessThan(actions!.x)
+	expect(zoom!.y + zoom!.height).toBeLessThan(actions!.y)
+	expect(zoom!.x + zoom!.width / 2).toBeCloseTo(frame!.x + frame!.width / 2, 0)
 	await expect(page.locator('html')).toHaveCSS('scrollbar-width', 'none')
 	await viewport.evaluate((element) => element.scrollTo({ left: 0, top: 0 }))
 	const zoomedWidth = (await page.locator('.board').boundingBox())!.width
-	await page.mouse.move(frame!.x + 3, frame!.y + 3)
+	await page.mouse.move(zoom!.x + zoom!.width / 2, zoom!.y + zoom!.height / 2)
 	await page.mouse.wheel(0, 100)
 	await page.waitForTimeout(150)
 	expect((await page.locator('.board').boundingBox())!.width).toBeCloseTo(zoomedWidth, 1)
@@ -103,13 +103,36 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('game header stays sticky and map frames use the yellow accent', async ({ page }) => {
-	await page.setViewportSize({ width: 390, height: 450 })
-	await page.goto('/play/1/')
-	await expect(page.locator('.board')).toBeVisible()
-	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-	await expect.poll(() => page.locator('.game-shell header').evaluate((header) => Math.round(header.getBoundingClientRect().top))).toBe(0)
-	await expect(page.locator('.board-frame')).toHaveCSS('border-top-color', 'rgb(244, 216, 121)')
+test('battlefield comes first, followed by centered zoom, players, actions and the minimap', async ({ page }) => {
+	for (const size of [
+		{ width: 1400, height: 900 },
+		{ width: 390, height: 844 },
+		{ width: 320, height: 480 }
+	]) {
+		await page.setViewportSize(size)
+		await page.goto('/play/1/')
+		await expect(page.locator('.board')).toBeVisible()
+		const frame = (await page.locator('.board-frame').boundingBox())!
+		const zoomRow = (await page.locator('.board-zoom').boundingBox())!
+		const zoom = (await page.locator('.zoom-controls').boundingBox())!
+		const header = (await page.locator('.game-shell header').boundingBox())!
+		const actions = (await page.locator('.board-actions').boundingBox())!
+		const minimap = (await page.locator('.minimap').boundingBox())!
+		expect(frame.y).toBe(0)
+		expect(frame.x).toBe(0)
+		expect(frame.width).toBe(size.width)
+		expect(header.x).toBe(size.width > 900 ? 16 : 8)
+		expect(zoom.y - (frame.y + frame.height)).toBeCloseTo(16, 0)
+		expect(zoom.x + zoom.width / 2).toBeCloseTo(frame.x + frame.width / 2, 0)
+		expect(zoomRow.y + zoomRow.height - (zoom.y + zoom.height)).toBeCloseTo(32, 0)
+		expect(header.y).toBeGreaterThanOrEqual(zoomRow.y + zoomRow.height)
+		await expect(page.locator('.board-actions')).toHaveCSS('padding-bottom', '16px')
+		expect(actions.y).toBeGreaterThanOrEqual(header.y + header.height)
+		expect(minimap.y).toBeGreaterThanOrEqual(actions.y + actions.height)
+		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+		await expect(page.locator('.board-frame')).toHaveCSS('border-top-width', '0px')
+		await expect(page.locator('.map-space')).toHaveCSS('padding', '0px')
+	}
 })
 
 test('zoom fits both axes and keeps the camera separate from game state', async ({ page }) => {

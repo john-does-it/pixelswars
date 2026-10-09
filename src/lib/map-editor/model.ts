@@ -1,5 +1,5 @@
-import { isUnitTypeId, unitTypes } from '../../src/lib/game/catalog.ts'
-import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '../../src/lib/game/types.ts'
+import { isUnitTypeId, unitTypes } from '../game/catalog.ts'
+import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '../game/types.ts'
 
 export class MapEditorError extends Error {
 	readonly key: string
@@ -21,6 +21,7 @@ export const terrainBrushes = [
 	{ name: 'map_editor_bridge_horizontal', classes: ['-road', '-bridge', '-h'] },
 	{ name: 'map_editor_bridge_vertical', classes: ['-road', '-bridge', '-v'] },
 	{ name: 'terrain_water', classes: ['-water'] },
+	{ name: 'map_editor_water_under_bridge', classes: ['-water', '-under-bridge', '-h'] },
 	{ name: 'building_city', classes: ['-building', '-city', '-ongrass'] },
 	{ name: 'building_oil_field', classes: ['-building', '-oil-field', '-ongrass'] },
 	{ name: 'building_factory', classes: ['-building', '-factory', '-ongrass'] },
@@ -71,7 +72,7 @@ function reconnectCell(map: GameMap, index: number): void {
 			.join('')
 		cell.classes = ['-road', ...roadSprites[openings]]
 	}
-	if (cell.classes.includes('-water')) {
+	if (cell.classes.includes('-water') && !cell.classes.includes('-under-bridge')) {
 		// Horizontal shore names are reversed in the original game sprites.
 		const shores = adjacent.flatMap((neighbor, direction) => (neighbor !== -1 && !map.cells[neighbor].classes.includes('-water') && !map.cells[neighbor].classes.includes('-bridge') ? [['-top', '-left', '-bottom', '-right'][direction]] : []))
 		// The existing art has no horizontal one-cell channel or enclosed puddle.
@@ -113,11 +114,12 @@ export function readMap(text: string): GameMap {
 	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
 	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building']
 	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-oil-field', '-factory', '-hospital', '-airport', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
-	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge'])
+	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge', '-under-bridge'])
 	const cells = input.cells.map((cell) => {
 		if (!cell || !Array.isArray(cell.classes) || !cell.classes.some((name) => baseClasses.includes(name)) || cell.classes.some((name) => !allowedClasses.has(name)) || ![0, 1, 2].includes(cell.owner) || !Number.isInteger(cell.capturePoints) || cell.capturePoints < 0 || cell.capturePoints > 20) throw new MapEditorError('map_editor_error_cell')
 		if (cell.classes.includes('-building') && !['-city', '-oil-field', '-factory', '-hospital', '-airport'].some((name) => cell.classes.includes(name))) throw new MapEditorError('map_editor_error_building')
 		if (cell.classes.includes('-bridge') && (!cell.classes.includes('-road') || cell.classes.includes('-h') === cell.classes.includes('-v') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
+		if (cell.classes.includes('-under-bridge') && (!cell.classes.includes('-water') || !cell.classes.includes('-h') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
 		return { classes: [...cell.classes], owner: cell.owner, capturePoints: cell.capturePoints }
 	})
 	if (!Array.isArray(input.units)) throw new MapEditorError('map_editor_error_units')

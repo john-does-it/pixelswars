@@ -39,4 +39,7 @@ const staticAssets = fileURLToPath(new URL('../static/assets/', import.meta.url)
 syncDirectory(fileURLToPath(new URL('../assets/', import.meta.url)), staticAssets)
 pruneGeneratedAssets(fileURLToPath(new URL('../assets/', import.meta.url)), staticAssets)
 writeFileSync(join(staticAssets, 'preload-manifest.json'), JSON.stringify(visualAssets(staticAssets).sort()))
-writeFileSync(new URL('../static/favicon.png', import.meta.url), Buffer.from(readFileSync(new URL('../favicon.png.base64', import.meta.url), 'utf8').replace(/\s/g, ''), 'base64'))
+// Center the damaged red infantry sprite in a square without resampling its pixels.
+const faviconSprite = readFileSync(new URL('../assets/units/infantry-2-damage-2-fit.png.base64', import.meta.url), 'utf8').replace(/\s/g, '')
+writeFileSync(new URL('../static/favicon.svg', import.meta.url), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><image width="128" height="128" preserveAspectRatio="xMidYMid meet" style="image-rendering:pixelated" href="data:image/png;base64,${faviconSprite}"/></svg>`)
+writeFileSync(new URL('../static/favicon.png', import.meta.url), Buffer.from(faviconSprite, 'base64'))

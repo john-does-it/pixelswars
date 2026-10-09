@@ -12,9 +12,9 @@
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatsPanel from './StatsPanel.svelte'
 	import Modal from './Modal.svelte'
-	import CargoTray from './CargoTray.svelte'
+	import UiIcon from './UiIcon.svelte'
 
-	let { game, aiMode = false, showHelp = $bindable(false), controlsHeight = $bindable(0), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; controlsHeight?: number; onrestart?: () => void } = $props()
+	let { game, aiMode = false, showHelp = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; onrestart?: () => void } = $props()
 	let showPreview = $state(false)
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
@@ -49,35 +49,34 @@
 
 <svelte:window onkeydown={openStatsWithKeyboard} />
 
-<nav aria-label={translate(messages.game_controls)} bind:offsetHeight={controlsHeight} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
+<nav aria-label={translate(messages.game_controls)} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
 		{#if previewCell}
-			<button class="inspect-action" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={`${translate(messages.preview_expand)} (I)`} aria-keyshortcuts="I" aria-haspopup="dialog" onclick={() => (showPreview = true)}>
+			<button class="inspect-action pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={`${translate(messages.preview_expand)} (I)`} aria-keyshortcuts="I" aria-haspopup="dialog" onclick={() => (showPreview = true)}>
 				<span class="tile-thumbnail" aria-hidden="true">
 					<TerrainIcon cell={previewCell} size="fill" />
 					{#if previewUnit}<img src={asset(unitSprite(previewUnit))} alt="" />{/if}
-					<span class="info-badge">i</span>
 				</span>
+				<span class="info-badge" aria-hidden="true"><UiIcon name="stats-informations" size={16} /></span>
 			</button>
 		{/if}
 		{#if selected}
-			<button disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
-				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 4-5 5 5 5M4 9h10a6 6 0 0 1 0 12h-3" /></svg>
+			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
+				<UiIcon name="previous-action" />
 			</button>
-			<button disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
-				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
+				<UiIcon name="validate-action" />
 			</button>
 		{/if}
 		{#if canCapture(gameState)}
-			<button disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
-				<svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14l-3 5 3 5H5" /></svg>
+			<button class="pixel-icon-button" disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
+				<UiIcon name="icon-capture" />
 			</button>
 		{/if}
 		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} title={translate(messages.end_round)} onclick={() => game.endTurn()}>
 			{translate(messages.end_round)}
 		</button>
 	</div>
-	<div class="cargo-row"><CargoTray {game} disabled={inputLocked} /></div>
 </nav>
 {#if showPreview && previewCell}
 	<Modal title={translate(messages.cell_statistics)} alwaysShowScrollbar={false} onclose={() => (showPreview = false)}>
@@ -102,29 +101,40 @@
 		{/snippet}
 		{#snippet settings()}
 			<div class="settings-controls">
-				<label class="audio volume-control">
-					<span>{translate(messages.sound)}</span>
-					<input type="range" min="0" max="100" step="5" value={preferences.volume} aria-label={translate(messages.sound)} aria-valuetext={`${preferences.volume}%`} oninput={(event) => updatePreferences({ volume: event.currentTarget.valueAsNumber, sound: event.currentTarget.valueAsNumber > 0 })} />
+				<div class="audio volume-control">
+					<button class="pixel-icon-button" aria-label={translate(preferences.volume > 0 ? messages.sound_on : messages.sound_off)} title={translate(preferences.volume > 0 ? messages.sound_on : messages.sound_off)} aria-pressed={preferences.volume > 0} onclick={() => updatePreferences({ volume: preferences.volume > 0 ? 0 : 100, sound: preferences.volume === 0 })}>
+						<UiIcon name={preferences.volume > 0 ? 'icon-play-sound' : 'icon-mute-sound'} />
+					</button>
+					<label for="sound-volume">{translate(messages.sound)}</label>
+					<input id="sound-volume" type="range" min="0" max="100" step="5" value={preferences.volume} aria-label={translate(messages.sound)} aria-valuetext={`${preferences.volume}%`} oninput={(event) => updatePreferences({ volume: event.currentTarget.valueAsNumber, sound: event.currentTarget.valueAsNumber > 0 })} />
 					<output aria-hidden="true">{preferences.volume}%</output>
-				</label>
-				<button class="audio" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
+				</div>
+				<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
 					{translate(messages.music)}
-					<img src={asset(`/assets/icons/icon-${gameState.music ? 'play' : 'mute'}-sound.png`)} alt="" />
+					<UiIcon name={gameState.music ? 'icon-play-sound' : 'icon-mute-sound'} />
 				</button>
-				<LanguageSelect compact />
-				<button aria-label={translate(preferences.animations ? messages.animations_on : messages.animations_off)} aria-pressed={preferences.animations} onclick={() => updatePreferences({ animations: !preferences.animations })}>
-					{translate(messages.animations)} · {translate(preferences.animations ? messages.setting_on : messages.setting_off)}
-				</button>
-				<SettingSelect
-					label={translate(messages.keyboard)}
-					ariaLabel={translate(messages.keyboard_movement_layout)}
-					value={gameState.keyboardLayout}
-					options={[
-						{ value: 'azerty', label: 'AZERTY · ZQSD' },
-						{ value: 'qwerty', label: 'QWERTY · WASD' }
-					]}
-					onchange={changeKeyboardLayout}
-				/>
+				<div class="preference-controls">
+					<LanguageSelect compact />
+					<SettingSelect
+						label={translate(messages.animations)}
+						value={preferences.animations ? 'on' : 'off'}
+						options={[
+							{ value: 'on', label: translate(messages.setting_on) },
+							{ value: 'off', label: translate(messages.setting_off) }
+						]}
+						onchange={(value) => updatePreferences({ animations: value === 'on' })}
+					/>
+					<SettingSelect
+						label={translate(messages.keyboard)}
+						ariaLabel={translate(messages.keyboard_movement_layout)}
+						value={gameState.keyboardLayout}
+						options={[
+							{ value: 'azerty', label: 'AZERTY · ZQSD' },
+							{ value: 'qwerty', label: 'QWERTY · WASD' }
+						]}
+						onchange={changeKeyboardLayout}
+					/>
+				</div>
 			</div>
 		{/snippet}
 	</HowToPlayModal>
@@ -150,6 +160,20 @@
 		flex-wrap: wrap;
 		gap: 10px;
 	}
+	.preference-controls {
+		display: grid;
+		gap: 10px;
+		width: 100%;
+		:global(label) {
+			display: grid;
+			grid-template-columns: 100px minmax(0, 1fr);
+			width: min(100%, 320px);
+		}
+		:global(select) {
+			width: 100%;
+			min-width: 0;
+		}
+	}
 
 	.audio {
 		display: inline-flex;
@@ -157,26 +181,17 @@
 		gap: 8px;
 	}
 
-	.audio img {
-		display: block;
-		width: 24px;
-		height: 24px;
-		object-fit: contain;
-		image-rendering: pixelated;
-	}
 	.volume-control {
+		font: 700 16px / 1.5 var(--font-display);
 		min-height: 44px;
 		max-width: 100%;
 		flex-wrap: wrap;
-		padding-inline: 10px;
-		border: 1px solid var(--color-border);
-		border-radius: 4px;
+		padding-inline: 0;
 	}
 	.volume-control input {
 		width: 110px;
 		min-height: 44px;
 		margin: 0;
-		accent-color: var(--color-accent);
 	}
 	.volume-control output {
 		min-width: 4ch;
@@ -184,7 +199,9 @@
 	}
 
 	nav {
-		width: min(100%, 480px);
+		width: auto;
+		max-width: 100%;
+		margin-left: auto;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
@@ -195,17 +212,11 @@
 		}
 	}
 
-	.cargo-row {
-		flex: 0 0 100%;
-		height: 48px;
-		display: flex;
-		justify-content: flex-end;
-	}
 	.action-controls {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: 8px;
+		gap: 4px;
 		button {
 			display: grid;
 			place-items: center;
@@ -220,6 +231,7 @@
 			min-width: 0;
 			width: auto;
 			padding-inline: 14px;
+			padding-bottom: 2px;
 			white-space: nowrap;
 		}
 	}
@@ -237,44 +249,18 @@
 			image-rendering: pixelated;
 		}
 	}
+	.inspect-action {
+		position: relative;
+	}
 	.info-badge {
 		position: absolute;
-		right: -3px;
-		bottom: -3px;
+		left: -2px;
+		top: -2px;
 		width: 16px;
 		height: 16px;
-		border-radius: 50%;
-		background: var(--color-accent);
-		color: var(--color-background);
-		font-size: 12px;
-		font-weight: bold;
-		line-height: 16px;
-		text-align: center;
-	}
-	.action-icon {
-		display: block;
-		width: 24px;
-		height: 24px;
-		fill: none;
-		stroke: currentColor;
-		stroke-width: 2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
 	}
 
 	@media (max-width: 900px) {
-		nav {
-			width: auto;
-			position: fixed;
-			inset: auto 0 0;
-			z-index: 10;
-			padding: 10px max(12px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-			border-top: 1px solid var(--color-border);
-			background: color-mix(in srgb, var(--color-surface) 96%, transparent);
-			box-shadow: 0 -4px 16px #0005;
-			justify-content: flex-end;
-		}
-
 		.action-controls {
 			width: min(100%, 480px);
 			flex-wrap: nowrap;
@@ -286,7 +272,7 @@
 	}
 	@media (max-width: 480px) {
 		.action-controls {
-			gap: 4px;
+			gap: 2px;
 			button:not(.primary) {
 				flex-basis: 40px;
 				width: 40px;
@@ -299,14 +285,12 @@
 	}
 	@media (max-width: 360px) {
 		.action-controls {
-			gap: 4px;
 			button:not(.primary) {
 				flex-basis: 36px;
 				width: 36px;
 			}
 			.primary {
 				padding-inline: 6px;
-				font-size: 13px;
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 	import { onMount, type Snippet } from 'svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
+	import UiIcon from './UiIcon.svelte'
 
 	let { title, onclose, children, alwaysShowScrollbar = true }: { title: string; onclose?: () => void; children: Snippet; alwaysShowScrollbar?: boolean } = $props()
 	let dialog = $state<HTMLDialogElement>()
@@ -26,7 +27,7 @@
 		<div class="heading">
 			<h2>{title}</h2>
 			{#if onclose}
-				<button aria-label={translate(messages.close)} onclick={onclose}>×</button>
+				<button class="pixel-icon-button" aria-label={translate(messages.close)} onclick={onclose}><UiIcon name="close" /></button>
 			{/if}
 		</div>
 		{@render children()}

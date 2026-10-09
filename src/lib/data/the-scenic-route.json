@@ -55,12 +55,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-right"],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -110,22 +110,22 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-corner", "-bottom", "-right"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -145,7 +145,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-road", "-endtop"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -165,12 +165,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-oil-field", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -200,12 +200,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -230,17 +230,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -260,7 +260,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -290,7 +290,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -301,36 +301,6 @@
 		},
 		{
 			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass", "-variant"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-road", "-corner", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -346,6 +316,21 @@
 		},
 		{
 			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-cross"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -365,12 +350,27 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-junction", "-north"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-junction", "-south"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
 			"classes": ["-grass"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-building", "-oil-field", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -380,7 +380,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -400,7 +400,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-endbottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -420,32 +420,32 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water", "-grass", "-top"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water", "-grass", "-corner", "-top", "-left"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-grass"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
 			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-h"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-corner", "-nw"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -485,12 +485,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left"],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -547,54 +547,64 @@
 	],
 	"units": [
 		{
-			"cell": 0,
 			"type": "artillery",
-			"player": 1
+			"player": 1,
+			"cell": 0
 		},
 		{
-			"cell": 1,
 			"type": "infantry",
-			"player": 1
+			"player": 1,
+			"cell": 1
 		},
 		{
-			"cell": 2,
 			"type": "jeep",
-			"player": 1
+			"player": 1,
+			"cell": 2
 		},
 		{
-			"cell": 3,
 			"type": "infantry-rocket",
-			"player": 1
+			"player": 1,
+			"cell": 3
 		},
 		{
-			"cell": 4,
 			"type": "tank",
-			"player": 1
+			"player": 1,
+			"cell": 4
 		},
 		{
-			"cell": 103,
 			"type": "tank",
-			"player": 2
+			"player": 2,
+			"cell": 103
 		},
 		{
-			"cell": 104,
 			"type": "infantry-rocket",
-			"player": 2
+			"player": 2,
+			"cell": 104
 		},
 		{
-			"cell": 105,
 			"type": "jeep",
-			"player": 2
+			"player": 2,
+			"cell": 105
 		},
 		{
-			"cell": 106,
 			"type": "infantry",
-			"player": 2
+			"player": 2,
+			"cell": 106
 		},
 		{
-			"cell": 107,
 			"type": "artillery",
-			"player": 2
+			"player": 2,
+			"cell": 107
+		},
+		{
+			"type": "infantry",
+			"player": 1,
+			"cell": 5
+		},
+		{
+			"type": "infantry",
+			"player": 2,
+			"cell": 102
 		}
 	]
 }

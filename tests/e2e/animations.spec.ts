@@ -45,8 +45,8 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	await expect(page.locator('.water-shimmer').first()).toBeVisible()
 	await expect(page.locator('.water-shimmer').first()).not.toHaveCSS('mask-image', 'none')
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
-	await page.getByRole('button', { name: 'Animations on', exact: true }).click()
-	await expect(page.getByRole('button', { name: 'Animations off', exact: true })).toHaveAttribute('aria-pressed', 'false')
+	await page.getByRole('combobox', { name: 'Animations', exact: true }).selectOption('off')
+	await expect(page.getByRole('combobox', { name: 'Animations', exact: true })).toHaveValue('off')
 	await expect(page.locator('.unit-sprite.idle')).toHaveCount(0)
 	await expect(page.locator('.water-shimmer')).toHaveCount(0)
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!
@@ -55,7 +55,7 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
 	await expect(page.locator('.unit-sprite.idle')).toHaveCount(0)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
-	await page.getByRole('button', { name: 'Animations off', exact: true }).click()
+	await page.getByRole('combobox', { name: 'Animations', exact: true }).selectOption('on')
 	await expect(sprite).toHaveClass(/idle/)
 })
 

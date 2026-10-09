@@ -2,8 +2,8 @@ node_modules/
 .svelte-kit/
 build/
 static/assets/
-static/map-editor/
 static/favicon.png
+static/favicon.svg
 .npm-cache/
 test-results/
 playwright-report/

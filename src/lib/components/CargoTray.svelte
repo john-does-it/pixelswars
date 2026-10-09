@@ -31,18 +31,23 @@
 		height: 48px;
 	}
 	button {
+		--button-background: transparent;
 		display: grid;
 		place-items: center;
 		flex: 0 0 48px;
 		width: 48px;
 		height: 48px;
 		padding: 4px;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
 	}
-	button[aria-pressed='true'] {
-		--button-background: var(--color-accent);
-		outline: 2px solid var(--color-accent);
-		outline-offset: -2px;
-		background: var(--color-accent);
+	button:hover:not(:disabled) {
+		background: transparent;
+		filter: brightness(1.15);
+	}
+	button[aria-pressed='true'] img {
+		filter: drop-shadow(1px 0 0 var(--color-accent)) drop-shadow(-1px 0 0 var(--color-accent)) drop-shadow(0 1px 0 var(--color-accent)) drop-shadow(0 -1px 0 var(--color-accent));
 	}
 	img {
 		width: 38px;

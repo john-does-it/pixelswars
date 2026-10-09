@@ -3,6 +3,7 @@
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { playerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
+	import UiIcon from './UiIcon.svelte'
 
 	let { state, aiMode = false, onoptions }: { state: GameState; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
@@ -18,7 +19,7 @@
 			<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
 		</div>
 	</div>
-	<button class="options-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><span aria-hidden="true">⚙</span></button>
+	<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
 </header>
 
 <style>
@@ -26,11 +27,8 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		position: sticky;
-		top: 0;
-		z-index: 20;
 		background: var(--color-background);
-		padding: 8px 0;
+		padding: 8px 0 16px;
 		border-bottom: 3px solid #71b9ee;
 		margin-bottom: 0;
 		&.red {
@@ -53,7 +51,6 @@
 		width: 40px;
 		height: 40px;
 		padding: 0;
-		font-size: 24px;
 	}
 	.turn {
 		display: flex;
@@ -86,7 +83,7 @@
 	}
 	@media (max-width: 900px) {
 		header {
-			padding: 8px 0;
+			padding: 8px 0 16px;
 			margin-bottom: 0;
 		}
 		.match-summary {

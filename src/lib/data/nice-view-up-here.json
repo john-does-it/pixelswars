@@ -15,7 +15,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -80,7 +80,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -105,7 +105,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-corner", "-se"],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -170,7 +170,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-endright"],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -620,17 +620,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -710,7 +710,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-endright"],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -720,7 +720,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-forest", "-ongrass", "-variant"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1095,7 +1095,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-endleft"],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1160,17 +1160,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-corner", "-nw"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1185,7 +1185,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1267,124 +1267,124 @@
 	],
 	"units": [
 		{
-			"cell": 3,
 			"type": "artillery",
-			"player": 1
+			"player": 1,
+			"cell": 3
 		},
 		{
-			"cell": 4,
 			"type": "infantry",
-			"player": 1
+			"player": 1,
+			"cell": 4
 		},
 		{
-			"cell": 5,
 			"type": "jeep",
-			"player": 1
+			"player": 1,
+			"cell": 5
 		},
 		{
-			"cell": 6,
 			"type": "infantry-rocket",
-			"player": 1
+			"player": 1,
+			"cell": 6
 		},
 		{
-			"cell": 7,
 			"type": "tank",
-			"player": 1
+			"player": 1,
+			"cell": 7
 		},
 		{
-			"cell": 8,
 			"type": "infantry-sniper",
-			"player": 1
+			"player": 1,
+			"cell": 8
 		},
 		{
-			"cell": 9,
 			"type": "helicopter",
-			"player": 1
+			"player": 1,
+			"cell": 9
 		},
 		{
-			"cell": 10,
 			"type": "anti-air",
-			"player": 1
+			"player": 1,
+			"cell": 10
 		},
 		{
-			"cell": 11,
 			"type": "infantry",
-			"player": 1
+			"player": 1,
+			"cell": 11
 		},
 		{
-			"cell": 12,
 			"type": "infantry-rocket",
-			"player": 1
+			"player": 1,
+			"cell": 12
 		},
 		{
-			"cell": 14,
 			"type": "jeep",
-			"player": 1
+			"player": 1,
+			"cell": 14
 		},
 		{
-			"cell": 248,
 			"type": "artillery",
-			"player": 2
+			"player": 2,
+			"cell": 248
 		},
 		{
-			"cell": 247,
 			"type": "infantry",
-			"player": 2
+			"player": 2,
+			"cell": 247
 		},
 		{
-			"cell": 246,
 			"type": "jeep",
-			"player": 2
+			"player": 2,
+			"cell": 246
 		},
 		{
-			"cell": 245,
 			"type": "infantry-rocket",
-			"player": 2
+			"player": 2,
+			"cell": 245
 		},
 		{
-			"cell": 244,
 			"type": "tank",
-			"player": 2
+			"player": 2,
+			"cell": 244
 		},
 		{
-			"cell": 243,
 			"type": "infantry-sniper",
-			"player": 2
+			"player": 2,
+			"cell": 243
 		},
 		{
-			"cell": 242,
 			"type": "helicopter",
-			"player": 2
+			"player": 2,
+			"cell": 242
 		},
 		{
-			"cell": 241,
 			"type": "anti-air",
-			"player": 2
+			"player": 2,
+			"cell": 241
 		},
 		{
-			"cell": 240,
 			"type": "infantry",
-			"player": 2
+			"player": 2,
+			"cell": 240
 		},
 		{
-			"cell": 239,
 			"type": "infantry-rocket",
-			"player": 2
+			"player": 2,
+			"cell": 239
 		},
 		{
-			"cell": 237,
 			"type": "jeep",
-			"player": 2
+			"player": 2,
+			"cell": 237
 		},
 		{
-			"cell": 13,
 			"type": "transport",
-			"player": 1
+			"player": 1,
+			"cell": 13
 		},
 		{
-			"cell": 238,
 			"type": "transport",
-			"player": 2
+			"player": 2,
+			"cell": 238
 		}
 	]
 }

@@ -60,17 +60,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
 			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-moutain", "-ongrass"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -80,7 +80,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -145,22 +145,22 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -225,7 +225,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -270,7 +270,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -305,7 +305,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-h"],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -350,7 +350,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -410,32 +410,32 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -490,27 +490,27 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant2"],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -567,54 +567,54 @@
 	],
 	"units": [
 		{
-			"cell": 0,
 			"type": "artillery",
-			"player": 1
+			"player": 1,
+			"cell": 0
 		},
 		{
-			"cell": 1,
 			"type": "infantry",
-			"player": 1
+			"player": 1,
+			"cell": 1
 		},
 		{
-			"cell": 2,
 			"type": "jeep",
-			"player": 1
+			"player": 1,
+			"cell": 2
 		},
 		{
-			"cell": 3,
 			"type": "infantry-rocket",
-			"player": 1
+			"player": 1,
+			"cell": 3
 		},
 		{
-			"cell": 4,
 			"type": "tank",
-			"player": 1
+			"player": 1,
+			"cell": 4
 		},
 		{
-			"cell": 107,
 			"type": "tank",
-			"player": 2
+			"player": 2,
+			"cell": 107
 		},
 		{
-			"cell": 108,
 			"type": "infantry-rocket",
-			"player": 2
+			"player": 2,
+			"cell": 108
 		},
 		{
-			"cell": 109,
 			"type": "jeep",
-			"player": 2
+			"player": 2,
+			"cell": 109
 		},
 		{
-			"cell": 110,
 			"type": "infantry",
-			"player": 2
+			"player": 2,
+			"cell": 110
 		},
 		{
-			"cell": 111,
 			"type": "artillery",
-			"player": 2
+			"player": 2,
+			"cell": 111
 		}
 	]
 }

@@ -47,7 +47,7 @@ for (const map of additionalMaps) {
 			const bottom = state.cells.slice(Math.ceil(state.cells.length / 2)).filter((cell) => cell.building === building).length
 			assert.equal(top, bottom, building)
 		}
-		const expectedAirports = ['4', '5', '7'].includes(map.id) ? 0 : ['3', '6', '8'].includes(map.id) ? 2 : 1
+		const expectedAirports = ['4', '5', '7', '9'].includes(map.id) ? 0 : ['3', '6', '8'].includes(map.id) ? 2 : 1
 		const airports = state.cells.filter((cell) => cell.building === 'airport')
 		assert.equal(airports.length, expectedAirports)
 		if (expectedAirports === 2) {
@@ -55,10 +55,10 @@ for (const map of additionalMaps) {
 			assert.equal(airports.filter((cell) => cell.index > state.cells.length / 2).length, 1)
 		}
 		if (Number(map.id) >= 5 && Number(map.id) <= 8) {
-			if (map.id !== '5') assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
-			assertConnectedRoads(state, map.id === '6')
+			if (['7', '8'].includes(map.id)) assert.ok(state.cells.every((cell) => cell.terrain !== 'water'))
+			assertConnectedRoads(state)
 		}
-		if (map.id === '9') assert.ok(state.cells.filter((cell) => cell.terrain === 'water').length >= 40)
+		if (map.id === '9') assert.equal(state.cells.filter((cell) => cell.terrain === 'water').length, 31)
 		if (map.id === '7') {
 			for (const building of state.cells.filter((cell) => cell.building)) {
 				assert.ok(
@@ -91,18 +91,18 @@ for (const map of maps) {
 		const firstSession = initialState(map),
 			secondSession = initialState(map)
 		assert.equal(firstSession.cells.length, firstSession.cols * firstSession.rows)
-		assert.equal(firstSession.units.length, 10)
+		assert.equal(firstSession.units.length, map.id === '5' ? 12 : 10)
 		assert.ok(firstSession.units.every((unit) => unit.cell >= 0 && unit.cell < firstSession.cells.length))
 		firstSession.units[0].health = 1
 		firstSession.cells[0].owner = 2
 		firstSession.money[1] = 1000
-		assert.equal(secondSession.units[0].health, 120)
+		assert.equal(secondSession.units[0].health, unitTypes[secondSession.units[0].type].maxHealth)
 		assert.equal(secondSession.cells[0].owner, 0)
 		assert.equal(secondSession.money[1], 0)
 	})
 	test(`map ${map.id}: movement, occupancy, edge wrapping and cancellation`, () => {
 		const state = initialState(map)
-		const unit = state.units[1]
+		const unit = state.units.find((unit) => unit.player === 1 && unit.type === 'infantry')!
 		actions.select(state, unit.id)
 		assert.ok(!reachableCells(state).includes(0))
 		const destination = unit.cell + state.cols
@@ -159,7 +159,7 @@ test('map 4 has a continuous central road without an airport', () => {
 	assertConnectedRoads(state)
 })
 
-test('map 6 buildings follow the sketched moves and keep their new roadside access', () => {
+test('map 6 keeps roadside buildings and a connected road network around its ponds', () => {
 	const state = initialState(maps[5])
 	for (const [index, building] of [
 		[19, 'factory'],
@@ -173,16 +173,28 @@ test('map 6 buildings follow the sketched moves and keep their new roadside acce
 	for (const index of [10, 12, 14, 84, 86, 88]) assert.equal(state.cells[index].building, null)
 	assert.equal(state.cells[61].terrain, 'moutain')
 	assert.equal(state.cells[60].terrain, 'grass')
-	for (const index of [26, 46, 47, 48, 49, 50, 51, 52, 72]) assert.equal(state.cells[index].terrain, 'road')
-	for (const index of [45, 53]) assert.equal(state.cells[index].terrain, 'grass')
+	for (const index of [46, 47, 48, 49, 50, 51, 52]) assert.equal(state.cells[index].terrain, 'road')
+	for (const index of [26, 72]) assert.equal(state.cells[index].terrain, 'grass')
+	assert.deepEqual(
+		state.cells.filter((cell) => cell.terrain === 'water').map((cell) => cell.index),
+		[8, 44, 45, 53, 54, 90]
+	)
+	for (const building of state.cells.filter((cell) => cell.building)) {
+		assert.ok(
+			neighbors(state, building.index).some((index) => state.cells[index].terrain === 'road'),
+			`building ${building.index} must have road access`
+		)
+	}
 	assert.deepEqual(state.cells[49].classes, ['-road', '-cross'])
-	assertConnectedRoads(state, true)
+	assertConnectedRoads(state)
+	assertWaterShores(state)
 })
 
 test('small corner ponds preserve deployment cells and secondary roads connect on maps 2, 3 and 5', () => {
 	for (const map of maps.filter((candidate) => ['2', '3', '5'].includes(candidate.id))) {
 		const state = initialState(map)
-		assert.equal(state.cells.filter((cell) => cell.terrain === 'water').length, map.id === '5' ? 8 : 4)
+		const expectedWaterTiles = { '2': 4, '3': 1, '5': 2 }
+		assert.equal(state.cells.filter((cell) => cell.terrain === 'water').length, expectedWaterTiles[map.id as keyof typeof expectedWaterTiles])
 		if (map.id === '2') for (const index of [72, 73, 84, 85]) assert.notEqual(state.cells[index].terrain, 'water')
 		if (map.id === '3') for (const index of [9, 10, 20, 21]) assert.notEqual(state.cells[index].terrain, 'water')
 		assertWaterShores(state)

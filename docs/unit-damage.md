@@ -8,6 +8,8 @@ plus matching cropped stat-panel images. The healthy sprites remain
 the originals. All variants preserve the original canvas and alpha silhouette.
 Infantry wounds progress across the face, arm, and leg, following the reference.
 Red infantry uses dark crimson blood so wounds remain visible against its uniform.
+Anti-air sprites include a two-pixel outer outline in the healthy source images;
+damage variants retain that outline without changing the interior sprite artwork.
 
 Health determines the appearance in five equal bands: above 80% uses the original;
 60–80% (excluding 60%) light damage; 40–60% (excluding 40%) moderate;

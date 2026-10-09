@@ -8,7 +8,7 @@ import { createController } from '../src/lib/game/controller.ts'
 import { applySnapshot, matchSnapshot, validCommand } from '../src/lib/game/online.ts'
 import { runAiTurn } from '../src/lib/game/ai.ts'
 import { projectExpertDecision } from '../src/lib/game/expert-ai.ts'
-import { readMap, mapJson } from '../tools/map-editor/model.ts'
+import { readMap, mapJson } from '../src/lib/map-editor/model.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
 
 const map: GameMap = {

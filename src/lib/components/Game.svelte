@@ -2,7 +2,7 @@
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
-	import { selectedUnit } from '$lib/game/model.js'
+	import { selectedUnit, locked } from '$lib/game/model.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import { preloadGameAssets } from '$lib/game/preload.js'
 	import { initializePreferences, updatePreferences, preferences } from '$lib/preferences.svelte.js'
@@ -13,6 +13,7 @@
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import GameHeader from './GameHeader.svelte'
 	import Controls from './Controls.svelte'
+	import CargoTray from './CargoTray.svelte'
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
 	import TurnAnnouncement from './TurnAnnouncement.svelte'
@@ -25,9 +26,9 @@
 	let game = $state<GameController>(untrack(() => createGame(map, { aiDifficulty: difficulty, sound: (name) => audio?.sound(name) }, connection)))
 	const network = $derived(game.state.network)
 	const localTurn = $derived(!network || network.player === game.state.player)
+	const waiting = $derived(game.state.aiThinking || !localTurn || !!(network && network.phase !== 'playing'))
 	let preferencesLoaded = $state(false)
 	let showHelp = $state(false)
-	let controlsHeight = $state(0)
 	let camera = $state<MapCamera>()
 	let gameElement = $state<HTMLElement>()
 	const assetsReady = preloadGameAssets()
@@ -101,7 +102,7 @@
 		<p role="status">{translate(messages.loading_battlefield)}</p>
 	</main>
 {:then}
-	<main bind:this={gameElement} class="game-shell" style:--controls-height={`${controlsHeight}px`}>
+	<main bind:this={gameElement} class="game-shell">
 		{#key game}
 			{#key game.state.round}
 				{#if game.state.winner === null && localTurn && (!network || network.phase === 'playing')}
@@ -109,22 +110,27 @@
 				{/if}
 			{/key}
 		{/key}
-		<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 		{#snippet mapStatus()}
 			<div class="match-status">
 				{#if network}
 					<p class="match-mode" role="status">{translate(network.player === 1 ? messages.online_blue : messages.online_red)}{!localTurn ? ` · ${translate(messages.online_opponent_turn)}` : ''}</p>
 				{/if}
 				<p class="combat-status" role="status"><span class:inactive={!game.state.fighting || game.state.aiThinking} aria-hidden={!game.state.fighting || game.state.aiThinking}>{translate(messages.combat_in_progress)}</span></p>
+				<div class="cargo-row" class:inactive={waiting} inert={waiting} aria-hidden={waiting}><CargoTray {game} disabled={locked(game.state) || waiting || !!network?.pending} /></div>
 			</div>
 		{/snippet}
 		<div class="field">
 			<div class="board-column">
-				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} bind:camera reservedBottom={controlsHeight} {mapStatus} />
-				<div class="board-actions">
-					<div class="desktop-zoom"><ZoomControls {camera} /></div>
-					<Controls {game} aiMode={!!difficulty} bind:showHelp bind:controlsHeight onrestart={connection ? undefined : restart} />
-				</div>
+				{#snippet boardDetails()}
+					<div class="board-details">
+						<div class="board-zoom"><ZoomControls {camera} /></div>
+						<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
+						<div class="board-actions">
+							<Controls {game} aiMode={!!difficulty} bind:showHelp onrestart={connection ? undefined : restart} />
+						</div>
+					</div>
+				{/snippet}
+				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} bind:camera {boardDetails} {mapStatus} />
 			</div>
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
@@ -161,11 +167,15 @@
 	.combat-status {
 		text-align: left;
 	}
+	.cargo-row {
+		height: 48px;
+	}
 	.inactive {
 		visibility: hidden;
 	}
 	.game-shell {
-		width: calc(100% - 32px);
+		--game-gutter: 16px;
+		width: 100%;
 		margin: auto;
 		min-height: 100svh;
 		display: flex;
@@ -173,8 +183,7 @@
 		gap: 8px;
 		padding-bottom: 8px;
 		@media (max-width: 900px) {
-			padding-bottom: calc(var(--controls-height, 0px) + 8px);
-			width: calc(100% - 16px);
+			--game-gutter: 8px;
 		}
 	}
 
@@ -204,34 +213,41 @@
 	}
 
 	.board-column {
-		height: max(340px, calc(100svh - 210px));
+		height: max(520px, calc(100svh - 8px));
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 		min-width: 0;
 		min-height: 0;
 	}
+	.board-details {
+		padding-inline: var(--game-gutter);
+		flex: none;
+	}
+	.board-zoom {
+		display: flex;
+		justify-content: center;
+		padding: 16px;
+		flex: none;
+	}
 	.board-actions {
+		padding: 8px 0 16px;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 16px;
+		gap: 8px;
+		flex-wrap: wrap;
 		flex: none;
 		min-height: 46px;
 	}
 	@media (max-width: 900px) {
-		.field {
-			flex: 1;
-		}
-		.board-column {
-			height: auto;
-			min-height: 240px;
-		}
-		.desktop-zoom {
-			display: none;
-		}
 		.board-actions {
-			display: contents;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			justify-items: start;
+		}
+		.board-actions :global(nav) {
+			width: 100%;
 		}
 	}
 </style>

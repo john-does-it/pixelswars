@@ -62,10 +62,11 @@ transport for quick loading tests. The link and route data are gated by SvelteKi
 
 ### Controls and battlefield feedback
 
+- **Layout:** the borderless battlefield spans the full page width without padding, followed by inset containers for centered zoom controls, player information, actions and the minimap. Passenger controls share the bottom row with the minimap without resizing the board.
 - **Move:** select a unit, then click or tap a reachable dot. The unit follows the cheapest legal path.
 - **Enemy inspection:** select an enemy to see its current attack range as stripes and its remaining movement as dots. Terrain costs and occupied cells constrain movement; the preview does not move the enemy.
 - **Camera:** drag to pan, use the mouse wheel over the map or pinch to zoom. The overview button fits the map,
-  and the always-visible minimap lets you reposition the camera.
+  and the minimap below the actions lets you reposition the camera.
 - **Tile details:** select a tile and open its thumbnail in the action bar. Statistics appear in a dialog on desktop and mobile.
 - **Unit indicators:** the heart and damaged sprite show health. Bottom-left bullets show attacks, the bottom-right
   fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
@@ -332,7 +333,8 @@ Assets include SVGs, original audio and bitmap sources stored as `.png.base64`
 or `.gif.base64`. Prepare, predev and prebuild synchronize these into ignored
 `static/assets/`, decoding Base64 files and copying other sources. Native image
 files take precedence over their Base64 equivalents. The favicon is generated
-from `favicon.png.base64`.
+from the damaged red infantry sprite (`assets/units/infantry-2-damage-2-fit.png.base64`).
+The shared root layout uses its square SVG favicon across the game and map editor.
 
 Visual assets are preloaded when entering a game and reused across map navigation.
 To refresh generated assets after editing sources:
@@ -416,15 +418,15 @@ Pushing or merging does not automatically deploy the site.
 
 ### Create and submit a map
 
-Open the map editor from the homepage, or run `npm run map:editor` and open
-http://127.0.0.1:5182/ for local editing. The editor shares the game’s language preference (English, French or German).
+Open the map editor from the homepage, or run `npm run dev` and open
+http://127.0.0.1:5173/map-editor/ for local editing. The editor shares the game’s language preference (English, French or German).
 Paint terrain and buildings with the game's sprites, place both armies, and download
 a JSON file ready for integration. Roads and shores connect automatically. Existing
 maps and JSON files can be imported; the current draft is saved locally in the browser.
 The editor is included in development and production builds. Submit your JSON in a
 [GitHub issue](https://github.com/john-does-it/pixelswars/issues/new), with a name,
 description and optional screenshot.
-Maps are reviewed before publication. See the [editor guide](tools/map-editor/README.md).
+Maps are reviewed before publication. See the [editor guide](docs/map-editor.md).
 
 ## Credits
 

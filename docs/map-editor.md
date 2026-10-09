@@ -2,10 +2,11 @@
 
 Open the map editor from the game homepage. The editor shares the game’s language preference (English, French or German).
 It uses the game's existing sprites and saves drafts only in the current browser.
-For local development, run `npm run map:editor` and open http://127.0.0.1:5182/.
-The same editor is bundled into `static/map-editor/` before `npm run dev` and
-`npm run build`, so GitHub Pages also serves it at `/map-editor/index.html`.
-Run `npm run build:map-editor` to refresh that generated copy after editor changes.
+For local development, run `npm run dev` and open http://127.0.0.1:5173/map-editor/.
+The SvelteKit route in `src/routes/map-editor/+page.svelte` shares the root layout,
+favicon, styles and language preferences. It is prerendered with the rest of the
+site by `npm run build`; drawing and drafts run entirely in the browser.
+`npm run map:editor` is a shortcut to start the same dev server and open the editor.
 
 1. Choose dimensions (2–32 columns and rows) and create a new grid, or load a copy
    of an existing map / import a JSON file.

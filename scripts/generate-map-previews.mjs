@@ -49,7 +49,7 @@ try {
 			return canvas.toDataURL('image/png').split(',')[1]
 		}, map)
 		await writeFile(new URL(`map-${id}.png.base64`, output), `${png}\n`)
-		metadata[id] = { cols: map.cols, rows: map.rows, size: map.cols * map.rows <= 100 ? 'small' : map.cols * map.rows <= 160 ? 'medium' : 'large' }
+		metadata[id] = { cols: map.cols, rows: map.rows, size: map.cols * map.rows >= 1024 ? 'xxl' : map.cols * map.rows <= 100 ? 'small' : map.cols * map.rows <= 160 ? 'medium' : 'large' }
 		console.log(`Map ${id}: ${map.cols} × ${map.rows}`)
 	}
 	await writeFile(new URL('../src/lib/data/map-previews.json', import.meta.url), `${JSON.stringify(metadata, null, '\t')}\n`)

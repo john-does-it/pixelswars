@@ -78,5 +78,15 @@
 		"cols": 13,
 		"rows": 13,
 		"size": "large"
+	},
+	"17": {
+		"cols": 32,
+		"rows": 32,
+		"size": "xxl"
+	},
+	"18": {
+		"cols": 24,
+		"rows": 16,
+		"size": "large"
 	}
 }

@@ -55,6 +55,22 @@
 		<img class="unit-icon" src={asset(unitSprite(previewUnit, true))} alt="" />
 	</div>
 	<StatList items={statsFor(previewUnit)} />
+	{#if unitTypes[previewUnit.type].capacity}
+		<div class="passenger-details">
+			<h3>{translate(messages.transport_cargo, { count: previewUnit.cargo?.length ?? 0, capacity: unitTypes[previewUnit.type].capacity ?? 0 })}</h3>
+			{#if previewUnit.cargo?.length}
+				<ul class="passenger-list">
+					{#each previewUnit.cargo as passenger (passenger.id)}
+						<li>
+							<img class="unit-icon" src={asset(unitSprite(passenger, true))} alt="" />
+							<span>{unitName(passenger.type)}</span>
+							<span class="passenger-health"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} />{passenger.health}/{unitTypes[passenger.type].maxHealth}</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
+	{/if}
 	{#if effectiveRange(state, previewUnit).bonus}<p>{translate(messages.mountain_range_bonus)}</p>{/if}
 {/snippet}
 
@@ -93,6 +109,35 @@
 		object-fit: contain;
 		image-rendering: pixelated;
 		flex: none;
+	}
+	.passenger-details {
+		margin-top: 12px;
+	}
+	.passenger-list {
+		list-style: none;
+		margin: 8px 0 0;
+		padding: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.passenger-list li {
+		display: grid;
+		grid-template-columns: 32px minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 10px;
+	}
+	.passenger-health {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-weight: bold;
+		white-space: nowrap;
+	}
+	.passenger-health img {
+		width: 14px;
+		height: 14px;
+		object-fit: contain;
+		image-rendering: pixelated;
 	}
 	h2,
 	h3 {

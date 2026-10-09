@@ -1,4 +1,4 @@
-import { readMapFixture } from './map-fixtures.ts'
+import { mapIds, readMapFixture } from './map-fixtures.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -247,8 +247,8 @@ test('local mode still hands the turn directly to the other player', () => {
 })
 
 for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
-	test(`${difficulty} completes legal turns on all sixteen maps`, async () => {
-		for (let mapId = 1; mapId <= 16; mapId++) {
+	test(`${difficulty} completes legal turns on all maps`, async () => {
+		for (const mapId of mapIds) {
 			const map = readMapFixture(mapId) as GameMap
 			const state = initialState(map)
 			const controller = createController(state, { delay: noDelay })

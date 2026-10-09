@@ -1,8 +1,8 @@
-import { readMapFixture } from './map-fixtures.ts'
+import { mapIds, readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { newMap, paintCell, readMap, mapJson } from '../tools/map-editor/model.ts'
-import { initialState } from '../src/lib/game/model.ts'
+import { newMap, paintCell, readMap, mapJson } from '../src/lib/map-editor/model.ts'
+import { initialState, movementCostForDomain } from '../src/lib/game/model.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
 
 test('bridges retain their axis, connect road ends and round-trip as passable roads', () => {
@@ -34,6 +34,28 @@ test('editor draws connected road junctions and repairs neighboring sprites when
 	paintCell(map, 17, { kind: 'terrain', classes: ['-grass'], owner: 0 })
 	assert.deepEqual(map.cells[24].classes, ['-road', '-junction', '-south'])
 	assert.deepEqual(map.cells[10].classes, ['-road', '-endbottom'])
+})
+
+test('water below a bridge preserves its sprite and remains impassable to ground units', () => {
+	const map = newMap(5, 5)
+	const classes = ['-water', '-under-bridge', '-h']
+	paintCell(map, 12, { kind: 'unit', type: 'infantry', player: 1 })
+	paintCell(map, 12, { kind: 'terrain', classes, owner: 0 })
+	assert.equal(map.units.length, 0)
+	paintCell(map, 7, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 })
+	paintCell(map, 17, { kind: 'terrain', classes: ['-water'], owner: 0 })
+	assert.deepEqual(map.cells[12].classes, classes)
+	assert.ok(!map.cells[17].classes.includes('-top'))
+	assert.throws(() => paintCell(map, 12, { kind: 'unit', type: 'tank', player: 1 }), /map_editor_error_ground/)
+	paintCell(map, 12, { kind: 'unit', type: 'helicopter', player: 1 })
+	assert.deepEqual(readMap(mapJson(map)), map)
+	const cell = initialState(map).cells[12]
+	assert.equal(cell.terrain, 'water')
+	assert.equal(movementCostForDomain('ground', cell), Infinity)
+	assert.equal(movementCostForDomain('air', cell), 1)
+	const invalid = structuredClone(map)
+	invalid.cells[12].classes = ['-road', '-under-bridge', '-h']
+	assert.throws(() => readMap(JSON.stringify(invalid)), /map_editor_error_cell/)
 })
 
 test('editor updates shores, enforces one unit per cell and prevents ground units on water', () => {
@@ -71,7 +93,7 @@ test('editor exports owned buildings and armies in the actual game schema', () =
 })
 
 test('editor can round-trip all existing maps without changing their terrain or armies', () => {
-	for (let mapId = 1; mapId <= 16; mapId++) {
+	for (const mapId of mapIds) {
 		const source = JSON.stringify(readMapFixture(mapId))
 		assert.deepEqual(JSON.parse(mapJson(readMap(source))), JSON.parse(source), `map ${mapId}`)
 	}
