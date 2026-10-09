@@ -18,7 +18,8 @@ test('map chooser shows lightweight terrain previews, dimensions and localized s
 	]) {
 		await page.getByRole('combobox').selectOption(locale)
 		await expect(cards.first().locator('.map-metadata')).toHaveText(`${small} · 8 × 8`)
-		await expect(cards.last().locator('.map-metadata')).toHaveText(`${large} · 18 × 18`)
+		await expect(page.locator('.map[href="/play/12/"] .map-metadata')).toHaveText(`${large} · 18 × 18`)
+		await expect(cards.last().locator('.map-metadata')).toHaveText('XXL · 32 × 32')
 	}
 	await cards.last().click()
 	await expect(page.getByRole('dialog')).toBeVisible()

@@ -1,3 +1,4 @@
+import { readMapFixture } from '../map-fixtures'
 import { zoomToReadableTiles } from './map-view'
 import { test, expect, type Page } from '@playwright/test'
 import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
@@ -199,7 +200,7 @@ for (const [id, cols, rows] of [
 	test(`map ${id}: renders the complete new battlefield without horizontal overflow`, async ({ page }) => {
 		await page.goto(`/play/${id}/`)
 		await expect(page.locator('[data-cell]')).toHaveCount(cols * rows)
-		await expect(page.locator('[data-unit]')).toHaveCount(10)
+		await expect(page.locator('[data-unit]')).toHaveCount(readMapFixture(id).units.length)
 		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
 		const width = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, viewport: innerWidth }))
 		expect(width.scroll).toBeLessThanOrEqual(width.viewport)
@@ -345,7 +346,7 @@ test('mobile controls keep full-size selects and wide maps use 48px scrollable t
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	const selectHeights = await page.getByRole('combobox').evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().height))
-	expect(selectHeights).toHaveLength(2)
+	expect(selectHeights).toHaveLength(3)
 	for (const height of selectHeights) expect(height).toBeGreaterThanOrEqual(44)
 	await page.keyboard.press('Escape')
 	const dimensions = await page.locator('.board-viewport').evaluate((viewport) => {
@@ -538,8 +539,8 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await expect(cell(42).locator('.damage-indicator')).toHaveText('−16')
 	await expect(end).toBeDisabled()
 	await expect(end).toHaveText('End round')
-	await expect(end).toHaveCSS('color', 'rgb(214, 221, 197)')
-	await expect(end).toHaveCSS('background-color', 'rgb(36, 50, 38)')
+	await expect(end).toHaveCSS('opacity', '0.75')
+	await expect(end).toHaveCSS('color', 'rgb(17, 26, 20)')
 	await expect(cell(42).locator('[data-unit]')).toHaveAttribute('data-health', '164')
 	await expect(cell(34).locator('[data-unit]')).toHaveAttribute('data-health', '6')
 	await expect(cell(34).locator('.damage-indicator')).toHaveText(`−${attackerHealth - 6}`)
@@ -771,8 +772,8 @@ test('mobile minimap shows the complete battlefield and repositions without movi
 	await expect(page.locator('.minimap')).toHaveCount(1)
 	await expect(overview).toBeVisible()
 	const boardBounds = await page.locator('.board-frame').boundingBox()
-	const upperBounds = await overview.boundingBox()
-	expect(upperBounds!.y + upperBounds!.height).toBeLessThan(boardBounds!.y)
+	const minimapBounds = await overview.boundingBox()
+	expect(minimapBounds!.y).toBeGreaterThanOrEqual(boardBounds!.y + boardBounds!.height)
 	await expect(overview.locator('[data-minimap-unit]')).toHaveCount(10)
 	await expect(overview.locator('[data-minimap-cell]')).toHaveCount(112)
 	await expect(overview.locator('svg')).toHaveAttribute('viewBox', '0 0 160 70')
@@ -880,6 +881,6 @@ test('catalog cards share a desktop grid and mountain lists its ranged ground bo
 	}
 	const select = page.getByRole('combobox')
 	await select.focus()
-	await expect(select).toHaveCSS('outline-style', 'none')
-	await expect(select.locator('..')).toHaveCSS('outline-style', 'solid')
+	await expect(select).toHaveCSS('outline-style', 'solid')
+	await expect(select.locator('..')).toHaveCSS('outline-style', 'none')
 })

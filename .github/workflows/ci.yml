@@ -9,8 +9,8 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -20,10 +20,13 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: node node_modules/@playwright/test/cli.js install --with-deps chromium
-      - run: npm run test:e2e
+      - name: Run browser regression tests
+        run: npm run test:e2e -- --grep-invert "stays responsive on large map"
+      - name: Measure AI responsiveness without competing browser workers
+        run: npm run test:e2e -- tests/e2e/ai-performance.spec.ts --project desktop --workers 1 --output test-results/ai-performance
       - name: Upload failed browser test diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-failures
           path: test-results/
