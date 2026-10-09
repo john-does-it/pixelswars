@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { asset, resolve } from '$app/paths'
-	import { selectedUnit, unitAt, canCapture, locked } from '$lib/game/model.js'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
+	import { resolve } from '$app/paths'
+	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
@@ -9,17 +8,14 @@
 	import HowToPlayModal from './HowToPlayModal.svelte'
 	import LanguageSelect from './LanguageSelect.svelte'
 	import SettingSelect from './SettingSelect.svelte'
-	import TerrainIcon from './TerrainIcon.svelte'
 	import StatsPanel from './StatsPanel.svelte'
 	import Modal from './Modal.svelte'
 	import UiIcon from './UiIcon.svelte'
 
-	let { game, aiMode = false, showHelp = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; onrestart?: () => void } = $props()
-	let showPreview = $state(false)
+	let { game, aiMode = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void } = $props()
 	const gameState = $derived(game.state)
 	const selected = $derived(selectedUnit(gameState))
 	const previewCell = $derived(gameState.previewIndex === null ? undefined : gameState.cells[gameState.previewIndex])
-	const previewUnit = $derived(previewCell && unitAt(gameState, previewCell.index))
 
 	const inputLocked = $derived(locked(gameState) || gameState.aiThinking || !!gameState.network?.pending)
 	const waiting = $derived(gameState.aiThinking || (gameState.network && (gameState.network.phase !== 'playing' || gameState.player !== gameState.network.player)))
@@ -51,15 +47,6 @@
 
 <nav aria-label={translate(messages.game_controls)} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
-		{#if previewCell}
-			<button class="inspect-action pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.preview_expand)} title={`${translate(messages.preview_expand)} (I)`} aria-keyshortcuts="I" aria-haspopup="dialog" onclick={() => (showPreview = true)}>
-				<span class="tile-thumbnail" aria-hidden="true">
-					<TerrainIcon cell={previewCell} size="fill" />
-					{#if previewUnit}<img src={asset(unitSprite(previewUnit))} alt="" />{/if}
-				</span>
-				<span class="info-badge" aria-hidden="true"><UiIcon name="stats-informations" size={16} /></span>
-			</button>
-		{/if}
 		{#if selected}
 			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
 				<UiIcon name="previous-action" />
@@ -235,30 +222,6 @@
 			white-space: nowrap;
 		}
 	}
-	.tile-thumbnail {
-		position: relative;
-		display: block;
-		width: 34px;
-		height: 34px;
-		pointer-events: none;
-		img {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			image-rendering: pixelated;
-		}
-	}
-	.inspect-action {
-		position: relative;
-	}
-	.info-badge {
-		position: absolute;
-		left: -2px;
-		top: -2px;
-		width: 16px;
-		height: 16px;
-	}
 
 	@media (max-width: 900px) {
 		.action-controls {
@@ -277,10 +240,6 @@
 				flex-basis: 40px;
 				width: 40px;
 			}
-		}
-		.tile-thumbnail {
-			width: 28px;
-			height: 28px;
 		}
 	}
 	@media (max-width: 360px) {

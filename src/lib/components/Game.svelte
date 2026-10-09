@@ -2,7 +2,7 @@
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
 	import { createGame } from '$lib/game/game.svelte.js'
-	import { selectedUnit, locked } from '$lib/game/model.js'
+	import { selectedUnit, unitAt, locked } from '$lib/game/model.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import { preloadGameAssets } from '$lib/game/preload.js'
 	import { initializePreferences, updatePreferences, preferences } from '$lib/preferences.svelte.js'
@@ -12,6 +12,7 @@
 	import ZoomControls from './ZoomControls.svelte'
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import GameHeader from './GameHeader.svelte'
+	import SelectedUnitStrip from './SelectedUnitStrip.svelte'
 	import Controls from './Controls.svelte'
 	import CargoTray from './CargoTray.svelte'
 	import ProductionModal from './ProductionModal.svelte'
@@ -29,6 +30,8 @@
 	const waiting = $derived(game.state.aiThinking || !localTurn || !!(network && network.phase !== 'playing'))
 	let preferencesLoaded = $state(false)
 	let showHelp = $state(false)
+	let showPreview = $state(false)
+	const previewCell = $derived(game.state.previewIndex === null ? undefined : game.state.cells[game.state.previewIndex])
 	let camera = $state<MapCamera>()
 	let gameElement = $state<HTMLElement>()
 	const assetsReady = preloadGameAssets()
@@ -116,7 +119,10 @@
 					<p class="match-mode" role="status">{translate(network.player === 1 ? messages.online_blue : messages.online_red)}{!localTurn ? ` · ${translate(messages.online_opponent_turn)}` : ''}</p>
 				{/if}
 				<p class="combat-status" role="status"><span class:inactive={!game.state.fighting || game.state.aiThinking} aria-hidden={!game.state.fighting || game.state.aiThinking}>{translate(messages.combat_in_progress)}</span></p>
-				<div class="cargo-row" class:inactive={waiting} inert={waiting} aria-hidden={waiting}><CargoTray {game} disabled={locked(game.state) || waiting || !!network?.pending} /></div>
+				<div class="unit-footer" class:inactive={waiting} inert={waiting} aria-hidden={waiting}>
+					<SelectedUnitStrip cell={previewCell} unit={previewCell ? unitAt(game.state, previewCell.index) : undefined} disabled={locked(game.state) || waiting || !!network?.pending} oninspect={() => (showPreview = true)} />
+					<CargoTray {game} disabled={locked(game.state) || waiting || !!network?.pending} />
+				</div>
 			</div>
 		{/snippet}
 		<div class="field">
@@ -126,7 +132,7 @@
 						<div class="board-zoom"><ZoomControls {camera} /></div>
 						<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 						<div class="board-actions">
-							<Controls {game} aiMode={!!difficulty} bind:showHelp onrestart={connection ? undefined : restart} />
+							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
 						</div>
 					</div>
 				{/snippet}
@@ -167,8 +173,18 @@
 	.combat-status {
 		text-align: left;
 	}
-	.cargo-row {
+	.unit-footer {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		height: 48px;
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+		color: var(--color-text);
+		:global(.cargo-tray) {
+			flex: none;
+		}
 	}
 	.inactive {
 		visibility: hidden;
