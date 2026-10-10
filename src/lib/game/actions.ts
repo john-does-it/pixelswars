@@ -86,13 +86,16 @@ export function endTurn(state: GameState): boolean {
 	state.incomeCells = state.cells.filter((cell) => buildingIncome(cell.building) > 0 && cell.owner === state.player).map((cell) => cell.index)
 	state.money[state.player] += state.incomeCells.reduce((income, index) => income + buildingIncome(state.cells[index].building), 0)
 	for (const unit of state.units) {
-		const definition = unitTypes[unit.type]
+		// Passengers spend turns aboard too; refresh their actions like deployed units.
+		for (const participant of [unit, ...(unit.cargo ?? [])]) {
+			const definition = unitTypes[participant.type]
+			participant.movement = definition.movement
+			participant.attacks = definition.attacks
+			participant.capture = definition.captures ? 1 : 0
+		}
 		const cell = state.cells[unit.cell]
-		unit.movement = definition.movement
-		unit.attacks = definition.attacks
-		unit.capture = definition.captures ? 1 : 0
 		if (cell.building === 'hospital' && cell.owner === state.player && unit.player === state.player) {
-			const recoveredHealth = Math.min(50, definition.maxHealth - unit.health)
+			const recoveredHealth = Math.min(50, unitTypes[unit.type].maxHealth - unit.health)
 			unit.health += recoveredHealth
 			if (recoveredHealth > 0) state.healedCells[cell.index] = recoveredHealth
 		}

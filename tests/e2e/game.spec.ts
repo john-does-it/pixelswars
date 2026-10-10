@@ -345,8 +345,10 @@ test('mobile controls keep full-size selects and wide maps use 48px scrollable t
 	expect(barBounds!.y + barBounds!.height).toBeLessThanOrEqual(overviewBounds.y)
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	for (const name of ['Language', 'Animations', 'Unit facing', 'Keyboard movement layout']) {
+		await expect(page.getByRole('combobox', { name, exact: true })).toBeVisible()
+	}
 	const selectHeights = await page.getByRole('combobox').evaluateAll((selects) => selects.map((select) => select.getBoundingClientRect().height))
-	expect(selectHeights).toHaveLength(3)
 	for (const height of selectHeights) expect(height).toBeGreaterThanOrEqual(44)
 	await page.keyboard.press('Escape')
 	const dimensions = await page.locator('.board-viewport').evaluate((viewport) => {

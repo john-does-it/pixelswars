@@ -221,6 +221,73 @@ test('boarding and deployment preserve both available and spent captures, includ
 	}
 })
 
+for (const transportType of ['transport', 'transport-helicopter'] as const) {
+	for (const player of [1, 2] as const) {
+		test(`${transportType}, player ${player}: a rested passenger can finish capture after swapping with a spent passenger`, () => {
+			const state = fixture()
+			const vehicle = state.units[0]
+			vehicle.type = transportType
+			for (const unit of state.units) unit.player = unit.player === 1 ? player : player === 1 ? 2 : 1
+			state.player = player
+			state.round = player
+			state.cells[7].building = 'city'
+			state.cells[11].building = 'city'
+			const first = state.units[1]
+			const second = state.units[2]
+			const game = createController(state)
+			// The second soldier used capture before boarding on an earlier turn.
+			game.select(second.id)
+			game.capture()
+			assert.equal(second.capture, 0)
+			game.move(vehicle.cell)
+			game.select(first.id)
+			game.move(vehicle.cell)
+			assert.equal(vehicle.cargo?.length, 2)
+			game.endTurn()
+			game.endTurn()
+			game.select(vehicle.id)
+			game.selectPassenger(first.id)
+			game.clickCell(7)
+			game.clickCell(7)
+			game.capture()
+			assert.equal(state.cells[7].capturePoints, 10)
+			game.move(vehicle.cell)
+			assert.equal(first.capture, 0, 'boarding must not refresh an action spent this turn')
+			game.selectPassenger(second.id)
+			game.clickCell(7)
+			game.clickCell(7)
+			assert.equal(state.selectedId, second.id)
+			assert.equal(canCapture(state), true, 'the other passenger rested during the turn change')
+			game.capture()
+			assert.equal(state.cells[7].owner, player)
+			assert.equal(second.capture, 0)
+			assert.equal(first.capture, 0)
+			game.dispose()
+		})
+	}
+	test(`${transportType}: all infantry passengers refresh actions aboard without healing or losing facing`, () => {
+		const state = fixture()
+		const vehicle = state.units[0]
+		vehicle.type = transportType
+		for (const id of [1, 2, 3]) {
+			assert.equal(embark(state, id), true)
+			const passenger = vehicle.cargo!.find((unit) => unit.id === id)!
+			Object.assign(passenger, { movement: 0, attacks: 0, capture: 0, health: 25, facing: 'left' })
+		}
+		actions.endTurn(state)
+		actions.endTurn(state)
+		for (const passenger of vehicle.cargo!) {
+			const definition = unitTypes[passenger.type]
+			assert.deepEqual([passenger.movement, passenger.attacks, passenger.capture], [definition.movement, definition.attacks, 1])
+			assert.equal(passenger.health, 25)
+			assert.equal(passenger.facing, 'left')
+		}
+		const guest = fixture()
+		assert.equal(applySnapshot(guest, matchSnapshot(state)), true)
+		assert.deepEqual(guest.units[0].cargo, vehicle.cargo)
+	})
+}
+
 test('boarding spends the destination terrain cost and repeated boarding never restores movement', () => {
 	for (const [terrain, cost] of [
 		['road', 1],
@@ -314,7 +381,10 @@ test('loaded passengers do not capture, heal in hospitals or appear in movement 
 	actions.endTurn(state)
 	actions.endTurn(state)
 	assert.equal(state.units[0].cargo![0].health, 25)
-	assert.equal(state.units[0].cargo![0].capture, 0)
+	assert.equal(state.units[0].cargo![0].capture, 1)
+	assert.equal(state.cells[7].capturePoints, 20)
+	actions.select(state, state.units[0].id)
+	assert.equal(canCapture(state), false, 'a ready passenger cannot capture from inside the vehicle')
 })
 
 test('online snapshots preserve cargo and reject duplicate IDs, enemy passengers, nested cargo and overcapacity', () => {

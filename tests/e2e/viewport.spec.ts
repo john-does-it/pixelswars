@@ -136,7 +136,8 @@ test('players and money sit above the battlefield with stable controls below whi
 		expect(minimap.y).toBeGreaterThanOrEqual(actions.y + actions.height)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 		await expect(page.locator('.board-frame')).toHaveCSS('border-top-width', '0px')
-		await expect(page.locator('.map-space')).toHaveCSS('padding', '0px')
+		// Five pixels for the outer corner markers, plus two pixels of clearance.
+		await expect(page.locator('.map-space')).toHaveCSS('padding', '7px')
 		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
 			await page.getByRole('button', { name, exact: true }).click()
 			expect(await page.locator('.game-shell header').boundingBox()).toEqual(header)

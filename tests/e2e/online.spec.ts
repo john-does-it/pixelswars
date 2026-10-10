@@ -6,6 +6,8 @@ import { loadEnv } from 'vite'
 const relayConfigured = Boolean(loadEnv('development', process.cwd(), 'VITE_').VITE_METERED_APP)
 const relayEndpoint = 'https://*.metered.live/api/v1/turn/credentials**'
 const relayResponse = [{ urls: 'turn:standard.relay.metered.ca:80', username: 'e2e-user', credential: 'e2e-password' }]
+// The application gives WebRTC 35 seconds; include time for the UI to update.
+const connectionTimeout = 40000
 
 // Local signaling runs outside the production CSP allowlist. These same-machine,
 // relay-free tests use IP candidates directly so they do not depend on multicast
@@ -82,7 +84,7 @@ async function expectOnlineBattlefields(host: Page, guest: Page) {
 	try {
 		await Promise.all(
 			[host, guest].map(async (device) => {
-				await expect(device.locator('.game-shell'), 'WebRTC handshake completes').toBeVisible({ timeout: 40000 })
+				await expect(device.locator('.game-shell'), 'WebRTC handshake completes').toBeVisible({ timeout: connectionTimeout })
 				await expect(device.locator('.board [data-cell]').first(), 'connected device finishes loading its sprites').toBeVisible({ timeout: 30000 })
 			})
 		)
@@ -158,7 +160,7 @@ for (const blockedSide of ['host', 'guest'] as const) {
 }
 
 test('two devices connect, synchronize a match and pause when a player leaves', async ({ page, browser, isMobile }) => {
-	test.setTimeout(90000)
+	test.setTimeout(120000)
 	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
 	const guest = await guestContext.newPage()
 	const errors: string[] = []
@@ -250,7 +252,8 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await localIce(extra)
 		await extra.goto(invitation)
 		await extra.getByRole('button', { name: 'Join', exact: true }).click()
-		await expect(extra.getByRole('alert')).toContainText('already has two players', { timeout: 10000 })
+		// Rejection also needs an established data channel to deliver its reason.
+		await expect(extra.getByRole('alert')).toContainText('already has two players', { timeout: connectionTimeout })
 		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
 		await extra.close()
 		await guest.goto('/')
@@ -263,7 +266,8 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 })
 
 test('a guest can finish loading its sprites after the host has connected', async ({ page, browser, isMobile }) => {
-	test.setTimeout(60000)
+	// Budget separately for connection, the intentional 16-second hold, and asset loading.
+	test.setTimeout(120000)
 	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
 	const guest = await guestContext.newPage()
 	let releaseAssets!: () => void
@@ -282,8 +286,7 @@ test('a guest can finish loading its sprites after the host has connected', asyn
 		await expect(invitation).toHaveValue(/#invite=PW2\./)
 		await guest.goto(await invitation.inputValue())
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
-		await expect(guest.locator('.game-shell[aria-busy="true"]')).toBeVisible()
-		await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toBeVisible()
+		await Promise.all([expect(guest.locator('.game-shell[aria-busy="true"]'), 'connected guest starts preloading').toBeVisible({ timeout: connectionTimeout }), expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toBeVisible({ timeout: connectionTimeout })])
 		await expect(guest.locator('.board')).toHaveCount(0)
 		// Reproduce a slow guest beyond the old combined 15-second readiness deadline.
 		releaseTimer = setTimeout(releaseAssets, 16000)
