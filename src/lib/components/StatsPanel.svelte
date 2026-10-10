@@ -14,7 +14,7 @@
 	const unit = $derived(cell && unitAt(state, cell.index))
 
 	function terrainStats(previewCell: Cell): StatItem[] {
-		return [{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'water' ? `${previewCell.cost} (${translate(messages.ships_only)})` : previewCell.cost }, { icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }, ...(buildingIncome(previewCell.building) ? [{ icon: 'icon-money', label: translate(messages.stat_income), value: `${buildingIncome(previewCell.building)}$` }] : [])]
+		return [{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'blocker' ? '∞' : previewCell.cost }, { icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }, ...(buildingIncome(previewCell.building) ? [{ icon: 'icon-money', label: translate(messages.stat_income), value: `${buildingIncome(previewCell.building)}$` }] : [])]
 	}
 	function statsFor(currentUnit: Unit): StatItem[] {
 		const definition = unitTypes[currentUnit.type]
@@ -37,6 +37,11 @@
 	</div>
 	{#if previewCell}
 		<StatList items={terrainStats(previewCell)} />
+		{#if previewCell.terrain === 'water'}
+			<p class="stat-description">{translate(messages.terrain_water_description)}</p>
+		{:else if previewCell.terrain === 'blocker'}
+			<p class="stat-description">{translate(messages.terrain_blocker_description)}</p>
+		{/if}
 		{#if previewCell.building}
 			<p class="building-status">
 				<span>{translate(messages.owner, { owner: previewCell.owner ? playerName(previewCell.owner, aiMode) : translate(messages.neutral) })}</span>
@@ -71,7 +76,7 @@
 			{/if}
 		</div>
 	{/if}
-	{#if effectiveRange(state, previewUnit).bonus}<p>{translate(messages.mountain_range_bonus)}</p>{/if}
+	{#if effectiveRange(state, previewUnit).bonus}<p class="stat-description">{translate(messages.mountain_range_bonus)}</p>{/if}
 {/snippet}
 
 <aside aria-label={translate(messages.cell_statistics)}>
@@ -86,6 +91,8 @@
 		--stat-gap: 4px 10px;
 		--stat-margin: 8px 0;
 		--stat-icon-size: 14px;
+		--stat-description-padding: 8px;
+		--stat-description-margin-bottom: 0;
 	}
 	section + section {
 		border-top: 1px solid var(--color-border);
@@ -148,7 +155,7 @@
 	h3 {
 		color: var(--color-accent);
 	}
-	p {
+	p:not(.stat-description) {
 		margin: 8px 0 0;
 	}
 	.building-status {

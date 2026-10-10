@@ -190,7 +190,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -400,7 +400,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -435,22 +435,22 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-top", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-forest", "-ongrass", "-variant"],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -460,12 +460,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-moutain", "-ongrass"],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -485,7 +485,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-moutain", "-ongrass"],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -495,22 +495,22 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-city", "-ongrass"],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass", "-variant"],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -525,7 +525,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -535,7 +535,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},

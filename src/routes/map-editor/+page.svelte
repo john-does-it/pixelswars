@@ -309,7 +309,7 @@
 			<section>
 				<h2>{t('map_editor_terrains')}</h2>
 				<div id="terrain-palette" class="palette">
-					{#each terrainBrushes as terrain}<button type="button" data-brush={terrain.name} aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}><span class="palette-icon cell-container {terrain.classes.join(' ')}" aria-hidden="true"></span></button>{/each}
+					{#each terrainBrushes as terrain}<button type="button" class="pixel-corners" data-brush={terrain.name} aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}><span class="palette-icon cell-container {terrain.classes.join(' ')}{terrain.classes.includes('-building') && owner ? ` -capturedby${owner}` : ''}" aria-hidden="true"></span></button>{/each}
 				</div>
 				<label
 					><span>{t('map_editor_owner')}</span><select
@@ -342,7 +342,7 @@
 					</select></label
 				>
 				<div id="unit-palette" class="palette">
-					{#each unitTypeIds as unitType}<button type="button" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset('/assets/units/' + unitType + '-' + team + '-fit.png')}')`} aria-hidden="true"></span></button>{/each}
+					{#each unitTypeIds as unitType}<button type="button" class="pixel-corners" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset('/assets/units/' + unitType + '-' + team + '-fit.png')}')`} aria-hidden="true"></span></button>{/each}
 				</div>
 				<button id="erase-unit" data-brush="erase-unit" aria-pressed={brush.kind === 'erase-unit'} onclick={() => (brush = { kind: 'erase-unit' })}>{t('map_editor_erase')}</button>
 			</section>
@@ -353,7 +353,7 @@
 			</div>
 			<div id="canvas-scroll" bind:this={canvasScroll}>
 				<div id="board" bind:this={board} role="group" aria-label={t('map_editor_board_label')} style:--tile-size={tileSize + 'px'} style:grid-template-columns={`repeat(${map.cols}, var(--tile-size))`} onpointerdown={startStroke} onpointermove={movePointer} onpointerup={finishStroke} onpointercancel={finishStroke} onlostpointercapture={finishStroke} oncontextmenu={(event) => event.preventDefault()}>
-					{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
+					{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container pixel-corners {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
 							>{#if unit}<img src={asset('/assets/units/' + unit.type + '-' + unit.player + '.png')} alt="" draggable="false" />{/if}</button
 						>{/each}
 				</div>
@@ -523,25 +523,9 @@
 		display: grid;
 		place-items: center;
 	}
-	.palette button::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-	}
-	.palette button[aria-pressed='true']::after,
-	.palette button:focus-visible::after {
-		background: var(--pixel-corner-frame);
-	}
-	.palette button:focus-visible {
-		outline: none;
-	}
 	@media (hover: hover) {
 		.palette button:hover:not(:disabled) {
 			background: transparent;
-		}
-		.palette button:hover:not(:disabled)::after {
-			background: var(--pixel-corner-frame);
 		}
 	}
 	.palette-icon {
@@ -601,12 +585,6 @@
 		background-size: 100% 100%;
 		image-rendering: pixelated;
 		transition: none;
-	}
-	#board button:hover,
-	#board button:focus-visible {
-		outline: 2px solid var(--color-accent);
-		outline-offset: -2px;
-		z-index: 1;
 	}
 	#board img {
 		position: absolute;

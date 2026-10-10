@@ -74,7 +74,7 @@ for (const [id, cols, rows] of [
 			for (const transport of transports) assert.ok(state.units.some((unit) => unit.player === transport.player && boardingPaths({ ...state, player: unit.player }, unit).has(transport.cell)))
 		}
 	})
-	test(`${map.name}: neutral objectives and connected ground routes are balanced`, () => {
+	test(`${map.name}: neutral objectives remain reachable through connected ground routes`, () => {
 		const state = initialState(map)
 		const objectives = state.cells.filter((cell) => cell.building)
 		if (id === 11 || id === 12) {
@@ -85,15 +85,17 @@ for (const [id, cols, rows] of [
 				)
 			}
 		}
-		assert.equal(objectives.filter((cell) => cell.building === 'city').length, id === 12 ? 2 : 4)
+		assert.equal(objectives.filter((cell) => cell.building === 'city').length, 4)
 		assert.equal(objectives.filter((cell) => cell.building === 'oil-field').length, id === 11 ? 3 : id === 12 ? 4 : 0)
-		assert.equal(objectives.filter((cell) => cell.building === 'factory').length, 4)
+		assert.equal(objectives.filter((cell) => cell.building === 'factory').length, id === 12 ? 5 : 4)
 		assert.equal(objectives.filter((cell) => cell.building === 'hospital').length, 2)
-		assert.equal(objectives.filter((cell) => cell.building === 'airport').length, 2)
+		assert.equal(objectives.filter((cell) => cell.building === 'airport').length, id === 12 ? 1 : 2)
 		for (const cell of state.cells) {
 			const opposite = state.cells[state.cells.length - 1 - cell.index]
 			// Map 11 has one additional contested oil field east of the central road.
-			if (id !== 11 || (cell.index !== 119 && opposite.index !== 119)) assert.equal(cell.building, opposite.building)
+			// Map 12 adds western cities and replaces the southern airport with a factory.
+			const asymmetricObjective = id === 12 && [18, 270, 273].some((index) => cell.index === index || opposite.index === index)
+			if (!asymmetricObjective && (id !== 11 || (cell.index !== 119 && opposite.index !== 119))) assert.equal(cell.building, opposite.building)
 			assert.equal(cell.owner, 0)
 		}
 		for (const player of [1, 2]) {

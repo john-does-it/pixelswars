@@ -1928,62 +1928,62 @@
 	"units": [
 		{
 			"type": "infantry",
-			"player": 2,
+			"player": 1,
 			"cell": 193
 		},
 		{
 			"type": "infantry",
-			"player": 1,
+			"player": 2,
 			"cell": 211
 		},
 		{
 			"type": "infantry",
-			"player": 2,
+			"player": 1,
 			"cell": 217
 		},
 		{
 			"type": "jeep",
-			"player": 2,
+			"player": 1,
 			"cell": 194
 		},
 		{
 			"type": "jeep",
-			"player": 1,
+			"player": 2,
 			"cell": 210
 		},
 		{
 			"type": "infantry-rocket",
-			"player": 2,
+			"player": 1,
 			"cell": 169
 		},
 		{
 			"type": "infantry-rocket",
-			"player": 1,
+			"player": 2,
 			"cell": 235
 		},
 		{
 			"type": "infantry",
-			"player": 1,
+			"player": 2,
 			"cell": 187
 		},
 		{
 			"type": "tank",
-			"player": 2,
+			"player": 1,
 			"cell": 218
 		},
 		{
 			"type": "tank",
-			"player": 1,
+			"player": 2,
 			"cell": 186
 		},
 		{
 			"type": "transport",
-			"player": 1,
+			"player": 2,
 			"cell": 234
 		},
 		{
 			"type": "transport",
-			"player": 2,
+			"player": 1,
 			"cell": 170
 		}
 	]

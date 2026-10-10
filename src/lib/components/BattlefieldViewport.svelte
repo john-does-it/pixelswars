@@ -9,6 +9,7 @@
 
 	let { state: gameState, name, children, camera = $bindable(), boardDetails, mapStatus }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; mapStatus?: Snippet } = $props()
 	let viewport = $state<HTMLDivElement>()
+	let mapSpace = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
 	let tileSize = $state(48)
 	let fitSize = $state(48)
@@ -57,8 +58,12 @@
 	}
 
 	function updateViewportSize() {
-		if (!viewport) return
-		fitSize = Math.max(0.5, Math.min(viewport.clientWidth / gameState.cols, viewport.clientHeight / gameState.rows, maximumSize))
+		if (!viewport || !mapSpace) return
+		// Reserve the outer corner markers and their clearance when fitting the map.
+		const padding = getComputedStyle(mapSpace)
+		const availableWidth = viewport.clientWidth - parseFloat(padding.paddingLeft) - parseFloat(padding.paddingRight)
+		const availableHeight = viewport.clientHeight - parseFloat(padding.paddingTop) - parseFloat(padding.paddingBottom)
+		fitSize = Math.max(0.5, Math.min(availableWidth / gameState.cols, availableHeight / gameState.rows, maximumSize))
 		if (!initialized) {
 			initialized = true
 			tileSize = fitSize
@@ -217,7 +222,7 @@
 				}
 			}}
 		>
-			<div class="map-space" style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>
+			<div class="map-space" bind:this={mapSpace} style:width={`calc(${gameState.cols * tileSize}px + 2 * var(--map-edge-space))`} style:height={`calc(${gameState.rows * tileSize}px + 2 * var(--map-edge-space))`}>
 				<div class="map-surface" bind:this={surface} style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>{@render children()}</div>
 			</div>
 		</div>
@@ -292,6 +297,8 @@
 		}
 	}
 	.map-space {
+		--map-edge-space: calc(var(--pixel-corner-outset) + 2px);
+		padding: var(--map-edge-space);
 		position: relative;
 		min-width: 100%;
 		min-height: 100%;

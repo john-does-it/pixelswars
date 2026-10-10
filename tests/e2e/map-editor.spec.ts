@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test'
 
+test('obstacle brush renders the new asset and permits only aircraft', async ({ page }) => {
+	await page.goto('/map-editor/')
+	const brush = page.getByRole('button', { name: 'Obstacle', exact: true })
+	await expect(async () => {
+		await brush.click()
+		await expect(brush).toHaveAttribute('aria-pressed', 'true', { timeout: 500 })
+	}).toPass({ timeout: 10000 })
+	const tile = page.locator('#board [data-cell="0"]')
+	await tile.press('Enter')
+	await expect(tile).toHaveClass(/-blocker/)
+	await expect(tile).toHaveAttribute('aria-label', /Obstacle/)
+	const sprite = await tile.evaluate((element) => getComputedStyle(element).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])
+	expect(sprite).toContain('cell-blocker-on-grass.svg')
+	expect((await page.request.get(sprite!)).ok()).toBe(true)
+	await page.getByRole('button', { name: 'Infantry', exact: true }).click()
+	await tile.press('Enter')
+	await expect(page.locator('#status')).toHaveText('Only air units can be placed on an obstacle.')
+	await expect(tile.locator('img')).toHaveCount(0)
+	await page.getByRole('button', { name: 'Helicopter', exact: true }).click()
+	await tile.press('Enter')
+	await expect(tile.locator('img')).toHaveCount(1)
+	await page.locator('#json-panel summary').click()
+	await expect(page.locator('#json-output')).toHaveValue(/"-blocker"/)
+	const exported = JSON.parse(await page.locator('#json-output').inputValue())
+	expect(exported.cells[0].classes).toEqual(['-blocker', '-ongrass'])
+	expect(exported.units).toContainEqual({ type: 'helicopter', player: 1, cell: 0 })
+})
+
 test('public editor opens from home with working sprites, JSON export and submission links', async ({ page }, testInfo) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))

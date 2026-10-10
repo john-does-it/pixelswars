@@ -1,8 +1,8 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <rect width="200" height="200" fill="url(#pattern0_2916_124)"/>
-<rect x="189" y="103" width="2" height="1" fill="#C8C1C4"/>
-<rect x="191" y="131" width="28" height="1" transform="rotate(-90 191 131)" fill="#C8C1C4"/>
-<rect x="189" y="103" width="4" height="1" transform="rotate(-90 189 103)" fill="#C8C1C4"/>
+<rect x="189" y="103" width="2" height="1" fill="#3F2631"/>
+<rect x="191" y="131" width="28" height="1" transform="rotate(-90 191 131)" fill="#3F2631"/>
+<rect x="189" y="103" width="4" height="1" transform="rotate(-90 189 103)" fill="#3F2631"/>
 <rect x="84" y="111" width="100" height="12" fill="#C0CBDC"/>
 <rect x="77" y="100" width="52" height="7" fill="#E84537"/>
 <rect x="123" y="111" width="7" height="12" fill="#8B9BB4"/>
@@ -13,9 +13,9 @@
 <rect x="182" y="111" width="11" height="7" transform="rotate(-90 182 111)" fill="#3F2631"/>
 <rect x="171" y="111" width="11" height="7" transform="rotate(-90 171 111)" fill="#3F2631"/>
 <rect x="178" y="106" width="6" height="4" transform="rotate(-90 178 106)" fill="#3F2631"/>
-<rect x="154" y="103" width="17" height="1" fill="#C8C1C4"/>
-<rect x="171" y="99" width="18" height="1" fill="#C8C1C4"/>
-<rect x="170" y="103" width="4" height="1" transform="rotate(-90 170 103)" fill="#C8C1C4"/>
+<rect x="154" y="103" width="17" height="1" fill="#3F2631"/>
+<rect x="171" y="99" width="18" height="1" fill="#3F2631"/>
+<rect x="170" y="103" width="4" height="1" transform="rotate(-90 170 103)" fill="#3F2631"/>
 <rect x="178" y="106" width="4" height="12" fill="#C0CBDC"/>
 <rect x="115" y="99" width="15" height="1" fill="#933534"/>
 <rect x="129" y="107" width="7" height="1" transform="rotate(-90 129 107)" fill="#D34136"/>
@@ -32,6 +32,7 @@
 <rect x="177" y="106" width="1" height="1" transform="rotate(-90 177 106)" fill="#6F6471"/>
 <rect x="182" y="106" width="1" height="1" transform="rotate(-90 182 106)" fill="#6F6471"/>
 <rect x="182" y="111" width="1" height="1" transform="rotate(-90 182 111)" fill="#6F6471"/>
+
 <rect x="92" y="63" width="8" height="8" fill="#3f2631"/>
 <rect x="84" y="87" width="8" height="8" fill="#76031c"/>
 <defs>

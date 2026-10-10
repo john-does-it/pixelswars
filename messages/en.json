@@ -393,5 +393,11 @@
 	"map_17_description": "Command your army across an XXL battlefield of roads, lakes and mountain passes.",
 	"map_xxl": "XXL",
 	"map_18": "Long Island Iced Tea",
-	"map_18_description": "Choose your route across this sprawling 24 × 16 battlefield."
+	"map_18_description": "Choose your route across this sprawling 24 × 16 battlefield.",
+	"terrain_blocker": "Obstacle",
+	"terrain_blocker_description": "Only air units can cross this obstacle.",
+	"air_units_only": "air units only",
+	"map_editor_error_blocker": "Only air units can be placed on an obstacle.",
+	"unit_transport_helicopter": "Transport helicopter",
+	"unit_transport_helicopter_description": "Flies over any terrain and carries up to three infantry units. Cannot attack. Its passengers are lost if it is destroyed."
 }

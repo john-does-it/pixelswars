@@ -56,7 +56,7 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 		for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
 			const definition = unitTypes[type]
 			if (productionBuilding(type) !== building.building || definition.cost > budget + income * 2) continue
-			if (type === 'transport') {
+			if (definition.capacity) {
 				const score = transportPurchaseScore(state, building.index)
 				if (score > 0) offers.push({ buildingIndex: building.index, type, cost: definition.cost, score, affordable: definition.cost <= budget })
 				continue

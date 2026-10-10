@@ -3,8 +3,8 @@ export type AiDifficulty = 'easy' | 'medium' | 'hard' | 'expert'
 export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
-export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'plane'
-export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest'
+export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'transport-helicopter' | 'plane'
+export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest' | 'blocker'
 export type BuildingId = 'city' | 'oil-field' | 'factory' | 'hospital' | 'airport'
 export type ProductionBuildingId = 'factory' | 'airport'
 

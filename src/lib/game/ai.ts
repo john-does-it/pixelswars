@@ -132,7 +132,7 @@ export function choosePurchase(state: GameState, buildingIndex: number, difficul
 	const needsCapture = state.cells.some((candidate) => candidate.building && candidate.owner !== state.player) && allies.filter((unit) => unitTypes[unit.type].captures).length < 2
 	const airThreat = enemies.some((unit) => unitTypes[unit.type].domain === 'air') && !allies.some((unit) => unit.type === 'anti-air')
 	const hasIncome = state.cells.some((candidate) => buildingIncome(candidate.building) > 0 && candidate.owner === state.player)
-	const transportScore = cell.building === 'factory' && !airThreat ? transportPurchaseScore(state, buildingIndex, difficulty) : 0
+	const transportScore = !airThreat ? transportPurchaseScore(state, buildingIndex, difficulty) : 0
 	// Do not spend every 200$ income tick on infantry when an important counter needs saving.
 	if (cell.building === 'factory' && hasIncome && allies.some((unit) => unitTypes[unit.type].captures)) {
 		if (airThreat && state.money[state.player] < unitTypes['anti-air'].cost) return null
@@ -142,7 +142,7 @@ export function choosePurchase(state: GameState, buildingIndex: number, difficul
 	return (
 		offers
 			.map((type) => {
-				if (type === 'transport') return { type, score: transportScore }
+				if (unitTypes[type].capacity) return { type, score: transportScore }
 				const definition = unitTypes[type]
 				const matchups = enemies.length ? enemies.reduce((total, enemy) => total + rules.typeModifier(type, enemy.type), 0) / enemies.length : 1
 				const diversity = 1 + allies.filter((unit) => unit.type === type).length * 0.5

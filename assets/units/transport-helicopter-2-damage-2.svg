@@ -1,0 +1,9 @@
+<svg style="image-rendering:pixelated" shape-rendering="crispEdges" width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="200" height="200" fill="url(#pattern0_2959_98)"/>
+<defs>
+<pattern id="pattern0_2959_98" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_2959_98" transform="translate(0.187077 0.188747) scale(0.0390625)"/>
+</pattern>
+<image id="image0_2959_98" width="16" height="16" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAABtQTFRFAAAA7vj+/3Vxi5u0UmB86EU3wMvcqiwjPyYxh6AKywAAAAF0Uk5TAEDm2GYAAABrSURBVAjXHc2xDYAwDARAlyzAAilgAZAYICuYpE8UqJGQ20gp+LH55KvzF34RoErPhB4arXQRm7/pKsj5pjv8ThNn0uwPCMyeJc1EMGYezXWVl1BVloRzbrVIfGYh8uGEA2ickDGKMc+jyg+bOTACrXpekQAAAABJRU5ErkJggg=="/>
+</defs>
+<mask id="silhouette" style="mask-type:alpha"><rect width="200" height="200" fill="url(#pattern0_2959_98)"/></mask><g mask="url(#silhouette)"><rect x="76" y="94" width="16" height="8" fill="#45313a"/><rect x="116" y="78" width="8" height="16" fill="#3f2631"/></g></svg>

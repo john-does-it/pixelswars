@@ -30,3 +30,7 @@ damage stages and cropped previews. This preserves the supplied team colors and 
 Then run `node --experimental-strip-types scripts/sync-assets.ts`. Generated Base64 assets are committed so ordinary
 builds need no Python dependencies. `--stdout` emits a JSON asset map for runtimes
 that cannot write directly to the workspace.
+
+Transport helicopter SVG originals use `assets/units/transport-helicopter-{1,2}.svg`.
+Run `node scripts/export-air-transport-sprites.mjs` to regenerate both teams, damage
+stages, cropped previews, and `docs/air-transport-damage-variants.png`.

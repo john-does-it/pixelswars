@@ -77,9 +77,12 @@ for (const [id, cols, rows, unitsPerSide, passages] of [
 		for (const cell of state.cells) {
 			const opposite = state.cells.at(-cell.index - 1)!
 			if (id === 13) assert.equal(cell.terrain, opposite.terrain)
-			assert.equal(cell.building, opposite.building)
+			if (id === 13) assert.equal(cell.building, opposite.building)
 			assert.equal(cell.owner, 0)
 			if (cell.building) assert.ok(neighbors(state, cell.index).some((index) => state.cells[index].terrain === 'road'))
 		}
+		// Which Way Across has asymmetric city positions, with equal objectives on each side.
+		const objectives = (cells: GameState['cells']) => cells.flatMap((cell) => (cell.building ? [cell.building] : [])).sort()
+		assert.deepEqual(objectives(state.cells.slice(0, (cols * rows) / 2)), objectives(state.cells.slice((cols * rows) / 2)))
 	})
 }

@@ -12,6 +12,7 @@ export const unitTypes: Record<UnitTypeId, UnitDefinition> = {
 	'infantry-rocket': { name: 'Rocket', attack: 40, range: 1, exclusion: 0, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 400, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'tank-shot' },
 	plane: { name: 'Plane', domain: 'air', production: 'airport', attack: 80, range: 1, exclusion: 0, attacks: 1, defense: 25, movement: 10, maxHealth: 120, cost: 3000, captures: false, delay: 1000, selectSound: 'plane-engine', fightSound: 'missile-launch' },
 	helicopter: { name: 'Helicopter', domain: 'air', production: 'airport', attack: 65, range: 1, exclusion: 0, attacks: 1, defense: 15, movement: 8, maxHealth: 110, cost: 1800, captures: false, delay: 750, selectSound: 'helico-engine', fightSound: 'gun-battle' },
+	'transport-helicopter': { name: 'Transport helicopter', domain: 'air', production: 'airport', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 15, movement: 8, maxHealth: 110, cost: 1800, captures: false, delay: 750, selectSound: 'helico-engine', fightSound: 'gun-battle' },
 	infantry: { name: 'Infantry', attack: 40, range: 1, exclusion: 0, attacks: 2, defense: 10, movement: 5, maxHealth: 100, cost: 200, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'gun-battle' },
 	jeep: { name: 'Jeep', attack: 50, range: 1, exclusion: 0, attacks: 2, defense: 20, movement: 8, maxHealth: 125, cost: 600, captures: false, delay: 500, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
 	transport: { name: 'Transport jeep', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 20, movement: 8, maxHealth: 125, cost: 600, captures: false, delay: 500, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
@@ -26,7 +27,8 @@ export const terrainTypes: Record<TerrainId, TerrainDefinition> = {
 	water: { name: 'Water', cost: 2, defense: 0 },
 	building: { name: 'Building', cost: 2, defense: 40 },
 	road: { name: 'Road', cost: 1, defense: 0 },
-	forest: { name: 'Forest', cost: 3, defense: 30 }
+	forest: { name: 'Forest', cost: 3, defense: 30 },
+	blocker: { name: 'Obstacle', cost: 1, defense: 0 }
 }
 
 export function isUnitTypeId(value: string): value is UnitTypeId {

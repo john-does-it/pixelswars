@@ -393,5 +393,11 @@
 	"map_17_description": "Führe deine Armee über ein XXL-Schlachtfeld mit Straßen, Seen und Bergpässen.",
 	"map_xxl": "XXL",
 	"map_18": "Long Island Iced Tea",
-	"map_18_description": "Wähle deinen Weg über dieses weitläufige Schlachtfeld mit 24 × 16 Feldern."
+	"map_18_description": "Wähle deinen Weg über dieses weitläufige Schlachtfeld mit 24 × 16 Feldern.",
+	"terrain_blocker": "Hindernis",
+	"terrain_blocker_description": "Nur Lufteinheiten können dieses Hindernis überqueren.",
+	"air_units_only": "nur Lufteinheiten",
+	"map_editor_error_blocker": "Auf einem Hindernis können nur Lufteinheiten platziert werden.",
+	"unit_transport_helicopter": "Transporthubschrauber",
+	"unit_transport_helicopter_description": "Fliegt über jedes Gelände und transportiert bis zu drei Infanterieeinheiten. Kann nicht angreifen. Wird er zerstört, gehen auch seine Passagiere verloren."
 }

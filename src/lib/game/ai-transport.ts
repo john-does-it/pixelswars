@@ -124,7 +124,7 @@ function shouldStayAboard(state: GameState, transport: Unit, passenger: Unit, po
 			.sort((left, right) => left.cost - right.cost)[0]
 		if (!approach) continue
 		// Resume driving next turn; an unused capture is available on arrival.
-		const turns = Math.max(passenger.capture > 0 ? 1 : 2, 1 + arrivalTurns(state, transport, approach.path, unitTypes.transport.movement))
+		const turns = Math.max(passenger.capture > 0 ? 1 : 2, 1 + arrivalTurns(state, transport, approach.path, unitTypes[transport.type].movement))
 		const value = difficulty === 'easy' ? 300 : buildingIncome(objective.building) * 3 || (objective.building === 'factory' ? 400 : 180)
 		ridingValue = Math.max(ridingValue, value / (1 + turns))
 	}
@@ -165,7 +165,7 @@ export function transportPurchaseScore(state: GameState, buildingIndex: number, 
 	if (allies.some((unit) => unitTypes[unit.type].capacity)) return 0
 	const passengers = allies.filter((unit) => isInfantry(unit) && neighbors(state, buildingIndex).includes(unit.cell) && !canCapture({ ...state, selectedId: unit.id }))
 	if (!passengers.length) return 0
-	const transport = createUnit('transport', state.player, buildingIndex, state.nextId)
+	const transport = createUnit(state.cells[buildingIndex].building === 'airport' ? 'transport-helicopter' : 'transport', state.player, buildingIndex, state.nextId)
 	const projected = { ...state, units: [...state.units, transport] }
 	const positions = threatsForDifficulty(projected, difficulty)
 	// Buy a combat unit first when the production site can be struck next turn.
@@ -180,10 +180,10 @@ export function transportPurchaseScore(state: GameState, buildingIndex: number, 
 				.map((index) => driving.get(index))
 				.filter((route) => route !== undefined)
 				.sort((left, right) => left.cost - right.cost)[0]
-			if (!footRoute || !driveRoute) continue
+			if (!driveRoute) continue
 			// Newly bought vehicles can move immediately; boarding preserves capture.
-			const walkingTurns = arrivalTurns(state, passenger, footRoute.path, passenger.movement)
-			const ridingTurns = Math.max(passenger.capture > 0 ? 0 : 1, arrivalTurns(projected, transport, driveRoute.path, unitTypes.transport.movement))
+			const walkingTurns = footRoute ? arrivalTurns(state, passenger, footRoute.path, passenger.movement) : 8
+			const ridingTurns = Math.max(passenger.capture > 0 ? 0 : 1, arrivalTurns(projected, transport, driveRoute.path, unitTypes[transport.type].movement))
 			const savedTurns = walkingTurns - ridingTurns
 			const value = buildingIncome(objective.building) || (objective.building === 'factory' ? 150 : 50)
 			objectiveSavings.set(objective.index, Math.max(objectiveSavings.get(objective.index) ?? 0, savedTurns * value))
@@ -193,6 +193,6 @@ export function transportPurchaseScore(state: GameState, buildingIndex: number, 
 		.sort((left, right) => right - left)
 		.slice(0, passengers.length)
 		.reduce((total, saving) => total + saving, 0)
-	// The saved income must repay a meaningful share of the $600 investment.
-	return Math.max(0, benefit - unitTypes.transport.cost * 0.5) / 2
+	// The saved income must repay a meaningful share of the transport investment.
+	return Math.max(0, benefit - unitTypes[transport.type].cost * 0.5) / 2
 }

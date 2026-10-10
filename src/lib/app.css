@@ -22,7 +22,21 @@
 	font-display: swap;
 }
 
+.stat-description {
+	padding-top: var(--stat-description-padding, 14px);
+	border-top: 1px solid var(--color-border);
+	margin: 0 0 var(--stat-description-margin-bottom, 1em);
+}
+
+:root,
+.pixel-corners {
+	--pixel-corner-frame:
+		linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) left 1px top 1px / 8px 3px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) left 1px top 1px / 3px 8px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) right 1px top 1px / 8px 3px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) right 1px top 1px / 3px 8px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) left 1px bottom 1px / 8px 3px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) left 1px bottom 1px / 3px 8px no-repeat,
+		linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) right 1px bottom 1px / 8px 3px no-repeat, linear-gradient(var(--pixel-corner-color, var(--color-accent)), var(--pixel-corner-color, var(--color-accent))) right 1px bottom 1px / 3px 8px no-repeat, linear-gradient(#080d0b, #080d0b) left top / 10px 5px no-repeat, linear-gradient(#080d0b, #080d0b) left top / 5px 10px no-repeat, linear-gradient(#080d0b, #080d0b) right top / 10px 5px no-repeat, linear-gradient(#080d0b, #080d0b) right top / 5px 10px no-repeat, linear-gradient(#080d0b, #080d0b) left bottom / 10px 5px no-repeat, linear-gradient(#080d0b, #080d0b) left bottom / 5px 10px no-repeat, linear-gradient(#080d0b, #080d0b) right bottom / 10px 5px no-repeat, linear-gradient(#080d0b, #080d0b) right bottom / 5px 10px no-repeat;
+}
+
 :root {
+	--pixel-corner-outset: 5px;
 	--color-background: #111a14;
 	--color-surface: #243226;
 	--color-control: #34472f;
@@ -31,7 +45,6 @@
 	--color-text: #fffdf2;
 	--color-muted: #d6ddc5;
 	--color-accent: #f4d879;
-	--pixel-corner-frame: linear-gradient(var(--color-accent), var(--color-accent)) left top / 6px 2px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) left top / 2px 6px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) right top / 6px 2px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) right top / 2px 6px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) left bottom / 6px 2px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) left bottom / 2px 6px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) right bottom / 6px 2px no-repeat, linear-gradient(var(--color-accent), var(--color-accent)) right bottom / 2px 6px no-repeat;
 	--font-body: 'IBM Plex Mono', ui-monospace, monospace;
 	--font-display: 'Pixelify Sans', ui-monospace, monospace;
 	font-family: var(--font-body);
@@ -274,6 +287,32 @@ button.pixel-icon-control:hover:not(:disabled) {
 :focus-visible {
 	outline: 3px solid var(--color-accent);
 	outline-offset: 3px;
+}
+
+/* Shared corner markers for terrain cells and sprite palettes; never affect layout. */
+.pixel-corners {
+	position: relative;
+}
+.cell-container.pixel-corners {
+	--pixel-corner-inset: calc(-1 * var(--pixel-corner-outset));
+}
+.pixel-corners::before {
+	content: '';
+	position: absolute;
+	inset: var(--pixel-corner-inset, 0);
+	z-index: 5;
+	pointer-events: none;
+}
+.pixel-corners:focus-visible {
+	outline: none;
+}
+.pixel-corners:is(:focus-visible, [aria-pressed='true'])::before {
+	background: var(--pixel-corner-frame);
+}
+@media (hover: hover) {
+	.pixel-corners:hover:not(:disabled)::before {
+		background: var(--pixel-corner-frame);
+	}
 }
 
 .panel {
@@ -596,6 +635,9 @@ button.pixel-icon-control:hover:not(:disabled) {
 
 .cell-container.-water.-under-bridge.-h {
 	background-image: url('/assets/cells/cell-water-bridge-h.svg');
+}
+.cell-container.-blocker {
+	background-image: url('/assets/cells/cell-blocker-on-grass.svg');
 }
 .cell-container.-road.-bridge.-v {
 	background-image: url('/assets/cells/cell-road-bridge-v.svg');

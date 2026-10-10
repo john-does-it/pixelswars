@@ -1,9 +1,9 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <rect width="200" height="200" fill="url(#pattern0_2916_125)"/>
 <rect x="77" y="101" width="52" height="7" fill="#009ADC"/>
-<rect x="189" y="104" width="2" height="1" fill="#C8C1C4"/>
-<rect x="191" y="132" width="28" height="1" transform="rotate(-90 191 132)" fill="#C8C1C4"/>
-<rect x="189" y="104" width="4" height="1" transform="rotate(-90 189 104)" fill="#C8C1C4"/>
+<rect x="189" y="104" width="2" height="1" fill="#3F2631"/>
+<rect x="191" y="132" width="28" height="1" transform="rotate(-90 191 132)" fill="#3F2631"/>
+<rect x="189" y="104" width="4" height="1" transform="rotate(-90 189 104)" fill="#3F2631"/>
 <rect x="84" y="112" width="100" height="12" fill="#C0CBDC"/>
 <rect x="123" y="112" width="7" height="12" fill="#8B9BB4"/>
 <rect x="130" y="112" width="1" height="12" fill="#98A7BE"/>
@@ -13,9 +13,9 @@
 <rect x="182" y="112" width="11" height="7" transform="rotate(-90 182 112)" fill="#3F2631"/>
 <rect x="171" y="112" width="11" height="7" transform="rotate(-90 171 112)" fill="#3F2631"/>
 <rect x="178" y="107" width="6" height="4" transform="rotate(-90 178 107)" fill="#3F2631"/>
-<rect x="154" y="104" width="17" height="1" fill="#C8C1C4"/>
-<rect x="171" y="100" width="18" height="1" fill="#C8C1C4"/>
-<rect x="170" y="104" width="4" height="1" transform="rotate(-90 170 104)" fill="#C8C1C4"/>
+<rect x="154" y="104" width="17" height="1" fill="#3F2631"/>
+<rect x="171" y="100" width="18" height="1" fill="#3F2631"/>
+<rect x="170" y="104" width="4" height="1" transform="rotate(-90 170 104)" fill="#3F2631"/>
 <rect x="178" y="107" width="4" height="12" fill="#C0CBDC"/>
 <rect x="115" y="100" width="15" height="1" fill="#206086"/>
 <rect x="129" y="108" width="7" height="1" transform="rotate(-90 129 108)" fill="#088CC6"/>
@@ -32,6 +32,7 @@
 <rect x="177" y="107" width="1" height="1" transform="rotate(-90 177 107)" fill="#6F6471"/>
 <rect x="182" y="107" width="1" height="1" transform="rotate(-90 182 107)" fill="#6F6471"/>
 <rect x="182" y="112" width="1" height="1" transform="rotate(-90 182 112)" fill="#6F6471"/>
+
 
 <defs>
 <pattern id="pattern0_2916_125" patternContentUnits="objectBoundingBox" width="1" height="1">

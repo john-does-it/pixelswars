@@ -11,11 +11,11 @@ export function playerName(player: Player, aiMode = false): string {
 }
 
 export function unitName(id: UnitTypeId): string {
-	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, transport: messages.unit_transport, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, plane: messages.unit_plane }[id])
+	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, transport: messages.unit_transport, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, 'transport-helicopter': messages.unit_transport_helicopter, plane: messages.unit_plane }[id])
 }
 
 export function terrainName(id: TerrainId): string {
-	return translate({ road: messages.terrain_road, grass: messages.terrain_grass, forest: messages.terrain_forest, moutain: messages.terrain_moutain, water: messages.terrain_water, building: messages.terrain_building }[id])
+	return translate({ road: messages.terrain_road, grass: messages.terrain_grass, forest: messages.terrain_forest, moutain: messages.terrain_moutain, water: messages.terrain_water, building: messages.terrain_building, blocker: messages.terrain_blocker }[id])
 }
 
 export function buildingName(id: BuildingId): string {

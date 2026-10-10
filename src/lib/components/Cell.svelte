@@ -43,7 +43,7 @@
 	)
 </script>
 
-<button type="button" class="cell-container {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:boarding-target={boardingTarget} class:deployment-target={deploymentTarget} class:reachable class:attackable class:inspected class:under-fire={underFire} aria-label={boardingTarget ? `${label}, ${translate(messages.transport_load)}` : deploymentTarget ? `${label}, ${translate(messages.transport_deploy)}` : reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
+<button type="button" class="cell-container pixel-corners {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:boarding-target={boardingTarget} class:deployment-target={deploymentTarget} class:reachable class:attackable class:inspected class:under-fire={underFire} style:--pixel-corner-color={(selected || inspected) && unit ? (unit.player === 1 ? '#8dcbff' : '#ffb3b1') : undefined} aria-label={boardingTarget ? `${label}, ${translate(messages.transport_load)}` : deploymentTarget ? `${label}, ${translate(messages.transport_deploy)}` : reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
 	{#if cell.terrain === 'water' && animate && !cell.classes.includes('-under-bridge')}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
 	{#if reachable || deploymentTarget}
 		<span class="movement-marker" aria-hidden="true"></span>
@@ -126,12 +126,6 @@
 		background-size: cover;
 		cursor: pointer;
 		image-rendering: pixelated;
-
-		&:focus-visible {
-			z-index: 2;
-			outline: 3px solid white;
-			outline-offset: -3px;
-		}
 	}
 
 	.movement-marker {
@@ -141,10 +135,10 @@
 		left: 50%;
 		width: clamp(5px, 12%, 9px);
 		aspect-ratio: 1;
-		border-radius: 50%;
+		box-sizing: content-box;
+		border: 3px solid #3f2631;
 		transform: translate(-50%, -50%);
-		background: var(--range-color);
-		box-shadow: 0 0 0 1px var(--color-background);
+		background: var(--movement-marker-color);
 		pointer-events: none;
 	}
 

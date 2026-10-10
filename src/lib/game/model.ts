@@ -54,6 +54,7 @@ export function neighbors(state: GameState, index: number): number[] {
 
 export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'>): number {
 	if (domain === 'air') return 1
+	if (cell.terrain === 'blocker') return Infinity
 	if (domain === 'naval') return cell.terrain === 'water' ? cell.cost : Infinity
 	return cell.terrain === 'water' ? Infinity : cell.cost
 }

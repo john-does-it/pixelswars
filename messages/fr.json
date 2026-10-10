@@ -393,5 +393,11 @@
 	"map_17_description": "Menez votre armée sur un champ de bataille XXL entre routes, lacs et cols montagneux.",
 	"map_xxl": "XXL",
 	"map_18": "Long Island Iced Tea",
-	"map_18_description": "Choisissez votre route à travers ce vaste champ de bataille de 24 × 16 cases."
+	"map_18_description": "Choisissez votre route à travers ce vaste champ de bataille de 24 × 16 cases.",
+	"terrain_blocker": "Obstacle",
+	"terrain_blocker_description": "Seules les unités aériennes peuvent franchir cet obstacle.",
+	"air_units_only": "unités aériennes uniquement",
+	"map_editor_error_blocker": "Seules les unités aériennes peuvent être placées sur un obstacle.",
+	"unit_transport_helicopter": "Hélicoptère de transport",
+	"unit_transport_helicopter_description": "Survole tous les terrains et transporte jusqu’à trois unités d’infanterie. Ne peut pas attaquer. Ses passagers sont perdus si elle est détruite."
 }

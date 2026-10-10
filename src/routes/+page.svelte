@@ -23,16 +23,17 @@
 		tank: messages.unit_tank_description,
 		'anti-air': messages.unit_anti_air_description,
 		helicopter: messages.unit_helicopter_description,
+		'transport-helicopter': messages.unit_transport_helicopter_description,
 		plane: messages.unit_plane_description
 	}
-	const terrainDescriptions = { road: messages.terrain_road_description, grass: messages.terrain_grass_description, forest: messages.terrain_forest_description, moutain: messages.terrain_moutain_description, water: messages.terrain_water_description, building: messages.terrain_building_description }
+	const terrainDescriptions = { road: messages.terrain_road_description, grass: messages.terrain_grass_description, forest: messages.terrain_forest_description, moutain: messages.terrain_moutain_description, water: messages.terrain_water_description, building: messages.terrain_building_description, blocker: messages.terrain_blocker_description }
 	const unitGroups: { name: (...parameters: any[]) => string; description: (...parameters: any[]) => string; ids: UnitTypeId[] }[] = [
 		{ name: messages.infantry_group, description: messages.infantry_group_description, ids: ['infantry', 'infantry-rocket', 'infantry-sniper'] },
 		{ name: messages.vehicles_group, description: messages.vehicles_group_description, ids: ['jeep', 'transport', 'artillery', 'tank', 'anti-air'] },
-		{ name: messages.aircraft_group, description: messages.aircraft_group_description, ids: ['helicopter', 'plane'] }
+		{ name: messages.aircraft_group, description: messages.aircraft_group_description, ids: ['helicopter', 'transport-helicopter', 'plane'] }
 	]
 	const terrainGroups: { name: (...parameters: any[]) => string; ids: TerrainId[] }[] = [
-		{ name: messages.ground_group, ids: ['road', 'grass', 'forest', 'moutain'] },
+		{ name: messages.ground_group, ids: ['road', 'grass', 'forest', 'moutain', 'blocker'] },
 		{ name: messages.waterways_group, ids: ['water'] }
 	]
 	const unitStats = (unit: UnitDefinition): StatItem[] => [
@@ -44,7 +45,7 @@
 		{ icon: 'icon-defense', label: translate(messages.stat_defense), value: unit.defense },
 		{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: unit.attack ? `${unit.exclusion + 1}–${unit.range}` : '—' }
 	]
-	const terrainStats = (terrain: TerrainDefinition, rangeBonus = 0): StatItem[] => [{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain.cost }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }, ...(rangeBonus ? [{ icon: 'icon-attack-range', label: translate(messages.stat_range_bonus), value: `+${rangeBonus}` }] : [])]
+	const terrainStats = (terrain: TerrainDefinition, rangeBonus = 0): StatItem[] => [{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain === terrainTypes.blocker ? '∞' : terrain.cost }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }, ...(rangeBonus ? [{ icon: 'icon-attack-range', label: translate(messages.stat_range_bonus), value: `+${rangeBonus}` }] : [])]
 
 	const buildings: { id: BuildingId; description: (...parameters: any[]) => string }[] = [
 		{ id: 'city', description: messages.building_city_description },
@@ -155,7 +156,7 @@
 							<img src={asset(`/assets/units/${id}-1.png`)} alt={unitName(id)} />
 							<h4>{unitName(id)}</h4>
 							<StatList items={unitStats(unit)} />
-							<p class="description">{translate(unitDescriptions[id])}</p>
+							<p class="stat-description">{translate(unitDescriptions[id])}</p>
 						</article>
 					{/each}
 				</div>
@@ -174,7 +175,7 @@
 							<TerrainIcon terrain={id} size={70} />
 							<h4>{terrainName(id)}</h4>
 							<StatList items={terrainStats(terrain, id === 'moutain' ? 1 : 0)} />
-							<p class="description">{translate(terrainDescriptions[id])}</p>
+							<p class="stat-description">{translate(terrainDescriptions[id])}</p>
 						</article>
 					{/each}
 				</div>
@@ -188,7 +189,7 @@
 						<TerrainIcon terrain={building.id} size={70} />
 						<h4>{buildingName(building.id)}</h4>
 						<StatList items={terrainStats(terrainTypes.building)} />
-						<p class="description">{translate(building.description)}</p>
+						<p class="stat-description">{translate(building.description)}</p>
 					</article>
 				{/each}
 			</div>
@@ -366,12 +367,6 @@
 
 	article p {
 		font-size: 16px;
-	}
-
-	.description {
-		padding-top: 14px;
-		border-top: 1px solid var(--color-border);
-		margin-top: 0;
 	}
 
 	footer {

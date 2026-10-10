@@ -14,7 +14,8 @@
 		city: '-building -city -ongrass',
 		'oil-field': '-building -oil-field -ongrass',
 		road: '-road -h',
-		forest: '-forest -ongrass'
+		forest: '-forest -ongrass',
+		blocker: '-blocker -ongrass'
 	}
 	const classes = $derived(cell ? cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' ') : terrainClasses[terrain])
 </script>

@@ -17,8 +17,9 @@ site by `npm run build`; drawing and drafts run entirely in the browser.
    road movement and defense rules; neighboring water stays open beneath them.
    Water uses the existing shore sprites: use areas at least two cells thick for
    complete banks. Unsupported narrow shapes keep plain water rather than broken corners.
+   Obstacles block ground units; only aircraft can cross or occupy them.
 3. Choose a blue or red unit and place it. The eraser removes only units; painting
-   water removes ground units from that cell. Aircraft can be placed over water.
+   water or obstacles removes ground units from that cell. Aircraft can be placed over both.
    Transport jeeps start empty; place their infantry separately. Players can load
    up to three adjacent infantry units during the match.
 4. Set a name and numeric map ID, then **Exporter le JSON** to download `board-ID.json`.
@@ -33,7 +34,7 @@ Cells also support keyboard activation with Enter/Space.
 
 Export accepts an unfinished map with no armies, with a reminder to add both teams.
 It validates dimensions, known terrain and unit types, ownership, duplicate units,
-and ground units on water. It does not automatically judge map balance or whether
+and ground units on water or obstacles. It does not automatically judge map balance or whether
 both armies can reach each other. Loading/exporting never writes a game source file.
 
 Run `npm run test:map-editor` for the browser smoke test. Editor rules and import/export

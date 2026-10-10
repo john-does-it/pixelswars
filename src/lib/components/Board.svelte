@@ -109,6 +109,7 @@
 
 <style>
 	.board-layout {
+		--movement-marker-color: #0077c5;
 		--range-color: #8dcbff;
 		--range-fill: #174a70;
 		display: flex;
@@ -116,6 +117,7 @@
 		min-width: 0;
 		min-height: 0;
 		&.range-red {
+			--movement-marker-color: #aa2c23;
 			--range-color: #ffb3b1;
 			--range-fill: #792d3a;
 		}
