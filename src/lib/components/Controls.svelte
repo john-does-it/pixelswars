@@ -11,6 +11,7 @@
 	import StatsPanel from './StatsPanel.svelte'
 	import Modal from './Modal.svelte'
 	import UiIcon from './UiIcon.svelte'
+	import CargoTray from './CargoTray.svelte'
 
 	let { game, aiMode = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void } = $props()
 	const gameState = $derived(game.state)
@@ -47,6 +48,7 @@
 
 <nav aria-label={translate(messages.game_controls)} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
+		<CargoTray {game} disabled={inputLocked || !!waiting} />
 		{#if selected}
 			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
 				<UiIcon name="previous-action" />

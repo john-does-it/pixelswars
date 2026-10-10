@@ -14,7 +14,6 @@
 	import GameHeader from './GameHeader.svelte'
 	import SelectedUnitStrip from './SelectedUnitStrip.svelte'
 	import Controls from './Controls.svelte'
-	import CargoTray from './CargoTray.svelte'
 	import ProductionModal from './ProductionModal.svelte'
 	import VictoryModal from './VictoryModal.svelte'
 	import TurnAnnouncement from './TurnAnnouncement.svelte'
@@ -121,17 +120,16 @@
 				<p class="combat-status" role="status"><span class:inactive={!game.state.fighting || game.state.aiThinking} aria-hidden={!game.state.fighting || game.state.aiThinking}>{translate(messages.combat_in_progress)}</span></p>
 				<div class="unit-footer" class:inactive={waiting} inert={waiting} aria-hidden={waiting}>
 					<SelectedUnitStrip cell={previewCell} unit={previewCell ? unitAt(game.state, previewCell.index) : undefined} disabled={locked(game.state) || waiting || !!network?.pending} oninspect={() => (showPreview = true)} />
-					<CargoTray {game} disabled={locked(game.state) || waiting || !!network?.pending} />
 				</div>
 			</div>
 		{/snippet}
 		<div class="field">
 			<div class="board-column">
+				<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 				{#snippet boardDetails()}
 					<div class="board-details">
 						<div class="board-zoom"><ZoomControls {camera} /></div>
-						<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
-						<div class="board-actions">
+						<div class="board-actions" class:red={game.state.player === 2}>
 							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
 						</div>
 					</div>
@@ -174,17 +172,12 @@
 		text-align: left;
 	}
 	.unit-footer {
+		container: unit-footer / inline-size;
 		display: flex;
 		align-items: center;
-		gap: 12px;
 		height: 48px;
 		min-width: 0;
-		overflow-x: auto;
-		scrollbar-width: none;
 		color: var(--color-text);
-		:global(.cargo-tray) {
-			flex: none;
-		}
 	}
 	.inactive {
 		visibility: hidden;
@@ -232,7 +225,6 @@
 		height: max(520px, calc(100svh - 8px));
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
 		min-width: 0;
 		min-height: 0;
 	}
@@ -247,6 +239,10 @@
 		flex: none;
 	}
 	.board-actions {
+		border-top: 3px solid #71b9ee;
+		&.red {
+			border-color: #f59b9b;
+		}
 		padding: 8px 0 16px;
 		display: flex;
 		justify-content: space-between;

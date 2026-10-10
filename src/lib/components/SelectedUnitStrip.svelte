@@ -22,9 +22,9 @@
 			<span class="details">
 				<strong>{name}</strong>
 				<span class="stats">
-					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} />{unit.health}/{definition.maxHealth}</span>
-					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} />{unit.movement}/{definition.movement}</span>
-					<span title={translate(messages.stat_attacks)}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} />{unit.attacks}/{definition.attacks}</span>
+					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /><span>{unit.health}<span class="stat-maximum">/{definition.maxHealth}</span></span></span>
+					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /><span>{unit.movement}<span class="stat-maximum">/{definition.movement}</span></span></span>
+					<span title={translate(messages.stat_attacks)}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} /><span>{unit.attacks}<span class="stat-maximum">/{definition.attacks}</span></span></span>
 				</span>
 			</span>
 		{/if}
@@ -80,7 +80,7 @@
 			monospace;
 		font-variant-numeric: tabular-nums;
 	}
-	.stats span {
+	.stats > span {
 		display: inline-flex;
 		align-items: center;
 		gap: 3px;
@@ -89,5 +89,10 @@
 	.stats img {
 		width: 12px;
 		height: 12px;
+	}
+	@container unit-footer (max-width: 190px) {
+		.stat-maximum {
+			display: none;
+		}
 	}
 </style>

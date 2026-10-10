@@ -5,8 +5,8 @@ import rules from '../src/lib/game/combat-rules.ts'
 test('all 16 approved unit matchups', () => {
 	const types = ['infantry', 'jeep', 'tank', 'artillery']
 	const expected = [
-		[1, 0.5, 0.5, 0.8],
-		[1.5, 1, 0.5, 1],
+		[1, 1.25, 0.5, 0.8],
+		[1, 1, 0.5, 1],
 		[1.5, 1.5, 1, 0.5],
 		[1.35, 1.45, 1.6, 1]
 	]
@@ -79,7 +79,8 @@ test('rocket infantry is strong against vehicles but vulnerable to ground-capabl
 	for (const target of ['jeep', 'tank']) assert.equal(rules.typeModifier('infantry-rocket', target), 2.5)
 	assert.equal(rules.typeModifier('infantry-rocket', 'artillery'), 2.15)
 	assert.equal(rules.typeModifier('infantry-rocket', 'infantry'), 0.5)
-	for (const attacker of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
+	assert.equal(rules.typeModifier('infantry', 'infantry-rocket'), 1)
+	for (const attacker of ['infantry-rocket', 'jeep', 'tank', 'plane']) assert.equal(rules.typeModifier(attacker, 'infantry-rocket'), 1.5)
 	assert.equal(rules.typeModifier('artillery', 'infantry-rocket'), 1.35)
 	assert.equal(rules.typeModifier('helicopter', 'infantry-rocket'), 2)
 })

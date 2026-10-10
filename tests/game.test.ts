@@ -371,6 +371,49 @@ for (const type of ['artillery', 'infantry-sniper', 'anti-air'] as const) {
 	})
 }
 
+test('a jeep leaves infantry near half health and takes meaningful retaliation on open ground', async () => {
+	const state = fixture()
+	state.units = []
+	const jeep = spawn(state, 'jeep', 1, 18)
+	const infantry = spawn(state, 'infantry', 2, 19)
+	state.cells[18].defense = state.cells[19].defense = 0
+	const exchange: number[][] = [[jeep.health, infantry.health]]
+	const game = createController(state, {
+		delay: async () => {
+			exchange.push([jeep.health, infantry.health])
+		}
+	})
+	game.select(jeep.id)
+	await game.fight(infantry)
+	assert.deepEqual(exchange, [
+		[125, 100],
+		[125, 51],
+		[101, 51]
+	])
+	assert.equal(jeep.attacks, 1)
+	assert.equal(infantry.attacks, 2, 'retaliation does not consume the infantry’s own attacks')
+	game.dispose()
+})
+
+test('a healthy rocket soldier retains about 30 HP after both infantry attacks on open ground', async () => {
+	const state = fixture()
+	state.units = []
+	const infantry = spawn(state, 'infantry', 1, 18)
+	const rocket = spawn(state, 'infantry-rocket', 2, 19)
+	state.cells[18].defense = state.cells[19].defense = 0
+	const game = createController(state, { delay: async () => {} })
+	game.select(infantry.id)
+	await game.fight(rocket)
+	assert.deepEqual([infantry.health, rocket.health], [88, 61])
+	await game.fight(rocket)
+	assert.deepEqual([infantry.health, rocket.health], [83, 27])
+	assert.equal(infantry.attacks, 0)
+	assert.equal(rocket.attacks, 1)
+	assert.ok(state.units.includes(rocket))
+	assert.equal(state.winner, null)
+	game.dispose()
+})
+
 test('vehicle combat uses each unit’s maximum health for its first shot and retaliation', async () => {
 	const state = fixture()
 	state.units = []

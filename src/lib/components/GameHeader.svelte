@@ -8,8 +8,8 @@
 	let { state, aiMode = false, onoptions }: { state: GameState; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
 
-<header class:blue={state.player === 1} class:red={state.player === 2}>
-	<div class="match-summary">
+<header class="match-summary">
+	<div class="summary-details">
 		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
 			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{playerName(state.player, aiMode)}
 			<span>{translate(messages.round, { round: state.round })}</span>
@@ -23,19 +23,15 @@
 </header>
 
 <style>
-	header {
+	.match-summary {
+		flex: none;
+		padding: 16px var(--game-gutter);
+		background: var(--color-background);
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		background: var(--color-background);
-		padding: 8px 0 16px;
-		border-bottom: 3px solid #71b9ee;
-		margin-bottom: 0;
-		&.red {
-			border-color: #f59b9b;
-		}
 	}
-	.match-summary {
+	.summary-details {
 		flex: 1;
 		min-width: 0;
 		display: flex;
@@ -82,11 +78,7 @@
 		color: #ffb3b1;
 	}
 	@media (max-width: 900px) {
-		header {
-			padding: 8px 0 16px;
-			margin-bottom: 0;
-		}
-		.match-summary {
+		.summary-details {
 			gap: 4px 12px;
 		}
 		.turn,

@@ -103,9 +103,10 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('battlefield comes first, followed by centered zoom, players, actions and the minimap', async ({ page }) => {
+test('players and money sit above the battlefield with stable controls below while zooming', async ({ page }) => {
 	for (const size of [
 		{ width: 1400, height: 900 },
+		{ width: 412, height: 915 },
 		{ width: 390, height: 844 },
 		{ width: 320, height: 480 }
 	]) {
@@ -116,22 +117,32 @@ test('battlefield comes first, followed by centered zoom, players, actions and t
 		const zoomRow = (await page.locator('.board-zoom').boundingBox())!
 		const zoom = (await page.locator('.zoom-controls').boundingBox())!
 		const header = (await page.locator('.game-shell header').boundingBox())!
+		const options = (await page.locator('header .options-button').boundingBox())!
 		const actions = (await page.locator('.board-actions').boundingBox())!
 		const minimap = (await page.locator('.minimap').boundingBox())!
-		expect(frame.y).toBe(0)
+		expect(header.y).toBe(0)
+		expect(frame.y).toBe(header.y + header.height)
 		expect(frame.x).toBe(0)
 		expect(frame.width).toBe(size.width)
-		expect(header.x).toBe(size.width > 900 ? 16 : 8)
+		expect(header.x).toBe(0)
+		expect(header.width).toBe(size.width)
+		expect(options.x + options.width).toBe(size.width - (size.width > 900 ? 16 : 8))
+		expect(options.y + options.height).toBeLessThanOrEqual(header.y + header.height)
 		expect(zoom.y - (frame.y + frame.height)).toBeCloseTo(16, 0)
 		expect(zoom.x + zoom.width / 2).toBeCloseTo(frame.x + frame.width / 2, 0)
 		expect(zoomRow.y + zoomRow.height - (zoom.y + zoom.height)).toBeCloseTo(16, 0)
-		expect(header.y).toBeGreaterThanOrEqual(zoomRow.y + zoomRow.height)
 		await expect(page.locator('.board-actions')).toHaveCSS('padding-bottom', '16px')
-		expect(actions.y).toBeGreaterThanOrEqual(header.y + header.height)
+		expect(actions.y).toBeGreaterThanOrEqual(zoomRow.y + zoomRow.height)
 		expect(minimap.y).toBeGreaterThanOrEqual(actions.y + actions.height)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 		await expect(page.locator('.board-frame')).toHaveCSS('border-top-width', '0px')
 		await expect(page.locator('.map-space')).toHaveCSS('padding', '0px')
+		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
+			await page.getByRole('button', { name, exact: true }).click()
+			expect(await page.locator('.game-shell header').boundingBox()).toEqual(header)
+			expect(await page.locator('.board-frame').boundingBox()).toEqual(frame)
+			expect(await page.locator('.board-actions').boundingBox()).toEqual(actions)
+		}
 	}
 })
 
