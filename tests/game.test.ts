@@ -325,6 +325,7 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	assert.equal(defender.health, 61)
 	assert.equal(state.fighting, true)
 	assert.equal(state.combatTargetIndex, defender.cell)
+	assert.equal(state.combatSourceIndex, attacker.cell)
 	game.move(26)
 	game.cancel()
 	game.confirm()
@@ -336,12 +337,14 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	await Promise.resolve()
 	assert.equal(attacker.health, 76)
 	assert.equal(state.combatTargetIndex, attacker.cell, 'Retaliation highlights its actual recipient')
+	assert.equal(state.combatSourceIndex, defender.cell, 'Retaliation fires from the defender')
 	pending.shift()!()
 	await fight
 	assert.equal(attacker.attacks, 1)
 	assert.equal(defender.attacks, 2)
 	assert.equal(state.fighting, false)
 	assert.equal(state.combatTargetIndex, null)
+	assert.equal(state.combatSourceIndex, null)
 })
 
 for (const type of ['artillery', 'infantry-sniper', 'anti-air'] as const) {

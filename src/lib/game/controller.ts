@@ -4,6 +4,7 @@ import * as actions from './actions.ts'
 import * as transportActions from './transport.ts'
 import { pathsFrom } from './movement.ts'
 import { movementStepDuration } from './timing.ts'
+import { faceCell } from './facing.ts'
 import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 // A controller belongs to one mounted game. No DOM, global state or audio objects.
@@ -41,10 +42,13 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 	async function fight(defender: Unit): Promise<void> {
 		const attacker = selectedUnit(state)
 		if (!attacker || disposed || locked(state) || !canAttack(state, attacker, defender) || attacker.attacks <= 0) return
+		faceCell(attacker, defender.cell, state.cols)
+		faceCell(defender, attacker.cell, state.cols)
 		state.origin = { cell: attacker.cell, movement: attacker.movement }
 		state.fighting = true
 		state.inspectedEnemyId = null
 		state.combatTargetIndex = defender.cell
+		state.combatSourceIndex = attacker.cell
 		try {
 			play(unitTypes[attacker.type].fightSound)
 			applyDamage(state, attacker, defender)
@@ -55,6 +59,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			playImpact(attacker)
 			if (defender.health > 0 && canAttack(state, defender, attacker)) {
 				state.combatTargetIndex = attacker.cell
+				state.combatSourceIndex = defender.cell
 				play(unitTypes[defender.type].fightSound)
 				applyDamage(state, defender, attacker)
 				onChange()
@@ -84,6 +89,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			if (!disposed) {
 				state.fighting = false
 				state.combatTargetIndex = null
+				state.combatSourceIndex = null
 				onChange()
 			}
 		}
@@ -106,6 +112,8 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			disposed = true
 			state.moving = false
 			state.combatTargetIndex = null
+			state.combatSourceIndex = null
+			state.explosion = null
 		},
 		fight,
 		select(id: number) {

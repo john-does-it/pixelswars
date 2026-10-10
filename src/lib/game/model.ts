@@ -29,6 +29,7 @@ export function initialState(map: GameMap): GameState {
 		fighting: false,
 		moving: false,
 		combatTargetIndex: null,
+		combatSourceIndex: null,
 		winner: null,
 		explosion: null,
 		incomeCells: [],

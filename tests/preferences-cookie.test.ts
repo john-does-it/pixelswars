@@ -14,13 +14,20 @@ test('volume migrates muted preferences and validates persisted levels', () => {
 })
 
 test('shared game/editor preferences validate cookies and preserve other settings when changing language', () => {
-	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, volume: 0, animations: false }
+	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, volume: 0, animations: false, unitFacing: false }
 	const cookie = serializePreferencesCookie(settings)
 	assert.deepEqual(readPreferencesCookie(`unrelated=1;${cookie}`), settings)
 	assert.deepEqual(readPreferencesCookie(serializePreferencesCookie({ ...settings, locale: 'de' })), { ...settings, locale: 'de' })
 	for (const malformed of ['%', 'null', '{', encodeURIComponent('{"locale":"xx","sound":"false"}')]) {
 		assert.deepEqual(readPreferencesCookie(`pixelswars-settings=${malformed}`), defaultPreferences)
 	}
+})
+
+test('unit facing defaults on for older cookies and accepts only boolean settings', () => {
+	for (const unitFacing of [undefined, 'false', null, 0]) {
+		assert.equal(readPreferencesCookie(`pixelswars-settings=${encodeURIComponent(JSON.stringify({ unitFacing }))}`).unitFacing, true)
+	}
+	assert.equal(readPreferencesCookie(serializePreferencesCookie({ ...defaultPreferences, unitFacing: false })).unitFacing, false)
 })
 
 test('all editor messages have matching translations and placeholders', () => {

@@ -286,6 +286,7 @@
 	"reachable_this_turn": "Reachable with remaining movement",
 	"movement_remaining": "{remaining}/{total} movement points remaining",
 	"capture_available": "Capture available",
+	"unit_facing": "Unit facing",
 	"animations": "Animations",
 	"animations_on": "Animations on",
 	"animations_off": "Animations off",

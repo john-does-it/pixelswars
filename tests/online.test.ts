@@ -295,15 +295,18 @@ test('combat phases and sound reach the guest even with muted host audio; victor
 		await flush()
 		assert.equal(guestState.fighting, true)
 		assert.equal(guestState.combatTargetIndex, 18)
+		assert.equal(guestState.combatSourceIndex, 0)
 		assert.ok(guestState.units[1].health < 120)
 		assert.ok(sounds.length > 0)
 		delays.shift()!()
 		await flush()
 		assert.equal(guestState.combatTargetIndex, 0)
+		assert.equal(guestState.combatSourceIndex, 18)
 		assert.ok(guestState.units[0].health < 120)
 		delays.shift()!()
 		await flush()
 		assert.equal(guestState.fighting, false)
+		assert.equal(guestState.combatSourceIndex, null)
 		hostState.units[1].health = 1
 		hostState.units[0].attacks = 1
 		host.clickCell(18)

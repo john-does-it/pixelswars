@@ -129,5 +129,5 @@ test('editor shares all three languages with the game without changing the draft
 	await expect(page.locator('#board')).toHaveCount(0)
 	await expect(page.getByRole('combobox')).toHaveValue('de')
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!
-	expect(JSON.parse(decodeURIComponent(cookie.value))).toEqual({ locale: 'de', sound: false, volume: 0, music: true, animations: false, keyboardLayout: 'qwerty' })
+	expect(JSON.parse(decodeURIComponent(cookie.value))).toEqual({ locale: 'de', sound: false, volume: 0, music: true, animations: false, unitFacing: true, keyboardLayout: 'qwerty' })
 })

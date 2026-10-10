@@ -286,6 +286,7 @@
 	"reachable_this_turn": "Mit verbleibenden Bewegungspunkten erreichbar",
 	"movement_remaining": "{remaining}/{total} Bewegungspunkte übrig",
 	"capture_available": "Eroberung verfügbar",
+	"unit_facing": "Einheiten ausrichten",
 	"animations": "Animationen",
 	"animations_on": "Animationen an",
 	"animations_off": "Animationen aus",

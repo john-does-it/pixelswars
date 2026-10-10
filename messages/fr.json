@@ -286,6 +286,7 @@
 	"reachable_this_turn": "Atteignable avec les déplacements restants",
 	"movement_remaining": "{remaining}/{total} points de déplacement restants",
 	"capture_available": "Capture disponible",
+	"unit_facing": "Orientation des unités",
 	"animations": "Animations",
 	"animations_on": "Animations activées",
 	"animations_off": "Animations désactivées",

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
+	import { preferences } from '$lib/preferences.svelte.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { unitName, buildingName, terrainName, translate } from '$lib/i18n.svelte.js'
@@ -15,7 +16,7 @@
 	<button class="selected-unit-strip pixel-icon-control" {disabled} aria-label={translate(messages.preview_expand)} title={`${name} · ${translate(messages.preview_expand)} (I)`} aria-keyshortcuts="I" aria-haspopup="dialog" onclick={oninspect}>
 		<span class="tile-thumbnail" aria-hidden="true">
 			<TerrainIcon {cell} size="fill" />
-			{#if unit}<img class="sprite" src={asset(unitSprite(unit))} alt="" />{/if}
+			{#if unit}<img class="sprite" style:scale={preferences.unitFacing && unit.facing === 'left' ? '-1 1' : '1 1'} src={asset(unitSprite(unit))} alt="" />{/if}
 		</span>
 		{#if unit}
 			{@const definition = unitTypes[unit.type]}

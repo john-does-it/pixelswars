@@ -1,6 +1,7 @@
 import { buildingIncome, createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
 import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.ts'
 import type { GameState } from './types.ts'
+import { faceCell } from './facing.ts'
 
 export function deselect(state: GameState): void {
 	if (locked(state)) return
@@ -28,6 +29,7 @@ export function move(state: GameState, index: number, continuingPath = false): b
 	if (!unit || !reachableCells(state, unit).includes(index)) return false
 	unit.movement -= movementCost(unit, state.cells[index])
 	state.inspectedEnemyId = null
+	faceCell(unit, index, state.cols)
 	unit.cell = index
 	return true
 }

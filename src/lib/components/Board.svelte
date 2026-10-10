@@ -1,6 +1,7 @@
 <script lang="ts">
 	import BattlefieldViewport from './BattlefieldViewport.svelte'
 	import Cell from './Cell.svelte'
+	import CombatEffects from './CombatEffects.svelte'
 	import { boardingPaths, deploymentCells, selectedPassenger } from '$lib/game/transport.js'
 	import { pathsFrom } from '$lib/game/movement.js'
 	import { preferences } from '$lib/preferences.svelte.js'
@@ -85,7 +86,6 @@
 					attackable={attackRange.has(cell.index)}
 					underFire={gameState.combatTargetIndex === cell.index}
 					target={gameState.fighting ? gameState.combatTargetIndex === cell.index : !inspected && (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)}
-					explosion={gameState.explosion === cell.index}
 					income={gameState.incomeCells.includes(cell.index)}
 					recoveredHealth={gameState.healedCells[cell.index]}
 					captured={gameState.capturedCells.includes(cell.index)}
@@ -103,6 +103,7 @@
 					<path class="range-border" d={rangeOutline} />
 				</svg>
 			{/if}
+			{#if preferences.animations}<CombatEffects state={gameState} />{/if}
 		</div>
 	</BattlefieldViewport>
 </div>

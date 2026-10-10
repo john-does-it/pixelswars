@@ -114,6 +114,15 @@
 						onchange={(value) => updatePreferences({ animations: value === 'on' })}
 					/>
 					<SettingSelect
+						label={translate(messages.unit_facing)}
+						value={preferences.unitFacing ? 'on' : 'off'}
+						options={[
+							{ value: 'on', label: translate(messages.setting_on) },
+							{ value: 'off', label: translate(messages.setting_off) }
+						]}
+						onchange={(value) => updatePreferences({ unitFacing: value === 'on' })}
+					/>
+					<SettingSelect
 						label={translate(messages.keyboard)}
 						ariaLabel={translate(messages.keyboard_movement_layout)}
 						value={gameState.keyboardLayout}
@@ -161,6 +170,9 @@
 		:global(select) {
 			width: 100%;
 			min-width: 0;
+		}
+		:global(label > span) {
+			white-space: normal;
 		}
 	}
 

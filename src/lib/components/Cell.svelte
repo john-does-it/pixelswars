@@ -23,14 +23,13 @@
 		target?: boolean
 		underFire?: boolean
 		inspected?: boolean
-		explosion: boolean
 		income: boolean
 		recoveredHealth?: number
 		captured: boolean
 		secured: boolean
 		onclick: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, explosion, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
 	const label = $derived(
@@ -57,9 +56,6 @@
 		</span>
 	{/if}
 	<DamageIndicator {unit} />
-	{#if explosion}
-		<img class="explosion" src={asset('/assets/gifs/explosion.gif')} alt={translate(messages.explosion)} />
-	{/if}
 	{#if secured}
 		<CellFeedback text={translate(messages.secured)} />
 	{:else if captured}
@@ -140,14 +136,6 @@
 		transform: translate(-50%, -50%);
 		background: var(--movement-marker-color);
 		pointer-events: none;
-	}
-
-	.explosion {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 3;
 	}
 
 	.under-fire::after {

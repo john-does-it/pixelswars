@@ -2,6 +2,7 @@ import { unitTypes } from './catalog.ts'
 import { locked, movementCost, neighbors, selectedUnit, unitAt } from './model.ts'
 import type { GameState, Unit } from './types.ts'
 import { pathsFrom } from './movement.ts'
+import { faceCell } from './facing.ts'
 
 export const isInfantry = (unit: Unit): boolean => unit.type === 'infantry' || unit.type === 'infantry-rocket' || unit.type === 'infantry-sniper'
 
@@ -47,6 +48,7 @@ export function embark(state: GameState, passengerId: number, transportId = stat
 	const passenger = state.units.find((unit) => unit.id === passengerId)
 	if (!transport || !passenger || !canEmbark(state, transport, passenger, continuingPath)) return false
 	passenger.movement -= movementCost(passenger, state.cells[transport.cell])
+	faceCell(passenger, transport.cell, state.cols)
 	transport.cargo = [...(transport.cargo ?? []), passenger]
 	state.units = state.units.filter((unit) => unit.id !== passenger.id)
 	state.selectedId = transport.id
@@ -63,6 +65,7 @@ export function deploy(state: GameState, passengerId: number, destination: numbe
 	const passenger = transport?.cargo?.find((unit) => unit.id === passengerId)
 	if (!transport || !passenger || !deploymentCells(state, transport, passenger).includes(destination)) return false
 	transport.cargo = transport.cargo!.filter((unit) => unit.id !== passengerId)
+	faceCell(passenger, destination, state.cols, transport.cell)
 	passenger.cell = destination
 	state.units.push(passenger)
 	state.deployingPassengerId = null

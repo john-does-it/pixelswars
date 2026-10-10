@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { asset } from '$app/paths'
+	import { preferences } from '$lib/preferences.svelte.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
 	import { aircraftIdleTiming, infantryIdleWait } from '$lib/game/idle-animation.js'
@@ -37,6 +38,7 @@
 		class:airborne
 		class:alternate-look={alternateLook}
 		aria-hidden="true"
+		style:scale={preferences.unitFacing && unit.facing === 'left' ? '-1 1' : '1 1'}
 		style:background-image={`url('${asset(unitSprite(unit))}')`}
 		style:--idle-duration={`${idleTiming.duration}ms`}
 		style:--idle-delay={`${idleTiming.delay}ms`}

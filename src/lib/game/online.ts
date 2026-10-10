@@ -6,7 +6,7 @@ import { isInfantry, selectedPassenger, selectPassenger } from './transport.ts'
 import type { MatchConnection } from './peer.ts'
 import type { ControllerOptions, GameController, GameMap, GameState, Player } from './types.ts'
 
-const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'moving', 'combatTargetIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
+const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'moving', 'combatTargetIndex', 'combatSourceIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
 type Snapshot = Pick<GameState, (typeof sharedKeys)[number]> & { ownership: { owner: number; capturePoints: number }[] }
 export function matchSnapshot(state: GameState): Snapshot {
 	return JSON.parse(JSON.stringify({ ...Object.fromEntries(sharedKeys.map((key) => [key, state[key]])), ownership: state.cells.map(({ owner, capturePoints }) => ({ owner, capturePoints })) }))
@@ -17,21 +17,22 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 	const snapshot = input as Snapshot
 	const cellIndex = (value: unknown) => Number.isInteger(value) && Number(value) >= 0 && Number(value) < state.cells.length
 	const nullableCell = (value: unknown) => value === null || cellIndex(value)
+	const facing = (value: unknown) => value === undefined || value === 'left' || value === 'right'
 	const amount = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0
 	if (![1, 2].includes(snapshot.player) || !Number.isInteger(snapshot.round) || snapshot.round < 1 || !amount(snapshot.money?.[1]) || !amount(snapshot.money?.[2]) || !Number.isInteger(snapshot.nextId) || snapshot.nextId < 0) return false
-	if (!Array.isArray(snapshot.units) || snapshot.units.length > state.cells.length || !snapshot.units.every((unit) => unit && Number.isInteger(unit.id) && unit.id >= 0 && isUnitTypeId(unit.type) && [1, 2].includes(unit.player) && cellIndex(unit.cell) && [unit.health, unit.movement, unit.attacks, unit.capture].every(amount))) return false
+	if (!Array.isArray(snapshot.units) || snapshot.units.length > state.cells.length || !snapshot.units.every((unit) => unit && Number.isInteger(unit.id) && unit.id >= 0 && isUnitTypeId(unit.type) && [1, 2].includes(unit.player) && cellIndex(unit.cell) && facing(unit.facing) && [unit.health, unit.movement, unit.attacks, unit.capture].every(amount))) return false
 	if (new Set(snapshot.units.map((unit) => unit.id)).size !== snapshot.units.length || new Set(snapshot.units.map((unit) => unit.cell)).size !== snapshot.units.length) return false
 	const identities = new Set(snapshot.units.map((unit) => unit.id))
 	for (const transport of snapshot.units) {
 		if (transport.cargo === undefined) continue
 		if (!Array.isArray(transport.cargo) || !unitTypes[transport.type].capacity || transport.cargo.length > unitTypes[transport.type].capacity!) return false
 		for (const passenger of transport.cargo) {
-			if (!passenger || !isInfantry(passenger) || passenger.cargo !== undefined || !Number.isInteger(passenger.id) || passenger.id < 0 || identities.has(passenger.id) || passenger.player !== transport.player || !cellIndex(passenger.cell) || ![passenger.health, passenger.movement, passenger.attacks, passenger.capture].every(amount) || passenger.health <= 0) return false
+			if (!passenger || !isInfantry(passenger) || passenger.cargo !== undefined || !Number.isInteger(passenger.id) || passenger.id < 0 || identities.has(passenger.id) || passenger.player !== transport.player || !cellIndex(passenger.cell) || !facing(passenger.facing) || ![passenger.health, passenger.movement, passenger.attacks, passenger.capture].every(amount) || passenger.health <= 0) return false
 			identities.add(passenger.id)
 		}
 	}
 	if (!Array.isArray(snapshot.ownership) || snapshot.ownership.length !== state.cells.length || !snapshot.ownership.every((cell) => cell && [0, 1, 2].includes(cell.owner) && amount(cell.capturePoints) && cell.capturePoints <= 20)) return false
-	if (![snapshot.productionIndex, snapshot.combatTargetIndex, snapshot.explosion].every(nullableCell) || typeof snapshot.fighting !== 'boolean' || typeof snapshot.moving !== 'boolean' || ![null, 1, 2].includes(snapshot.winner)) return false
+	if (![snapshot.productionIndex, snapshot.combatTargetIndex, snapshot.combatSourceIndex, snapshot.explosion].every(nullableCell) || typeof snapshot.fighting !== 'boolean' || typeof snapshot.moving !== 'boolean' || ![null, 1, 2].includes(snapshot.winner)) return false
 	if (snapshot.selectedId !== null && !snapshot.units.some((unit) => unit.id === snapshot.selectedId && unit.player === snapshot.player)) return false
 	if (snapshot.origin !== null && (!snapshot.origin || !cellIndex(snapshot.origin.cell) || !amount(snapshot.origin.movement))) return false
 	if (![snapshot.incomeCells, snapshot.capturedCells, snapshot.securedCells].every((cells) => Array.isArray(cells) && cells.length <= state.cells.length && cells.every(cellIndex))) return false

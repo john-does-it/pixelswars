@@ -63,6 +63,7 @@ export interface Cell extends MapCell, TerrainDefinition {
 
 export interface Unit {
 	cargo?: Unit[]
+	facing?: 'left' | 'right'
 	id: number
 	type: UnitTypeId
 	player: Player
@@ -98,6 +99,7 @@ export interface GameState {
 	fighting: boolean
 	moving: boolean
 	combatTargetIndex: number | null
+	combatSourceIndex: number | null
 	winner: Player | null
 	explosion: number | null
 	incomeCells: number[]

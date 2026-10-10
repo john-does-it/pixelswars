@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Pixel’s War — Combat feedback preview</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			margin: 0;
+			background: #111a14;
+			color: #fffdf2;
+			font:
+				15px/1.6 system-ui,
+				sans-serif;
+		}
+		main {
+			max-width: 1160px;
+			margin: auto;
+			padding: 40px 24px;
+		}
+		.eyebrow {
+			color: #f4d879;
+			text-transform: uppercase;
+			letter-spacing: 0.16em;
+			font-size: 12px;
+		}
+		h1 {
+			font-size: clamp(28px, 4vw, 44px);
+			margin: 8px 0;
+			line-height: 1.2;
+		}
+		.intro {
+			color: #c0c9b7;
+			max-width: 650px;
+			margin: 12px 0 28px;
+		}
+		.toolbar {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 16px;
+			margin: 24px 0;
+		}
+		button,
+		select {
+			font: inherit;
+			color: #fffdf2;
+			background: #676c7e;
+			border: 3px solid #090e0b;
+			border-radius: 4px;
+			padding: 8px 14px;
+			box-shadow:
+				inset 0 2px #bfc7d5,
+				inset 0 -3px #424758;
+			cursor: pointer;
+		}
+		button.primary {
+			background: #f4d879;
+			color: #19251b;
+			box-shadow:
+				inset 0 2px #fff0b6,
+				inset 0 -3px #a28a3f;
+		}
+		button:disabled {
+			opacity: 0.5;
+			cursor: default;
+		}
+		:focus-visible {
+			outline: 2px solid #f4d879;
+			outline-offset: 4px;
+		}
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 18px;
+		}
+		article {
+			background: #243226;
+			border: 1px solid #738568;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		.copy {
+			padding: 18px;
+		}
+		h2 {
+			margin: 0;
+			font-size: 20px;
+		}
+		p {
+			margin: 8px 0 16px;
+		}
+		.copy p {
+			color: #c0c9b7;
+			min-height: 72px;
+			font-size: 14px;
+		}
+		.stage {
+			position: relative;
+			height: 230px;
+			display: grid;
+			place-items: center;
+			background: #1b291d;
+			overflow: hidden;
+		}
+		.field {
+			position: relative;
+			width: calc(var(--tile) * 3);
+			height: calc(var(--tile) * 2);
+			background-size: var(--tile) var(--tile);
+			image-rendering: pixelated;
+		}
+		.unit {
+			position: absolute;
+			width: var(--tile);
+			height: var(--tile);
+			top: calc(var(--tile) / 2);
+			image-rendering: pixelated;
+			object-fit: contain;
+		}
+		.attacker {
+			left: 0;
+		}
+		.defender {
+			right: 0;
+		}
+		.effect {
+			position: absolute;
+			pointer-events: none;
+			image-rendering: pixelated;
+			z-index: 2;
+		}
+		.damage {
+			position: absolute;
+			right: 12%;
+			top: 12%;
+			color: #fffdf2;
+			font-weight: 800;
+			text-shadow:
+				2px 2px #3f2631,
+				-1px -1px #3f2631;
+			z-index: 3;
+		}
+		.status {
+			margin: 0;
+			padding: 8px 18px;
+			color: #f4d879;
+			min-height: 40px;
+			border-top: 1px solid #738568;
+			font-size: 13px;
+		}
+		.legend {
+			margin-top: 28px;
+			border-top: 1px solid #738568;
+			padding-top: 20px;
+			color: #c0c9b7;
+		}
+		.swatches {
+			display: flex;
+			gap: 24px;
+			flex-wrap: wrap;
+			margin: 12px 0;
+		}
+		.swatch {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 13px;
+		}
+		.sample {
+			width: 48px;
+			height: 48px;
+			image-rendering: pixelated;
+			background-size: 400% 100%;
+		}
+		@media (max-width: 850px) {
+			.grid {
+				grid-template-columns: 1fr;
+			}
+			.copy p {
+				min-height: 0;
+			}
+			.stage {
+				height: 230px;
+			}
+			main {
+				padding: 24px 16px;
+			}
+		}
+	</style>
+	<main>
+		<div class="eyebrow">Pixel’s War · Visual preview</div>
+		<h1>A little more punch.</h1>
+		<p class="intro">Every unit, with the game’s firing and destruction sounds. Replay a shot or destroy each unit; transports remain unarmed.</p>
+		<div class="toolbar">
+			<button class="primary" id="all">Replay all in sequence</button>
+			<label
+				>Cell size
+				<select id="size">
+					<option value="48">48 px</option>
+					<option value="72" selected>72 px</option>
+					<option value="96">96 px</option>
+				</select></label
+			>
+			<label><input type="checkbox" id="animate" checked /> Animate effects</label>
+			<label><input type="checkbox" id="sound" checked /> Sound</label>
+			<label>Volume <input id="volume" type="range" min="0" max="1" step="0.05" value="0.4" /></label>
+		</div>
+		<div class="grid"></div>
+		<div class="legend">
+			Extracted effects · transparent backgrounds · crisp pixel scaling
+			<div class="swatches"></div>
+			<small>Illustrative damage values. These previews do not change combat balance. Reduced motion uses a still effect.</small>
+		</div>
+	</main>
+	<script>
+		const data = __PREVIEW_DATA__
+		const cards = Object.entries(data.units).map(([type, unit]) => {
+			const card = document.createElement('article')
+			card.dataset.unit = type
+			card.innerHTML = '<div class="stage"><div class="field"><img class="unit attacker"><img class="unit defender"></div></div><div class="status" aria-live="polite">Ready</div><div class="copy"><h2></h2><p></p><button class="fire">Fire</button> <button class="destroy">Destroy unit</button></div>'
+			card.querySelector('h2').textContent = unit.name
+			card.querySelector('p').textContent = unit.attack ? 'Fire with this unit, or preview its destruction.' : 'Unarmed transport: hit and destruction preview only.'
+			card.querySelector('.fire').disabled = !unit.attack
+			card.querySelector('.attacker').alt = 'Blue ' + unit.name
+			card.querySelector('.defender').alt = 'Red ' + unit.name
+			document.querySelector('.grid').append(card)
+			return card
+		})
+		const playingSounds = new Set()
+		function stopSounds() {
+			for (const audio of playingSounds) audio.pause()
+			playingSounds.clear()
+		}
+		function sound(name) {
+			if (!document.querySelector('#sound').checked) return
+			const audio = new Audio(data.sounds[name])
+			audio.volume = Number(document.querySelector('#volume').value)
+			playingSounds.add(audio)
+			audio.onended = () => playingSounds.delete(audio)
+			audio.play().catch(() => {
+				playingSounds.delete(audio)
+			})
+		}
+		document.querySelector('#sound').onchange = stopSounds
+		document.querySelector('#volume').oninput = () => {
+			for (const audio of playingSounds) audio.volume = Number(document.querySelector('#volume').value)
+		}
+		window.addEventListener('pagehide', stopSounds)
+		const animations = new Set()
+		const animate = document.querySelector('#animate')
+		const motion = matchMedia('(prefers-reduced-motion: reduce)')
+		if (motion.matches) animate.checked = false
+		const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+		const images = {}
+		const ready = Promise.all(
+			Object.entries(data.effects).map(async ([key, src]) => {
+				const img = new Image()
+				img.src = src
+				await img.decode()
+				images[key] = img
+			})
+		)
+		const size = () => Number(document.querySelector('#size').value)
+		function effect(field, name, x, y, scale, duration) {
+			const canvas = document.createElement('canvas')
+			canvas.className = 'effect'
+			canvas.width = canvas.height = 48
+			const width = size() * scale
+			Object.assign(canvas.style, { width: width + 'px', height: width + 'px', left: size() * x - width / 2 + 'px', top: size() * y - width / 2 + 'px' })
+			field.append(canvas)
+			const ctx = canvas.getContext('2d')
+			ctx.imageSmoothingEnabled = false
+			const start = performance.now()
+			const enabled = animate.checked && !motion.matches
+			function draw(now) {
+				const t = now - start
+				if (t >= duration) {
+					canvas.remove()
+					return
+				}
+				ctx.clearRect(0, 0, 48, 48)
+				ctx.drawImage(images[name], 48 * (enabled ? Math.min(3, Math.floor((t / duration) * 4)) : 0), 0, 48, 48, 0, 0, 48, 48)
+				requestAnimationFrame(draw)
+			}
+			requestAnimationFrame(draw)
+		}
+		function setup(card) {
+			const type = card.dataset.unit
+			card.querySelector('.field').style.backgroundImage = `url('${data.grass}')`
+			card.querySelector('.attacker').src = data.sprites[type + '-1']
+			card.querySelector('.defender').src = data.sprites[type + '-2']
+			card.querySelector('.defender').hidden = false
+			card.querySelectorAll('.damage').forEach((el) => el.remove())
+		}
+		// Flash centers from the annotated reference, in tile-relative coordinates.
+		// The unit occupies x=0..1 and y=0.5..1.5 within the preview field.
+		const muzzlePositions = data.muzzlePositions
+		async function replay(card, destroy = false) {
+			if (animations.size) return
+			animations.add(card)
+			stopSounds()
+			cards.forEach((c) => c.querySelectorAll('button').forEach((b) => (b.disabled = true)))
+			await ready
+			setup(card)
+			const type = card.dataset.unit,
+				unit = data.units[type],
+				field = card.querySelector('.field'),
+				status = card.querySelector('.status')
+			const infantry = type.startsWith('infantry')
+			if (!destroy) {
+				status.textContent = 'Firing…'
+				sound(unit.fightSound)
+				const [x, y] = muzzlePositions[type] ?? [0.85, 1]
+				effect(field, 'muzzle', x, y, infantry ? 0.4 : 0.52, 180)
+				if (type === 'infantry' || type === 'jeep' || type === 'helicopter') {
+					await wait(120)
+					effect(field, 'muzzle', x, y, infantry ? 0.4 : 0.52, 180)
+				}
+				await wait(120)
+			}
+			effect(field, 'impact', 2.5, 1, infantry ? 0.65 : 0.9, 280)
+			if (!destroy && unit.impactSound) sound(unit.impactSound)
+			const label = document.createElement('span')
+			label.className = 'damage'
+			label.textContent = destroy ? '−18' : '−24'
+			field.append(label)
+			status.textContent = destroy ? 'Final hit' : 'Hit'
+			if (destroy) {
+				await wait(160)
+				card.querySelector('.defender').hidden = true
+				sound('bombing')
+				effect(field, 'destruction', 2.5, 1, infantry ? 0.9 : 1.25, 520)
+				status.textContent = 'Unit destroyed'
+			}
+			await wait(850)
+			label.remove()
+			status.textContent = destroy ? 'Unit destroyed · terrain clear' : 'Exchange complete'
+			stopSounds()
+			animations.delete(card)
+			cards.forEach((c) => {
+				c.querySelector('.destroy').disabled = false
+				c.querySelector('.fire').disabled = !data.units[c.dataset.unit].attack
+			})
+		}
+		function resize() {
+			document.documentElement.style.setProperty('--tile', size() + 'px')
+		}
+		resize()
+		document.querySelector('#size').onchange = resize
+		for (const card of cards) {
+			setup(card)
+			card.querySelector('.fire').onclick = () => replay(card)
+			card.querySelector('.destroy').onclick = () => replay(card, true)
+		}
+		document.querySelector('#all').onclick = async (event) => {
+			if (animations.size) return
+			event.currentTarget.disabled = true
+			for (const card of cards) {
+				card.scrollIntoView({ block: 'center', behavior: 'instant' })
+				await replay(card, !data.units[card.dataset.unit].attack)
+				await wait(180)
+			}
+			document.querySelector('#all').disabled = false
+		}
+		for (const [name, src] of Object.entries(data.effects)) {
+			const el = document.createElement('div')
+			el.className = 'swatch'
+			const sample = document.createElement('span')
+			sample.className = 'sample'
+			sample.style.backgroundImage = `url('${src}')`
+			el.append(sample, document.createTextNode(name))
+			document.querySelector('.swatches').append(el)
+		}
+	</script>
+</html>

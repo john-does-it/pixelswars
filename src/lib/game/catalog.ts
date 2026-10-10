@@ -38,7 +38,7 @@ export function isUnitTypeId(value: string): value is UnitTypeId {
 export function createUnit(type: UnitTypeId, player: Player, cell: number, id: number): Unit {
 	const definition = unitTypes[type]
 	if (!definition) throw new Error(`Unknown unit type: ${type}`)
-	return { id, type, player, cell, health: definition.maxHealth, movement: definition.movement, attacks: definition.attacks, capture: definition.captures ? 1 : 0 }
+	return { id, type, player, cell, facing: 'right', health: definition.maxHealth, movement: definition.movement, attacks: definition.attacks, capture: definition.captures ? 1 : 0 }
 }
 
 export const productionBuildings: Record<ProductionBuildingId, { name: string }> = {

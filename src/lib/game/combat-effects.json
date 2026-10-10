@@ -1,0 +1,11 @@
+{
+	"infantry": [0.88, 1.08],
+	"infantry-sniper": [1.1, 1.08],
+	"infantry-rocket": [0.94, 0.96],
+	"jeep": [0.88, 1.04],
+	"tank": [0.88, 0.92],
+	"artillery": [0.68, 0.68],
+	"anti-air": [0.9, 0.8],
+	"helicopter": [0.86, 1.1],
+	"plane": [0.72, 1.2]
+}
