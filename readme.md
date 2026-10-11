@@ -11,22 +11,18 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
-- **16 battlefields:** roads, forests, mountain positions and narrow water crossings, ordered from smallest to largest by tile count.
-- **10 unit types:** capture with infantry, carry troops in transport jeeps, cover advances with artillery and contest the skies.
+- **18 battlefields:** roads, forests, mountain positions and narrow water crossings, up to the 32 × 32 Delusions Of Grandeur map, ordered from smallest to largest by tile count.
+- **11 unit types:** capture with infantry, carry troops in transport jeeps or helicopters, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.
 - **Desktop and mobile:** keyboard, mouse and touch controls, with a zoomable battlefield and an interactive minimap.
-- **English, French and German:** language, audio and keyboard settings in Options and help.
+- **English, French, German and Japanese:** language, audio, animation, unit-facing and keyboard settings in Options and help, with locally bundled fonts.
 
 ![Nice View Up Here with connected building access roads and a selected infantry unit](docs/screenshots/battlefield.png)
 
-Side roads connect the outlying buildings on Are We There Yet?, Nice View Up Here
-and The Other Bank. Several smaller maps also feature secondary routes
-and corner ponds, with asymmetric shorelines on A Little Stroll and After You.
-
-Two river maps offer narrow grass crossings instead of bridges: **Not the Shoes!**
-(10 × 8, small) and **Which Way Across?** (12 × 12, medium). Both banks remain
-accessible to ground units, with two crossings to defend or contest.
+Battlefields range from compact encounters to **Long Island Iced Tea** (24 × 16)
+and **Delusions Of Grandeur** (32 × 32). Roads, crossings, obstacles and production
+buildings offer different routes and objectives; the map editor lets you create your own.
 
 ## How to play
 
@@ -36,44 +32,52 @@ Blue plays first; in AI matches, the AI commands blue and you command red.
 The same team-colored transition announces both players’ turns, including the AI.
 AI actions begin after its transition finishes.
 
-Select a unit, then click or tap a dot-marked cell to move there, or an
+Select a unit, then click or tap a square-marked cell to move there, or an
 eligible enemy to attack. Confirm finishes the selection; cancel restores movement
 to the last committed position. Attacking or capturing commits that position,
 so cancelling cannot undo those actions.
 
 Transport jeeps cost **$600** and have the jeep’s **125 HP**, **20 defense** and
-**8 movement**, with no weapons or ammunition. Move friendly infantry onto a transport to board (up to three, including rockets
-and snipers). Select the jeep to see its passengers, choose one, then click a
-highlighted tile on the board to deploy. Boarding requires enough movement to enter the transport’s tile.
-Passengers deploy onto free adjacent land tiles, including bridges, never water.
+**8 movement**. Transport helicopters cost **$1800**, with **110 HP**, **15 defense**
+and **8 movement**, and fly over any terrain. Both are unarmed and carry up to three
+infantry units, including rockets and snipers. Move friendly infantry onto a transport
+to board. Select the transport, open its passenger-count button beside the action
+buttons, choose a passenger, then click a highlighted tile to deploy.
+Boarding requires enough movement to enter the transport’s tile.
+Passengers deploy onto free orthogonally adjacent land tiles, including bridges,
+never water or obstacles. Infantry cannot board a helicopter standing on terrain
+they cannot enter.
 Deployment costs no movement to the transport. Passengers keep their remaining attacks
 and movement, minus the approach and the terrain cost of entering the transport’s
 tile. Deploying costs no additional passenger movement. They can move and fire
 immediately, and retain their available capture action without restoring a spent one. Loading and deployment commit positions;
 cancel cannot undo them. Destroying a transport also destroys all its passengers.
-Transport jeeps can be bought at army bases and placed in the map editor.
-Nice View Up Here and The Other Bank each start with one transport per side,
-aligned with the other units: 12 units per army.
+Buy transport jeeps at army bases and transport helicopters at airports; both are
+available in the map editor. Nice View Up Here starts with a transport jeep per side;
+The Other Bank includes both ground and air transports for each army.
 
 In development (`npm run dev`), the homepage links to `/play/dev/`: an 8 × 8 grass
-field containing every unit type for both teams. Infantry starts beside each
-transport for quick loading tests. The link and route data are gated by SvelteKit’s
+field containing every unit type for both teams and an obstacle for movement checks.
+Infantry starts beside transports for loading tests. The link and route data are gated by SvelteKit’s
 `dev` flag; this map is not prerendered or available in the production build.
 
 ### Controls and battlefield feedback
 
-- **Layout:** the borderless battlefield spans the full page width without padding, followed by inset containers for centered zoom controls, player information, actions and the minimap. Passenger controls share the bottom row with the minimap without resizing the board.
-- **Move:** select a unit, then click or tap a reachable dot. The unit follows the cheapest legal path.
-- **Enemy inspection:** select an enemy to see its current attack range as stripes and its remaining movement as dots. Terrain costs and occupied cells constrain movement; the preview does not move the enemy.
+- **Layout:** player, round, money and settings sit above the battlefield. Centered zoom controls and actions sit below it, with the selected-cell preview opposite the minimap. Edge clearance keeps outer corner markers visible, and selection does not resize the board.
+- **Move:** select a unit, then click or tap a reachable square. Markers use the army’s color with a dark border. The unit follows the cheapest legal path.
+- **Selection:** the battlefield, editor and palettes share outlined pixel corners. Selected units use their team’s color, with the board markers drawn outside the cell.
+- **Enemy inspection:** select an enemy to see its current attack range as stripes and its remaining movement as squares. Terrain costs and occupied cells constrain movement; the preview does not move the enemy.
 - **Camera:** drag to pan, use the mouse wheel over the map or pinch to zoom. The overview button fits the map,
   and the minimap below the actions lets you reposition the camera.
-- **Tile details:** select a tile and open its thumbnail in the action bar. Statistics appear in a dialog on desktop and mobile.
+- **Tile details:** the bottom preview combines the terrain tile with its unit and shows the unit’s health, movement and attacks. Click it or press **I** for full statistics, passengers and explanatory notes below a separator.
 - **Unit indicators:** the heart and damaged sprite show health. Bottom-left bullets show attacks, the bottom-right
   fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
 - **Turn changes:** both players get the same team-colored transition. During AI or remote turns, the camera follows
   the active unit and the action bar is hidden without resizing the battlefield.
 - **Idle animations:** infantry glance back for two seconds after a fresh random wait of 12–24 seconds, aircraft hover gently and water ripples shimmer. Ground vehicles stay still. Only the sprite moves, keeping status indicators in their corners.
-- **Options:** change language, sound, music, board animations and keyboard layout, restart a local/AI match, or choose another map. The animation setting is saved locally in the existing preferences cookie.
+- **Combat feedback:** weapon flashes, hit effects and destruction animations accompany combat sounds, with firing positions adapted to each unit’s sprite.
+- **Unit facing:** units face left or right as they move and turn toward their opponent when fighting. They retain their last direction after moving; vertical movement does not introduce a new sprite direction. Toggle this independently below Animations in settings.
+- **Options:** change language, sound, music, board animations, unit facing and keyboard layout, restart a local/AI match, or choose another map. Preferences are saved in the local settings cookie.
 
 | Action           | Keyboard                                      |
 | ---------------- | --------------------------------------------- |
@@ -81,6 +85,7 @@ transport for quick loading tests. The link and route data are gated by SvelteKi
 | Confirm          | Enter                                         |
 | Cancel / close   | Escape                                        |
 | Capture / secure | Space                                         |
+| Cell statistics  | I                                             |
 
 All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
 and uses a static turn announcement. It also disables idle sprite and water animations. The Animations switch controls these ambient effects, while combat and status feedback remain available. Damage, healing and income also have floating feedback on the map.
@@ -110,10 +115,13 @@ outages and exhausted relay quotas can still prevent connections.
 The invitation contains a random session identifier, map and game fingerprint;
 it no longer contains the full WebRTC session description. Share it only with your
 opponent. A session accepts one guest, and expired, occupied or incompatible
-invitations show a recoverable error. Existing manual `PW1` invitations must be recreated.
+invitations show a recoverable error. The initial handshake retries and acknowledges
+introductions, preserving early game messages until the peer is validated. An incomplete
+connection times out after 35 seconds and can be retried; sprite loading happens separately.
+Existing manual `PW1` invitations must be recreated.
 
 The [terms, privacy and cookies page](https://pixelswar.io/terms/)
-explains session cookies, third-party services and connection limits in all three
+explains session cookies, third-party services and connection limits in all four
 languages. The invitation screen focuses on creating or joining a game.
 
 Use the published site when inviting someone on another device. A development
@@ -134,9 +142,7 @@ own restores all its capture points in one action.
 | Army base | Produces ground units                                                                |
 | Airport   | Produces helicopters and planes                                                      |
 
-Neutral oil fields form contested central objectives on maps 1, 3, 8, 11 and 12
-(respectively 1, 2, 2, 3 and 4 fields). Ten replace cities and two occupy former
-grass cells; roads, crossings and starting armies are unchanged.
+Oil fields provide valuable economic objectives alongside cities and production buildings.
 
 Healing never exceeds maximum health; a floating label shows the HP actually
 recovered at the start of the turn. To buy a unit, you must own the production
@@ -147,17 +153,19 @@ building, leave its cell empty and have enough money. New units can act immediat
 Movement is a points budget, not a number of cells. Attack and defense are inputs
 to the damage formula below; attack is not the final damage dealt.
 
-| Unit       |  Cost |  HP | Movement | Attacks / turn | Attack | Defense | Range |
-| ---------- | ----: | --: | -------: | -------------: | -----: | ------: | ----- |
-| Infantry   |  200$ | 100 |        5 |              2 |     40 |      10 | 1     |
-| Rocket     |  400$ | 100 |        4 |              1 |     40 |      10 | 1     |
-| Sniper     |  500$ | 100 |        4 |              1 |     60 |      10 | 2–3   |
-| Jeep       |  600$ | 125 |        8 |              2 |     50 |      20 | 1     |
-| Tank       | 1200$ | 180 |        6 |              2 |     70 |      40 | 1     |
-| Artillery  | 1600$ | 120 |        4 |              1 |     60 |      30 | 3–4   |
-| Anti-air   | 1000$ | 120 |        6 |              2 |     70 |      30 | 1–2   |
-| Helicopter | 1800$ | 110 |        8 |              1 |     65 |      15 | 1     |
-| Plane      | 3000$ | 120 |       10 |              1 |     80 |      25 | 1     |
+| Unit                 |  Cost |  HP | Movement | Attacks / turn | Attack | Defense | Range |
+| -------------------- | ----: | --: | -------: | -------------: | -----: | ------: | ----- |
+| Infantry             |  200$ | 100 |        5 |              2 |     40 |      10 | 1     |
+| Rocket               |  400$ | 100 |        4 |              1 |     40 |      10 | 1     |
+| Sniper               |  500$ | 100 |        4 |              1 |     60 |      10 | 2–3   |
+| Jeep                 |  600$ | 125 |        8 |              2 |     50 |      20 | 1     |
+| Transport jeep       |  600$ | 125 |        8 |              0 |      0 |      20 | —     |
+| Tank                 | 1200$ | 180 |        6 |              2 |     70 |      40 | 1     |
+| Artillery            | 1600$ | 120 |        4 |              1 |     60 |      30 | 3–4   |
+| Anti-air             | 1000$ | 120 |        6 |              2 |     70 |      30 | 1–2   |
+| Helicopter           | 1800$ | 110 |        8 |              1 |     65 |      15 | 1     |
+| Transport helicopter | 1800$ | 110 |        8 |              0 |      0 |      15 | —     |
+| Plane                | 3000$ | 120 |       10 |              1 |     80 |      25 | 1     |
 
 Infantry captures objectives. Rockets counter vehicles; snipers counter infantry.
 Jeeps are fast and effective against infantry, while tanks combine armor and two
@@ -179,9 +187,11 @@ cell at a time. Attack ranges are square, including diagonals.
 | Forest   |                    3 |      30 |
 | Mountain |                    4 |      50 |
 | Water    |           Impassable |       0 |
+| Obstacle |           Impassable |       0 |
 
 Flying units spend 1 movement point per cell regardless of terrain, and receive
-no terrain defense. There are no playable naval units yet.
+no terrain defense. Only flying units can cross obstacles; their ground movement
+cost is shown as **∞** in terrain statistics. There are no playable naval units yet.
 
 Ranged ground units on a mountain gain **+1 maximum range**, keeping their minimum
 range: sniper 2–4, artillery 3–5, anti-air 1–3. Melee and flying units gain no range.
@@ -248,7 +258,7 @@ npm run dev
 ```
 
 Open the Vite address. The home route is `/`; games use `/play/1/` through
-`/play/16/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
+`/play/18/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
 to play against the AI, or `?online=1` for online setup. Without either parameter,
 the game is local two-player.
 
@@ -285,6 +295,14 @@ the temporary local signaling port. Production CSP allows the PeerJS Cloud
 WebSocket endpoint explicitly. To use installed Chrome, set
 `PW_CHANNEL=chrome` (PowerShell: `$env:PW_CHANNEL = 'chrome'`).
 
+The online suite covers slow sprite loading, missed handshake messages, failed
+connections and invitation retries. Run it with `npm run test:e2e -- tests/e2e/online.spec.ts`.
+CI runs the general suite with `--grep-invert "stays responsive on large map"`, then
+runs the AI responsiveness test separately on desktop with one worker. Failed runs
+upload a `playwright-failures` artifact containing traces and available connection
+diagnostics. Download it before opening a CI trace locally with
+`npx playwright show-trace path/to/trace.zip`.
+
 ### Project layout
 
 | Location                                     | Responsibility                                           |
@@ -297,7 +315,7 @@ WebSocket endpoint explicitly. To use installed Chrome, set
 | `src/lib/game/ai*.ts`, `expert-ai.ts`        | AI decisions, economy and bounded lookahead              |
 | `src/lib/game/peer.ts`, `online.ts`          | WebRTC invitations, authoritative commands and snapshots |
 | `src/lib/data/neighbor-trouble.json`         | Explicit, editable map layouts                           |
-| `messages/`                                  | English, French and German source translations           |
+| `messages/`                                  | English, French, German and Japanese source translations |
 | `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
 | `distribution/itch/`                         | itch.io launcher source and bundled fonts                |
 | `docs/`                                      | Screenshots, cover artwork and technical guides          |
@@ -343,10 +361,14 @@ To refresh generated assets after editing sources:
 node --experimental-strip-types scripts/sync-assets.ts
 ```
 
-All ten unit types have a healthy sprite and four damage stages for both teams.
+All eleven unit types have a healthy sprite and four damage stages for both teams.
 See [asset sources and regeneration](assets/README.md) and [unit damage artwork](docs/unit-damage.md).
 Sprite generators write Base64 sources without redundant PNG copies. Synchronization removes stale
 public files when their source is removed. Do not commit generated static assets.
+
+Combat effect sheets live in `assets/effects/`; per-unit muzzle placement is shared
+through `src/lib/game/combat-effects.json`. Shared hover and selection corners are
+defined by `.pixel-corners` in `src/lib/app.css`.
 
 ### itch.io launcher and artwork
 
@@ -419,9 +441,11 @@ Pushing or merging does not automatically deploy the site.
 ### Create and submit a map
 
 Open the map editor from the homepage, or run `npm run dev` and open
-http://127.0.0.1:5173/map-editor/ for local editing. The editor shares the game’s language preference (English, French or German).
+http://127.0.0.1:5173/map-editor/ for local editing. The editor shares the game’s language preference (English, French, German or Japanese).
 Paint terrain and buildings with the game's sprites, place both armies, and download
-a JSON file ready for integration. Roads and shores connect automatically. Existing
+a JSON file ready for integration. Roads and shores connect automatically.
+Building palette previews reflect the selected owner: neutral, blue or red. Obstacles
+and both transport types are available. Existing
 maps and JSON files can be imported; the current draft is saved locally in the browser.
 The editor is included in development and production builds. Submit your JSON in a
 [GitHub issue](https://github.com/john-does-it/pixelswars/issues/new), with a name,
@@ -431,10 +455,12 @@ Maps are reviewed before publication. See the [editor guide](docs/map-editor.md)
 ## Credits
 
 Programming: [John Does it](https://johndoesit.be).
-Sprites: [Kenney](https://www.kenney.nl).
+Sprites: [Kenney — Tiny Battle](https://kenney.nl/assets/tiny-battle).
+Muzzle flashes and explosion effects: [bdragon1727](https://bdragon1727.itch.io).
 Cover and banner: AI-generated promotional artwork. See [prompts](docs/artwork/cover-prompt.md).
 Typography: [Pixelify Sans](https://github.com/google/fonts/tree/main/ofl/pixelifysans), hosted locally under the [SIL Open Font License](src/lib/fonts/OFL.txt).
 Body text and controls: [IBM Plex Mono](https://github.com/google/fonts/tree/main/ofl/ibmplexmono), hosted locally under the [SIL Open Font License](src/lib/fonts/ibm-plex-mono/OFL.txt).
+Japanese text: [DotGothic16](https://github.com/google/fonts/tree/main/ofl/dotgothic16), hosted locally under the [SIL Open Font License](src/lib/fonts/dotgothic16/OFL.txt). The game title keeps Pixelify Sans in every language.
 Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
 Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
 QA: Gauthier Miessen.
