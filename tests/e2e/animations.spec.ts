@@ -82,6 +82,16 @@ test('building lights switch without moving or recoloring the building beneath t
 	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
 	const lights = page.locator('.building-lights')
 	await expect(lights.first()).toBeVisible()
+	await expect
+		.poll(() =>
+			lights.evaluateAll((elements) =>
+				elements.every((element) => {
+					const animation = element.getAnimations()[0]
+					return animation?.startTime === 0 && animation.effect?.getTiming().duration === 8000
+				})
+			)
+		)
+		.toBe(true)
 	const result = await lights.first().evaluate((element) => {
 		const cell = element.parentElement!
 		const animation = element.getAnimations()[0]
@@ -99,8 +109,6 @@ test('building lights switch without moving or recoloring the building beneath t
 	expect(result.on).toBe('1')
 	expect(result.before).toEqual(result.after)
 	expect(result.pointerEvents).toBe('none')
-	const delays = await lights.evaluateAll((elements) => elements.map((element) => getComputedStyle(element).animationDelay))
-	expect(new Set(delays).size).toBeGreaterThan(1)
 })
 
 test('building lights can be disabled separately and retain their setting when animations are toggled', async ({ page }) => {
@@ -128,4 +136,5 @@ test('building lights can be disabled separately and retain their setting when a
 	await expect(page.locator('.building-lights')).toHaveCount(0)
 	await lights.selectOption('on')
 	await expect(page.locator('.building-lights').first()).toBeVisible()
+	await expect.poll(() => page.locator('.building-lights').evaluateAll((elements) => elements.every((element) => element.getAnimations()[0]?.startTime === 0))).toBe(true)
 })
