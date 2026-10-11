@@ -16,8 +16,9 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 			[8, 8]
 		],
 		5: [
-			[9, 3],
-			[2, 7]
+			[6, 3],
+			[5, 5],
+			[7, 7]
 		],
 		8: [
 			[6, 6],
