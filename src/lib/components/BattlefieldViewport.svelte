@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { onMount, tick, untrack, type Snippet } from 'svelte'
 	import Minimap from './Minimap.svelte'
+	import ZoomControls from './ZoomControls.svelte'
 	import UiIcon from './UiIcon.svelte'
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state: gameState, name, children, camera = $bindable(), boardDetails, mapStatus }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; mapStatus?: Snippet } = $props()
+	let { state: gameState, name, children, camera = $bindable(), boardDetails, mapBudgets }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; mapBudgets?: Snippet } = $props()
 	let viewport = $state<HTMLDivElement>()
 	let mapSpace = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
@@ -183,64 +184,63 @@
 </script>
 
 <div class="camera">
-	<div class="board-frame">
-		<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
-		<div
-			class="board-viewport"
-			class:dragging
-			bind:this={viewport}
-			role="region"
-			aria-label={name}
-			tabindex="0"
-			onscroll={updateVisibleMapArea}
-			onpointerdown={startMapGesture}
-			onpointermove={updateMapGesture}
-			onpointerup={endMapGesture}
-			onpointercancel={endMapGesture}
-			onlostpointercapture={(event) => {
-				// Touch starts with implicit capture on the cell. Transferring it to
-				// the viewport releases that cell, but the drag is still in progress.
-				if (event.target === viewport) endMapGesture(event)
-			}}
-			onclickcapture={(event) => {
-				if (suppressClick && event.detail !== 0) {
+	<div class="map-zone">
+		<div class="board-frame">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
+			<div
+				class="board-viewport"
+				class:dragging
+				bind:this={viewport}
+				role="region"
+				aria-label={name}
+				tabindex="0"
+				onscroll={updateVisibleMapArea}
+				onpointerdown={startMapGesture}
+				onpointermove={updateMapGesture}
+				onpointerup={endMapGesture}
+				onpointercancel={endMapGesture}
+				onlostpointercapture={(event) => {
+					// Touch starts with implicit capture on the cell. Transferring it to
+					// the viewport releases that cell, but the drag is still in progress.
+					if (event.target === viewport) endMapGesture(event)
+				}}
+				onclickcapture={(event) => {
+					if (suppressClick && event.detail !== 0) {
+						event.preventDefault()
+						event.stopPropagation()
+					}
+				}}
+				onwheel={(event) => {
+					if (!(event.target instanceof Element) || !event.target.closest('.board')) return
 					event.preventDefault()
-					event.stopPropagation()
-				}
-			}}
-			onwheel={(event) => {
-				if (!(event.target instanceof Element) || !event.target.closest('.board')) return
-				event.preventDefault()
-				const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 200 : 1)
-				void setTileSize(tileSize * Math.exp(-Math.max(-100, Math.min(100, delta)) * 0.005), { x: event.clientX, y: event.clientY })
-			}}
-			onkeydown={(event) => {
-				if (event.key === '+' || event.key === '-' || event.key === '0') {
-					event.preventDefault()
-					event.stopPropagation()
-					void setTileSize(event.key === '0' ? fitSize : tileSize * (event.key === '+' ? 1.25 : 0.8), undefined, event.key === '0')
-				}
-			}}
-		>
-			<div class="map-space" bind:this={mapSpace} style:width={`calc(${gameState.cols * tileSize}px + 2 * var(--map-edge-space))`} style:height={`calc(${gameState.rows * tileSize}px + 2 * var(--map-edge-space))`}>
-				<div class="map-surface" bind:this={surface} style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>{@render children()}</div>
-			</div>
-		</div>
-		{#if !opponentTurn}
-			{#each directions as direction}
-				<div class="scroll-edge {direction}" style:opacity={Math.min(1, edges[direction] / 48)}>
-					<button class="pixel-icon-button" aria-label={translate(directionLabels[direction])} disabled={edges[direction] <= 1} tabindex={edges[direction] <= 1 ? -1 : 0} onclick={() => scrollTowardEdge(direction)}><UiIcon name={`arrow-${direction}`} /></button>
+					const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 200 : 1)
+					void setTileSize(tileSize * Math.exp(-Math.max(-100, Math.min(100, delta)) * 0.005), { x: event.clientX, y: event.clientY })
+				}}
+				onkeydown={(event) => {
+					if (event.key === '+' || event.key === '-' || event.key === '0') {
+						event.preventDefault()
+						event.stopPropagation()
+						void setTileSize(event.key === '0' ? fitSize : tileSize * (event.key === '+' ? 1.25 : 0.8), undefined, event.key === '0')
+					}
+				}}
+			>
+				<div class="map-space" bind:this={mapSpace} style:width={`calc(${gameState.cols * tileSize}px + 2 * var(--map-edge-space))`} style:height={`calc(${gameState.rows * tileSize}px + 2 * var(--map-edge-space))`}>
+					<div class="map-surface" bind:this={surface} style:width={`${gameState.cols * tileSize}px`} style:height={`${gameState.rows * tileSize}px`}>{@render children()}</div>
 				</div>
-			{/each}
-		{/if}
+			</div>
+			{#if !opponentTurn}
+				{#each directions as direction}
+					<div class="scroll-edge {direction}" style:opacity={Math.min(1, edges[direction] / 48)}>
+						<button class="pixel-icon-button" aria-label={translate(directionLabels[direction])} disabled={edges[direction] <= 1} tabindex={edges[direction] <= 1 ? -1 : 0} onclick={() => scrollTowardEdge(direction)}><UiIcon name={`arrow-${direction}`} /></button>
+					</div>
+				{/each}
+			{/if}
+		</div>
+		<div class="map-budgets game-context-container">{@render mapBudgets?.()}</div>
+		<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>
 	</div>
 	{@render boardDetails?.()}
-	<div class="map-toolbar game-context-container">
-		<div class="toolbar-details">
-			{@render mapStatus?.()}
-		</div>
-		<Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} />
-	</div>
+
 </div>
 
 <style>
@@ -251,33 +251,31 @@
 		min-height: 0;
 		min-width: 0;
 	}
-	.map-toolbar {
-		padding-inline: var(--game-gutter);
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px;
-		min-height: 0;
-		flex: none;
-		@media (max-width: 900px) {
-			align-items: flex-end;
-		}
-	}
-	.toolbar-details {
-		flex: 1;
-		min-width: 0;
+
+	.map-zone {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		flex: 1;
+		min-height: 0;
+		min-width: 0;
+		background: var(--color-background);
 	}
-
+	.map-budgets { flex: none; padding-top: 12px; }
+	.board-zoom {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+		padding: 12px var(--game-gutter);
+		flex: none;
+	}
 	.board-frame {
 		position: relative;
 		isolation: isolate;
 		flex: 1;
 		min-height: 240px;
 		min-width: 0;
-		background: color-mix(in srgb, var(--color-surface) 45%, var(--color-background));
+		background: var(--color-background);
 	}
 	.board-viewport {
 		position: absolute;

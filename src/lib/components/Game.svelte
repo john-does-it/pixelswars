@@ -9,9 +9,8 @@
 	import { mapName, translate } from '$lib/i18n.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import Board from './Board.svelte'
-	import ZoomControls from './ZoomControls.svelte'
-	import type { MapCamera } from '$lib/game/map-camera.js'
 	import GameHeader from './GameHeader.svelte'
+	import PlayerBudgets from './PlayerBudgets.svelte'
 	import SelectedUnitStrip from './SelectedUnitStrip.svelte'
 	import Controls from './Controls.svelte'
 	import ProductionModal from './ProductionModal.svelte'
@@ -31,7 +30,6 @@
 	let showHelp = $state(false)
 	let showPreview = $state(false)
 	const previewCell = $derived(game.state.previewIndex === null ? undefined : game.state.cells[game.state.previewIndex])
-	let camera = $state<MapCamera>()
 	let gameElement = $state<HTMLElement>()
 	const assetsReady = preloadGameAssets()
 
@@ -125,16 +123,17 @@
 		{/snippet}
 		<div class="field">
 			<div class="board-column">
-				<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
+				<GameHeader name={mapName(map.id)} aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 				{#snippet boardDetails()}
 					<div class="board-details game-context-container">
-						<div class="board-zoom"><ZoomControls {camera} /></div>
 						<div class="board-actions" class:red={game.state.player === 2}>
+							{@render mapStatus()}
 							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
 						</div>
 					</div>
 				{/snippet}
-				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} bind:camera {boardDetails} {mapStatus} />
+				{#snippet mapBudgets()}<PlayerBudgets state={game.state} aiMode={!!difficulty} />{/snippet}
+				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} {boardDetails} {mapBudgets} />
 			</div>
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
@@ -228,7 +227,8 @@
 	}
 
 	.board-column {
-		height: max(520px, calc(100svh - 8px));
+		height: max(680px, calc(100svh - 8px));
+		gap: 12px;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
@@ -238,34 +238,22 @@
 		padding-inline: var(--game-gutter);
 		flex: none;
 	}
-	.board-zoom {
-		display: flex;
-		justify-content: center;
-		padding: 16px;
-		flex: none;
-	}
 	.board-actions {
-		border-top: 3px solid #71b9ee;
-		&.red {
-			border-color: #f59b9b;
-		}
-		padding: 8px 0 16px;
+		border: 1px solid var(--color-border);
+		border-top-color: #71b9ee;
+		border-radius: 12px;
+		background: var(--color-surface);
+		box-shadow: 0 3px 0 #0005;
+		padding: 16px;
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
-		gap: 8px;
+		align-items: center;
+		gap: 16px;
 		flex-wrap: wrap;
-		flex: none;
-		min-height: 46px;
+		&.red { border-top-color: #f59b9b; }
 	}
-	@media (max-width: 900px) {
-		.board-actions {
-			display: grid;
-			grid-template-columns: minmax(0, 1fr);
-			justify-items: start;
-		}
-		.board-actions :global(nav) {
-			width: 100%;
-		}
+	@media (max-width: 600px) {
+		.board-actions { padding: 10px; gap: 8px; }
+		.board-actions :global(nav) { width: 100%; }
 	}
 </style>

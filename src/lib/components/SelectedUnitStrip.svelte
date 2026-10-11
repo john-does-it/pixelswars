@@ -28,6 +28,8 @@
 					<span title={translate(messages.stat_attacks)}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} /><span>{unit.attacks}<span class="stat-maximum">/{definition.attacks}</span></span></span>
 				</span>
 			</span>
+		{:else}
+			<span class="details"><strong>{name}</strong></span>
 		{/if}
 	</button>
 {/if}

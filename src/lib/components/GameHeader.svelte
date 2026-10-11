@@ -5,19 +5,16 @@
 	import type { GameState } from '$lib/game/types.js'
 	import UiIcon from './UiIcon.svelte'
 
-	let { state, aiMode = false, onoptions }: { state: GameState; aiMode?: boolean; onoptions: () => void } = $props()
+	let { state, name, aiMode = false, onoptions }: { state: GameState; name: string; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
 
 <header class="match-summary game-context-container">
 	<div class="summary-details">
 		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
 			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
-			<span>{translate(messages.round, { round: state.round })}</span>
+			<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong><span class="current-player">{translate(messages.player_turn, { player: state.player })}</span></div>
 		</div>
-		<div class="budgets">
-			<span><span class="player-one">{playerName(1, aiMode)}</span> <b>{state.money[1]}$</b></span>
-			<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
-		</div>
+
 	</div>
 	<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
 </header>
@@ -26,9 +23,14 @@
 	.match-summary {
 		flex: none;
 		padding: 16px var(--game-gutter);
-		background: var(--color-background);
+		background: var(--color-surface);
+		width: calc(100% - 2 * var(--game-gutter));
+		margin-top: 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 12px;
+		box-shadow: 0 3px 0 #0005;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 12px;
 	}
 	.summary-details {
@@ -37,7 +39,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: 8px 20px;
 	}
 	.options-button {
@@ -50,13 +52,13 @@
 	}
 	.turn {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		flex-wrap: wrap;
 		gap: 8px;
 		font-weight: bold;
 		img {
-			width: 28px;
-			height: 28px;
+			width: 44px;
+			height: 44px;
 			object-fit: contain;
 			image-rendering: pixelated;
 		}
@@ -64,13 +66,11 @@
 			color: var(--color-accent);
 		}
 	}
-	.budgets {
-		display: flex;
-		justify-content: flex-end;
-		flex-wrap: wrap;
-		gap: 8px 16px;
-		font-size: var(--font-size-ui);
-	}
+
+	.turn-details { display: grid; gap: 2px; }
+	.map-name { font-weight: 400; }
+	.turn-details strong { font-size: 20px; color: var(--color-accent); }
+	.current-player { font-weight: 400; }
 	.player-one {
 		color: #8dcbff;
 	}
@@ -81,12 +81,8 @@
 		.summary-details {
 			gap: 4px 12px;
 		}
-		.turn,
-		.budgets {
+		.turn {
 			font-size: var(--font-size-ui);
-		}
-		.budgets {
-			justify-content: flex-start;
 		}
 	}
 </style>
