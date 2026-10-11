@@ -250,10 +250,17 @@
 		align-items: center;
 		gap: 16px;
 		flex-wrap: wrap;
-		&.red { border-top-color: #f59b9b; }
+		&.red {
+			border-top-color: #f59b9b;
+		}
 	}
 	@media (max-width: 600px) {
-		.board-actions { padding: 10px; gap: 8px; }
-		.board-actions :global(nav) { width: 100%; }
+		.board-actions {
+			padding: 10px;
+			gap: 8px;
+		}
+		.board-actions :global(nav) {
+			width: 100%;
+		}
 	}
 </style>

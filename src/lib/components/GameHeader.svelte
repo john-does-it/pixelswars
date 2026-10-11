@@ -14,7 +14,6 @@
 			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
 			<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong><span class="current-player">{translate(messages.player_turn, { player: state.player })}</span></div>
 		</div>
-
 	</div>
 	<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
 </header>
@@ -67,10 +66,20 @@
 		}
 	}
 
-	.turn-details { display: grid; gap: 2px; }
-	.map-name { font-weight: 400; }
-	.turn-details strong { font-size: 20px; color: var(--color-accent); }
-	.current-player { font-weight: 400; }
+	.turn-details {
+		display: grid;
+		gap: 2px;
+	}
+	.map-name {
+		font-weight: 400;
+	}
+	.turn-details strong {
+		font-size: 20px;
+		color: var(--color-accent);
+	}
+	.current-player {
+		font-weight: 400;
+	}
 	.player-one {
 		color: #8dcbff;
 	}

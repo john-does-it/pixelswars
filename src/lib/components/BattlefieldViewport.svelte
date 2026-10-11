@@ -240,7 +240,6 @@
 		<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>
 	</div>
 	{@render boardDetails?.()}
-
 </div>
 
 <style>
@@ -260,7 +259,10 @@
 		min-width: 0;
 		background: var(--color-background);
 	}
-	.map-budgets { flex: none; padding-top: 12px; }
+	.map-budgets {
+		flex: none;
+		padding-top: 12px;
+	}
 	.board-zoom {
 		display: flex;
 		justify-content: space-between;
