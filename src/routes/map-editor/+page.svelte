@@ -275,6 +275,7 @@
 				<option value="en">{t('language_english')}</option>
 				<option value="de">{t('language_german')}</option>
 				<option value="fr">{t('language_french')}</option>
+				<option value="ja">{t('language_japanese')}</option>
 			</select></label
 		>
 		<div class="header-content">

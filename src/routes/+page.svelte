@@ -218,6 +218,7 @@
 	}
 
 	h1 {
+		font-family: 'Pixelify Sans', ui-monospace, monospace;
 		font-size: clamp(26px, 6vw, 76px);
 		margin: 0;
 		color: var(--color-accent);

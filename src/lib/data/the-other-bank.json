@@ -1455,7 +1455,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-junction", "-south"],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1545,7 +1545,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-road", "-v"],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1745,6 +1745,16 @@
 			"type": "transport",
 			"player": 2,
 			"cell": 310
+		},
+		{
+			"type": "transport-helicopter",
+			"player": 1,
+			"cell": 15
+		},
+		{
+			"type": "transport-helicopter",
+			"player": 2,
+			"cell": 308
 		}
 	]
 }

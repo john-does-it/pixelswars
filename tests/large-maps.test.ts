@@ -31,10 +31,11 @@ for (const [id, cols, rows] of [
 		assert.equal(state.cols, cols)
 		assert.equal(state.rows, rows)
 		assert.equal(state.cells.length, cols * rows)
-		assert.equal(state.units.length, id === 10 ? 22 : 24)
+		assert.equal(state.units.length, id === 10 ? 22 : id === 12 ? 26 : 24)
 		assert.equal(new Set(state.units.map((unit) => unit.cell)).size, state.units.length)
 		const expected = ['artillery', 'infantry', 'jeep', 'infantry-rocket', 'tank', 'infantry-sniper', 'helicopter', 'anti-air', 'infantry', 'infantry-rocket', 'jeep'].sort()
 		if (id !== 10) expected.push('transport')
+		if (id === 12) expected.push('transport-helicopter')
 		expected.sort()
 		for (const player of [1, 2]) {
 			const positions = state.units

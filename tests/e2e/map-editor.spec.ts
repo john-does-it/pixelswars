@@ -91,7 +91,7 @@ test('public editor opens from home with working sprites, JSON export and submis
 	expect(errors).toEqual([])
 })
 
-test('editor shares all three languages with the game without changing the draft or other settings', async ({ page, context, baseURL }, testInfo) => {
+test('editor shares all four languages with the game without changing the draft or other settings', async ({ page, context, baseURL }, testInfo) => {
 	await context.addCookies([{ name: 'pixelswars-settings', value: encodeURIComponent(JSON.stringify({ locale: 'fr', sound: false, music: true, animations: false, keyboardLayout: 'qwerty' })), url: baseURL! }])
 	await page.goto('/')
 	await page.getByRole('link', { name: 'Ouvrir l’atelier de cartes', exact: true }).click()
@@ -104,6 +104,7 @@ test('editor shares all three languages with the game without changing the draft
 	for (const [locale, title, infantry, guidance, error] of [
 		['de', 'Karteneditor', 'Infanterie', 'Karte vorschlagen', 'Die Abmessungen müssen zwischen 2 und 32 Feldern liegen.'],
 		['en', 'Map editor', 'Infantry', 'Submit your map', 'Dimensions must be between 2 and 32 tiles.'],
+		['ja', 'マップエディター', '歩兵', 'マップを投稿', '縦横のサイズはそれぞれ2〜32マスにしてください。'],
 		['fr', 'Atelier de cartes', 'Infanterie', 'Proposer ta carte', 'Les dimensions doivent être comprises entre 2 et 32 cases.']
 	]) {
 		await page.locator('#language').selectOption(locale)

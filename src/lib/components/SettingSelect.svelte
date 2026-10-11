@@ -1,10 +1,10 @@
 <script lang="ts">
 	type Option = { value: string; label: string }
 
-	let { label, ariaLabel = label, value, options, standalone = false, onchange }: { label: string; ariaLabel?: string; value: string; options: Option[]; standalone?: boolean; onchange: (value: string) => void } = $props()
+	let { label, ariaLabel = label, value, options, standalone = false, class: className = '', onchange }: { label: string; ariaLabel?: string; value: string; options: Option[]; standalone?: boolean; class?: string; onchange: (value: string) => void } = $props()
 </script>
 
-<label class:standalone>
+<label class={className} class:standalone>
 	<span>{label}</span>
 	<select aria-label={ariaLabel} {value} onchange={(event) => onchange(event.currentTarget.value)}>
 		{#each options as option (option.value)}

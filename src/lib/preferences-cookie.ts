@@ -1,6 +1,6 @@
 import type { KeyboardLayout } from './game/types.ts'
 
-export type Locale = 'en' | 'fr' | 'de'
+export type Locale = 'en' | 'fr' | 'de' | 'ja'
 export interface Preferences {
 	locale: Locale
 	keyboardLayout: KeyboardLayout
@@ -15,7 +15,7 @@ export const preferencesCookieName = 'pixelswars-settings'
 export const defaultPreferences: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, volume: 100, music: false, animations: true, unitFacing: true }
 
 export function isLocale(value: unknown): value is Locale {
-	return value === 'en' || value === 'de' || value === 'fr'
+	return value === 'en' || value === 'de' || value === 'fr' || value === 'ja'
 }
 
 export function readPreferencesCookie(cookies: string): Preferences {

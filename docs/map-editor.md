@@ -1,6 +1,6 @@
 # Map editor
 
-Open the map editor from the game homepage. The editor shares the game’s language preference (English, French or German).
+Open the map editor from the game homepage. The editor shares the game’s language preference (English, French, German or Japanese).
 It uses the game's existing sprites and saves drafts only in the current browser.
 For local development, run `npm run dev` and open http://127.0.0.1:5173/map-editor/.
 The SvelteKit route in `src/routes/map-editor/+page.svelte` shares the root layout,
