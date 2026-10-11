@@ -402,5 +402,8 @@
 	"air_units_only": "航空部隊のみ",
 	"map_editor_error_blocker": "障害物の上には航空部隊だけを配置できます。",
 	"unit_transport_helicopter": "輸送ヘリコプター",
-	"unit_transport_helicopter_description": "あらゆる地形を飛び越え、歩兵系部隊を最大3部隊運べます。攻撃はできません。破壊されると搭乗部隊も失われます。"
+	"unit_transport_helicopter_description": "あらゆる地形を飛び越え、歩兵系部隊を最大3部隊運べます。攻撃はできません。破壊されると搭乗部隊も失われます。",
+	"map_tiny": "極小",
+	"map_19": "山歩き",
+	"map_19_description": "山と川の間に架かる橋を渡り、街を占領して軍を強化しましょう。"
 }

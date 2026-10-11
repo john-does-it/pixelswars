@@ -402,5 +402,8 @@
 	"air_units_only": "nur Lufteinheiten",
 	"map_editor_error_blocker": "Auf einem Hindernis können nur Lufteinheiten platziert werden.",
 	"unit_transport_helicopter": "Transporthubschrauber",
-	"unit_transport_helicopter_description": "Fliegt über jedes Gelände und transportiert bis zu drei Infanterieeinheiten. Kann nicht angreifen. Wird er zerstört, gehen auch seine Passagiere verloren."
+	"unit_transport_helicopter_description": "Fliegt über jedes Gelände und transportiert bis zu drei Infanterieeinheiten. Kann nicht angreifen. Wird er zerstört, gehen auch seine Passagiere verloren.",
+	"map_tiny": "Sehr klein",
+	"map_19": "Bergwanderung",
+	"map_19_description": "Überquere Brücken zwischen Bergen und Wasserläufen, erobere Städte und baue deine Armee auf."
 }

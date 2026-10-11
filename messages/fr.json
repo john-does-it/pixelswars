@@ -402,5 +402,8 @@
 	"air_units_only": "unités aériennes uniquement",
 	"map_editor_error_blocker": "Seules les unités aériennes peuvent être placées sur un obstacle.",
 	"unit_transport_helicopter": "Hélicoptère de transport",
-	"unit_transport_helicopter_description": "Survole tous les terrains et transporte jusqu’à trois unités d’infanterie. Ne peut pas attaquer. Ses passagers sont perdus si elle est détruite."
+	"unit_transport_helicopter_description": "Survole tous les terrains et transporte jusqu’à trois unités d’infanterie. Ne peut pas attaquer. Ses passagers sont perdus si elle est détruite.",
+	"map_tiny": "Très petite",
+	"map_19": "Randonnée en montagne",
+	"map_19_description": "Franchissez les ponts entre les montagnes et les cours d’eau pour capturer les villes et développer votre armée."
 }

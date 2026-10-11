@@ -11,7 +11,7 @@ secure its economy and combine infantry, armor and air power to win.
 
 ![Map selection in Pixel’s War](docs/screenshots/home.png)
 
-- **18 battlefields:** roads, forests, mountain positions and narrow water crossings, up to the 32 × 32 Delusions Of Grandeur map, ordered from smallest to largest by tile count.
+- **19 battlefields:** roads, forests, mountain positions and narrow water crossings, up to the 32 × 32 Delusions Of Grandeur map, ordered from smallest to largest by tile count.
 - **11 unit types:** capture with infantry, carry troops in transport jeeps or helicopters, cover advances with artillery and contest the skies.
 - **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
 - **Online duels:** invite a friend on another device through a direct WebRTC connection.

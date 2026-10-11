@@ -402,5 +402,8 @@
 	"air_units_only": "air units only",
 	"map_editor_error_blocker": "Only air units can be placed on an obstacle.",
 	"unit_transport_helicopter": "Transport helicopter",
-	"unit_transport_helicopter_description": "Flies over any terrain and carries up to three infantry units. Cannot attack. Its passengers are lost if it is destroyed."
+	"unit_transport_helicopter_description": "Flies over any terrain and carries up to three infantry units. Cannot attack. Its passengers are lost if it is destroyed.",
+	"map_tiny": "Very small",
+	"map_19": "Mountain Hike",
+	"map_19_description": "Cross bridges between mountains and waterways to capture towns and build your army."
 }

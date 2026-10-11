@@ -2,7 +2,7 @@
 	"1": {
 		"cols": 8,
 		"rows": 8,
-		"size": "small"
+		"size": "tiny"
 	},
 	"2": {
 		"cols": 12,
@@ -87,6 +87,11 @@
 	"18": {
 		"cols": 24,
 		"rows": 16,
+		"size": "large"
+	},
+	"19": {
+		"cols": 24,
+		"rows": 12,
 		"size": "large"
 	}
 }

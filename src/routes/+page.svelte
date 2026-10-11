@@ -72,7 +72,8 @@
 		{ id: 15, title: messages.map_15, text: messages.map_15_description },
 		{ id: 16, title: messages.map_16, text: messages.map_16_description },
 		{ id: 17, title: messages.map_17, text: messages.map_17_description },
-		{ id: 18, title: messages.map_18, text: messages.map_18_description }
+		{ id: 18, title: messages.map_18, text: messages.map_18_description },
+		{ id: 19, title: messages.map_19, text: messages.map_19_description }
 	].sort((firstMap, secondMap) => {
 		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
 		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
@@ -104,7 +105,7 @@
 		<div class="maps">
 			{#each maps as map}
 				{@const preview = mapPreviews[String(map.id) as keyof typeof mapPreviews]}
-				{@const sizeLabels = { small: messages.map_small, medium: messages.map_medium, large: messages.map_large, xxl: messages.map_xxl }}
+				{@const sizeLabels = { tiny: messages.map_tiny, small: messages.map_small, medium: messages.map_medium, large: messages.map_large, xxl: messages.map_xxl }}
 				<a
 					class="panel map"
 					href={`${resolve('/play/[map]', { map: String(map.id) })}/`}
