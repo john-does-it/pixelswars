@@ -76,7 +76,7 @@
 
 	small {
 		display: block;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 	}
 
 	@media (max-width: 430px) {

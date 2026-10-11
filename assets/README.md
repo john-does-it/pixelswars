@@ -9,6 +9,7 @@ This directory contains the game's source assets. `static/assets/` is generated 
   Road connections and junction variants are documented in [ROAD_TILE_MAPPING.md](cells/ROAD_TILE_MAPPING.md).
 - `units/`: healthy and damaged sprites for both armies, plus cropped `-fit` variants used in previews and production menus.
 - `icons/`: shared interface and resource icons.
+  Passenger badges use the original 16px bitmaps from `docs/artwork/cargo-count/`. Regenerate with `node scripts/export-cargo-count.mjs`, then synchronize assets.
   Pixel UI controls use the supplied SVGs through `UiIcon.svelte`; button labels and keyboard shortcuts remain on the controls themselves.
 - `gifs/`: combat animation.
 - `mp3/`: music and sound effects, including the infantry selection variants.

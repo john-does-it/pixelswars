@@ -44,6 +44,8 @@
 }
 
 :root {
+	/* Interface text stays readable independently of battlefield zoom. */
+	--font-size-ui: 16px;
 	--pixel-corner-outset: 5px;
 	--color-background: #111a14;
 	--color-surface: #243226;
@@ -56,7 +58,7 @@
 	--font-body: 'IBM Plex Mono', ui-monospace, monospace;
 	--font-display: 'Pixelify Sans', ui-monospace, monospace;
 	font-family: var(--font-body);
-	font-size: 16px;
+	font-size: var(--font-size-ui);
 	line-height: 1.5;
 	color: var(--color-text);
 	background: var(--color-background);
@@ -74,12 +76,10 @@
 /* Keep the language picker consistent in the home, game settings and editor.
    Japanese names still need the Japanese face, whichever locale is selected. */
 .language-select {
-	--font-display: 'Pixelify Sans', 'DotGothic16', ui-monospace, monospace;
+	--font-body: 'IBM Plex Mono', 'DotGothic16', ui-monospace, monospace;
 }
 
-h1,
-h2,
-h3 {
+h1 {
 	font-family: var(--font-display);
 }
 
@@ -114,6 +114,12 @@ body {
 	margin: 0;
 }
 
+.game-context-container {
+	width: 100%;
+	max-width: 1480px;
+	margin-inline: auto;
+}
+
 html:has(.game-shell),
 body:has(.game-shell),
 .game-shell aside {
@@ -136,7 +142,7 @@ a {
 button,
 .button {
 	--button-background: var(--color-control);
-	font: 700 16px / 1.5 var(--font-display);
+	font: 700 16px / 1.5 var(--font-body);
 	color: inherit;
 	background: var(--button-background);
 	border: 1px solid var(--color-border-strong);
@@ -153,7 +159,7 @@ select {
 	/* Own the closed control's rendering so native chrome cannot cover its frame. */
 	appearance: none;
 	-webkit-appearance: none;
-	font: 700 16px / 1.5 var(--font-display);
+	font: 700 16px / 1.5 var(--font-body);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

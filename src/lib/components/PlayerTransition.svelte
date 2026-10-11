@@ -108,6 +108,7 @@
 	}
 
 	.transition-content {
+		font-family: var(--font-body);
 		position: relative;
 		width: min(960px, calc(100% - 32px));
 		margin: auto;

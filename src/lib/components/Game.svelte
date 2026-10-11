@@ -117,7 +117,7 @@
 				{#if network}
 					<p class="match-mode" role="status">{translate(network.player === 1 ? messages.online_blue : messages.online_red)}{!localTurn ? ` · ${translate(messages.online_opponent_turn)}` : ''}</p>
 				{/if}
-				<p class="combat-status" role="status"><span class:inactive={!game.state.fighting || game.state.aiThinking} aria-hidden={!game.state.fighting || game.state.aiThinking}>{translate(messages.combat_in_progress)}</span></p>
+				<p class="combat-status" role="status">{game.state.fighting && !game.state.aiThinking ? translate(messages.combat_in_progress) : ''}</p>
 				<div class="unit-footer" class:inactive={waiting} inert={waiting} aria-hidden={waiting}>
 					<SelectedUnitStrip cell={previewCell} unit={previewCell ? unitAt(game.state, previewCell.index) : undefined} disabled={locked(game.state) || waiting || !!network?.pending} oninspect={() => (showPreview = true)} />
 				</div>
@@ -127,7 +127,7 @@
 			<div class="board-column">
 				<GameHeader aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 				{#snippet boardDetails()}
-					<div class="board-details">
+					<div class="board-details game-context-container">
 						<div class="board-zoom"><ZoomControls {camera} /></div>
 						<div class="board-actions" class:red={game.state.player === 2}>
 							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
@@ -161,7 +161,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		column-gap: 16px;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		color: var(--color-accent);
 	}
 	.match-mode,
@@ -169,13 +169,19 @@
 		margin: 0;
 	}
 	.combat-status {
-		text-align: left;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 	.unit-footer {
 		container: unit-footer / inline-size;
 		display: flex;
 		align-items: center;
-		height: 48px;
+		height: 75px;
 		min-width: 0;
 		color: var(--color-text);
 	}

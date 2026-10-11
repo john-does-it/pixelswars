@@ -57,7 +57,7 @@
 	}
 
 	ul {
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		line-height: 1.6;
 	}
 

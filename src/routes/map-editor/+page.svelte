@@ -385,7 +385,7 @@
 
 <style>
 	.map-editor {
-		font-size: 13px;
+		font-size: var(--font-size-ui);
 	}
 	header {
 		padding: 24px 28px;
@@ -435,7 +435,7 @@
 		align-items: center;
 		margin: 0 0 18px;
 		gap: 8px;
-		font: 700 16px / 1.5 var(--font-display);
+		font: 700 16px / 1.5 var(--font-body);
 	}
 	.language-select span {
 		white-space: nowrap;
@@ -600,7 +600,7 @@
 		gap: 12px;
 		margin-top: 10px;
 		color: var(--color-muted);
-		font-size: 12px;
+		font-size: var(--font-size-ui);
 	}
 	#status {
 		margin-top: 22px;
@@ -611,7 +611,7 @@
 	}
 	.hint {
 		color: var(--color-muted);
-		font-size: 12px;
+		font-size: var(--font-size-ui);
 		max-width: 700px;
 	}
 	#json-output {
@@ -619,7 +619,7 @@
 		resize: vertical;
 		background: var(--color-surface);
 		color: var(--color-text);
-		font: 12px var(--font-body);
+		font: var(--font-size-ui) var(--font-body);
 		padding: 12px;
 		border: 1px solid var(--color-border);
 	}

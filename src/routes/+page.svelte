@@ -244,7 +244,7 @@
 	}
 
 	.eyebrow {
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		letter-spacing: 0.12em;
 		color: var(--color-muted);
 	}
@@ -316,7 +316,7 @@
 		}
 	}
 	.map-metadata {
-		font-size: 13px;
+		font-size: var(--font-size-ui);
 	}
 
 	.map p {
@@ -343,7 +343,7 @@
 	.group-description {
 		max-width: 720px;
 		margin: 0 0 14px;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 	}
 
 	article {
@@ -371,7 +371,7 @@
 	}
 
 	footer {
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		margin-top: 40px;
 
 		a {

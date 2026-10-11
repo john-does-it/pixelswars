@@ -34,9 +34,9 @@
 
 <style>
 	.selected-unit-strip {
-		width: 280px;
+		width: 324px;
 		max-width: 100%;
-		height: 48px;
+		height: 75px;
 		flex: none;
 		display: flex;
 		align-items: center;
@@ -52,8 +52,8 @@
 	}
 	.tile-thumbnail {
 		position: relative;
-		width: 32px;
-		height: 32px;
+		width: 75px;
+		height: 75px;
 		flex: none;
 	}
 	.sprite {
@@ -68,7 +68,7 @@
 	}
 	strong {
 		display: block;
-		font: 700 16px / 1.4 var(--font-display);
+		font: 700 var(--font-size-ui) / 1.4 var(--font-body);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -76,9 +76,7 @@
 	.stats {
 		display: flex;
 		gap: 4px;
-		font:
-			11px / 1.5 ui-monospace,
-			monospace;
+		font: 400 var(--font-size-ui) / 1.5 var(--font-body);
 		font-variant-numeric: tabular-nums;
 	}
 	.stats > span {
@@ -91,7 +89,7 @@
 		width: 12px;
 		height: 12px;
 	}
-	@container unit-footer (max-width: 190px) {
+	@container unit-footer (max-width: 324px) {
 		.stat-maximum {
 			display: none;
 		}

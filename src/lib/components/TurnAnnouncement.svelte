@@ -10,9 +10,3 @@
 		{message}
 	</div>
 </PlayerTransition>
-
-<style>
-	.turn-announcement {
-		font-family: var(--font-display);
-	}
-</style>

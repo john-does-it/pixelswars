@@ -88,13 +88,14 @@
 	}
 	.instruction {
 		margin: 0 0 12px;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 	}
 	.passengers {
 		display: grid;
 		gap: 8px;
 	}
 	.passenger {
+		font-family: var(--font-body);
 		display: grid;
 		grid-template-columns: 36px minmax(0, 1fr) auto;
 		align-items: center;
@@ -110,7 +111,7 @@
 		align-items: center;
 		gap: 4px;
 		white-space: nowrap;
-		font-size: 12px;
+		font-size: var(--font-size-ui);
 		img {
 			width: 12px;
 			height: 12px;

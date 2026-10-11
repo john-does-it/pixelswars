@@ -445,6 +445,26 @@ test('capture city and factory, earn income and purchase through the dialog', as
 	expect(errors).toEqual([])
 })
 
+test('hover previews cells without selecting or moving units', async ({ page }) => {
+	await page.goto('/play/1/')
+	const cell = (index: number) => page.locator(`.board [data-cell="${index}"]`)
+	const preview = page.locator('.selected-unit-strip')
+	await cell(2).hover()
+	await expect(preview.locator('.sprite')).toHaveAttribute('src', /infantry-1\.png$/)
+	await expect(page.locator('.board [aria-pressed="true"]')).toHaveCount(0)
+	await cell(2).click()
+	await cell(58).hover()
+	await expect(preview.locator('.sprite')).toHaveAttribute('src', /tank-2\.png$/)
+	await expect(cell(2)).toHaveAttribute('aria-pressed', 'true')
+	await expect(cell(58)).toHaveAttribute('aria-pressed', 'false')
+	await cell(10).hover()
+	await expect(preview.locator('.sprite')).toHaveCount(0)
+	await expect(cell(2).locator('[data-unit]')).toHaveCount(1)
+	await expect(cell(10).locator('[data-unit]')).toHaveCount(0)
+	await preview.click()
+	await expect(page.getByRole('dialog', { name: 'Cell statistics', exact: true })).toBeVisible()
+})
+
 test('movement fuel and capture indicators track use, cancellation and turn reset', async ({ page }) => {
 	await page.goto('/play/1/')
 	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
@@ -478,36 +498,17 @@ test('movement fuel and capture indicators track use, cancellation and turn rese
 	await expect(cell(10).locator('.capture')).not.toHaveClass(/spent/)
 })
 
-test('spent resources fade in sync across units even when activated at different times', async ({ page }) => {
+test('spent resource indicators stay at half opacity without blinking', async ({ page }) => {
 	await page.goto('/play/1/')
-	const bullets = page.locator('.ammo img')
-	await expect(bullets.first()).toBeVisible()
-	// Isolate animation timing from combat. Activate the spent state on two different units.
-	await bullets.first().evaluate((bullet) => bullet.classList.add('spent'))
-	await expect.poll(() => bullets.first().evaluate((bullet) => Number(bullet.getAnimations()[0]?.currentTime))).toBeGreaterThan(0)
-	await page.waitForTimeout(350)
-	await bullets.last().evaluate((bullet) => bullet.classList.add('spent'))
-	await page
-		.locator('.fuel')
-		.first()
-		.evaluate((indicator) => indicator.classList.add('spent'))
-	await page
-		.locator('.capture')
-		.first()
-		.evaluate((indicator) => indicator.classList.add('spent'))
-	const spent = page.locator('.unit-container .spent')
-	const assertSynchronized = async () => {
-		await expect.poll(() => spent.evaluateAll((bullets) => bullets.map((bullet) => bullet.getAnimations()[0]?.startTime))).toEqual([0, 0, 0, 0])
-		const opacity = await spent.evaluateAll((bullets) => bullets.map((bullet) => Number(getComputedStyle(bullet).opacity)))
-		for (const value of opacity) expect(value).toBeCloseTo(opacity[0], 4)
+	for (const selector of ['.ammo img', '.fuel', '.capture']) {
+		const indicator = page.locator(selector).first()
+		await expect(indicator).toBeVisible()
+		await indicator.evaluate((element) => element.classList.add('spent'))
+		await expect(indicator).toHaveCSS('opacity', '0.5')
+		await expect(indicator).toHaveCSS('animation-name', 'none')
 	}
-	await assertSynchronized()
-	await page.emulateMedia({ reducedMotion: 'reduce' })
-	await expect(spent.first()).toHaveCSS('animation-name', 'none')
-	await page.emulateMedia({ reducedMotion: 'no-preference' })
-	await assertSynchronized()
+	await expect(page.locator('.ammo img:not(.spent)').first()).toHaveCSS('opacity', '1')
 })
-
 test('combat updates rune-driven health, locks controls and clears a dead attacker', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))

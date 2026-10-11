@@ -235,7 +235,7 @@
 		{/if}
 	</div>
 	{@render boardDetails?.()}
-	<div class="map-toolbar">
+	<div class="map-toolbar game-context-container">
 		<div class="toolbar-details">
 			{@render mapStatus?.()}
 		</div>

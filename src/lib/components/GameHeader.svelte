@@ -8,10 +8,10 @@
 	let { state, aiMode = false, onoptions }: { state: GameState; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
 
-<header class="match-summary">
+<header class="match-summary game-context-container">
 	<div class="summary-details">
 		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
-			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt="" />{playerName(state.player, aiMode)}
+			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
 			<span>{translate(messages.round, { round: state.round })}</span>
 		</div>
 		<div class="budgets">
@@ -69,7 +69,7 @@
 		justify-content: flex-end;
 		flex-wrap: wrap;
 		gap: 8px 16px;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 	}
 	.player-one {
 		color: #8dcbff;
@@ -83,7 +83,7 @@
 		}
 		.turn,
 		.budgets {
-			font-size: 14px;
+			font-size: var(--font-size-ui);
 		}
 		.budgets {
 			justify-content: flex-start;

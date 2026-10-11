@@ -91,6 +91,7 @@
 					recoveredHealth={gameState.healedCells[cell.index]}
 					captured={gameState.capturedCells.includes(cell.index)}
 					secured={gameState.securedCells.includes(cell.index)}
+					onpreview={() => (gameState.previewIndex = cell.index)}
 					onclick={() => {
 						gameState.previewIndex = cell.index
 						game.clickCell(cell.index)

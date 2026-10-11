@@ -173,9 +173,10 @@
 		gap: 10px;
 		width: 100%;
 		:global(label) {
-			display: grid;
-			grid-template-columns: 100px minmax(0, 1fr);
-			width: min(100%, 320px);
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			width: 100%;
 		}
 		:global(select) {
 			width: 100%;
@@ -193,7 +194,7 @@
 	}
 
 	.volume-control {
-		font: 700 16px / 1.5 var(--font-display);
+		font: 700 16px / 1.5 var(--font-body);
 		min-height: 44px;
 		max-width: 100%;
 		flex-wrap: wrap;

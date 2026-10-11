@@ -31,7 +31,7 @@
 	}
 </script>
 
-<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)}>
+<span class="unit-container -{unit.type} {unit.player === 1 ? '-one' : '-two'}" class:carries-units={!!unitDefinition.capacity} class:-inrange={target} data-unit={unit.id} data-health={unit.health} data-damage={damageStage(unit)}>
 	<span
 		class="unit-sprite"
 		class:idle={animate && (airborne || infantry)}
@@ -48,20 +48,20 @@
 		}}
 		onanimationend={scheduleNextLook}
 	></span>
-	<img class="health" src={asset('/assets/icons/icon-health.png')} alt="" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s" />
+	<span class="health" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s"><img src={asset('/assets/icons/icon-health.png')} alt="" /></span>
 	{#if showResources}
 		{#if unitDefinition.attacks > 0}<span class="ammo" aria-hidden="true" data-remaining={unit.attacks}>
 				{#each Array(unitDefinition.attacks) as _, index}
-					<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} onanimationstart={synchronizeStatus} src={asset('/assets/icons/icon-attack-capacity.png')} alt="" /></span>
+					<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} src={asset('/assets/icons/icon-attack-capacity.png')} alt="" /></span>
 				{/each}
 			</span>{/if}
-		{#if unitDefinition.capacity}<span class="cargo-count" aria-label={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })}>{unit.cargo?.length ?? 0}/{unitDefinition.capacity}</span>{/if}
-		<span class="fuel" class:spent={unit.movement === 0} onanimationstart={synchronizeStatus} data-level={fuelLevel} data-remaining={unit.movement} style:--empty-fuel={`${88 - fuelLevel * 19}%`} aria-hidden="true">
+		{#if unitDefinition.capacity}<span class="cargo-count"><img src={asset(`/assets/icons/cargo-count-${unit.cargo?.length ?? 0}.png`)} alt={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })} /></span>{/if}
+		<span class="fuel" class:spent={unit.movement === 0} data-level={fuelLevel} data-remaining={unit.movement} style:--empty-fuel={`${88 - fuelLevel * 19}%`} aria-hidden="true">
 			<img class="fuel-empty" src={asset('/assets/icons/icon-movement.png')} alt="" />
 			<img class="fuel-fill" src={asset('/assets/icons/icon-movement.png')} alt="" />
 		</span>
 		{#if unitDefinition.captures}
-			<img class="capture" class:spent={unit.capture === 0} onanimationstart={synchronizeStatus} src={asset('/assets/icons/icon-capture-capacity.png')} alt="" aria-hidden="true" />
+			<span class="capture" class:spent={unit.capture === 0} aria-hidden="true"><img src={asset('/assets/icons/icon-capture-capacity.png')} alt="" /></span>
 		{/if}
 	{/if}
 	{#if target}
@@ -71,17 +71,20 @@
 
 <style>
 	.cargo-count {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		color: white;
-		background: #18211ee6;
-		font-size: max(8px, calc(var(--cell-size, 40px) * 0.15));
-		line-height: 1.1;
-		padding: 1px 2px;
-		border-radius: 2px;
+		bottom: var(--indicator-inset);
+		right: var(--indicator-inset);
+		aspect-ratio: 8 / 9;
+		--icon-left: -100%;
+		--icon-top: calc(-7 / 9 * 100%);
+		--icon-width: 200%;
+	}
+	.carries-units .fuel {
+		left: var(--indicator-inset);
+		right: auto;
 	}
 	.unit-container {
+		--indicator-size: 30%;
+		--indicator-inset: 2%;
 		position: absolute;
 		z-index: 1;
 		inset: 0;
@@ -137,19 +140,39 @@
 	}
 
 	.health {
-		position: absolute;
-		width: 23%;
-		height: 23%;
-		left: 3%;
-		top: 3%;
+		aspect-ratio: 24 / 20;
+		left: var(--indicator-inset);
+		top: var(--indicator-inset);
+		--icon-left: calc(-3 / 24 * 100%);
+		--icon-top: -25%;
+		--icon-width: 125%;
 		animation: pulse 2s infinite;
+	}
+	/* Size the visible pixels consistently, without each sprite's transparent padding. */
+	.health,
+	.fuel,
+	.capture,
+	.cargo-count {
+		position: absolute;
+		width: var(--indicator-size);
+		overflow: hidden;
+		img {
+			position: absolute;
+			left: var(--icon-left);
+			top: var(--icon-top);
+			width: var(--icon-width);
+			max-width: none;
+			display: block;
+			image-rendering: pixelated;
+		}
 	}
 
 	.ammo {
 		position: absolute;
-		bottom: 2px;
-		left: 2px;
-		width: 15.84%;
+		bottom: var(--indicator-inset);
+		left: var(--indicator-inset);
+		/* Two stacked rounds should occupy roughly the height of one status icon. */
+		width: calc(var(--indicator-size) * 0.6);
 		display: flex;
 		flex-direction: column;
 		.ammo-round {
@@ -170,55 +193,38 @@
 	}
 
 	.fuel {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		width: 25%;
-		img {
-			display: block;
-			width: 100%;
-			image-rendering: pixelated;
-		}
+		bottom: var(--indicator-inset);
+		right: var(--indicator-inset);
+		aspect-ratio: 18 / 19;
+		--icon-left: calc(-3 / 18 * 100%);
+		--icon-top: calc(-3 / 19 * 100%);
+		--icon-width: calc(25 / 18 * 100%);
 		.fuel-empty {
 			filter: grayscale(1) brightness(0.65);
 		}
 		.fuel-fill {
-			position: absolute;
-			inset: 0;
 			/* Ignore the sprite's transparent padding when masking the fuel level. */
 			clip-path: inset(var(--empty-fuel) 0 0);
 		}
 	}
 
 	.capture {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 25%;
+		top: var(--indicator-inset);
+		right: var(--indicator-inset);
+		aspect-ratio: 13 / 15;
+		--icon-left: calc(-6 / 13 * 100%);
+		--icon-top: calc(-5 / 15 * 100%);
+		--icon-width: calc(25 / 13 * 100%);
 	}
 
 	.spent {
-		opacity: 0.2;
-		animation: resource-used 1.4s ease-in-out infinite;
-	}
-
-	@keyframes resource-used {
-		0%,
-		100% {
-			opacity: 0.2;
-		}
-		50% {
-			opacity: 1;
-		}
+		opacity: 0.5;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.unit-sprite.idle,
 		.unit-sprite.idle.alternate-look,
 		.unit-sprite.idle.airborne {
-			animation: none;
-		}
-		.spent {
 			animation: none;
 		}
 	}

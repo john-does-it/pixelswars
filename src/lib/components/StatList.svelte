@@ -61,7 +61,7 @@
 		place-items: center;
 		border: 1px solid currentColor;
 		border-radius: 50%;
-		font-size: 11px;
+		font-size: var(--font-size-ui);
 		font-weight: bold;
 	}
 </style>

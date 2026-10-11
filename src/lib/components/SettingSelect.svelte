@@ -20,7 +20,7 @@
 		min-height: 46px;
 		flex: 0 0 auto;
 		gap: 8px;
-		font: 700 16px / 1.5 var(--font-display);
+		font: 700 16px / 1.5 var(--font-body);
 		color: var(--color-text);
 	}
 

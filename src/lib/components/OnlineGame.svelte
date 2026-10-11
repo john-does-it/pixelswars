@@ -223,7 +223,7 @@
 		border-top: 1px solid var(--color-border);
 		padding-top: 16px;
 		margin-top: 24px;
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		color: var(--color-text);
 	}
 </style>

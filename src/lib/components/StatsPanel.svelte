@@ -86,7 +86,7 @@
 
 <style>
 	aside {
-		font-size: 12px;
+		font-size: var(--font-size-ui);
 		line-height: 1.4;
 		--stat-gap: 4px 10px;
 		--stat-margin: 8px 0;
@@ -148,7 +148,7 @@
 	}
 	h2,
 	h3 {
-		font-size: 14px;
+		font-size: var(--font-size-ui);
 		line-height: 1.4;
 		margin: 0;
 	}
