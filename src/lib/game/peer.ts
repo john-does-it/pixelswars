@@ -46,6 +46,7 @@ export class PeerConnection implements MatchConnection {
 	private errors = new Set<(error: PeerError) => void>()
 	private pending: unknown[] = []
 	private heartbeat?: ReturnType<typeof setInterval>
+	private helloRetry?: ReturnType<typeof setInterval>
 	private connectionTimeout?: ReturnType<typeof setTimeout>
 	private lastSeen = Date.now()
 	private hasConnected = false
@@ -138,6 +139,8 @@ export class PeerConnection implements MatchConnection {
 		// Only diagnose an empty search once gathering has actually finished.
 		if (reason === 'network' && transport?.iceGatheringState === 'complete' && transport.localDescription && !/^a=candidate:/m.test(transport.localDescription.sdp)) reason = 'no_candidates'
 		clearTimeout(this.connectionTimeout)
+		clearInterval(this.helloRetry)
+		this.pending = []
 		this.channel = undefined
 		connection.close()
 		this.setStatus('disconnected')
@@ -151,9 +154,21 @@ export class PeerConnection implements MatchConnection {
 		connection.peerConnection?.addEventListener('iceconnectionstatechange', () => {
 			if (connection.peerConnection?.iceConnectionState === 'failed') this.failConnection(connection, 'network')
 		})
+		const sendHello = (ack = false) => {
+			if (this.channel !== connection || !connection.open) return false
+			try {
+				connection.send({ type: 'hello', version: protocolVersion, map: this.map.id, fingerprint: matchFingerprint(this.map), ack })
+				return true
+			} catch {
+				this.failConnection(connection, 'network')
+				return false
+			}
+		}
 		connection.on('open', () => {
-			if (this.channel !== connection) return
-			connection.send({ type: 'hello', version: protocolVersion, map: this.map.id, fingerprint: matchFingerprint(this.map) })
+			if (!sendHello()) return
+			// A locally open channel does not prove the other peer received our hello.
+			// Retry until its hello arrives, within the existing connection deadline.
+			if (!this.hasConnected) this.helloRetry = setInterval(() => sendHello(), 1000)
 		})
 		connection.on('close', () => {
 			if (this.channel !== connection) return
@@ -180,20 +195,30 @@ export class PeerConnection implements MatchConnection {
 				return
 			}
 			if (!this.hasConnected) {
-				if (message.type !== 'hello') return
+				if (message.type !== 'hello') {
+					// The other side may already be loading the game while our hello is retried.
+					// Hold its early messages, but never deliver them before validating its hello.
+					if (message.type !== 'heartbeat' && this.pending.length < 32) this.pending.push(message)
+					return
+				}
 				if (message.version !== protocolVersion || message.map !== this.map.id || message.fingerprint !== matchFingerprint(this.map)) {
 					this.failConnection(connection, 'incompatible')
 					return
 				}
 				this.hasConnected = true
 				clearTimeout(this.connectionTimeout)
+				clearInterval(this.helloRetry)
 				this.heartbeat = setInterval(() => {
 					if (Date.now() - this.lastSeen > 10000) this.setStatus('disconnected')
 					this.send({ type: 'heartbeat' })
 				}, 2000)
 			}
+			// Answer retries even after we connected, so a one-sided handshake can recover.
+			// Acknowledgements are still valid hellos, but are not echoed indefinitely.
+			if (message.type === 'hello' && message.ack !== true && connection.open && !sendHello(true)) return
 			this.lastSeen = Date.now()
 			this.setStatus('connected')
+			this.flushPending()
 			if (message.type === 'hello' || message.type === 'heartbeat') return
 			if (!this.messages.size) {
 				if (this.pending.length < 32) this.pending.push(message)
@@ -210,9 +235,13 @@ export class PeerConnection implements MatchConnection {
 			return false
 		}
 	}
+	private flushPending() {
+		if (!this.hasConnected || !this.messages.size) return
+		for (const message of this.pending.splice(0)) for (const listener of this.messages) listener(message)
+	}
 	onMessage(listener: (message: unknown) => void) {
 		this.messages.add(listener)
-		for (const message of this.pending.splice(0)) listener(message)
+		this.flushPending()
 		return () => {
 			this.messages.delete(listener)
 		}
@@ -253,6 +282,7 @@ export class PeerConnection implements MatchConnection {
 		this.setStatus('closed')
 		this.abort.abort()
 		clearInterval(this.heartbeat)
+		clearInterval(this.helloRetry)
 		clearTimeout(this.connectionTimeout)
 		this.channel?.close()
 		this.peer?.destroy()

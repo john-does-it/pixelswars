@@ -78,6 +78,21 @@ async function localIce(page: Page, withoutCandidates = false) {
 	)
 }
 
+async function attachConnectionDiagnostics(host: Page, guest: Page) {
+	if (test.info().attachments.some(({ name }) => name === 'online-connection.json')) return
+	const diagnostics = await Promise.all(
+		[host, guest].map(async (device, index) => ({
+			player: index === 0 ? 'host' : 'guest',
+			alerts: await device
+				.getByRole('alert')
+				.allTextContents()
+				.catch(() => []),
+			events: await device.evaluate(() => Reflect.get(window, 'onlineConnectionEvents')).catch(() => 'Page unavailable')
+		}))
+	)
+	await test.info().attach('online-connection.json', { body: JSON.stringify(diagnostics, null, 2), contentType: 'application/json' })
+}
+
 async function expectOnlineBattlefields(host: Page, guest: Page) {
 	// WebRTC allows 35 seconds to connect. Only then does each device preload sprites.
 	// Give those two stages separate deadlines instead of sharing 15 seconds.
@@ -89,17 +104,7 @@ async function expectOnlineBattlefields(host: Page, guest: Page) {
 			})
 		)
 	} catch (error) {
-		const diagnostics = await Promise.all(
-			[host, guest].map(async (device, index) => ({
-				player: index === 0 ? 'host' : 'guest',
-				alerts: await device
-					.getByRole('alert')
-					.allTextContents()
-					.catch(() => []),
-				events: await device.evaluate(() => Reflect.get(window, 'onlineConnectionEvents')).catch(() => 'Page unavailable')
-			}))
-		)
-		await test.info().attach('online-connection.json', { body: JSON.stringify(diagnostics, null, 2), contentType: 'application/json' })
+		await attachConnectionDiagnostics(host, guest)
 		throw error
 	}
 	await expect(host.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
@@ -265,6 +270,45 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 	}
 })
 
+for (const delayedSide of ['host', 'guest'] as const) {
+	test(`the handshake recovers when the ${delayedSide}'s initial hellos are missed`, async ({ page, browser }) => {
+		test.setTimeout(60000)
+		const guestContext = await browser.newContext({ bypassCSP: true })
+		const guest = await guestContext.newPage()
+		try {
+			await localIce(page)
+			await localIce(guest)
+			const delayed = delayedSide === 'host' ? page : guest
+			await delayed.addInitScript(() => {
+				Reflect.set(window, 'helloAttempts', 0)
+				const send = RTCDataChannel.prototype.send
+				RTCDataChannel.prototype.send = function (data) {
+					if (ArrayBuffer.isView(data) && JSON.parse(new TextDecoder().decode(data)).type === 'hello') {
+						const attempts = Number(Reflect.get(window, 'helloAttempts')) + 1
+						Reflect.set(window, 'helloAttempts', attempts)
+						// Reproduce the CI trace: ICE connects, but only one peer receives a hello.
+						// Also miss the immediate acknowledgement, requiring the other peer to retry.
+						if (attempts <= 2) return
+					}
+					return send.call(this, data as ArrayBufferView<ArrayBuffer>)
+				}
+			})
+			await page.goto('/play/1/?online=1')
+			await page.getByRole('button', { name: 'Create a game' }).click()
+			const invitation = page.getByLabel('Invitation link', { exact: true })
+			await expect(invitation).toHaveValue(/#invite=PW2\./)
+			await guest.goto(await invitation.inputValue())
+			await guest.getByRole('button', { name: 'Join', exact: true }).click()
+			await expectOnlineBattlefields(page, guest)
+			expect(await delayed.evaluate(() => Reflect.get(window, 'helloAttempts'))).toBeGreaterThan(2)
+			await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+			await expect(guest.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+		} finally {
+			await guestContext.close()
+		}
+	})
+}
+
 test('a guest can finish loading its sprites after the host has connected', async ({ page, browser, isMobile }) => {
 	// Budget separately for connection, the intentional 16-second hold, and asset loading.
 	test.setTimeout(120000)
@@ -294,6 +338,9 @@ test('a guest can finish loading its sprites after the host has connected', asyn
 		for (const device of [page, guest]) await expect(device.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
 		await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
 		await expect(guest.getByRole('button', { name: 'End round', exact: true })).toBeHidden()
+	} catch (error) {
+		await attachConnectionDiagnostics(page, guest)
+		throw error
 	} finally {
 		clearTimeout(releaseTimer)
 		releaseAssets()
