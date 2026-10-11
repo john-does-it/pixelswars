@@ -15,6 +15,7 @@
 		selected?: boolean
 		showResources?: boolean
 		animate?: boolean
+		buildingLights?: boolean
 		boardingTarget?: boolean
 		deploymentTarget?: boolean
 		reachable: boolean
@@ -29,7 +30,7 @@
 		secured: boolean
 		onclick: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
+	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, buildingLights = true, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
 	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
 	const label = $derived(
@@ -44,6 +45,9 @@
 
 <button type="button" class="cell-container pixel-corners {classes}" class:-capturedby1={cell.owner === 1} class:-capturedby2={cell.owner === 2} class:-halfcaptured={cell.capturePoints < 20} class:boarding-target={boardingTarget} class:deployment-target={deploymentTarget} class:reachable class:attackable class:inspected class:under-fire={underFire} style:--pixel-corner-color={(selected || inspected) && unit ? (unit.player === 1 ? '#8dcbff' : '#ffb3b1') : undefined} aria-label={boardingTarget ? `${label}, ${translate(messages.transport_load)}` : deploymentTarget ? `${label}, ${translate(messages.transport_deploy)}` : reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label} aria-pressed={selected || inspected} data-cell={cell.index} {onclick}>
 	{#if cell.terrain === 'water' && animate && !cell.classes.includes('-under-bridge')}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
+	{#if cell.building && animate && buildingLights}
+		<span class="building-lights" aria-hidden="true" style:background-image={`url('${asset(`/assets/cells/building-lights/${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}.svg`)}')`} style:animation-delay={`${-((cell.index * 17) % 47) * 0.2}s`} style:animation-duration={`${6 + (cell.index % 5)}s`}></span>
+	{/if}
 	{#if reachable || deploymentTarget}
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
@@ -107,8 +111,26 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.water-shimmer {
+		.water-shimmer,
+		.building-lights {
 			display: none;
+		}
+	}
+	.building-lights {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-size: 100% 100%;
+		image-rendering: pixelated;
+		animation: building-lights 8s steps(1, end) infinite;
+	}
+	@keyframes building-lights {
+		0%,
+		100% {
+			opacity: 0;
+		}
+		55% {
+			opacity: 1;
 		}
 	}
 	button {

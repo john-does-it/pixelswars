@@ -75,6 +75,7 @@
 					{cell}
 					{unit}
 					{aiMode}
+					buildingLights={preferences.buildingLights}
 					animate={preferences.animations && !locked(gameState) && !gameState.winner && (!gameState.network || gameState.network.phase === 'playing')}
 					showResources={!!unit && unit.player === gameState.player && !opponentTurn && (!gameState.network || gameState.network.phase === 'playing')}
 					selected={!!unit && selected?.id === unit.id}

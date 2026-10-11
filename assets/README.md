@@ -4,6 +4,7 @@ This directory contains the game's source assets. `static/assets/` is generated 
 
 - `cells/`: terrain and building art. Water-tile provenance is documented in [WATER_TILE_MAPPING.md](cells/WATER_TILE_MAPPING.md).
 	Oil fields use six native `cell-oil-field-on-grass*.png` sprites for neutral, captured and partially captured states.
+	`cells/building-lights/` contains animated light overlays for all five buildings and ownership states. Regenerate with `node scripts/generate-building-lights.mjs` from the supplied SVGs in `docs/artwork/building-lights/`, then synchronize assets. The overlays retain the corrected light shapes and gradients while leaving base sprites unchanged.
 	`cells/water-shimmer/` contains ripple-only masks derived from the existing water sprites. Regenerate them with `node scripts/generate-water-shimmer.mjs`, then run asset synchronization. They leave shorelines untouched.
   Road connections and junction variants are documented in [ROAD_TILE_MAPPING.md](cells/ROAD_TILE_MAPPING.md).
 - `units/`: healthy and damaged sprites for both armies, plus cropped `-fit` variants used in previews and production menus.

@@ -43,12 +43,14 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	expect(nextCycle.delay).toBeLessThanOrEqual(24000)
 	expect(nextCycle.transform).toBe('none')
 	await expect(page.locator('.water-shimmer').first()).toBeVisible()
+	await expect(page.locator('.building-lights').first()).toBeVisible()
 	await expect(page.locator('.water-shimmer').first()).not.toHaveCSS('mask-image', 'none')
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	await page.getByRole('combobox', { name: 'Animations', exact: true }).selectOption('off')
 	await expect(page.getByRole('combobox', { name: 'Animations', exact: true })).toHaveValue('off')
 	await expect(page.locator('.unit-sprite.idle')).toHaveCount(0)
 	await expect(page.locator('.water-shimmer')).toHaveCount(0)
+	await expect(page.locator('.building-lights')).toHaveCount(0)
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!
 	expect(JSON.parse(decodeURIComponent(cookie.value)).animations).toBe(false)
 	await page.reload()
@@ -57,6 +59,7 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	await page.getByRole('combobox', { name: 'Animations', exact: true }).selectOption('on')
 	await expect(sprite).toHaveClass(/idle/)
+	await expect(page.locator('.building-lights').first()).toBeVisible()
 })
 
 test('helicopters hover, ground vehicles stay still, and reduced motion disables ambient effects', async ({ page }) => {
@@ -71,4 +74,58 @@ test('helicopters hover, ground vehicles stay still, and reduced motion disables
 	await page.emulateMedia({ reducedMotion: 'reduce' })
 	for (const sprite of await page.locator('.unit-sprite').all()) await expect(sprite).toHaveCSS('animation-name', 'none')
 	for (const water of await page.locator('.water-shimmer').all()) await expect(water).toBeHidden()
+	for (const lights of await page.locator('.building-lights').all()) await expect(lights).toBeHidden()
+})
+
+test('building lights switch without moving or recoloring the building beneath them', async ({ page }) => {
+	await page.goto('/play/18/')
+	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
+	const lights = page.locator('.building-lights')
+	await expect(lights.first()).toBeVisible()
+	const result = await lights.first().evaluate((element) => {
+		const cell = element.parentElement!
+		const animation = element.getAnimations()[0]
+		const timing = animation.effect!.getTiming()
+		const duration = Number(timing.duration)
+		const snapshot = () => ({ bounds: cell.getBoundingClientRect().toJSON(), background: getComputedStyle(cell).backgroundImage })
+		animation.pause()
+		animation.currentTime = Number(timing.delay) + duration * 2.1
+		const off = getComputedStyle(element).opacity
+		const before = snapshot()
+		animation.currentTime = Number(timing.delay) + duration * 2.75
+		return { off, on: getComputedStyle(element).opacity, before, after: snapshot(), pointerEvents: getComputedStyle(element).pointerEvents }
+	})
+	expect(result.off).toBe('0')
+	expect(result.on).toBe('1')
+	expect(result.before).toEqual(result.after)
+	expect(result.pointerEvents).toBe('none')
+	const delays = await lights.evaluateAll((elements) => elements.map((element) => getComputedStyle(element).animationDelay))
+	expect(new Set(delays).size).toBeGreaterThan(1)
+})
+
+test('building lights can be disabled separately and retain their setting when animations are toggled', async ({ page }) => {
+	await page.goto('/play/1/')
+	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	const lights = page.getByRole('combobox', { name: 'Building lights', exact: true })
+	const animations = page.getByRole('combobox', { name: 'Animations', exact: true })
+	await expect(lights).toHaveValue('on')
+	await lights.selectOption('off')
+	await expect(page.locator('.building-lights')).toHaveCount(0)
+	await expect(page.locator('.water-shimmer').first()).toBeVisible()
+	await expect(page.locator('.unit-sprite.idle').first()).toBeVisible()
+	await animations.selectOption('off')
+	await expect(lights).toBeVisible()
+	await expect(lights).toBeDisabled()
+	await animations.selectOption('on')
+	await expect(lights).toBeEnabled()
+	await expect(lights).toHaveValue('off')
+	await page.reload()
+	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
+	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
+	await expect(animations).toHaveValue('on')
+	await expect(lights).toHaveValue('off')
+	await expect(page.locator('.building-lights')).toHaveCount(0)
+	await lights.selectOption('on')
+	await expect(page.locator('.building-lights').first()).toBeVisible()
 })

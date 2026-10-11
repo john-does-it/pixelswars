@@ -74,7 +74,7 @@ Infantry starts beside transports for loading tests. The link and route data are
   fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
 - **Turn changes:** both players get the same team-colored transition. During AI or remote turns, the camera follows
   the active unit and the action bar is hidden without resizing the battlefield.
-- **Idle animations:** infantry glance back for two seconds after a fresh random wait of 12–24 seconds, aircraft hover gently and water ripples shimmer. Ground vehicles stay still. Only the sprite moves, keeping status indicators in their corners.
+- **Idle animations:** infantry glance back for two seconds after a fresh random wait of 12–24 seconds, aircraft hover gently, water ripples shimmer and building lights switch on and off at staggered intervals. Ground vehicles stay still. Only the sprite moves, keeping status indicators in their corners.
 - **Combat feedback:** weapon flashes, hit effects and destruction animations accompany combat sounds, with firing positions adapted to each unit’s sprite.
 - **Unit facing:** units face left or right as they move and turn toward their opponent when fighting. They retain their last direction after moving; vertical movement does not introduce a new sprite direction. Toggle this independently below Animations in settings.
 - **Options:** change language, sound, music, board animations, unit facing and keyboard layout, restart a local/AI match, or choose another map. Preferences are saved in the local settings cookie.
@@ -88,7 +88,7 @@ Infantry starts beside transports for loading tests. The link and route data are
 | Cell statistics  | I                                             |
 
 All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
-and uses a static turn announcement. It also disables idle sprite and water animations. The Animations switch controls these ambient effects, while combat and status feedback remain available. Damage, healing and income also have floating feedback on the map.
+and uses a static turn announcement. It also disables idle sprite, water and building-light animations. When Animations is on, a separate Building lights option lets you disable blinking buildings while retaining other ambient effects. Both settings are saved. Damage, healing and income also have floating feedback on the map.
 
 ### Play with a friend online
 

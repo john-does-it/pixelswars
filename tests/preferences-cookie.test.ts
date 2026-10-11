@@ -14,7 +14,7 @@ test('volume migrates muted preferences and validates persisted levels', () => {
 })
 
 test('shared game/editor preferences validate cookies and preserve other settings when changing language', () => {
-	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, volume: 0, animations: false, unitFacing: false }
+	const settings = { ...defaultPreferences, locale: 'fr' as const, sound: false, volume: 0, animations: false, buildingLights: false, unitFacing: false }
 	const cookie = serializePreferencesCookie(settings)
 	assert.deepEqual(readPreferencesCookie(`unrelated=1;${cookie}`), settings)
 	assert.deepEqual(readPreferencesCookie(serializePreferencesCookie({ ...settings, locale: 'de' })), { ...settings, locale: 'de' })

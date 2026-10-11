@@ -114,6 +114,16 @@
 						onchange={(value) => updatePreferences({ animations: value === 'on' })}
 					/>
 					<SettingSelect
+						label={translate(messages.building_lights)}
+						value={preferences.buildingLights ? 'on' : 'off'}
+						disabled={!preferences.animations}
+						options={[
+							{ value: 'on', label: translate(messages.setting_on) },
+							{ value: 'off', label: translate(messages.setting_off) }
+						]}
+						onchange={(value) => updatePreferences({ buildingLights: value === 'on' })}
+					/>
+					<SettingSelect
 						label={translate(messages.unit_facing)}
 						value={preferences.unitFacing ? 'on' : 'off'}
 						options={[
