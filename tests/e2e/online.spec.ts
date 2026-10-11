@@ -343,6 +343,7 @@ test('invalid invitations show a recoverable error', async ({ page }) => {
 })
 
 test('an incomplete connection times out on both devices and the invitation can be retried', async ({ page, browser, isMobile }) => {
+	test.setTimeout(120000)
 	const guestContext = await browser.newContext({ viewport: page.viewportSize()!, isMobile, hasTouch: isMobile, bypassCSP: true })
 	const guest = await guestContext.newPage()
 	try {
@@ -369,7 +370,7 @@ test('an incomplete connection times out on both devices and the invitation can 
 		await guest.goto(await invitation.inputValue())
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
 		for (const device of [page, guest]) {
-			await expect.poll(() => device.evaluate(() => Reflect.get(window, 'onlinePacketAttempted'))).toBe(true)
+			await expect.poll(() => device.evaluate(() => Reflect.get(window, 'onlinePacketAttempted')), { timeout: connectionTimeout }).toBe(true)
 		}
 		await page.clock.fastForward(36000)
 		for (const device of [page, guest]) {
@@ -378,8 +379,8 @@ test('an incomplete connection times out on both devices and the invitation can 
 			await device.evaluate(() => Reflect.set(window, 'dropOnlinePackets', false))
 		}
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
-		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
-		await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+		// Retrying still requires a fresh WebRTC handshake and sprite preload.
+		await expectOnlineBattlefields(page, guest)
 	} finally {
 		await guestContext.close()
 	}

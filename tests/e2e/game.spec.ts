@@ -107,10 +107,10 @@ test('turn transitions block unit selection, production and keyboard input until
 	await expect(page.getByRole('dialog', { name: 'Army base', exact: true })).toBeVisible()
 })
 
-for (const [mapId, columns, rows, name] of [
-	[10, 16, 14, 'Watch the Puddles'],
-	[11, 18, 14, 'Nice View Up Here'],
-	[12, 18, 18, 'The Other Bank']
+for (const [mapId, columns, rows, name, unitCount] of [
+	[10, 16, 14, 'Watch the Puddles', 22],
+	[11, 18, 14, 'Nice View Up Here', 24],
+	[12, 18, 18, 'The Other Bank', 26]
 ] as const) {
 	test(`${name}: opens from home with reinforced armies and a playable sniper`, async ({ page }, testInfo) => {
 		await page.goto('/')
@@ -118,7 +118,8 @@ for (const [mapId, columns, rows, name] of [
 		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 		await expect(page).toHaveURL(new RegExp(`/play/${mapId}/$`))
 		await expect(page.locator('[data-cell]')).toHaveCount(columns * rows)
-		await expect(page.locator('[data-unit]')).toHaveCount(mapId === 10 ? 22 : 24)
+		await expect(page.locator('[data-unit]')).toHaveCount(unitCount)
+		if (mapId === 12) await expect(page.locator('.board .unit-container.-transport-helicopter')).toHaveCount(2)
 		await expect(page).toHaveTitle(`Pixel’s War · ${name}`)
 		await expect(page.getByRole('group', { name, exact: true })).toBeVisible()
 		await expect(page.locator('header h1')).toHaveCount(0)
@@ -148,7 +149,7 @@ for (const [mapId, columns, rows, name] of [
 		await expect(captureCell).toHaveClass(/-halfcaptured/)
 		await page.setViewportSize({ width: 360, height: 800 })
 		await zoomToReadableTiles(page)
-		await expect(page.locator('.minimap').first().locator('[data-minimap-unit]')).toHaveCount(mapId === 10 ? 22 : 24)
+		await expect(page.locator('.minimap').first().locator('[data-minimap-unit]')).toHaveCount(unitCount)
 		await page
 			.locator('.minimap')
 			.first()

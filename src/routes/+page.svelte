@@ -196,8 +196,8 @@
 		</div>
 	</section>
 	<footer>
-		<p>{translate(messages.programming)}: <a href="https://johndoesit.be">John Does it</a> · {translate(messages.graphics)}: <a href="https://www.kenney.nl">Kenney</a> · {translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects">Pixabay</a> · {translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack">Monolith</a> · {translate(messages.quality_assurance)}: Gauthier Miessen</p>
-		<p>{translate(messages.feedback)}: <a href="https://github.com/john-does-it/pixelswars/issues">GitHub</a></p>
+		<p>{translate(messages.programming)}: <a href="https://johndoesit.be" target="_blank" rel="noopener noreferrer">John Does it</a> · {translate(messages.graphics)}: <a href="https://kenney.nl/assets/tiny-battle" target="_blank" rel="noopener noreferrer">Kenney</a>, <a href="https://bdragon1727.itch.io" target="_blank" rel="noopener noreferrer">bdragon1727</a> · {translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects" target="_blank" rel="noopener noreferrer">Pixabay</a> · {translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack" target="_blank" rel="noopener noreferrer">Monolith</a> · {translate(messages.quality_assurance)}: Gauthier Miessen</p>
+		<p>{translate(messages.feedback)}: <a href="https://github.com/john-does-it/pixelswars/issues" target="_blank" rel="noopener noreferrer">GitHub</a></p>
 		<p><a href={resolve('/terms/', {})}>{translate(messages.legal_title)}</a></p>
 	</footer>
 </main>
