@@ -33,7 +33,7 @@ test('small screens keep the selected unit above actions without a floating prev
 	}
 })
 
-test('mouse wheel zooms around its pointer and zoom controls stay centered below the board', async ({ page }) => {
+test('mouse wheel zooms around its pointer and zoom controls stay right-aligned below the board', async ({ page }) => {
 	await page.setViewportSize({ width: 1400, height: 900 })
 	await page.goto('/play/12/')
 	await expect(page.locator('dialog.turn-transition')).toBeVisible()
@@ -57,7 +57,9 @@ test('mouse wheel zooms around its pointer and zoom controls stay centered below
 	const zoom = await page.getByRole('button', { name: 'Zoom in', exact: true }).boundingBox()
 	const actions = await page.getByRole('button', { name: 'End round', exact: true }).boundingBox()
 	expect(zoom!.y + zoom!.height).toBeLessThan(actions!.y)
-	expect(zoom!.x + zoom!.width / 2).toBeCloseTo(frame!.x + frame!.width / 2, 0)
+	const zoomRow = (await page.locator('.board-zoom').boundingBox())!
+	const controls = (await page.locator('.zoom-controls').boundingBox())!
+	expect(controls.x + controls.width).toBeCloseTo(zoomRow.x + zoomRow.width - 16, 0)
 	await expect(page.locator('html')).toHaveCSS('scrollbar-width', 'none')
 	await viewport.evaluate((element) => element.scrollTo({ left: 0, top: 0 }))
 	const zoomedWidth = (await page.locator('.board').boundingBox())!.width
@@ -74,7 +76,7 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	const dialog = page.getByRole('dialog', { name: 'Cell statistics', exact: true })
 	await expect(inspect).toHaveCount(0)
 	await page.locator('[data-cell="1"]').click()
-	await expect(inspect.locator('img[src*="/assets/units/"]')).toBeVisible()
+	await expect(inspect.locator('img.sprite')).toBeVisible()
 	await expect(dialog).toHaveCount(0)
 	const before = await page.locator('.board-frame').boundingBox()
 	await inspect.click()
@@ -92,7 +94,7 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(dialog.getByRole('heading', { name: 'Hospital', exact: true })).toBeVisible()
 	await dialog.getByRole('button', { name: 'Close', exact: true }).click()
 	await page.locator('[data-cell="30"]').click()
-	await expect(inspect.locator('img[src*="/assets/units/"]')).toHaveCount(0)
+	await expect(inspect.locator('img.sprite')).toHaveCount(0)
 	await inspect.click()
 	await expect(dialog.getByTestId('preview-health')).toHaveCount(0)
 	await page.keyboard.press('Escape')
@@ -103,46 +105,58 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('players and money sit above the battlefield with stable controls below while zooming', async ({ page }) => {
+test('budgets, minimap and zoom align with the bottom panel independently of map zoom', async ({ page }) => {
 	for (const size of [
+		{ width: 1920, height: 1080 },
 		{ width: 1400, height: 900 },
 		{ width: 412, height: 915 },
-		{ width: 390, height: 844 },
 		{ width: 320, height: 480 }
 	]) {
 		await page.setViewportSize(size)
 		await page.goto('/play/1/')
 		await expect(page.locator('.board')).toBeVisible()
-		const frame = (await page.locator('.board-frame').boundingBox())!
-		const zoomRow = (await page.locator('.board-zoom').boundingBox())!
-		const zoom = (await page.locator('.zoom-controls').boundingBox())!
-		const header = (await page.locator('.game-shell header').boundingBox())!
-		const options = (await page.locator('header .options-button').boundingBox())!
-		const actions = (await page.locator('.board-actions').boundingBox())!
-		const minimap = (await page.locator('.minimap').boundingBox())!
-		expect(header.y).toBe(0)
-		expect(frame.y).toBe(header.y + header.height)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+		const geometry = () =>
+			page.evaluate(() =>
+				Object.fromEntries(
+					['header', '.board-frame', '.board-zoom', '.zoom-controls', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
+						const r = document.querySelector(selector)!.getBoundingClientRect()
+						return [selector, { x: r.x, y: r.y + scrollY, width: r.width, height: r.height }]
+					})
+				)
+			)
+		const before = await geometry()
+		const frame = before['.board-frame'],
+			panel = before['.board-actions'],
+			zoom = before['.zoom-controls'],
+			minimap = before['.minimap'],
+			budgets = before['.budgets']
 		expect(frame.x).toBe(0)
 		expect(frame.width).toBe(size.width)
-		expect(header.x).toBe(0)
-		expect(header.width).toBe(size.width)
-		expect(options.x + options.width).toBe(size.width - (size.width > 900 ? 16 : 8))
-		expect(options.y + options.height).toBeLessThanOrEqual(header.y + header.height)
-		expect(zoom.y - (frame.y + frame.height)).toBeCloseTo(16, 0)
-		expect(zoom.x + zoom.width / 2).toBeCloseTo(frame.x + frame.width / 2, 0)
-		expect(zoomRow.y + zoomRow.height - (zoom.y + zoom.height)).toBeCloseTo(16, 0)
-		await expect(page.locator('.board-actions')).toHaveCSS('padding-bottom', '16px')
-		expect(actions.y).toBeGreaterThanOrEqual(zoomRow.y + zoomRow.height)
-		expect(minimap.y).toBeGreaterThanOrEqual(actions.y + actions.height)
+		expect(before.header.y).toBe(12)
+		expect(frame.y).toBeGreaterThanOrEqual(before.header.y + before.header.height)
+		expect(budgets.y).toBeGreaterThanOrEqual(frame.y + frame.height)
+		expect(before['.board-zoom'].y).toBeGreaterThanOrEqual(budgets.y + budgets.height)
+		expect(panel.y).toBeGreaterThanOrEqual(before['.board-zoom'].y + before['.board-zoom'].height)
+		expect(minimap.x).toBeCloseTo(panel.x, 0)
+		expect(zoom.x + zoom.width).toBeCloseTo(panel.x + panel.width, 0)
+		expect(before['.board-details'].width).toBeLessThanOrEqual(1480)
+		expect(before['.board-details'].x + before['.board-details'].width / 2).toBeCloseTo(size.width / 2, 0)
+		const playerCards = page.locator('.budgets > span')
+		expect((await playerCards.first().boundingBox())!.x).toBeCloseTo(panel.x, 0)
+		const rightCard = (await playerCards.last().boundingBox())!
+		expect(rightCard.x + rightCard.width).toBeCloseTo(panel.x + panel.width, 0)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-		await expect(page.locator('.board-frame')).toHaveCSS('border-top-width', '0px')
-		// Five pixels for the outer corner markers, plus two pixels of clearance.
 		await expect(page.locator('.map-space')).toHaveCSS('padding', '7px')
 		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
 			await page.getByRole('button', { name, exact: true }).click()
-			expect(await page.locator('.game-shell header').boundingBox()).toEqual(header)
-			expect(await page.locator('.board-frame').boundingBox()).toEqual(frame)
-			expect(await page.locator('.board-actions').boundingBox()).toEqual(actions)
+			const after = await geometry()
+			for (const selector of Object.keys(before)) {
+				expect(after[selector].x).toBeCloseTo(before[selector].x, 0)
+				expect(after[selector].y).toBeCloseTo(before[selector].y, 0)
+				expect(after[selector].width).toBeCloseTo(before[selector].width, 0)
+				expect(after[selector].height).toBeCloseTo(before[selector].height, 0)
+			}
 		}
 	}
 })

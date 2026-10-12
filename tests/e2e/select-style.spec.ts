@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('settings selects use pixel arrows and keep focus feedback for keyboard navigation', async ({ page, isMobile }, testInfo) => {
 	await page.goto('/play/3/')
 	await expect(page.locator('.turn-announcement')).toHaveCount(0, { timeout: 10000 })
-	await expect(page.locator('.board-zoom')).toHaveCSS('padding', '16px')
+	await expect(page.locator('.board-zoom')).toHaveCSS('padding-top', '12px')
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	const dialog = page.getByRole('dialog', { name: 'Options and help', exact: true })
 	const language = dialog.getByRole('combobox', { name: 'Language', exact: true })

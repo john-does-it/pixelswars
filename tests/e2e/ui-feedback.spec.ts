@@ -12,9 +12,9 @@ test('map chooser shows lightweight terrain previews, dimensions and localized s
 		await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
 	}
 	for (const [locale, small, large] of [
-		['en', 'Small', 'Large'],
-		['fr', 'Petite', 'Grande'],
-		['de', 'Klein', 'Groß']
+		['en', 'Very small', 'Large'],
+		['fr', 'Très petite', 'Grande'],
+		['de', 'Sehr klein', 'Groß']
 	]) {
 		await page.getByRole('combobox').selectOption(locale)
 		await expect(cards.first().locator('.map-metadata')).toHaveText(`${small} · 8 × 8`)
