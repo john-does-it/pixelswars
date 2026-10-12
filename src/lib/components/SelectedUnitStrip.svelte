@@ -21,7 +21,6 @@
 		{#if unit}
 			{@const definition = unitTypes[unit.type]}
 			<span class="details">
-				<strong>{name}</strong>
 				<span class="stats">
 					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /><span>{unit.health}<span class="stat-maximum">/{definition.maxHealth}</span></span></span>
 					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /><span>{unit.movement}<span class="stat-maximum">/{definition.movement}</span></span></span>
@@ -29,7 +28,12 @@
 				</span>
 			</span>
 		{:else}
-			<span class="details"><strong>{name}</strong></span>
+			<span class="details">
+				<span class="stats">
+					<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
+					<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.png')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
+				</span>
+			</span>
 		{/if}
 	</button>
 {/if}
@@ -41,7 +45,7 @@
 		height: 75px;
 		flex: none;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: flex-start;
 		gap: 6px;
 		padding: 0;
@@ -68,16 +72,10 @@
 		min-width: 0;
 		flex: 1;
 	}
-	strong {
-		display: block;
-		font: 700 var(--font-size-ui) / 1.4 var(--font-body);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
 	.stats {
 		display: flex;
-		gap: 4px;
+		flex-direction: column;
+		gap: 0;
 		font: 400 var(--font-size-ui) / 1.5 var(--font-body);
 		font-variant-numeric: tabular-nums;
 	}
@@ -88,8 +86,8 @@
 		white-space: nowrap;
 	}
 	.stats img {
-		width: 12px;
-		height: 12px;
+		width: 1em;
+		height: 1em;
 	}
 	@container unit-footer (max-width: 324px) {
 		.stat-maximum {

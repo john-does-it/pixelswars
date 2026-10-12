@@ -157,6 +157,8 @@
 		animation-play-state: paused;
 	}
 	.match-status {
+		flex: 1 1 324px;
+		min-width: 0;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		column-gap: 16px;
