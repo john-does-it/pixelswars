@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { asset, resolve } from '$app/paths'
+	import { resolve } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import { dev } from '$app/environment'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'

@@ -1,5 +1,5 @@
 import { browser } from '$app/environment'
-import { asset } from '$app/paths'
+import { asset } from '$lib/game/asset-path'
 
 let preloadPromise: Promise<void> | undefined
 const retainedImages: HTMLImageElement[] = []
@@ -10,7 +10,7 @@ function loadImage(path: string): Promise<void> {
 		retainedImages.push(image)
 		image.onload = () => resolve()
 		image.onerror = () => resolve()
-		image.src = asset(path)
+		image.src = path
 	})
 }
 
@@ -18,7 +18,7 @@ async function loadAllVisualAssets(): Promise<void> {
 	const response = await fetch(asset('/assets/preload-manifest.json'), { cache: 'force-cache' })
 	if (!response.ok) return
 	const paths = (await response.json()) as string[]
-	await Promise.all(paths.map(loadImage))
+	await Promise.all([...new Set(paths.map(asset))].map(loadImage))
 }
 
 export function preloadGameAssets(): Promise<void> {

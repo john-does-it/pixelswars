@@ -1,10 +1,6 @@
 # Road sprite connections
 
-Roads use the existing horizontal, vertical, corner and end-cap artwork. Additional
-SVG variants rotate the original corner/end sprites without rotating units or
-overlays. The four T junctions extend the existing crossroads SVG and its palette.
-All sprites are self-contained so the board, minimap and generated thumbnails use
-the same artwork.
+Road sprites are self-contained SVGs on the original 16 × 16 pixel grid. They preserve the original silhouettes and central lane markings, with uniform light curbs and no exterior decorative marks. Horizontal and vertical bridges use the same central lane markings as straight roads. The board, editor, minimap and generated thumbnails share this artwork.
 
 Directions below describe **open road exits**, not the location of the curb.
 
@@ -32,9 +28,7 @@ Keep each opening connected to an adjacent road or the map boundary. Buildings
 remain separate terrain cells, with access roads beside them. The map tests check
 road connectivity, sprite orientation and building access on maps 7, 11 and 12.
 
-Bridges are straight road variants. The horizontal SVG contains the original 16 × 16 pixel artwork with nearest-neighbor
-scaling; the vertical SVG rotates it without rotating units or indicators.
-The editor preserves their selected axis and keeps water open beside the bridge.
+Bridges are straight road variants. The editor preserves their selected axis and keeps water open beside the bridge.
 
 After changing a map, regenerate its thumbnail against the dev server:
 

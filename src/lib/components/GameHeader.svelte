@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { playerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'

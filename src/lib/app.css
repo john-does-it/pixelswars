@@ -365,39 +365,39 @@ button.pixel-icon-control:hover:not(:disabled) {
 /* Original terrain and unit sprites; layout lives in Svelte components. */
 
 .cell-container.-grass {
-	background-image: url('/assets/cells/cell-grass.png');
+	background-image: url('/assets/figma/cells/grass/grass@2x.png');
 
 	&.-variant {
-		background-image: url('/assets/cells/cell-grass-variant.png');
+		background-image: url('/assets/figma/cells/grass/grass-variant-1@2x.png');
 	}
 
 	&.-variant2 {
-		background-image: url('/assets/cells/cell-grass-variant-2.png');
+		background-image: url('/assets/figma/cells/grass/cell-grass-variant-2@2x.png');
 	}
 
 	&.-variant3 {
-		background-image: url('/assets/cells/cell-grass-variant-3.png');
+		background-image: url('/assets/figma/cells/grass/cell-grass-variant-3@2x.png');
 	}
 }
 
 .cell-container.-moutain.-ongrass {
-	background-image: url('/assets/cells/cell-moutain-on-grass.png');
+	background-image: url('/assets/figma/cells/terrain/cell-mountain-on-grass@2x.png');
 }
 
 .cell-container.-forest.-ongrass {
-	background-image: url('/assets/cells/cell-forest-on-grass.png');
+	background-image: url('/assets/figma/cells/terrain/cell-forest-on-grass@2x.png');
 
 	&.-variant {
-		background-image: url('/assets/cells/cell-forest-on-grass-variant.png');
+		background-image: url('/assets/figma/cells/terrain/cell-forest-on-grass-variant@2x.png');
 	}
 }
 
 .cell-container.-road.-v {
-	background-image: url('/assets/cells/cell-road-v.png');
+	background-image: url('/assets/cells/cell-road-v.svg');
 }
 
 .cell-container.-road.-h {
-	background-image: url('/assets/cells/cell-road-h.png');
+	background-image: url('/assets/cells/cell-road-h.svg');
 }
 
 .cell-container.-road.-cross {
@@ -405,15 +405,15 @@ button.pixel-icon-control:hover:not(:disabled) {
 }
 
 .cell-container.-road.-corner.-top {
-	background-image: url('/assets/cells/cell-road-corner-top.png');
+	background-image: url('/assets/cells/cell-road-corner-top.svg');
 }
 
 .cell-container.-road.-corner.-bottom {
-	background-image: url('/assets/cells/cell-road-corner-bottom.png');
+	background-image: url('/assets/cells/cell-road-corner-bottom.svg');
 }
 
 .cell-container.-road.-endtop {
-	background-image: url('/assets/cells/cell-road-end-top.png');
+	background-image: url('/assets/cells/cell-road-end-top.svg');
 }
 
 .cell-container.-road.-corner.-nw {
@@ -453,113 +453,113 @@ button.pixel-icon-control:hover:not(:disabled) {
 }
 
 .cell-container.-water {
-	background-image: url('/assets/cells/cell-water.png');
+	background-image: url('/assets/figma/cells/water/tile-0037@2x.png');
 	--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water.png');
 
 	&.-grass.-left {
-		background-image: url('/assets/cells/cell-water-grass-on-left.png');
+		background-image: url('/assets/figma/cells/water/tile-0038@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left.png');
 	}
 
 	&.-grass.-right {
-		background-image: url('/assets/cells/cell-water-grass-on-right.png');
+		background-image: url('/assets/figma/cells/water/tile-0036@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right.png');
 	}
 
 	&.-grass.-top {
-		background-image: url('/assets/cells/cell-water-grass-on-top.png');
+		background-image: url('/assets/figma/cells/water/tile-0019@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top.png');
 	}
 
 	&.-grass.-bottom {
-		background-image: url('/assets/cells/cell-water-grass-on-bottom.png');
+		background-image: url('/assets/figma/cells/water/tile-0055@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom.png');
 	}
 
 	&.-grass.-left.-top {
-		background-image: url('/assets/cells/cell-water-grass-on-left-and-top.png');
+		background-image: url('/assets/figma/cells/water/tile-0004@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-top.png');
 	}
 
 	&.-grass.-right.-top {
-		background-image: url('/assets/cells/cell-water-grass-on-right-and-top.png');
+		background-image: url('/assets/figma/cells/water/tile-0003@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-top.png');
 	}
 
 	&.-grass.-left.-bottom {
-		background-image: url('/assets/cells/cell-water-grass-on-left-and-bottom.png');
+		background-image: url('/assets/figma/cells/water/tile-0022@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-bottom.png');
 	}
 
 	&.-grass.-right.-bottom {
-		background-image: url('/assets/cells/cell-water-grass-on-right-and-bottom.png');
+		background-image: url('/assets/figma/cells/water/tile-0021@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-bottom.png');
 	}
 
 	&.-grass.-corner.-left.-top {
-		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-top.png');
+		background-image: url('/assets/figma/cells/water/tile-0020@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-top.png');
 	}
 
 	&.-grass.-corner.-right.-top {
-		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-top.png');
+		background-image: url('/assets/figma/cells/water/tile-0018@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-top.png');
 	}
 
 	&.-grass.-corner.-left.-bottom {
-		background-image: url('/assets/cells/cell-water-grass-corner-on-left-and-bottom.png');
+		background-image: url('/assets/figma/cells/water/tile-0056@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-bottom.png');
 	}
 
 	&.-grass.-corner.-right.-bottom {
-		background-image: url('/assets/cells/cell-water-grass-corner-on-right-and-bottom.png');
+		background-image: url('/assets/figma/cells/water/tile-0054@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-bottom.png');
 	}
 
 	&.-grass.-left.-right {
-		background-image: url('/assets/cells/cell-water-grass-on-left-and-right.png');
+		background-image: url('/assets/figma/cells/water/tile-0057@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-right.png');
 	}
 
 	&.-grass.-left-corners {
-		background-image: url('/assets/cells/cell-water-grass-on-left-corners.png');
+		background-image: url('/assets/figma/cells/water/tile-0072@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-corners.png');
 	}
 
 	&.-grass.-right-corners {
-		background-image: url('/assets/cells/cell-water-grass-on-right-corners.png');
+		background-image: url('/assets/figma/cells/water/tile-0074@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-corners.png');
 	}
 
 	&.-grass.-top-corners {
-		background-image: url('/assets/cells/cell-water-grass-on-top-corners.png');
+		background-image: url('/assets/figma/cells/water/tile-0075@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-corners.png');
 	}
 
 	&.-grass.-bottom-corners {
-		background-image: url('/assets/cells/cell-water-grass-on-bottom-corners.png');
+		background-image: url('/assets/figma/cells/water/tile-0039@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom-corners.png');
 	}
 
 	&.-grass.-top-and-bottom-corners {
-		background-image: url('/assets/cells/cell-water-grass-on-top-and-bottom-corners.png');
+		background-image: url('/assets/figma/cells/water/tile-0073@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-and-bottom-corners.png');
 	}
 }
 
 .cell-container.-building.-factory.-ongrass {
-	background-image: url('/assets/cells/cell-factory-on-grass.png');
+	background-image: url('/assets/figma/cells/buildings/cell-factory-on-grass@2x.png');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-factory-on-grass-captured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-factory-on-grass-captured-by-1@2x.png');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-factory-on-grass-captured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-factory-on-grass-captured-by-2@2x.png');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-factory-on-grass-halfcaptured.png');
+		background-image: url('/assets/figma/cells/buildings/cell-factory-on-grass-half-captured@2x.png');
 	}
 
 	&.-halfcaptured.-capturedby1 {
@@ -567,31 +567,31 @@ button.pixel-icon-control:hover:not(:disabled) {
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-factory-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-factory-on-grass-half-captured-by-2@2x.png');
 	}
 }
 
 .cell-container.-building.-hospital.-ongrass {
-	background-image: url('/assets/cells/cell-hospital-on-grass.png');
+	background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass@2x.png');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-hospital-on-grass-captured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass-captured-by-1@2x.png');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-hospital-on-grass-captured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass-captured-by-2@2x.png');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured.png');
+		background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass-half-captured@2x.png');
 	}
 
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass-half-captured-by-1@2x.png');
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-hospital-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-hospital-on-grass-half-captured-by-2@2x.png');
 	}
 }
 
@@ -615,45 +615,45 @@ button.pixel-icon-control:hover:not(:disabled) {
 }
 
 .cell-container.-building.-city.-ongrass {
-	background-image: url('/assets/cells/cell-city-on-grass.png');
+	background-image: url('/assets/figma/cells/buildings/cell-city-on-grass@2x.png');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-city-on-grass-captured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-city-on-grass-captured-by-1@2x.png');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-city-on-grass-captured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-city-on-grass-captured-by-2@2x.png');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured.png');
+		background-image: url('/assets/figma/cells/buildings/cell-city-on-grass-half-captured@2x.png');
 	}
 
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-city-on-grass-half-captured-by-1@2x.png');
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-city-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-city-on-grass-half-captured-by-2@2x.png');
 	}
 }
 
 .cell-container.-airport {
-	background-image: url('/assets/cells/cell-airport-on-grass.png');
+	background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass@2x.png');
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-airport-on-grass-captured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass-captured-by-1@2x.png');
 	}
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-airport-on-grass-captured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass-captured-by-2@2x.png');
 	}
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured.png');
+		background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass-half-captured@2x.png');
 	}
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass-half-captured-by-1@2x.png');
 	}
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-airport-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-airport-on-grass-half-captured-by-2@2x.png');
 	}
 }
 .cell-container.-road.-bridge.-h {

@@ -10,7 +10,8 @@ This directory contains the game's source assets. `static/assets/` is generated 
 - `units/`: healthy and damaged sprites for both armies, plus cropped `-fit` variants used in previews and production menus.
 - `icons/`: shared interface and resource icons.
   Passenger badges use the original 16px bitmaps from `docs/artwork/cargo-count/`. Regenerate with `node scripts/export-cargo-count.mjs`, then synchronize assets.
-  Pixel UI controls use the supplied SVGs through `UiIcon.svelte`; button labels and keyboard shortcuts remain on the controls themselves.
+  Pixel UI controls keep their original SVG assets through `UiIcon.svelte`; button labels and keyboard shortcuts remain on the controls themselves.
+- `figma/`: runtime PNG ×2 exports and derived unit variants. The catalog, archived Figma exports and import instructions are in [the Figma artwork documentation](../docs/artwork/figma/README.md). `src/lib/game/asset-path.ts` resolves legacy gameplay names to the new export names. Approved road SVGs and animation overlays remain unchanged.
 - `gifs/`: combat animation.
 - `mp3/`: music and sound effects, including the infantry selection variants.
 - `map-previews/`: homepage thumbnails generated from the maps.

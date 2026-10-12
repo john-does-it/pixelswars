@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import '$lib/app.css'
 	import { initializePreferences } from '$lib/preferences.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'

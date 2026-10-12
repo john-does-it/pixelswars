@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import { preferences } from '$lib/preferences.svelte.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	let { name, size = 40 }: { name: 'arrow-down' | 'arrow-left' | 'arrow-right' | 'arrow-up' | 'close' | 'fit-map' | 'game-settings' | 'icon-capture' | 'icon-mute-sound' | 'icon-play-sound' | 'less-zoom' | 'plus-zoom' | 'previous-action' | 'stats-informations' | 'validate-action'; size?: number } = $props()
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import Modal from './Modal.svelte'
 	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
 	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'

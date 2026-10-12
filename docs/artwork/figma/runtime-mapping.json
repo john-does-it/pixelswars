@@ -1,0 +1,427 @@
+[
+	{
+		"nodeId": "2981:1919",
+		"legacy": "icons/cargo-count-0.png",
+		"exported": "icons/cargo/passengers-0@2x.png"
+	},
+	{
+		"nodeId": "2981:1920",
+		"legacy": "icons/cargo-count-1.png",
+		"exported": "icons/cargo/passengers-1@2x.png"
+	},
+	{
+		"nodeId": "2981:1921",
+		"legacy": "icons/cargo-count-2.png",
+		"exported": "icons/cargo/passengers-2@2x.png"
+	},
+	{
+		"nodeId": "2981:1922",
+		"legacy": "icons/cargo-count-3.png",
+		"exported": "icons/cargo/passengers-3@2x.png"
+	},
+	{
+		"nodeId": "674:95",
+		"legacy": "icons/icon-health.png",
+		"exported": "icons/stats/icon-health@2x.png"
+	},
+	{
+		"nodeId": "674:96",
+		"legacy": "icons/icon-attack-capacity.png",
+		"exported": "icons/stats/icon-attack-capacity@2x.png"
+	},
+	{
+		"nodeId": "684:5",
+		"legacy": "icons/icon-capture-capacity.png",
+		"exported": "icons/stats/icon-capture-capacity@2x.png"
+	},
+	{
+		"nodeId": "674:98",
+		"legacy": "icons/icon-attack-range.png",
+		"exported": "icons/stats/icon-attack-range@2x.png"
+	},
+	{
+		"nodeId": "674:99",
+		"legacy": "icons/icon-movement.png",
+		"exported": "icons/stats/icon-movement@2x.png"
+	},
+	{
+		"nodeId": "674:103",
+		"legacy": "icons/icon-defense.png",
+		"exported": "icons/stats/icon-defense@2x.png"
+	},
+	{
+		"nodeId": "674:106",
+		"legacy": "icons/icon-attack-damage.png",
+		"exported": "icons/stats/icon-attack-damage@2x.png"
+	},
+	{
+		"nodeId": "2905:22",
+		"legacy": "cells/cell-airport-on-grass.png",
+		"exported": "cells/buildings/cell-airport-on-grass@2x.png"
+	},
+	{
+		"nodeId": "2905:23",
+		"legacy": "cells/cell-airport-on-grass-captured-by-2.png",
+		"exported": "cells/buildings/cell-airport-on-grass-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "2905:26",
+		"legacy": "cells/cell-airport-on-grass-captured-by-1.png",
+		"exported": "cells/buildings/cell-airport-on-grass-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "2905:36",
+		"legacy": "cells/cell-airport-on-grass-halfcaptured.png",
+		"exported": "cells/buildings/cell-airport-on-grass-half-captured@2x.png"
+	},
+	{
+		"nodeId": "2905:43",
+		"legacy": "cells/cell-airport-on-grass-halfcaptured-by-2.png",
+		"exported": "cells/buildings/cell-airport-on-grass-half-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "2905:50",
+		"legacy": "cells/cell-airport-on-grass-halfcaptured-by-1.png",
+		"exported": "cells/buildings/cell-airport-on-grass-half-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "674:131",
+		"legacy": "cells/cell-city-on-grass.png",
+		"exported": "cells/buildings/cell-city-on-grass@2x.png"
+	},
+	{
+		"nodeId": "674:138",
+		"legacy": "cells/cell-city-on-grass-captured-by-1.png",
+		"exported": "cells/buildings/cell-city-on-grass-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "674:145",
+		"legacy": "cells/cell-city-on-grass-captured-by-2.png",
+		"exported": "cells/buildings/cell-city-on-grass-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "674:152",
+		"legacy": "cells/cell-city-on-grass-halfcaptured.png",
+		"exported": "cells/buildings/cell-city-on-grass-half-captured@2x.png"
+	},
+	{
+		"nodeId": "674:159",
+		"legacy": "cells/cell-city-on-grass-halfcaptured-by-1.png",
+		"exported": "cells/buildings/cell-city-on-grass-half-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "674:166",
+		"legacy": "cells/cell-city-on-grass-halfcaptured-by-2.png",
+		"exported": "cells/buildings/cell-city-on-grass-half-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "2969:260",
+		"legacy": "cells/cell-factory-on-grass.png",
+		"exported": "cells/buildings/cell-factory-on-grass@2x.png"
+	},
+	{
+		"nodeId": "2969:267",
+		"legacy": "cells/cell-factory-on-grass-captured-by-1.png",
+		"exported": "cells/buildings/cell-factory-on-grass-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "2969:274",
+		"legacy": "cells/cell-factory-on-grass-captured-by-2.png",
+		"exported": "cells/buildings/cell-factory-on-grass-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "2969:281",
+		"legacy": "cells/cell-factory-on-grass-halfcaptured.png",
+		"exported": "cells/buildings/cell-factory-on-grass-half-captured@2x.png"
+	},
+	{
+		"nodeId": "2969:295",
+		"legacy": "cells/cell-factory-on-grass-halfcaptured-by-2.png",
+		"exported": "cells/buildings/cell-factory-on-grass-half-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "674:218",
+		"legacy": "cells/cell-hospital-on-grass.png",
+		"exported": "cells/buildings/cell-hospital-on-grass@2x.png"
+	},
+	{
+		"nodeId": "674:226",
+		"legacy": "cells/cell-hospital-on-grass-captured-by-2.png",
+		"exported": "cells/buildings/cell-hospital-on-grass-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "674:234",
+		"legacy": "cells/cell-hospital-on-grass-captured-by-1.png",
+		"exported": "cells/buildings/cell-hospital-on-grass-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "674:242",
+		"legacy": "cells/cell-hospital-on-grass-halfcaptured.png",
+		"exported": "cells/buildings/cell-hospital-on-grass-half-captured@2x.png"
+	},
+	{
+		"nodeId": "674:250",
+		"legacy": "cells/cell-hospital-on-grass-halfcaptured-by-2.png",
+		"exported": "cells/buildings/cell-hospital-on-grass-half-captured-by-2@2x.png"
+	},
+	{
+		"nodeId": "674:258",
+		"legacy": "cells/cell-hospital-on-grass-halfcaptured-by-1.png",
+		"exported": "cells/buildings/cell-hospital-on-grass-half-captured-by-1@2x.png"
+	},
+	{
+		"nodeId": "2927:6",
+		"legacy": "cells/cell-moutain-on-grass.png",
+		"exported": "cells/terrain/cell-mountain-on-grass@2x.png"
+	},
+	{
+		"nodeId": "2927:14",
+		"legacy": "cells/cell-forest-on-grass.png",
+		"exported": "cells/terrain/cell-forest-on-grass@2x.png"
+	},
+	{
+		"nodeId": "2927:21",
+		"legacy": "cells/cell-forest-on-grass-variant.png",
+		"exported": "cells/terrain/cell-forest-on-grass-variant@2x.png"
+	},
+	{
+		"nodeId": "674:370",
+		"legacy": "cells/cell-grass.png",
+		"exported": "cells/grass/grass@2x.png"
+	},
+	{
+		"nodeId": "674:338",
+		"legacy": "cells/cell-grass-variant.png",
+		"exported": "cells/grass/grass-variant-1@2x.png"
+	},
+	{
+		"nodeId": "695:2",
+		"legacy": "cells/cell-grass-variant-2.png",
+		"exported": "cells/grass/cell-grass-variant-2@2x.png"
+	},
+	{
+		"nodeId": "674:348",
+		"legacy": "cells/cell-grass-variant-3.png",
+		"exported": "cells/grass/cell-grass-variant-3@2x.png"
+	},
+	{
+		"nodeId": "674:126",
+		"legacy": "icons/icon-crosshair.png",
+		"exported": "icons/stats/icon-crosshair-1@2x.png"
+	},
+	{
+		"nodeId": "2927:43",
+		"legacy": "cells/cell-water-grass-on-right-and-top.png",
+		"exported": "cells/water/tile-0003@2x.png"
+	},
+	{
+		"nodeId": "2927:44",
+		"legacy": "cells/cell-water-grass-on-left-and-top.png",
+		"exported": "cells/water/tile-0004@2x.png"
+	},
+	{
+		"nodeId": "2927:40",
+		"legacy": "cells/cell-water-grass-corner-on-right-and-top.png",
+		"exported": "cells/water/tile-0018@2x.png"
+	},
+	{
+		"nodeId": "2927:42",
+		"legacy": "cells/cell-water-grass-on-top.png",
+		"exported": "cells/water/tile-0019@2x.png"
+	},
+	{
+		"nodeId": "2927:31",
+		"legacy": "cells/cell-water-grass-corner-on-left-and-top.png",
+		"exported": "cells/water/tile-0020@2x.png"
+	},
+	{
+		"nodeId": "2927:29",
+		"legacy": "cells/cell-water-grass-on-right-and-bottom.png",
+		"exported": "cells/water/tile-0021@2x.png"
+	},
+	{
+		"nodeId": "2927:30",
+		"legacy": "cells/cell-water-grass-on-left-and-bottom.png",
+		"exported": "cells/water/tile-0022@2x.png"
+	},
+	{
+		"nodeId": "2927:33",
+		"legacy": "cells/cell-water-grass-on-right.png",
+		"exported": "cells/water/tile-0036@2x.png"
+	},
+	{
+		"nodeId": "2927:32",
+		"legacy": "cells/cell-water.png",
+		"exported": "cells/water/tile-0037@2x.png"
+	},
+	{
+		"nodeId": "2927:34",
+		"legacy": "cells/cell-water-grass-on-left.png",
+		"exported": "cells/water/tile-0038@2x.png"
+	},
+	{
+		"nodeId": "2927:47",
+		"legacy": "cells/cell-water-grass-on-bottom-corners.png",
+		"exported": "cells/water/tile-0039@2x.png"
+	},
+	{
+		"nodeId": "2927:46",
+		"legacy": "cells/cell-water-grass-corner-on-right-and-bottom.png",
+		"exported": "cells/water/tile-0054@2x.png"
+	},
+	{
+		"nodeId": "2927:45",
+		"legacy": "cells/cell-water-grass-on-bottom.png",
+		"exported": "cells/water/tile-0055@2x.png"
+	},
+	{
+		"nodeId": "2927:39",
+		"legacy": "cells/cell-water-grass-corner-on-left-and-bottom.png",
+		"exported": "cells/water/tile-0056@2x.png"
+	},
+	{
+		"nodeId": "2927:37",
+		"legacy": "cells/cell-water-grass-on-left-and-right.png",
+		"exported": "cells/water/tile-0057@2x.png"
+	},
+	{
+		"nodeId": "2927:41",
+		"legacy": "cells/cell-water-grass-on-left-corners.png",
+		"exported": "cells/water/tile-0072@2x.png"
+	},
+	{
+		"nodeId": "2927:35",
+		"legacy": "cells/cell-water-grass-on-top-and-bottom-corners.png",
+		"exported": "cells/water/tile-0073@2x.png"
+	},
+	{
+		"nodeId": "2927:38",
+		"legacy": "cells/cell-water-grass-on-right-corners.png",
+		"exported": "cells/water/tile-0074@2x.png"
+	},
+	{
+		"nodeId": "2927:36",
+		"legacy": "cells/cell-water-grass-on-top-corners.png",
+		"exported": "cells/water/tile-0075@2x.png"
+	},
+	{
+		"nodeId": "2905:95",
+		"legacy": "units/infantry-1.png",
+		"exported": "units/infantry-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:96",
+		"legacy": "units/infantry-rocket-2.png",
+		"exported": "units/rocket-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:99",
+		"legacy": "units/infantry-rocket-1.png",
+		"exported": "units/rocket-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:100",
+		"legacy": "units/infantry-2.png",
+		"exported": "units/infantry-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2916:125",
+		"legacy": "units/infantry-sniper-1.png",
+		"exported": "units/sniper-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2916:124",
+		"legacy": "units/infantry-sniper-2.png",
+		"exported": "units/sniper-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:101",
+		"legacy": "units/artillery-1.png",
+		"exported": "units/artillery-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:102",
+		"legacy": "units/artillery-2.png",
+		"exported": "units/artillery-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:103",
+		"legacy": "units/tank-1.png",
+		"exported": "units/tank-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:106",
+		"legacy": "units/tank-2.png",
+		"exported": "units/tank-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:109",
+		"legacy": "units/jeep-1.png",
+		"exported": "units/jeep-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:110",
+		"legacy": "units/jeep-2.png",
+		"exported": "units/jeep-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:111",
+		"legacy": "units/plane-1.png",
+		"exported": "units/plane-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:112",
+		"legacy": "units/plane-2.png",
+		"exported": "units/plane-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:113",
+		"legacy": "units/helicopter-2.png",
+		"exported": "units/helicopter-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2905:114",
+		"legacy": "units/helicopter-1.png",
+		"exported": "units/helicopter-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2932:252",
+		"legacy": "units/transport-1.png",
+		"exported": "units/transport-jeep-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2932:251",
+		"legacy": "units/transport-2.png",
+		"exported": "units/transport-jeep-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2964:2",
+		"legacy": "units/transport-helicopter-1.png",
+		"exported": "units/transport-helicopter-player-1@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	},
+	{
+		"nodeId": "2964:3",
+		"legacy": "units/transport-helicopter-2.png",
+		"exported": "units/transport-helicopter-player-2@2x.png",
+		"derived": "Placement normalized to existing unit canvas; damage marks and cropped variants regenerated at 2x."
+	}
+]

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import { selectedUnit } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import { deploymentCells, selectedPassenger } from '$lib/game/transport.js'

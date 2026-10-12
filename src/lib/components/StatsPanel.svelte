@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
 	import { unitAt, effectiveRange } from '$lib/game/model.js'

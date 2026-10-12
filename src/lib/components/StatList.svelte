@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import type { StatItem } from '$lib/game/types.js'
 
 	let { items }: { items: StatItem[] } = $props()

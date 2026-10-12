@@ -1,5 +1,5 @@
 // Browser-only resource owner, created on mount and disposed on navigation.
-import { asset } from '$app/paths'
+import { asset } from '$lib/game/asset-path'
 
 import type { AudioController, Player } from './types.ts'
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte'
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import { turnTransitionDuration } from '$lib/game/timing.js'
 	import type { Player } from '$lib/game/types.js'
 

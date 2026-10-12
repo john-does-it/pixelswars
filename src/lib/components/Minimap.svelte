@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$app/paths'
+	import { asset } from '$lib/game/asset-path'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
