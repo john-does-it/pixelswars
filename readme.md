@@ -41,7 +41,7 @@ Transport jeeps cost **$600** and have the jeep’s **125 HP**, **20 defense** a
 **8 movement**. Transport helicopters cost **$1800**, with **110 HP**, **15 defense**
 and **8 movement**, and fly over any terrain. Both are unarmed and carry up to three
 infantry units, including rockets and snipers. Move friendly infantry onto a transport
-to board. Select the transport, open its passenger-count button beside the action
+to board. Select the transport, press **T** (when passengers are aboard) or open its passenger-count button beside the action
 buttons, choose a passenger, then click a highlighted tile to deploy.
 Boarding requires enough movement to enter the transport’s tile.
 Passengers deploy onto free orthogonally adjacent land tiles, including bridges,
@@ -79,13 +79,14 @@ Infantry starts beside transports for loading tests. The link and route data are
 - **Unit facing:** units face left or right as they move and turn toward their opponent when fighting. They retain their last direction after moving; vertical movement does not introduce a new sprite direction. Toggle this independently below Animations in settings.
 - **Options:** change language, sound, music, board animations, unit facing and keyboard layout, restart a local/AI match, or choose another map. Preferences are saved in the local settings cookie.
 
-| Action           | Keyboard                                      |
-| ---------------- | --------------------------------------------- |
-| Move             | Arrow keys or the selected ZQSD / WASD layout |
-| Confirm          | Enter                                         |
-| Cancel / close   | Escape                                        |
-| Capture / secure | Space                                         |
-| Cell statistics  | I                                             |
+| Action               | Keyboard                                      |
+| -------------------- | --------------------------------------------- |
+| Move                 | Arrow keys or the selected ZQSD / WASD layout |
+| Confirm              | Enter                                         |
+| Cancel / close       | Escape                                        |
+| Capture / secure     | Space                                         |
+| Cell statistics      | I                                             |
+| Transport passengers | T (selected transport with passengers)        |
 
 All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
 and uses a static turn announcement. It also disables idle sprite, water and building-light animations. When Animations is on, a separate Building lights option lets you disable blinking buildings while retaining other ambient effects. Both settings are saved. Damage, healing and income also have floating feedback on the map.

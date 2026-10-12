@@ -389,6 +389,8 @@
 	"transport_blocked": "この輸送部隊の隣に空いている陸地マスがありません。",
 	"dev_map_title": "部隊テスト場",
 	"dev_map_open": "DEV · 部隊テスト場 8 × 8",
+	"transport_passengers": "輸送部隊の搭乗者",
+	"transport_shortcut_hint": "1部隊以上が搭乗している輸送部隊を選択し、Tキーを押すと搭乗者の選択パネルが開きます。",
 	"transport_board_hint": "歩兵系部隊をこの輸送部隊のマスへ移動させると搭乗できます（最大3部隊）。",
 	"transport_choose_passenger": "降ろす部隊を選択してください。",
 	"transport_choose_tile": "強調表示された降車先のマスを選択してください。Escapeでキャンセルします。",

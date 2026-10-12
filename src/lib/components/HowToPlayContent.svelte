@@ -43,6 +43,7 @@
 <section>
 	<svelte:element this={headingLevel === 3 ? 'h3' : 'h4'} class="section-title">{translate(messages.transport_title)}</svelte:element>
 	<p>{translate(messages.transport_rules)}</p>
+	<p>{translate(messages.transport_shortcut_hint)}</p>
 </section>
 
 <section>
@@ -68,6 +69,10 @@
 		<div>
 			<dt>{translate(messages.cell_statistics)}</dt>
 			<dd>I</dd>
+		</div>
+		<div>
+			<dt>{translate(messages.transport_passengers)}</dt>
+			<dd>T</dd>
 		</div>
 	</dl>
 </section>

@@ -389,6 +389,8 @@
 	"transport_blocked": "Kein freies Landfeld neben dem Transport.",
 	"dev_map_title": "Testgelände",
 	"dev_map_open": "DEV · Testgelände 8 × 8",
+	"transport_passengers": "Transportpassagiere",
+	"transport_shortcut_hint": "Wähle einen Transporter mit mindestens einer Einheit und drücke T, um die Passagierauswahl zu öffnen.",
 	"transport_board_hint": "Bewege Infanterie auf diesen Jeep zum Einsteigen (maximal 3).",
 	"transport_choose_passenger": "Wähle einen Passagier zum Aussteigen.",
 	"transport_choose_tile": "Wähle ein markiertes Feld zum Aussteigen. Escape bricht ab.",

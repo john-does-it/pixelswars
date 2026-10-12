@@ -12,15 +12,25 @@
 	const transport = $derived(selectedUnit(game.state))
 	const passenger = $derived(selectedPassenger(game.state))
 	let showPassengers = $state(false)
+	function openPassengersWithKeyboard(event: KeyboardEvent) {
+		if (event.key.toLowerCase() !== 't' || event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
+		if (disabled || showPassengers || !transport?.cargo?.length || !unitTypes[transport.type].capacity || document.querySelector('dialog[open]')) return
+		const target = event.target instanceof Element ? event.target : null
+		if (target?.closest('input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
+		event.preventDefault()
+		showPassengers = true
+	}
 	$effect(() => {
 		if (disabled || !transport?.cargo?.length) showPassengers = false
 	})
 </script>
 
+<svelte:window onkeydown={openPassengersWithKeyboard} />
+
 {#if transport && unitTypes[transport.type].capacity}
 	{@const label = translate(messages.transport_cargo, { count: transport.cargo?.length ?? 0, capacity: unitTypes[transport.type].capacity ?? 0 })}
 	<section class="cargo-tray" aria-label={translate(messages.transport_title)}>
-		<button class="cargo-toggle pixel-icon-button" disabled={disabled || !transport.cargo?.length} aria-label={label} title={label} aria-haspopup="dialog" onclick={() => (showPassengers = true)}>
+		<button class="cargo-toggle pixel-icon-button" disabled={disabled || !transport.cargo?.length} aria-label={label} aria-keyshortcuts="T" title={`${label} (T)`} aria-haspopup="dialog" onclick={() => (showPassengers = true)}>
 			<span class="cargo-face" style:background-image={`url('${asset('/assets/icons/action-frame.svg')}')`}>{transport.cargo?.length ?? 0}/{unitTypes[transport.type].capacity}</span>
 		</button>
 		{#if showPassengers}
@@ -28,7 +38,8 @@
 				<p class="instruction">{translate(messages.transport_choose_passenger)}</p>
 				<div class="passengers">
 					{#each transport.cargo ?? [] as unit (unit.id)}
-						{@const passengerLabel = `${unitName(unit.type)}, ${unit.health} / ${unitTypes[unit.type].maxHealth} ${translate(messages.stat_health)}`}
+						{@const definition = unitTypes[unit.type]}
+						{@const passengerLabel = `${unitName(unit.type)}, ${unit.health} / ${unitTypes[unit.type].maxHealth} ${translate(messages.stat_health)}, ${unit.movement}/${definition.movement} ${translate(messages.stat_movement)}, ${unit.attacks}/${definition.attacks} ${translate(messages.stat_attacks)}, ${translate(messages.capture)}: ${unit.capture}`}
 						<button
 							class="passenger"
 							{disabled}
@@ -41,8 +52,14 @@
 							}}
 						>
 							<img src={asset(unitSprite(unit, true))} alt="" />
-							<span class="passenger-name">{unitName(unit.type)}</span>
-							<span class="health"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} />{unit.health}/{unitTypes[unit.type].maxHealth}</span>
+							<span class="passenger-stats">
+								<span class="health"><span class="status-icon health-icon"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /></span>{unit.health}/{definition.maxHealth}</span>
+								<span class="movement" title={`${translate(messages.stat_movement)}: ${unit.movement}/${definition.movement}`}><span class="status-icon movement-icon" class:spent={unit.movement === 0}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /></span></span>
+								<span class="ammunition" title={`${translate(messages.stat_attacks)}: ${unit.attacks}/${definition.attacks}`}>
+									{#each Array(definition.attacks) as _, index}<span class="status-icon ammo-icon" class:spent={index < definition.attacks - unit.attacks}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} /></span>{/each}
+								</span>
+								{#if definition.captures}<span class="capture" title={`${translate(messages.capture)}: ${unit.capture}`}><span class="status-icon capture-icon" class:spent={unit.capture === 0}><img src={asset('/assets/icons/icon-capture-capacity.png')} alt={translate(messages.capture)} /></span></span>{/if}
+							</span>
 						</button>
 					{/each}
 				</div>
@@ -96,26 +113,73 @@
 	}
 	.passenger {
 		font-family: var(--font-body);
-		display: grid;
-		grid-template-columns: 36px minmax(0, 1fr) auto;
+		display: flex;
+		justify-content: space-between;
 		align-items: center;
 		gap: 8px;
 		text-align: left;
 		padding: 4px;
 	}
-	.passenger-name {
-		overflow-wrap: anywhere;
+	.passenger-stats {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
-	.health {
+	.passenger-stats > .ammunition {
+		align-self: flex-end;
+		flex-direction: column;
+		gap: 0;
+		transform: translateY(-4px);
+	}
+	.passenger-stats > span {
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
 		white-space: nowrap;
 		font-size: var(--font-size-ui);
+	}
+	.status-icon {
+		position: relative;
+		display: block;
+		flex: none;
+		width: 16px;
+		overflow: hidden;
 		img {
-			width: 12px;
-			height: 12px;
+			position: absolute;
+			left: var(--icon-left);
+			top: var(--icon-top);
+			width: var(--icon-width);
+			height: auto;
+			max-width: none;
 		}
+	}
+	.health-icon {
+		aspect-ratio: 24 / 20;
+		--icon-left: -12.5%;
+		--icon-top: -25%;
+		--icon-width: 125%;
+	}
+	.movement-icon {
+		aspect-ratio: 18 / 19;
+		--icon-left: calc(-3 / 18 * 100%);
+		--icon-top: calc(-3 / 19 * 100%);
+		--icon-width: calc(25 / 18 * 100%);
+	}
+	.capture-icon {
+		aspect-ratio: 13 / 15;
+		--icon-left: calc(-6 / 13 * 100%);
+		--icon-top: calc(-5 / 15 * 100%);
+		--icon-width: calc(25 / 13 * 100%);
+	}
+	.ammo-icon {
+		width: 9.6px;
+		aspect-ratio: 17 / 13;
+		--icon-left: calc(-4 / 17 * 100%);
+		--icon-top: calc(-6 / 13 * 100%);
+		--icon-width: calc(25 / 17 * 100%);
+	}
+	.spent {
+		opacity: 0.5;
 	}
 	img {
 		width: 36px;

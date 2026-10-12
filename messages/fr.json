@@ -389,6 +389,8 @@
 	"transport_blocked": "Aucune case terrestre libre à côté du transport.",
 	"dev_map_title": "Terrain de test",
 	"dev_map_open": "DEV · Terrain de test 8 × 8",
+	"transport_passengers": "Passagers du transport",
+	"transport_shortcut_hint": "Sélectionnez un transport contenant au moins une unité et appuyez sur T pour ouvrir le panneau de sélection des passagers.",
 	"transport_board_hint": "Déplacez une infanterie sur cette jeep pour embarquer (3 maximum).",
 	"transport_choose_passenger": "Sélectionnez un passager à débarquer.",
 	"transport_choose_tile": "Choisissez une case surlignée pour débarquer. Échap annule.",

@@ -389,6 +389,8 @@
 	"transport_blocked": "No free land tile beside this transport.",
 	"dev_map_title": "Unit test field",
 	"dev_map_open": "DEV · Unit test field 8 × 8",
+	"transport_passengers": "Transport passengers",
+	"transport_shortcut_hint": "Select a transport carrying at least one unit and press T to open its passenger selection panel.",
 	"transport_board_hint": "Move infantry onto this jeep to board (up to 3).",
 	"transport_choose_passenger": "Select a passenger to deploy.",
 	"transport_choose_tile": "Select a highlighted tile to deploy. Escape cancels.",
