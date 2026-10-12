@@ -204,24 +204,25 @@ Roads stretch these distances; forests and mountains shorten them.
 Damage is calculated before rounding the defender's remaining health:
 
 ```text
-base damage = max(0, attack − (unit defense + terrain defense) / 10)
+base damage = max(0, attack) × (1 − 0.75 × unit defense / 100) × (1 − 0.75 × terrain defense / 100)
 damage = base damage × (attacker HP / attacker maximum HP) × matchup multiplier
 remaining HP = max(0, round(defender HP − damage))
 ```
 
-A surviving defender retaliates if its own range and matchup allow it. Retaliation
-uses its remaining health and does not spend an attack point. Snipers and artillery
+A surviving defender retaliates if its own range and matchup allow it and it has an attack point left. Retaliation
+uses its remaining health and spends one attack point. Attack points refresh for both armies at each turn change.
+Unit and terrain defense are scores clamped to 0–100. Each point grants 0.75% reduction, applied multiplicatively. A tank (40) on a mountain (50) receives 43.75% of incoming damage, a combined reduction of 56.25%. Snipers and artillery
 cannot retaliate at contact. A forbidden matchup cannot be selected as a target.
 
 A full-health artillery shot against a full-health target on grass or road gives:
 
 | Target                     | Matchup multiplier | Starting HP | Remaining HP |
 | -------------------------- | -----------------: | ----------: | -----------: |
-| Infantry, Rocket or Sniper |              ×1.35 |         100 |       **20** |
-| Jeep                       |              ×1.45 |         125 |       **41** |
-| Anti-air                   |              ×1.25 |         120 |       **49** |
-| Tank                       |              ×1.60 |         180 |       **90** |
-| Artillery                  |              ×1.00 |         120 |       **63** |
+| Infantry, Rocket or Sniper |              ×1.35 |         100 |       **25** |
+| Jeep                       |              ×1.45 |         125 |       **51** |
+| Anti-air                   |              ×1.25 |         120 |       **62** |
+| Tank                       |              ×1.60 |         180 |      **113** |
+| Artillery                  |              ×1.00 |         120 |       **74** |
 
 All infantry types take the same artillery damage under the same conditions.
 Terrain protection and damage to the attacker reduce these losses. Artillery
@@ -229,8 +230,8 @@ cannot destroy any of these full-health targets with one shot; its single attack
 price and adjacent blind spot leave room for faster units to close in.
 
 Against full-health artillery on grass or road, full-health basic infantry deals
-30 HP per attack, leaving 60 of its 120 HP after two attacks. Rocket infantry deals
-80 HP in one attack, leaving 40 HP. Their respective matchup multipliers are ×0.8
+25 HP per attack, leaving 70 of its 120 HP after two attacks. Rocket infantry deals
+67 HP in one attack, leaving 53 HP. Their respective matchup multipliers are ×0.8
 and ×2.15. Terrain cover and injured attackers reduce these losses.
 
 The complete matchup table lives in [combat-rules.ts](src/lib/game/combat-rules.ts).

@@ -4,7 +4,7 @@ import { buildingIncome, unitTypes } from './catalog.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import { planTransport, transportedValue, transportPurchaseScore } from './ai-transport.ts'
 import { threatens, damage, enemyPositions, exposure } from './ai-threats.ts'
-import { neighbors, canAttack, applyDamage, canCapture, unitAt, productionBuilding } from './model.ts'
+import { neighbors, canAttack, canRetaliate, applyDamage, canCapture, unitAt, productionBuilding } from './model.ts'
 import type { AiDifficulty, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 export function isAiDifficulty(value: unknown): value is AiDifficulty {
@@ -14,7 +14,7 @@ export function isAiDifficulty(value: unknown): value is AiDifficulty {
 function attackValue(state: GameState, attacker: Unit, defender: Unit): number {
 	const dealt = damage(state, attacker, defender)
 	const survivor = { ...defender, health: defender.health - dealt }
-	const retaliation = survivor.health > 0 && threatens(state, survivor, attacker) ? damage(state, survivor, attacker) : 0
+	const retaliation = survivor.health > 0 && survivor.attacks > 0 && threatens(state, survivor, attacker) ? damage(state, survivor, attacker) : 0
 	const targetValue = unitTypes[defender.type].cost + (defender.cargo ?? []).reduce((value, passenger) => value + unitTypes[passenger.type].cost, 0)
 	return (dealt / unitTypes[defender.type].maxHealth) * targetValue + (survivor.health <= 0 ? targetValue * 0.6 : 0) - (retaliation / unitTypes[attacker.type].maxHealth) * unitTypes[attacker.type].cost * 1.2
 }
@@ -25,7 +25,10 @@ export function simulateAttack(state: GameState, attacker: Unit, defender: Unit)
 	const simulatedDefender = simulated.units.find((unit) => unit.id === defender.id)!
 	applyDamage(simulated, simulatedAttacker, simulatedDefender)
 	simulatedAttacker.attacks--
-	if (simulatedDefender.health > 0 && canAttack(simulated, simulatedDefender, simulatedAttacker)) applyDamage(simulated, simulatedDefender, simulatedAttacker)
+	if (canRetaliate(simulated, simulatedDefender, simulatedAttacker)) {
+		applyDamage(simulated, simulatedDefender, simulatedAttacker)
+		simulatedDefender.attacks--
+	}
 	simulated.units = simulated.units.filter((unit) => unit.health > 0)
 	return simulated
 }

@@ -7,13 +7,13 @@ test('all 16 approved unit matchups', () => {
 	const expected = [
 		[1, 1.25, 0.5, 0.8],
 		[1, 1, 0.5, 1],
-		[1.5, 1.5, 1, 0.5],
+		[1.5, 1.5, 1, 1],
 		[1.35, 1.45, 1.6, 1]
 	]
 	types.forEach((attacker, row) =>
 		types.forEach((defender, column) => {
 			assert.equal(rules.typeModifier(attacker, defender), expected[row][column], `${attacker} -> ${defender}`)
-			assert.equal(rules.damage(40, 100, 100, 10, 30, attacker, defender), 36 * expected[row][column])
+			assert.equal(rules.damage(40, 100, 100, 10, 30, attacker, defender), 28.675 * expected[row][column])
 		})
 	)
 })
@@ -32,17 +32,17 @@ test('future unspecified matchups are neutral', () => {
 })
 
 test('terrain and attacker health still affect damage; defense never heals a target', () => {
-	assert.equal(rules.damage(40, 50, 100, 10, 30, 'infantry', 'artillery'), 14.4)
-	assert.equal(rules.damage(1, 125, 125, 100, 100, 'jeep', 'infantry'), 0)
+	assert.equal(rules.damage(40, 50, 100, 10, 30, 'infantry', 'artillery'), 11.47)
+	assert.equal(rules.damage(1, 125, 125, 100, 100, 'jeep', 'infantry'), 0.0625)
 })
 
 test('damage follows health percentage rather than raw maximum health', () => {
 	for (const maxHealth of [100, 110, 120, 125, 180]) {
-		assert.equal(rules.damage(70, maxHealth, maxHealth, 40, 0, 'tank', 'tank'), 66)
-		assert.equal(rules.damage(70, maxHealth / 2, maxHealth, 40, 0, 'tank', 'tank'), 33)
+		assert.equal(rules.damage(70, maxHealth, maxHealth, 40, 0, 'tank', 'tank'), 49)
+		assert.equal(rules.damage(70, maxHealth / 2, maxHealth, 40, 0, 'tank', 'tank'), 24.5)
 		assert.equal(rules.damage(70, 0, maxHealth, 40, 0, 'tank', 'tank'), 0)
 	}
-	assert.equal(rules.damage(70, 360, 180, 40, 0, 'tank', 'tank'), 66)
+	assert.equal(rules.damage(70, 360, 180, 40, 0, 'tank', 'tank'), 49)
 	assert.equal(rules.damage(70, 100, 0, 40, 0, 'tank', 'tank'), 0)
 })
 
@@ -92,14 +92,15 @@ test('helicopters hunt infantry, trade evenly with vehicles and lose to planes',
 	assert.equal(rules.typeModifier('plane', 'helicopter'), 2)
 })
 
-test('anti-air attacks only aircraft and uses the approved one-shot/two-shot balance', () => {
+test('anti-air attacks only aircraft and uses the helicopter one-shot and armored plane three-shot balance', () => {
 	for (const ground of ['infantry', 'infantry-rocket', 'jeep', 'tank', 'artillery', 'anti-air']) {
 		assert.equal(rules.canTarget('anti-air', ground), false)
 	}
 	assert.equal(rules.canTarget('anti-air', 'helicopter'), true)
 	assert.equal(rules.canTarget('anti-air', 'plane'), true)
 	assert.ok(rules.damage(70, 120, 120, 15, 0, 'anti-air', 'helicopter') >= 110)
-	const planeDamage = rules.damage(70, 120, 120, 20, 0, 'anti-air', 'plane')
+	const planeDamage = rules.damage(70, 120, 120, 25, 0, 'anti-air', 'plane')
 	assert.ok(planeDamage < 120)
-	assert.ok(planeDamage * 2 >= 120)
+	assert.ok(planeDamage * 2 < 120)
+	assert.ok(planeDamage * 3 >= 120)
 })

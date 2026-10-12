@@ -11,7 +11,7 @@ const CombatRules = (() => {
 		aircraft: { infantry: 1, 'infantry-rocket': 1.5, jeep: 1, tank: 1, artillery: 1, 'anti-air': 1, aircraft: 1, plane: 1, helicopter: 1 },
 		infantry: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1, infantry: 1, jeep: 1.25, tank: 0.5, artillery: 0.8 },
 		jeep: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1, jeep: 1, tank: 0.5, artillery: 1 },
-		tank: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1.5, jeep: 1.5, tank: 1, artillery: 0.5 },
+		tank: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.5, infantry: 1.5, jeep: 1.5, tank: 1, artillery: 1 },
 		artillery: { aircraft: 0, plane: 0, helicopter: 0, 'infantry-rocket': 1.35, infantry: 1.35, jeep: 1.45, tank: 1.6, artillery: 1, 'anti-air': 1.25 }
 	}
 
@@ -42,7 +42,9 @@ const CombatRules = (() => {
 	}
 
 	function damage(attack: number, health: number, maxHealth: number, defense: number, terrainDefense: number, attackerType: string, defenderType: string): number {
-		const baseDamage = Math.max(0, attack - (defense + terrainDefense) / 10)
+		// Each defense point grants 0.75% reduction; unit and terrain compound.
+		const protection = (value: number) => 1 - (Math.min(100, Math.max(0, value)) * 0.75) / 100
+		const baseDamage = Math.max(0, attack) * protection(defense) * protection(terrainDefense)
 		const healthRatio = maxHealth > 0 ? Math.min(1, Math.max(0, health) / maxHealth) : 0
 		return baseDamage * healthRatio * typeModifier(attackerType, defenderType)
 	}

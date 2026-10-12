@@ -323,7 +323,7 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	const game = createController(state, { delay: () => new Promise((resolve) => pending.push(resolve)) })
 	game.select(attacker.id)
 	const fight = game.fight(defender)
-	assert.equal(defender.health, 61)
+	assert.equal(defender.health, 63)
 	assert.equal(state.fighting, true)
 	assert.equal(state.combatTargetIndex, defender.cell)
 	assert.equal(state.combatSourceIndex, attacker.cell)
@@ -336,13 +336,13 @@ test('real controller combat applies health-scaled retaliation and locks actions
 	assert.equal(state.round, 1)
 	pending.shift()!()
 	await Promise.resolve()
-	assert.equal(attacker.health, 76)
+	assert.equal(attacker.health, 77)
 	assert.equal(state.combatTargetIndex, attacker.cell, 'Retaliation highlights its actual recipient')
 	assert.equal(state.combatSourceIndex, defender.cell, 'Retaliation fires from the defender')
 	pending.shift()!()
 	await fight
 	assert.equal(attacker.attacks, 1)
-	assert.equal(defender.attacks, 2)
+	assert.equal(defender.attacks, 1)
 	assert.equal(state.fighting, false)
 	assert.equal(state.combatTargetIndex, null)
 	assert.equal(state.combatSourceIndex, null)
@@ -391,11 +391,11 @@ test('a jeep leaves infantry near half health and takes meaningful retaliation o
 	await game.fight(infantry)
 	assert.deepEqual(exchange, [
 		[125, 100],
-		[125, 51],
-		[101, 51]
+		[125, 54],
+		[102, 54]
 	])
 	assert.equal(jeep.attacks, 1)
-	assert.equal(infantry.attacks, 2, 'retaliation does not consume the infantry’s own attacks')
+	assert.equal(infantry.attacks, 1, 'retaliation consumes one attack point')
 	game.dispose()
 })
 
@@ -408,11 +408,11 @@ test('a healthy rocket soldier retains about 30 HP after both infantry attacks o
 	const game = createController(state, { delay: async () => {} })
 	game.select(infantry.id)
 	await game.fight(rocket)
-	assert.deepEqual([infantry.health, rocket.health], [88, 61])
+	assert.deepEqual([infantry.health, rocket.health], [88, 63])
 	await game.fight(rocket)
-	assert.deepEqual([infantry.health, rocket.health], [83, 27])
+	assert.deepEqual([infantry.health, rocket.health], [88, 30])
 	assert.equal(infantry.attacks, 0)
-	assert.equal(rocket.attacks, 1)
+	assert.equal(rocket.attacks, 0)
 	assert.ok(state.units.includes(rocket))
 	assert.equal(state.winner, null)
 	game.dispose()
@@ -427,14 +427,14 @@ test('vehicle combat uses each unit’s maximum health for its first shot and re
 	const game = createController(state, { delay: async () => {} })
 	game.select(attacker.id)
 	await game.fight(defender)
-	assert.equal(defender.health, 23)
-	assert.equal(attacker.health, 176)
+	assert.equal(defender.health, 36)
+	assert.equal(attacker.health, 175)
 	assert.equal(attacker.attacks, 1)
 	game.dispose()
 })
 
 test('artillery leaves all infantry equally wounded and healthy vehicles alive after one shot', async () => {
-	const remainingHealth: Partial<Record<UnitTypeId, number>> = { infantry: 20, 'infantry-rocket': 20, 'infantry-sniper': 20, jeep: 41, 'anti-air': 49, tank: 90 }
+	const remainingHealth: Partial<Record<UnitTypeId, number>> = { infantry: 25, 'infantry-rocket': 25, 'infantry-sniper': 25, jeep: 51, 'anti-air': 62, tank: 113 }
 	for (const [type, health] of Object.entries(remainingHealth)) {
 		const state = fixture()
 		state.units = []
@@ -453,10 +453,10 @@ test('artillery leaves all infantry equally wounded and healthy vehicles alive a
 	}
 })
 
-test('full-health infantry leaves artillery at 60 HP after two shots and rockets leave 40 HP after one', async () => {
+test('full-health infantry leaves artillery at 70 HP after two shots and rockets leave 53 HP after one', async () => {
 	for (const [attackerType, remainingHealthAfterShots] of [
-		['infantry', [90, 60]],
-		['infantry-rocket', [40]]
+		['infantry', [95, 70]],
+		['infantry-rocket', [53]]
 	] as const) {
 		const state = fixture()
 		state.units = []
@@ -497,9 +497,9 @@ test('tanks cross three grass cells per turn while infantry crosses two and jeep
 test('artillery damage stays equal across infantry types with cover and reduced attacker health', () => {
 	for (const type of ['infantry', 'infantry-rocket', 'infantry-sniper'] as const) {
 		for (const [attackerHealth, terrainDefense, remainingHealth] of [
-			[120, 50, 27],
-			[60, 0, 60],
-			[60, 50, 64]
+			[120, 50, 53],
+			[60, 0, 63],
+			[60, 50, 77]
 		]) {
 			const state = fixture()
 			const artillery = createUnit('artillery', 1, 18, 100)
@@ -515,8 +515,8 @@ test('artillery damage stays equal across infantry types with cover and reduced 
 test('planes defeat helicopters and damage armor heavily but remain vulnerable to anti-air', async () => {
 	for (const [attackerType, defenderType, remainingHealth] of [
 		['plane', 'helicopter', 0],
-		['plane', 'tank', 66],
-		['anti-air', 'plane', 53]
+		['plane', 'tank', 96],
+		['anti-air', 'plane', 63]
 	] as const) {
 		const state = fixture()
 		state.units = []
@@ -530,7 +530,8 @@ test('planes defeat helicopters and damage armor heavily but remain vulnerable t
 		if (attackerType === 'anti-air') {
 			assert.ok(attacker.health > 0)
 			await game.fight(defender)
-			assert.equal(defender.health, 0, 'Anti-air can finish the plane with two shots from outside retaliation range')
+			assert.equal(defender.health, 6, 'Plane armor now survives two anti-air shots; the attacker is out of ammunition')
+			assert.equal(attacker.attacks, 0)
 		}
 		game.dispose()
 	}
@@ -553,7 +554,7 @@ test('artillery dead zone, attack bonuses and forbidden targets', async () => {
 	defender.cell = 21
 	state.cells[21].defense = 0
 	await game.fight(defender)
-	assert.equal(defender.health, 90)
+	assert.equal(defender.health, 113)
 	assert.equal(attacker.health, 120)
 	assert.equal(attacker.attacks, 0)
 	defender.type = 'plane'

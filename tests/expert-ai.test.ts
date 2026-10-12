@@ -7,7 +7,7 @@ import { buildingIncome, createUnit, unitTypes } from '../src/lib/game/catalog.t
 import { chooseAttack, chooseMovement, chooseCaptureRelay, isAiDifficulty, runAiTurn } from '../src/lib/game/ai.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
-import { chooseExpertDecision, projectExpertDecision } from '../src/lib/game/expert-ai.ts'
+import { chooseExpertDecision, projectExpertDecision, expertCombatPressure } from '../src/lib/game/expert-ai.ts'
 import { planExpertProduction } from '../src/lib/game/ai-economy.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 
@@ -28,6 +28,42 @@ function productionFixture() {
 
 test('Expert is accepted as a difficulty', () => {
 	assert.equal(isAiDifficulty('expert'), true)
+})
+
+test('Expert values combat pressure using health, actual armor and terrain protection', () => {
+	const state = fixture()
+	const rocket = createUnit('infantry-rocket', 1, 0, 0)
+	const tank = createUnit('tank', 2, 1, 1)
+	const openGround = expertCombatPressure(state, rocket, tank)
+	assert.ok(Math.abs(openGround - (1200 * 0.5 * 70) / 180) < 1e-9)
+	state.cells[1].defense = 50
+	assert.ok(Math.abs(expertCombatPressure(state, rocket, tank) / openGround - 0.625) < 1e-9)
+	rocket.health = 50
+	assert.ok(Math.abs(expertCombatPressure(state, rocket, tank) / openGround - 0.3125) < 1e-9)
+	tank.health = 1
+	assert.equal(expertCombatPressure(state, rocket, tank), (1200 * 0.5) / 180, 'do not count overkill as useful pressure')
+})
+
+test('Expert respects diagonal reach, ranged dead zones, mountain range and airborne cover', () => {
+	const state = fixture()
+	const artillery = createUnit('artillery', 1, 0, 0)
+	const tank = createUnit('tank', 2, 3, 1)
+	const inRange = expertCombatPressure(state, artillery, tank)
+	tank.cell = 27
+	assert.equal(expertCombatPressure(state, artillery, tank), inRange, 'diagonal range is square')
+	tank.cell = 1
+	assert.equal(expertCombatPressure(state, artillery, tank), inRange / 3, 'two steps out of the dead zone')
+	tank.cell = 5
+	assert.equal(expertCombatPressure(state, artillery, tank), inRange / 2)
+	state.cells[0].terrain = 'moutain'
+	state.cells[0].cost = 4
+	assert.equal(expertCombatPressure(state, artillery, tank), inRange)
+	const antiAir = createUnit('anti-air', 1, 0, 2)
+	assert.equal(expertCombatPressure(state, antiAir, tank), 0)
+	const plane = createUnit('plane', 2, 1, 3)
+	const airborne = expertCombatPressure(state, antiAir, plane)
+	state.cells[1].defense = 50
+	assert.equal(expertCombatPressure(state, antiAir, plane), airborne)
 })
 
 test('Expert starts developing instead of passing its opening turn on every map', async () => {
@@ -167,7 +203,7 @@ test('Expert passes up a tempting kill to suppress the rocket that would destroy
 	state.units[0].movement = 0
 	state.units[1].movement = 0
 	state.units[1].attacks = 0
-	state.units[1].health = 70
+	state.units[1].health = 50
 	state.units[2].health = 40
 	const snapshot = JSON.stringify(state)
 	assert.equal(chooseAttack(state, 'hard')?.defenderId, 2)
@@ -175,7 +211,10 @@ test('Expert passes up a tempting kill to suppress the rocket that would destroy
 	assert.deepEqual(decision, { kind: 'attack', attackerId: 0, defenderId: 3 })
 	assert.equal(JSON.stringify(state), snapshot, 'Search must not modify the live match')
 	const projection = await projectExpertDecision(state, decision, new Set([0, 1]), new Set())
-	assert.equal(projection.winner, 1)
+	// Stronger armor extends the fight beyond this search horizon, but suppression
+	// must still save the tank compared with taking the immediate jeep kill.
+	const greedyProjection = await projectExpertDecision(state, { kind: 'attack', attackerId: 0, defenderId: 2 }, new Set([0, 1]), new Set())
+	assert.ok(!greedyProjection.units.some((unit) => unit.id === 1))
 	assert.ok(projection.units.some((unit) => unit.id === 1 && unit.health > 0))
 })
 

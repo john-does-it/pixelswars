@@ -35,7 +35,6 @@ for (const entry of catalog.assets) {
 	if (entry.name.startsWith('cells/terrain/') && existsSync(resolve(root, `assets/cells/${entry.originalName}.png.base64`))) include(entry, `cells/${entry.originalName}.png`)
 }
 const manual = {
-	'674:370': 'cells/cell-grass.png',
 	'674:338': 'cells/cell-grass-variant.png',
 	'695:2': 'cells/cell-grass-variant-2.png',
 	'674:348': 'cells/cell-grass-variant-3.png',
@@ -46,6 +45,11 @@ for (const [id, legacy] of Object.entries(manual)) {
 	const entry = catalog.assets.find((a) => a.id === id)
 	if (entry && existsSync(resolve(root, `assets/${legacy}.base64`))) include(entry, legacy)
 }
+// The second grass variant is also the default grass tile.
+include(
+	catalog.assets.find((entry) => entry.id === '695:2'),
+	'cells/cell-grass.png'
+)
 const water = readFileSync(resolve(root, 'assets/cells/WATER_TILE_MAPPING.md'), 'utf8')
 for (const match of water.matchAll(/`tile_(\d+)\.svg`\s*\|\s*`([^`]+\.png)`/g)) {
 	const entry = catalog.assets.find((a) => a.name === `cells/water/tile-${match[1]}`)

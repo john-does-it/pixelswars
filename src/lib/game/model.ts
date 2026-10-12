@@ -84,6 +84,10 @@ export function canAttack(state: GameState, attacker?: Unit, defender?: Unit): b
 	return !!(attacker && defender && attacker.health > 0 && defender.health > 0 && state.units.includes(attacker) && state.units.includes(defender) && attacker.player !== defender.player && rules.canTarget(attacker.type, defender.type) && attackCells(state, attacker).includes(defender.cell))
 }
 
+export function canRetaliate(state: GameState, defender: Unit, attacker: Unit): boolean {
+	return defender.attacks > 0 && canAttack(state, defender, attacker)
+}
+
 export function canCapture(state: GameState): boolean {
 	const unit = selectedUnit(state)
 	if (!unit || locked(state) || unit.capture <= 0 || unit.player !== state.player) return false

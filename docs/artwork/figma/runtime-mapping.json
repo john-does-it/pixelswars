@@ -185,9 +185,9 @@
 		"exported": "cells/terrain/cell-forest-on-grass-variant@2x.png"
 	},
 	{
-		"nodeId": "674:370",
+		"nodeId": "695:2",
 		"legacy": "cells/cell-grass.png",
-		"exported": "cells/grass/grass@2x.png"
+		"exported": "cells/grass/cell-grass-variant-2@2x.png"
 	},
 	{
 		"nodeId": "674:338",

@@ -1,5 +1,5 @@
 import { unitTypes } from './catalog.ts'
-import { selectedUnit, unitAt, canAttack, applyDamage, locked } from './model.ts'
+import { selectedUnit, unitAt, canAttack, canRetaliate, applyDamage, locked } from './model.ts'
 import * as actions from './actions.ts'
 import * as transportActions from './transport.ts'
 import { pathsFrom } from './movement.ts'
@@ -57,11 +57,12 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			await delay(unitTypes[attacker.type].delay)
 			if (disposed) return
 			playImpact(attacker)
-			if (defender.health > 0 && canAttack(state, defender, attacker)) {
+			if (canRetaliate(state, defender, attacker)) {
 				state.combatTargetIndex = attacker.cell
 				state.combatSourceIndex = defender.cell
 				play(unitTypes[defender.type].fightSound)
 				applyDamage(state, defender, attacker)
+				defender.attacks--
 				onChange()
 				await delay(unitTypes[defender.type].delay)
 				if (disposed) return

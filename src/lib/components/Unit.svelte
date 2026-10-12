@@ -38,7 +38,7 @@
 		class:airborne
 		class:alternate-look={alternateLook}
 		aria-hidden="true"
-		style:scale={preferences.unitFacing && unit.facing === 'left' ? '-1 1' : '1 1'}
+		style:scale={preferences.unitFacing && unit.facing === 'left' ? '-1.25 1.25' : '1.25 1.25'}
 		style:background-image={`url('${asset(unitSprite(unit))}')`}
 		style:--idle-duration={`${idleTiming.duration}ms`}
 		style:--idle-delay={`${idleTiming.delay}ms`}

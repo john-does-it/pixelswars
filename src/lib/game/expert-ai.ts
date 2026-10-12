@@ -2,11 +2,11 @@ import { pathsFrom } from './movement.ts'
 import { buildingIncome, unitTypes } from './catalog.ts'
 import * as actions from './actions.ts'
 import * as transportActions from './transport.ts'
-import { attackCells, canAttack, canCapture } from './model.ts'
+import { attackCells, canAttack, canCapture, effectiveRange } from './model.ts'
 import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision } from './ai.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import rules from './combat-rules.ts'
-import type { GameState, Player } from './types.ts'
+import type { GameState, Player, Unit } from './types.ts'
 
 // Bounded rollouts keep large mobile games responsive. A turn is a real endTurn()
 // boundary (income, healing and action refresh), not just another attack.
@@ -60,6 +60,21 @@ function simulateDecision(state: GameState, decision: AiDecision, moved: Set<num
 	return state
 }
 
+// Positional potential over a fresh turn, not an immediate damage prediction.
+// Exact rollouts account for current ammunition, retaliation and health loss.
+export function expertCombatPressure(state: GameState, unit: Unit, target: Unit): number {
+	const definition = unitTypes[unit.type]
+	const targetDefinition = unitTypes[target.type]
+	const targetCover = targetDefinition.domain === 'air' ? 0 : state.cells[target.cell].defense
+	const damage = rules.damage(definition.attack, unit.health, definition.maxHealth, targetDefinition.defense, targetCover, unit.type, target.type)
+	const distance = Math.max(Math.abs((unit.cell % state.cols) - (target.cell % state.cols)), Math.abs(Math.floor(unit.cell / state.cols) - Math.floor(target.cell / state.cols)))
+	const range = effectiveRange(state, unit)
+	const approach = Math.max(0, distance - range.maximum, range.minimum - distance)
+	// Keep this incentive below actual material gains so it does not reward
+	// reckless advances just to threaten an expensive target.
+	return (targetDefinition.cost * 0.5 * Math.min(target.health, damage * definition.attacks)) / targetDefinition.maxHealth / (1 + approach)
+}
+
 export function evaluateExpertPosition(state: GameState, player: Player): number {
 	if (state.winner !== null) return state.winner === player ? 1000000 : -1000000
 	const enemy = player === 1 ? 2 : 1
@@ -69,7 +84,8 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 		const sign = unit.player === player ? 1 : -1
 		const healthValue = definition.cost * (0.25 + (0.75 * unit.health) / definition.maxHealth)
 		const cover = definition.domain === 'air' ? 0 : state.cells[unit.cell].defense
-		score += sign * (healthValue + cover + (definition.captures ? 80 : 0))
+		const protectedHealthValue = healthValue * (1 - rules.damage(100, 100, 100, 0, cover, 'probe', 'probe') / 100)
+		score += sign * (healthValue + protectedHealthValue * 0.25 + (definition.captures ? 80 : 0))
 		for (const passenger of unit.cargo ?? []) {
 			const passengerDefinition = unitTypes[passenger.type]
 			score += sign * (passengerDefinition.cost * (0.25 + (0.75 * passenger.health) / passengerDefinition.maxHealth) + 80)
@@ -78,7 +94,7 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 		// until the simulated follow-up turn. Combat losses still dominate this bonus.
 		const distanceTo = (cell: number) => Math.abs((unit.cell % state.cols) - (cell % state.cols)) + Math.abs(Math.floor(unit.cell / state.cols) - Math.floor(cell / state.cols))
 		const targets = state.units.filter((target) => target.player !== unit.player && rules.canTarget(unit.type, target.type))
-		const pressure = Math.max(0, ...targets.map((target) => (unitTypes[target.type].cost * 0.2 * unit.health) / definition.maxHealth / (1 + Math.max(0, distanceTo(target.cell) - definition.range))))
+		const pressure = Math.max(0, ...targets.map((target) => expertCombatPressure(state, unit, target)))
 		const expansion = definition.captures ? Math.max(0, ...state.cells.filter((cell) => cell.building && cell.owner !== unit.player).map((cell) => (buildingIncome(cell.building) ? buildingIncome(cell.building) * 0.75 : 90) / (1 + distanceTo(cell.index)))) : 0
 		score += sign * (pressure + expansion)
 	}

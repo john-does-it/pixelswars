@@ -365,7 +365,7 @@ button.pixel-icon-control:hover:not(:disabled) {
 /* Original terrain and unit sprites; layout lives in Svelte components. */
 
 .cell-container.-grass {
-	background-image: url('/assets/figma/cells/grass/grass@2x.png');
+	background-image: url('/assets/figma/cells/grass/cell-grass-variant-2@2x.png');
 
 	&.-variant {
 		background-image: url('/assets/figma/cells/grass/grass-variant-1@2x.png');
