@@ -407,5 +407,7 @@
 	"unit_transport_helicopter_description": "Survole tous les terrains et transporte jusqu’à trois unités d’infanterie. Ne peut pas attaquer. Ses passagers sont perdus si elle est détruite.",
 	"map_tiny": "Très petite",
 	"map_19": "Randonnée en montagne",
-	"map_19_description": "Franchissez les ponts entre les montagnes et les cours d’eau pour capturer les villes et développer votre armée."
+	"map_19_description": "Franchissez les ponts entre les montagnes et les cours d’eau pour capturer les villes et développer votre armée.",
+	"map_20": "Genève",
+	"map_20_description": "Sécurisez les passages et capturez les bâtiments autour des cours d’eau."
 }

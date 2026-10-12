@@ -6,6 +6,8 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	const unit = page.locator('[data-unit="1"]')
 	const sprite = unit.locator('.unit-sprite')
 	await expect(sprite).toHaveClass(/idle/)
+	await expect(sprite).toHaveCSS('image-rendering', 'pixelated')
+	const originalArtwork = await sprite.evaluate((element) => getComputedStyle(element).backgroundImage)
 	const result = await unit.evaluate((element) => {
 		const artwork = element.querySelector('.unit-sprite')!
 		const animation = artwork.getAnimations()[0]
@@ -24,10 +26,11 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 		const before = positions()
 		const forward = getComputedStyle(artwork).transform
 		animation.currentTime = Number(timing.delay) + duration / 2
-		return { before, after: positions(), forward, reversed: getComputedStyle(artwork).transform }
+		return { before, after: positions(), forward, reversed: getComputedStyle(artwork).transform, artwork: getComputedStyle(artwork).backgroundImage }
 	})
 	expect(result.before).toEqual(result.after)
 	expect(result.forward).not.toEqual(result.reversed)
+	expect(result.artwork).toBe(originalArtwork)
 	const delays = await page.locator('.unit-sprite.idle').evaluateAll((sprites) => sprites.map((sprite) => parseFloat(getComputedStyle(sprite).animationDelay)))
 	expect(delays.every((delay) => delay >= 12 && delay <= 24)).toBe(true)
 	expect(new Set(delays).size).toBeGreaterThan(1)
@@ -49,6 +52,7 @@ test('ambient animations leave indicators fixed and persist their toggle across 
 	await page.getByRole('combobox', { name: 'Animations', exact: true }).selectOption('off')
 	await expect(page.getByRole('combobox', { name: 'Animations', exact: true })).toHaveValue('off')
 	await expect(page.locator('.unit-sprite.idle')).toHaveCount(0)
+	await expect(sprite).toHaveCSS('background-image', originalArtwork)
 	await expect(page.locator('.water-shimmer')).toHaveCount(0)
 	await expect(page.locator('.building-lights')).toHaveCount(0)
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!

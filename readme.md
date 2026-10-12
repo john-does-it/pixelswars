@@ -4,455 +4,124 @@
 
 **Capture cities. Build your army. Outsmart the AI or a friend.**
 
-A pixel-art, turn-based strategy game for desktop and mobile. Choose your battlefield,
-secure its economy and combine infantry, armor and air power to win.
+A pixel-art, turn-based strategy game for desktop and mobile.
+**[Play in your browser](https://pixelswar.io/)** — no installation required.
 
-**[Play in your browser](https://pixelswar.io/)** · No installation required
+- 20 battlefields, 11 unit types and a map editor.
+- Four AI difficulties, local two-player battles and online duels through WebRTC.
+- English, French, German and Japanese; keyboard, mouse and touch controls.
 
-![Map selection in Pixel’s War](docs/screenshots/home.png)
+![Map selection](docs/screenshots/home.png)
+![Battlefield](docs/screenshots/battlefield.png)
 
-- **19 battlefields:** roads, forests, mountain positions and narrow water crossings, up to the 32 × 32 Delusions Of Grandeur map, ordered from smallest to largest by tile count.
-- **11 unit types:** capture with infantry, carry troops in transport jeeps or helicopters, cover advances with artillery and contest the skies.
-- **4 AI difficulties:** Easy, Medium, Hard and Expert, or local two-player battles on one device.
-- **Online duels:** invite a friend on another device through a direct WebRTC connection.
-- **Desktop and mobile:** keyboard, mouse and touch controls, with a zoomable battlefield and an interactive minimap.
-- **English, French, German and Japanese:** language, audio, animation, unit-facing and keyboard settings in Options and help, with locally bundled fonts.
+## Play
 
-![Nice View Up Here with connected building access roads and a selected infantry unit](docs/screenshots/battlefield.png)
+Destroy all opposing units to win. Move, attack and capture with any available unit,
+then end your turn. Cities and oil fields earn income; army bases and airports
+produce reinforcements. Infantry can board transports and deploy beside them.
+Blue plays first; against the AI, you command red.
 
-Battlefields range from compact encounters to **Long Island Iced Tea** (24 × 16)
-and **Delusions Of Grandeur** (32 × 32). Roads, crossings, obstacles and production
-buildings offer different routes and objectives; the map editor lets you create your own.
+| Action               | Keyboard                               |
+| -------------------- | -------------------------------------- |
+| Move                 | Arrows or selected ZQSD / WASD layout  |
+| Confirm              | Enter                                  |
+| Cancel / close       | Escape                                 |
+| Capture / secure     | Space                                  |
+| Cell statistics      | I                                      |
+| Transport passengers | T (selected transport with passengers) |
 
-## How to play
+Drag to pan, wheel or pinch to zoom, and use the overview button to fit the map.
+The bottom preview shows the hovered unit or terrain; click it for full details.
+Options and help contains the rules and audio, animation and keyboard settings.
 
-Destroy every opposing unit to win. During your turn, you can move and use the
-available actions of **all your units**, in any order. End the turn when finished.
-Blue plays first; in AI matches, the AI commands blue and you command red.
-The same team-colored transition announces both players’ turns, including the AI.
-AI actions begin after its transition finishes.
+For online play, choose a map, create an invitation and send its link to a friend.
+Keep both pages open: refreshing or closing ends the session. The host validates
+and shares game state; this mode is intended for friends. Connecting contacts
+PeerJS Cloud and configured STUN/TURN services. Use the published site for invitations
+between devices. See [terms and privacy](https://pixelswar.io/terms/).
 
-Select a unit, then click or tap a square-marked cell to move there, or an
-eligible enemy to attack. Confirm finishes the selection; cancel restores movement
-to the last committed position. Attacking or capturing commits that position,
-so cancelling cannot undo those actions.
+## Develop
 
-Transport jeeps cost **$600** and have the jeep’s **125 HP**, **20 defense** and
-**8 movement**. Transport helicopters cost **$1800**, with **110 HP**, **15 defense**
-and **8 movement**, and fly over any terrain. Both are unarmed and carry up to three
-infantry units, including rockets and snipers. Move friendly infantry onto a transport
-to board. Select the transport, press **T** (when passengers are aboard) or open its passenger-count button beside the action
-buttons, choose a passenger, then click a highlighted tile to deploy.
-Boarding requires enough movement to enter the transport’s tile.
-Passengers deploy onto free orthogonally adjacent land tiles, including bridges,
-never water or obstacles. Infantry cannot board a helicopter standing on terrain
-they cannot enter.
-Deployment costs no movement to the transport. Passengers keep their remaining attacks
-and movement, minus the approach and the terrain cost of entering the transport’s
-tile. Deploying costs no additional passenger movement. They can move and fire
-immediately, and retain their available capture action without restoring a spent one. Loading and deployment commit positions;
-cancel cannot undo them. Destroying a transport also destroys all its passengers.
-Buy transport jeeps at army bases and transport helicopters at airports; both are
-available in the map editor. Nice View Up Here starts with a transport jeep per side;
-The Other Bank includes both ground and air transports for each army.
-
-In development (`npm run dev`), the homepage links to `/play/dev/`: an 8 × 8 grass
-field containing every unit type for both teams and an obstacle for movement checks.
-Infantry starts beside transports for loading tests. The link and route data are gated by SvelteKit’s
-`dev` flag; this map is not prerendered or available in the production build.
-
-### Controls and battlefield feedback
-
-- **Layout:** player, round, money and settings sit above the battlefield. Centered zoom controls and actions sit below it, with the selected-cell preview opposite the minimap. Edge clearance keeps outer corner markers visible, and selection does not resize the board.
-- **Move:** select a unit, then click or tap a reachable square. Markers use the army’s color with a dark border. The unit follows the cheapest legal path.
-- **Selection:** the battlefield, editor and palettes share outlined pixel corners. Selected units use their team’s color, with the board markers drawn outside the cell.
-- **Enemy inspection:** select an enemy to see its current attack range as stripes and its remaining movement as squares. Terrain costs and occupied cells constrain movement; the preview does not move the enemy.
-- **Camera:** drag to pan, use the mouse wheel over the map or pinch to zoom. The overview button fits the map,
-  and the minimap below the actions lets you reposition the camera.
-- **Tile details:** the bottom preview combines the terrain tile with its unit and shows the unit’s health, movement and attacks. Click it or press **I** for full statistics, passengers and explanatory notes below a separator.
-- **Unit indicators:** the heart and damaged sprite show health. Bottom-left bullets show attacks, the bottom-right
-  fuel icon shows movement, and infantry's top-right flag shows capture availability. Spent indicators fade together.
-- **Turn changes:** both players get the same team-colored transition. During AI or remote turns, the camera follows
-  the active unit and the action bar is hidden without resizing the battlefield.
-- **Idle animations:** infantry glance back for two seconds after a fresh random wait of 12–24 seconds, aircraft hover gently, water ripples shimmer and all building lights switch on and off together. Ground vehicles stay still. Only the sprite moves, keeping status indicators in their corners.
-- **Combat feedback:** weapon flashes, hit effects and destruction animations accompany combat sounds, with firing positions adapted to each unit’s sprite.
-- **Unit facing:** units face left or right as they move and turn toward their opponent when fighting. They retain their last direction after moving; vertical movement does not introduce a new sprite direction. Toggle this independently below Animations in settings.
-- **Options:** change language, sound, music, board animations, unit facing and keyboard layout, restart a local/AI match, or choose another map. Preferences are saved in the local settings cookie.
-
-| Action               | Keyboard                                      |
-| -------------------- | --------------------------------------------- |
-| Move                 | Arrow keys or the selected ZQSD / WASD layout |
-| Confirm              | Enter                                         |
-| Cancel / close       | Escape                                        |
-| Capture / secure     | Space                                         |
-| Cell statistics      | I                                             |
-| Transport passengers | T (selected transport with passengers)        |
-
-All action buttons have accessible labels. Reduced-motion mode keeps spent resource indicators dimmed
-and uses a static turn announcement. It also disables idle sprite, water and building-light animations. When Animations is on, a separate Building lights option lets you disable blinking buildings while retaining other ambient effects. Both settings are saved. Damage, healing and income also have floating feedback on the map.
-
-### Play with a friend online
-
-Choose a map, then **Play 1v1 online**:
-
-1. The host creates an invitation and sends its link to a friend.
-2. The friend opens the link and clicks **Join**. The connection is automatic; there is no response code to send back.
-3. The host commands blue and plays first; the guest commands red.
-
-Keep both game pages open. A temporary connection loss pauses play and reconnecting
-resynchronizes the match. Closing or refreshing either page ends the session;
-matches are not saved. After victory, both players must agree to a rematch.
-
-The browsers exchange game data through WebRTC, directly or through a TURN relay. The host validates
-actions and supplies the shared game state. This is intended for friends: the host
-can technically alter that state. No account or game server is required.
-[PeerJS Cloud](https://peerjs.com/server/cloud) exchanges the connection details
-automatically. When configured, Metered supplies STUN/TURN servers so WebRTC can
-use a relay when a direct path is unavailable. Without Metered settings, development
-uses Google's public STUN service only. Creating or joining contacts these services,
-but browsing maps or opening an invitation does not. Network restrictions, provider
-outages and exhausted relay quotas can still prevent connections.
-
-The invitation contains a random session identifier, map and game fingerprint;
-it no longer contains the full WebRTC session description. Share it only with your
-opponent. A session accepts one guest, and expired, occupied or incompatible
-invitations show a recoverable error. The initial handshake retries and acknowledges
-introductions, preserving early game messages until the peer is validated. An incomplete
-connection times out after 35 seconds and can be retried; sprite loading happens separately.
-Existing manual `PW1` invitations must be recreated.
-
-The [terms, privacy and cookies page](https://pixelswar.io/terms/)
-explains session cookies, third-party services and connection limits in all four
-languages. The invitation screen focuses on creating or joining a game.
-
-Use the published site when inviting someone on another device. A development
-link containing `127.0.0.1` points to the recipient's own computer.
-
-### Buildings and economy
-
-All three infantry types can capture and secure buildings. Buildings have 20
-capture points, and a capture removes 10. Each infantry unit can capture once per
-turn, so two units can finish a capture together. Securing a building you already
-own restores all its capture points in one action.
-
-| Building  | Benefit                                                                              |
-| --------- | ------------------------------------------------------------------------------------ |
-| City      | Adds 200$ at the start of each owner's turn                                          |
-| Oil field | Adds 300$ at the start of each owner's turn                                          |
-| Hospital  | Heals a friendly unit standing on it by up to 50 HP at the start of the owner's turn |
-| Army base | Produces ground units                                                                |
-| Airport   | Produces helicopters and planes                                                      |
-
-Oil fields provide valuable economic objectives alongside cities and production buildings.
-
-Healing never exceeds maximum health; a floating label shows the HP actually
-recovered at the start of the turn. To buy a unit, you must own the production
-building, leave its cell empty and have enough money. New units can act immediately.
-
-### Units
-
-Movement is a points budget, not a number of cells. Attack and defense are inputs
-to the damage formula below; attack is not the final damage dealt.
-
-| Unit                 |  Cost |  HP | Movement | Attacks / turn | Attack | Defense | Range |
-| -------------------- | ----: | --: | -------: | -------------: | -----: | ------: | ----- |
-| Infantry             |  200$ | 100 |        5 |              2 |     40 |      10 | 1     |
-| Rocket               |  400$ | 100 |        4 |              1 |     40 |      10 | 1     |
-| Sniper               |  500$ | 100 |        4 |              1 |     60 |      10 | 2–3   |
-| Jeep                 |  600$ | 125 |        8 |              2 |     50 |      20 | 1     |
-| Transport jeep       |  600$ | 125 |        8 |              0 |      0 |      20 | —     |
-| Tank                 | 1200$ | 180 |        6 |              2 |     70 |      40 | 1     |
-| Artillery            | 1600$ | 120 |        4 |              1 |     60 |      30 | 3–4   |
-| Anti-air             | 1000$ | 120 |        6 |              2 |     70 |      30 | 1–2   |
-| Helicopter           | 1800$ | 110 |        8 |              1 |     65 |      15 | 1     |
-| Transport helicopter | 1800$ | 110 |        8 |              0 |      0 |      15 | —     |
-| Plane                | 3000$ | 120 |       10 |              1 |     80 |      25 | 1     |
-
-Infantry captures objectives. Rockets counter vehicles; snipers counter infantry.
-Jeeps are fast and effective against infantry, while tanks combine armor and two
-attacks. Artillery softens ground targets from a distance, but cannot fire at
-cells one or two steps away. Anti-air attacks only flying units. Helicopters hunt infantry;
-planes can attack both ground and air units. Other ground units cannot target
-flying units.
-
-### Terrain and range
-
-Movement is orthogonal and pays the destination cell's cost. One unit occupies a
-cell at a time. Attack ranges are square, including diagonals.
-
-| Terrain  | Ground movement cost | Defense |
-| -------- | -------------------: | ------: |
-| Road     |                    1 |       0 |
-| Grass    |                    2 |       0 |
-| Building |                    2 |      40 |
-| Forest   |                    3 |      30 |
-| Mountain |                    4 |      50 |
-| Water    |           Impassable |       0 |
-| Obstacle |           Impassable |       0 |
-
-Flying units spend 1 movement point per cell regardless of terrain, and receive
-no terrain defense. Only flying units can cross obstacles; their ground movement
-cost is shown as **∞** in terrain statistics. There are no playable naval units yet.
-
-Ranged ground units on a mountain gain **+1 maximum range**, keeping their minimum
-range: sniper 2–4, artillery 3–5, anti-air 1–3. Melee and flying units gain no range.
-
-On grass, infantry can cross two cells per turn, tanks three and jeeps four.
-Roads stretch these distances; forests and mountains shorten them.
-
-### Combat and artillery balance
-
-Damage is calculated before rounding the defender's remaining health:
-
-```text
-base damage = max(0, attack) × (1 − 0.75 × unit defense / 100) × (1 − 0.75 × terrain defense / 100)
-damage = base damage × (attacker HP / attacker maximum HP) × matchup multiplier
-remaining HP = max(0, round(defender HP − damage))
-```
-
-A surviving defender retaliates if its own range and matchup allow it and it has an attack point left. Retaliation
-uses its remaining health and spends one attack point. Attack points refresh for both armies at each turn change.
-Unit and terrain defense are scores clamped to 0–100. Each point grants 0.75% reduction, applied multiplicatively. A tank (40) on a mountain (50) receives 43.75% of incoming damage, a combined reduction of 56.25%. Snipers and artillery
-cannot retaliate at contact. A forbidden matchup cannot be selected as a target.
-
-A full-health artillery shot against a full-health target on grass or road gives:
-
-| Target                     | Matchup multiplier | Starting HP | Remaining HP |
-| -------------------------- | -----------------: | ----------: | -----------: |
-| Infantry, Rocket or Sniper |              ×1.35 |         100 |       **25** |
-| Jeep                       |              ×1.45 |         125 |       **51** |
-| Anti-air                   |              ×1.25 |         120 |       **62** |
-| Tank                       |              ×1.60 |         180 |      **113** |
-| Artillery                  |              ×1.00 |         120 |       **74** |
-
-All infantry types take the same artillery damage under the same conditions.
-Terrain protection and damage to the attacker reduce these losses. Artillery
-cannot destroy any of these full-health targets with one shot; its single attack,
-price and adjacent blind spot leave room for faster units to close in.
-
-Against full-health artillery on grass or road, full-health basic infantry deals
-25 HP per attack, leaving 70 of its 120 HP after two attacks. Rocket infantry deals
-67 HP in one attack, leaving 53 HP. Their respective matchup multipliers are ×0.8
-and ×2.15. Terrain cover and injured attackers reduce these losses.
-
-The complete matchup table lives in [combat-rules.ts](src/lib/game/combat-rules.ts).
-Unit and terrain statistics live in [catalog.ts](src/lib/game/catalog.ts).
-
-### AI opponents
-
-Easy, Medium, Hard and Expert use the same units, budgets and rules as the player.
-Higher levels improve targeting, positioning and purchases. Expert also evaluates
-short sequences of future actions and economic opportunities; it is a bounded
-search, not an exhaustive solution of the game.
-Transport decisions also scale by difficulty: simple delivery on Easy, immediate
-combat and purchase value on Medium, future threats and passenger protection on
-Hard, and economic/turn simulations on Expert.
-
-See [AI rules and implementation notes](docs/ai.md) for each difficulty's behavior.
-
-## Development
-
-Built with **SvelteKit 2, Svelte 5 runes and Paraglide**. Requires Node.js 22.14 or newer:
+SvelteKit 2, Svelte 5 and Paraglide. Requires Node.js 22.14 or newer.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the Vite address. The home route is `/`; games use `/play/1/` through
-`/play/18/`. Add `?ai=easy`, `?ai=medium`, `?ai=hard` or `?ai=expert`
-to play against the AI, or `?online=1` for online setup. Without either parameter,
-the game is local two-player.
+Games use `/play/<map-id>/`; add `?ai=easy`, `medium`, `hard` or `expert`, or
+`?online=1`. Without a mode parameter, play is local multiplayer. `/play/dev/`
+is a development-only unit sandbox. Production output is `build/`, served over HTTP.
+
+Run the same checks as CI:
 
 ```sh
-npm run check
 npm run format:check
+npm run check
 npm test
 npm run build
-npm run preview
-```
-
-The production site is generated in `build/`; serve it over HTTP.
-After changing a map or its sprites, run `npm run generate:map-previews` with the dev server running.
-This refreshes the static thumbnails and their dimension/size metadata. Set `PREVIEW_BASE_URL`
-if the server uses an address other than `http://127.0.0.1:5173`.
-`npm run check` generates Paraglide messages and declarations before checking
-Svelte. `npm run generate:i18n` runs generation separately. Both generation and
-Vite use `paraglide.config.js`; generated `src/lib/paraglide/` files are ignored.
-
-### Browser tests
-
-```sh
 node node_modules/@playwright/test/cli.js install chromium
-npm run build
-npm run test:e2e
+npm run test:e2e -- --grep-invert "stays responsive on large map"
+npm run test:e2e -- tests/e2e/ai-performance.spec.ts --project desktop --workers 1
 ```
 
-Playwright covers desktop/mobile play, map navigation, movement, combat, capture,
-economy, settings, minimaps, AI and real WebRTC matches between two browser contexts.
-Online browser tests start a real local PeerServer and use local ICE candidates;
-they do not depend on the public signaling service or verify connectivity across
-different internet connections. Their browser contexts bypass CSP only to allow
-the temporary local signaling port. Production CSP allows the PeerJS Cloud
-WebSocket endpoint explicitly. To use installed Chrome, set
-`PW_CHANNEL=chrome` (PowerShell: `$env:PW_CHANNEL = 'chrome'`).
+`npm run format` applies formatting. Browser tests cover desktop/mobile and use a
+local PeerServer for online matches; they do not test public relay connectivity.
+Run AI performance tests separately to avoid competing browser workers.
 
-The online suite covers slow sprite loading, missed handshake messages, failed
-connections and invitation retries. Run it with `npm run test:e2e -- tests/e2e/online.spec.ts`.
-CI runs the general suite with `--grep-invert "stays responsive on large map"`, then
-runs the AI responsiveness test separately on desktop with one worker. Failed runs
-upload a `playwright-failures` artifact containing traces and available connection
-diagnostics. Download it before opening a CI trace locally with
-`npx playwright show-trace path/to/trace.zip`.
+| Location              | Purpose                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| `src/lib/game/`       | Rules, state, AI, input and online protocol                  |
+| `src/lib/components/` | Board, dialogs and controls                                  |
+| `src/lib/data/`       | Maps, map registry and preview metadata                      |
+| `messages/`           | Four source translations                                     |
+| `assets/`             | Artwork and audio sources                                    |
+| `scripts/`            | Asset sync, translations, map thumbnails and TURN diagnostic |
+| `tests/`              | Rule tests, fixtures and browser regression suite            |
 
-### Project layout
+Keep descriptive names, Svelte runes and game rules separate from DOM rendering.
+Formatting uses tabs, single quotes, no semicolons and no trailing commas.
+Online peers compare map/rule fingerprints; bump `protocolVersion` in `peer.ts`
+when command semantics or combat rules change.
 
-| Location                                     | Responsibility                                           |
-| -------------------------------------------- | -------------------------------------------------------- |
-| `src/routes/`                                | Map selection and game routes                            |
-| `src/lib/components/`                        | Board, controls, stats, dialogs and other UI             |
-| `src/lib/game/game.svelte.ts`, `model.ts`    | Per-game state and rule queries                          |
-| `src/lib/game/actions.ts`, `controller.ts`   | Actions, input and asynchronous combat                   |
-| `src/lib/game/catalog.ts`, `combat-rules.ts` | Statistics, terrain, attack geometry and damage          |
-| `src/lib/game/ai*.ts`, `expert-ai.ts`        | AI decisions, economy and bounded lookahead              |
-| `src/lib/game/peer.ts`, `online.ts`          | WebRTC invitations, authoritative commands and snapshots |
-| `src/lib/data/neighbor-trouble.json`         | Explicit, editable map layouts                           |
-| `messages/`                                  | English, French, German and Japanese source translations |
-| `assets/`, `src/lib/app.css`                 | Artwork/audio sources, global styles and sprite mappings |
-| `distribution/itch/`                         | itch.io launcher source and bundled fonts                |
-| `docs/`                                      | Screenshots, cover artwork and technical guides          |
-| `scripts/`                                   | Asset generation and connectivity checks                 |
-| `tests/`                                     | Node rule tests and Playwright browser tests             |
+- [Assets](assets/README.md): synchronization, naming and runtime variants.
+- [AI](docs/ai.md): difficulty behavior, search limits and regression coverage.
+- [Combat effects](docs/combat-effects.md): sprite sheets and muzzle placement.
+- [Map editor](docs/map-editor.md): editing and submitting maps. Keep numeric IDs
+  stable; register filenames in `map-files.json`, routes and translated titles.
+  Run `npm run generate:map-previews` with the dev server running after map changes
+  (`PREVIEW_BASE_URL` overrides its default address).
+- `npm run check` regenerates translations; `npm run generate:i18n` does so separately.
+  `paraglide.config.js` is shared with Vite; generated `src/lib/paraglide/` is ignored.
+- [itch.io launcher](distribution/itch/README.md): packaging instructions. Promotional
+  [cover](docs/artwork/pixels-war-cover-650x500.png) and [prompts](docs/artwork/cover-prompt.md)
+  live in `docs/artwork/`. Do not commit generated reports or temporary previews.
 
-Components use Svelte runes. Each game owns its state; navigation disposes pending
-combat and audio. The DOM displays state rather than storing game rules. Board
-measurements control scrolling, focus and minimap positioning.
+Unit statistics and terrain costs live in `catalog.ts`; damage and matchups in
+`combat-rules.ts`. Production menus enumerate the catalog. Add corresponding
+sprites, translations and tests when introducing a unit.
 
-Map JSON files use their English title in kebab case, such as `neighbor-trouble.json`.
-Their numeric IDs remain stable for game URLs and invitations. `src/lib/data/map-files.json`
-maps these IDs to filenames for preview generation and tests. When adding a map,
-register its route, translated title and description, then generate its thumbnail.
+## Deploy and configure TURN
 
-Online peers check a fingerprint of the map, unit statistics, terrain and protocol
-version before connecting. Bump `protocolVersion` in `peer.ts` when changing command
-semantics or combat rules so incompatible clients cannot start a match together.
+Copy `.env.example` to `.env.local`. Set `VITE_METERED_APP` to the app name or
+`.metered.live` hostname and `VITE_METERED_TURN_API_KEY` to a **credential-scoped
+TURN API key**, never the account Secret Key or Project API Key. Restart Vite.
+Without these settings, development uses public STUN only. Configured credential
+failures show an error rather than silently disabling the relay.
 
-To add a unit, extend the catalog, provide sprites and translations, and define
-non-neutral matchups. Production menus enumerate the catalog automatically.
+For GitHub Actions, set repository variable `METERED_APP` and secret
+`METERED_TURN_API_KEY`. The key is included in the public browser bundle despite
+being supplied as a GitHub secret: monitor quotas and replace it if abused.
+`.env` files are not committed. See the [Metered reference](https://www.metered.ca/docs/llms-turn-server.txt).
 
-Use tabs, single quotes, no JavaScript semicolons and no trailing commas. Keep
-Svelte script, markup and style sections distinct. Nest CSS variants and relevant
-media queries under their selector, with blank lines between rules.
-Use descriptive function and parameter names, such as `revealCell`, `attackerType` and `damageDealt`.
-Avoid single-letter placeholders for game entities. Coordinate properties `x` and `y` keep their standard meaning.
-Run `npm run format` before committing. CI checks formatting.
+`npm run test:turn` checks two peers forced through the configured relay and
+consumes a little relay bandwidth. `VITE_TURN_RELAY_ONLY=true` tests full local
+matches via TURN; leave it false for normal play.
 
-### Assets
-
-Assets include SVGs, original audio and bitmap sources stored as `.png.base64`
-or `.gif.base64`. Prepare, predev and prebuild synchronize these into ignored
-`static/assets/`, decoding Base64 files and copying other sources. Native image
-files take precedence over their Base64 equivalents. The favicon is generated
-from the damaged red infantry sprite (`assets/units/infantry-2-damage-2-fit.png.base64`).
-The shared root layout uses its square SVG favicon across the game and map editor.
-
-Visual assets are preloaded when entering a game and reused across map navigation.
-To refresh generated assets after editing sources:
-
-```sh
-node --experimental-strip-types scripts/sync-assets.ts
-```
-
-All eleven unit types have a healthy sprite and four damage stages for both teams.
-See [asset sources and regeneration](assets/README.md) and [unit damage artwork](docs/unit-damage.md).
-Sprite generators write Base64 sources without redundant PNG copies. Synchronization removes stale
-public files when their source is removed. Do not commit generated static assets.
-
-Combat effect sheets live in `assets/effects/`; per-unit muzzle placement is shared
-through `src/lib/game/combat-effects.json`. Shared hover and selection corners are
-defined by `.pixel-corners` in `src/lib/app.css`.
-
-### itch.io launcher and artwork
-
-The itch.io upload is a small launcher, not a second game build. It opens the current GitHub Pages game.
-See [launcher packaging and upload instructions](distribution/itch/README.md). The ready-to-upload archive
-is `distribution/itch.zip`, with `index.html` at its root and the same locally bundled fonts as the game.
-
-The [wide banner](docs/artwork/pixels-war-banner.png), [650 × 500 cover](docs/artwork/pixels-war-cover-650x500.png)
-and [generation prompts](docs/artwork/cover-prompt.md) live in `docs/artwork/`. Temporary exports belong in
-ignored `output/` or `tmp/` folders. Browser traces and verification screenshots belong in ignored `test-results/`.
-
-## GitHub Pages deployment
-
-### Metered TURN setup
-
-Create a TURN credential in the Metered dashboard. Copy `.env.example` to `.env.local`
-and set `VITE_METERED_APP` to the app name (or its `.metered.live` hostname) and
-`VITE_METERED_TURN_API_KEY` to that credential's API key. Restart Vite after changes.
-Use the credential-scoped key, **never the account Secret Key or Project API Key**.
-This integration needs no additional SDK or backend. See the
-[Metered TURN reference](https://www.metered.ca/docs/llms-turn-server.txt).
-
-The browser retrieves ICE servers when creating or joining a game. It keeps the
-provider's UDP, TCP and TLS endpoints, so the dashboard controls the available
-relay region. A failed credential request shows an error instead of silently
-turning the relay off. Keep the credential enabled and valid throughout your tests.
-
-In GitHub **Settings → Secrets and variables → Actions**, add:
-
-| Type                | Name                   | Value                          |
-| ------------------- | ---------------------- | ------------------------------ |
-| Repository variable | `METERED_APP`          | Metered app name or hostname   |
-| Repository secret   | `METERED_TURN_API_KEY` | Credential-scoped TURN API key |
-
-The workflow passes these values to Vite at build time. `.env` files on your PC
-are not uploaded by Git. The Pages workflow stops if either setting is missing.
-The TURN key is intentionally included in the public
-browser bundle, even when supplied through a GitHub secret. Anyone can extract
-and use the relay credential, so monitor its quota and revoke/replace it if abused.
-For wider distribution, consider issuing rotating credentials from a backend.
-
-For a local connectivity check, run `npm run test:turn`. It uses the `.env` values
-and two browser peers forced through TURN, exchanges a small payload and verifies
-the selected relay candidates. It consumes a small amount of relay bandwidth.
-Alternatively, set `VITE_TURN_RELAY_ONLY=true` locally and restart Vite to test a
-full game through TURN. Keep it `false` for normal play to allow direct connections.
-Provider quotas and credential expiry can interrupt or prevent relayed games.
-
-### Publish the site
-
-1. In **Settings → Pages**, choose **GitHub Actions** as the source.
-2. In **Actions → Deploy GitHub Pages → Run workflow**, select the branch to publish.
-
-The manual workflow builds with an empty `BASE_PATH` for the custom domain
-`https://pixelswar.io/` and publishes the generated `build/` artifact. Keep
-`pixelswar.io` configured as the custom domain in **Settings → Pages**.
-Publishing the source branch instead can display the README rather than the app.
-
-To test the production base path in PowerShell:
-
-```powershell
-$env:BASE_PATH = ''
-npm run build
-Remove-Item Env:BASE_PATH
-```
-
-CI checks formatting, components, rules, the build and browser behavior separately.
-Pushing or merging does not automatically deploy the site.
-
-### Create and submit a map
-
-Open the map editor from the homepage, or run `npm run dev` and open
-http://127.0.0.1:5173/map-editor/ for local editing. The editor shares the game’s language preference (English, French, German or Japanese).
-Paint terrain and buildings with the game's sprites, place both armies, and download
-a JSON file ready for integration. Roads and shores connect automatically.
-Building palette previews reflect the selected owner: neutral, blue or red. Obstacles
-and both transport types are available. Existing
-maps and JSON files can be imported; the current draft is saved locally in the browser.
-The editor is included in development and production builds. Submit your JSON in a
-[GitHub issue](https://github.com/john-does-it/pixelswars/issues/new), with a name,
-description and optional screenshot.
-Maps are reviewed before publication. See the [editor guide](docs/map-editor.md).
+In repository **Settings → Pages**, select **GitHub Actions** and keep the custom
+domain `pixelswar.io`. Run **Actions → Deploy GitHub Pages → Run workflow** on the
+branch to publish. It builds with an empty `BASE_PATH` and requires both Metered
+settings. Pushing or merging does not automatically deploy.
 
 ## Credits
 

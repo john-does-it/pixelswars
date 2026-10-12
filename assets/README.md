@@ -1,44 +1,39 @@
 # Game assets
 
-This directory contains the game's source assets. `static/assets/` is generated and ignored by Git.
+`assets/` contains source artwork and audio. `static/assets/` is generated and ignored.
+Keep one representation per bitmap: `.png.base64` or a native image, never both.
 
-- `cells/`: terrain and building art. Water-tile provenance is documented in [WATER_TILE_MAPPING.md](cells/WATER_TILE_MAPPING.md).
-	Oil fields use six native `cell-oil-field-on-grass*.png` sprites for neutral, captured and partially captured states.
-	`cells/building-lights/` contains animated light overlays for all five buildings and ownership states. Regenerate with `node scripts/generate-building-lights.mjs` from the supplied SVGs in `docs/artwork/building-lights/`, then synchronize assets. The overlays retain the corrected light shapes and gradients while leaving base sprites unchanged.
-	`cells/water-shimmer/` contains ripple-only masks derived from the existing water sprites. Regenerate them with `node scripts/generate-water-shimmer.mjs`, then run asset synchronization. They leave shorelines untouched.
-  Road connections and junction variants are documented in [ROAD_TILE_MAPPING.md](cells/ROAD_TILE_MAPPING.md).
-- `units/`: healthy and damaged sprites for both armies, plus cropped `-fit` variants used in previews and production menus.
-- `icons/`: shared interface and resource icons.
-  Passenger badges use the original 16px bitmaps from `docs/artwork/cargo-count/`. Regenerate with `node scripts/export-cargo-count.mjs`, then synchronize assets.
-  Pixel UI controls keep their original SVG assets through `UiIcon.svelte`; button labels and keyboard shortcuts remain on the controls themselves.
-- `figma/`: runtime PNG ×2 exports and derived unit variants. The catalog, archived Figma exports and import instructions are in [the Figma artwork documentation](../docs/artwork/figma/README.md). `src/lib/game/asset-path.ts` resolves legacy gameplay names to the new export names. Approved road SVGs and animation overlays remain unchanged.
-- `gifs/`: combat animation.
-- `mp3/`: music and sound effects, including the infantry selection variants.
-- `map-previews/`: homepage thumbnails generated from the maps.
+| Directory       | Contents                                                                               |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `figma/`        | Runtime PNG ×2 exports, including healthy/damaged units and cropped `-fit` variants    |
+| `cells/`        | Approved road SVGs, oil-field sprites, building-light overlays and water-shimmer masks |
+| `icons/`        | Original pixel UI buttons and passenger badges                                         |
+| `effects/`      | Combat sprite sheets                                                                   |
+| `mp3/`          | Music and sound effects                                                                |
+| `map-previews/` | Homepage thumbnails                                                                    |
+| `units/`        | Original damaged red infantry artwork retained for the favicon                         |
 
-Keep one source representation per bitmap, either the existing `.png.base64`/`.gif.base64`
-text format or a native image. Do not keep both copies. Editable sniper SVGs are authoring
-sources for their PNG exports and should be kept.
+The [Figma source](https://www.figma.com/design/qXf7Ow0SFObOF7z0Q8dyLo/Pixel-s-War)
+is organized by asset category. `src/lib/game/figma-assets.json` maps stable gameplay
+paths to exported PNG filenames through `asset-path.ts`. Terrain CSS uses exported
+paths directly. Keep both mappings consistent when renaming artwork.
+
+Units have five health bands: healthy above 80%, then damage stages at ≤80%, ≤60%,
+≤40% and ≤20% of maximum HP. Each team and stage has a consistent canvas; `-fit`
+variants serve compact previews. Infantry animation transforms the same sprite.
+UI buttons and approved roads retain their original SVGs.
+
+[Road connections](cells/ROAD_TILE_MAPPING.md) and [water tile naming](cells/WATER_TILE_MAPPING.md)
+document the tile conventions. Oil-field lighting states share one identical overlay.
+Other building overlays preserve ownership and partial-capture variations.
 
 ```sh
-node --experimental-strip-types scripts/sync-assets.ts
+node scripts/sync-assets.mjs
 ```
 
-This decodes Base64 sources, copies native assets and updates the visual preload manifest.
-It also removes generated files whose source no longer exists. `npm ci`, `npm run dev`
-and `npm run build` run synchronization automatically.
+Synchronization decodes Base64, copies native media, removes stale public files,
+generates the visual preload manifest and updates the favicon. `npm ci`, `npm run dev`
+and `npm run build` run it automatically. Do not commit generated public assets.
 
-To regenerate artwork:
-
-| Task | Command | Requirement |
-| --- | --- | --- |
-| Bitmap unit damage | `python scripts/draw-unit-damage.py` | Python and Pillow |
-| One unit's damage | `python scripts/draw-unit-damage.py --only tank` | Python and Pillow |
-| Sniper sprites and contact sheet | `node scripts/export-sniper-sprites.mjs` | Playwright Chromium |
-| Transport sprites from supplied SVGs | `node scripts/export-transport-sprites.mjs`, then `python scripts/draw-unit-damage.py --only transport` | Playwright Chromium, Python and Pillow |
-| Normalize an imported unit | `python scripts/normalize-unit-sprite.py INPUT OUTPUT.png` | Python and Pillow, writes `OUTPUT.png.base64` |
-| Map thumbnails | `npm run generate:map-previews` | Running dev server and Playwright Chromium |
-
-Run synchronization after modifying source files. See [damage artwork notes](../docs/unit-damage.md)
-for health thresholds. Promotional artwork belongs in `docs/artwork/`, not this preloadable asset tree.
-Keep experiments in the ignored root `tmp/` or `output/` directories.
+For map thumbnails, run `npm run generate:map-previews` with the dev server running
+and Playwright Chromium installed. Promotional artwork belongs in `docs/artwork/`.

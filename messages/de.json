@@ -407,5 +407,7 @@
 	"unit_transport_helicopter_description": "Fliegt über jedes Gelände und transportiert bis zu drei Infanterieeinheiten. Kann nicht angreifen. Wird er zerstört, gehen auch seine Passagiere verloren.",
 	"map_tiny": "Sehr klein",
 	"map_19": "Bergwanderung",
-	"map_19_description": "Überquere Brücken zwischen Bergen und Wasserläufen, erobere Städte und baue deine Armee auf."
+	"map_19_description": "Überquere Brücken zwischen Bergen und Wasserläufen, erobere Städte und baue deine Armee auf.",
+	"map_20": "Genf",
+	"map_20_description": "Sichere die Übergänge und erobere die Gebäude entlang der Wasserwege."
 }

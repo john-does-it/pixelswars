@@ -71,7 +71,7 @@
 		<span
 			class="building-lights"
 			aria-hidden="true"
-			style:background-image={`url('${asset(`/assets/cells/building-lights/${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}.svg`)}')`}
+			style:background-image={`url('${asset(`/assets/cells/building-lights/${cell.building === 'oil-field' ? 'oil-field-0' : `${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}`}.svg`)}')`}
 			onanimationstart={(event) => {
 				// Share the document timeline, including after actions or settings remount lights.
 				for (const animation of event.currentTarget.getAnimations()) animation.startTime = 0

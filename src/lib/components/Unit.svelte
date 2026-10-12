@@ -92,6 +92,7 @@
 		pointer-events: none;
 	}
 	.unit-sprite {
+		image-rendering: pixelated;
 		position: absolute;
 		inset: 0;
 		background-size: 90%;

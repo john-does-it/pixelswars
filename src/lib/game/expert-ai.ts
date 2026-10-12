@@ -3,7 +3,7 @@ import { buildingIncome, unitTypes } from './catalog.ts'
 import * as actions from './actions.ts'
 import * as transportActions from './transport.ts'
 import { attackCells, canAttack, canCapture, effectiveRange } from './model.ts'
-import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision } from './ai.ts'
+import { chooseAttack, chooseMovement, chooseHeuristicDecision, simulateAttack, type AiDecision, type MovementChoice } from './ai.ts'
 import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
 import rules from './combat-rules.ts'
 import type { GameState, Player, Unit } from './types.ts'
@@ -78,7 +78,10 @@ export function expertCombatPressure(state: GameState, unit: Unit, target: Unit)
 export function evaluateExpertPosition(state: GameState, player: Player): number {
 	if (state.winner !== null) return state.winner === player ? 1000000 : -1000000
 	const enemy = player === 1 ? 2 : 1
-	let score = (state.money[player] - state.money[enemy]) * 0.75
+	// Keep a useful reserve, but investing excess cash in an army should beat
+	// indefinitely banking income while the opponent takes the remaining territory.
+	const reserveValue = (money: number) => Math.min(money, 2000) * 0.65 + Math.max(0, money - 2000) * 0.25
+	let score = reserveValue(state.money[player]) - reserveValue(state.money[enemy])
 	for (const unit of state.units) {
 		const definition = unitTypes[unit.type]
 		const sign = unit.player === player ? 1 : -1
@@ -95,13 +98,13 @@ export function evaluateExpertPosition(state: GameState, player: Player): number
 		const distanceTo = (cell: number) => Math.abs((unit.cell % state.cols) - (cell % state.cols)) + Math.abs(Math.floor(unit.cell / state.cols) - Math.floor(cell / state.cols))
 		const targets = state.units.filter((target) => target.player !== unit.player && rules.canTarget(unit.type, target.type))
 		const pressure = Math.max(0, ...targets.map((target) => expertCombatPressure(state, unit, target)))
-		const expansion = definition.captures ? Math.max(0, ...state.cells.filter((cell) => cell.building && cell.owner !== unit.player).map((cell) => (buildingIncome(cell.building) ? buildingIncome(cell.building) * 0.75 : 90) / (1 + distanceTo(cell.index)))) : 0
+		const expansion = definition.captures ? Math.max(0, ...state.cells.filter((cell) => cell.building && cell.owner !== unit.player).map((cell) => (buildingIncome(cell.building) || (cell.building === 'factory' ? 180 : 90)) / (1 + distanceTo(cell.index)))) : 0
 		score += sign * (pressure + expansion)
 	}
 	for (const cell of state.cells) {
 		if (!cell.building) continue
-		// Three future income payments value growth and denying the opponent an income source.
-		const value = buildingIncome(cell.building) ? buildingIncome(cell.building) * 3 : cell.building === 'factory' ? 400 : cell.building === 'airport' ? 300 : 180
+		// Four income payments value growth and denying the opponent an income source.
+		const value = buildingIncome(cell.building) ? buildingIncome(cell.building) * 4 : cell.building === 'factory' ? 650 : cell.building === 'airport' ? 400 : 180
 		if (cell.owner !== 0) score += (cell.owner === player ? 1 : -1) * value
 		if (cell.capturePoints < 20) {
 			const capturer = state.units.find((unit) => unit.cell === cell.index && unitTypes[unit.type].captures)
@@ -121,70 +124,90 @@ async function rollout(state: GameState, moved: Set<number>, produced: Set<numbe
 	return state
 }
 
-export async function projectExpertDecision(state: GameState, decision: AiDecision, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}): Promise<GameState> {
+export async function projectExpertDecision(state: GameState, decision: AiDecision, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}, depth = { current: currentTurnActions, projected: projectedTurnActions }, enemyHolds = false): Promise<GameState> {
 	let projected = copyState(state)
 	const plannedMoves = new Set(moved)
 	const plannedProduction = new Set(produced)
 	projected = simulateDecision(projected, decision, plannedMoves, plannedProduction)
-	if (decision.kind !== 'end') projected = await rollout(projected, plannedMoves, plannedProduction, currentTurnActions, active, yieldControl)
+	if (decision.kind !== 'end') projected = await rollout(projected, plannedMoves, plannedProduction, depth.current, active, yieldControl)
 	if (!active() || projected.winner !== null) return projected
 	actions.endTurn(projected)
-	projected = await rollout(projected, new Set(), new Set(), projectedTurnActions, active, yieldControl)
+	if (!enemyHolds) projected = await rollout(projected, new Set(), new Set(), depth.projected, active, yieldControl)
 	if (!active() || projected.winner !== null) return projected
 	actions.endTurn(projected)
-	return rollout(projected, new Set(), new Set(), projectedTurnActions, active, yieldControl)
+	return rollout(projected, new Set(), new Set(), depth.projected, active, yieldControl)
 }
 
-function candidates(state: GameState, moved: Set<number>, produced: Set<number>, withinBudget: () => boolean): AiDecision[] {
-	const choices: AiDecision[] = [chooseHeuristicDecision(state, 'expert', moved, produced, withinBudget)]
-	if (!withinBudget()) return choices
+export function expertCandidates(state: GameState, moved: Set<number>, produced: Set<number>, withinBudget: () => boolean = () => true): AiDecision[] {
+	// Reserve reinforcement space before optional attack/movement alternatives.
+	const plan = planExpertProduction(state, produced)
+	const alternatives: MovementChoice[] = []
+	const fallback = chooseHeuristicDecision(state, 'expert', moved, produced, withinBudget, alternatives)
+	const choices: AiDecision[] = [fallback]
+	if (plan?.affordable) choices.push({ kind: 'buy', buildingIndex: plan.buildingIndex, type: plan.type })
+	const finish = () => {
+		const unique = [...new Map(choices.filter((choice) => choice.kind !== 'end').map((choice) => [JSON.stringify(choice), choice])).values()]
+		return [...unique.slice(0, candidateLimit), { kind: 'end' } as AiDecision]
+	}
+	if (!withinBudget()) return finish()
 	const capturer = state.units.filter((unit) => canCapture({ ...state, selectedId: unit.id })).sort((left, right) => economicObjectiveValue(state, state.cells[right.cell]) - economicObjectiveValue(state, state.cells[left.cell]))[0]
 	if (capturer) choices.push({ kind: 'capture', unitId: capturer.id })
-	if (!withinBudget()) return choices
-	const attack = chooseAttack(state, 'expert', withinBudget)
+	if (!withinBudget()) return finish()
+	const attack = fallback.kind === 'attack' ? fallback : chooseAttack(state, 'expert', withinBudget)
 	if (attack) {
 		choices.push({ kind: 'attack', attackerId: attack.attackerId, defenderId: attack.defenderId })
-		const alternativeTarget = chooseAttack({ ...state, units: state.units.filter((unit) => unit.id !== attack.defenderId) }, 'expert', withinBudget)
-		if (alternativeTarget) choices.push({ kind: 'attack', attackerId: alternativeTarget.attackerId, defenderId: alternativeTarget.defenderId })
-	}
-	if (!withinBudget()) return choices
-	const movement = chooseMovement(state, 'expert', moved, withinBudget)
-	if (movement) {
-		choices.push({ kind: 'move', unitId: movement.unitId, path: movement.path })
-		// Rejecting one unit's advance must not strand the rest of the army.
-		const alternativeMovement = chooseMovement(state, 'expert', new Set([...moved, movement.unitId]), withinBudget)
-		if (alternativeMovement) choices.push({ kind: 'move', unitId: alternativeMovement.unitId, path: alternativeMovement.path })
-	}
-	if (!withinBudget()) return choices
-	const plan = planExpertProduction(state, produced)
-	if (plan?.affordable) choices.push({ kind: 'buy', buildingIndex: plan.buildingIndex, type: plan.type })
-	if (attack) {
-		const alternative = chooseAttack({ ...state, units: state.units.map((unit) => (unit.id === attack.attackerId ? { ...unit, attacks: 0 } : unit)) }, 'expert', withinBudget)
+		// Exclude the target from consideration, never from the board or follow-up simulation.
+		const alternative = chooseAttack(state, 'expert', withinBudget, (_, defender) => defender.id !== attack.defenderId)
 		if (alternative) choices.push({ kind: 'attack', attackerId: alternative.attackerId, defenderId: alternative.defenderId })
 	}
-	const unique = [...new Map(choices.filter((choice) => choice.kind !== 'end').map((choice) => [JSON.stringify(choice), choice])).values()]
-	return [...unique.slice(0, candidateLimit), { kind: 'end' }]
+	if (!withinBudget()) return finish()
+	// Reuse the fallback's paths and threat estimates when it already searched movement.
+	const movement = fallback.kind === 'move' ? fallback : chooseMovement(state, 'expert', moved, withinBudget, alternatives)
+	if (movement) {
+		choices.splice(plan?.affordable ? 2 : 1, 0, { kind: 'move', unitId: movement.unitId, path: movement.path })
+		const ranked = alternatives.sort((a, b) => b.score - a.score)
+		const otherUnit = ranked.find((choice) => choice.unitId !== movement.unitId)
+		if (otherUnit) choices.splice(plan?.affordable ? 3 : 2, 0, { kind: 'move', unitId: otherUnit.unitId, path: otherUnit.path })
+		const sameUnit = ranked.find((choice) => choice.unitId === movement.unitId && choice.path.at(-1) !== movement.path.at(-1))
+		if (sameUnit) choices.push({ kind: 'move', unitId: sameUnit.unitId, path: sameUnit.path })
+	}
+	return finish()
 }
 
-function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set<number>, produced: Set<number>): boolean {
-	if (decision.kind !== 'move' && decision.kind !== 'capture' && decision.kind !== 'relay') return false
+function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set<number>, produced: Set<number>, withinBudget: () => boolean): boolean {
+	if (!withinBudget()) return false
+	if (decision.kind !== 'move' && decision.kind !== 'capture' && decision.kind !== 'relay' && decision.kind !== 'buy') return false
 	const after = simulateDecision(copyState(state), decision, new Set(moved), new Set(produced))
 	const participants = after.units.filter((unit) => {
 		const before = state.units.find((original) => original.id === unit.id)
-		return unit.player === state.player && before && (unit.cell !== before.cell || unit.capture !== before.capture)
+		return unit.player === state.player && (!before || unit.cell !== before.cell || unit.capture !== before.capture)
 	})
 	const advancesCapture = after.cells.some((cell) => cell.building && (cell.owner === state.player ? state.cells[cell.index].owner !== state.player || cell.capturePoints > state.cells[cell.index].capturePoints : cell.capturePoints < state.cells[cell.index].capturePoints))
 	const approachesBuilding = participants.some((unit) => {
+		if (!withinBudget()) return false
 		if (!unitTypes[unit.type].captures || unit.capture <= 0) return false
-		const before = state.units.find((original) => original.id === unit.id)!
+		const before = state.units.find((original) => original.id === unit.id)
+		if (!before) return false
 		const previousPaths = pathsFrom(state, before)
 		const nextPaths = pathsFrom(after, unit)
 		return after.cells.some((cell) => cell.building && cell.owner !== state.player && (nextPaths.get(cell.index)?.cost ?? Infinity) < (previousPaths.get(cell.index)?.cost ?? Infinity))
 	})
-	if (!advancesCapture && !approachesBuilding) return false
+	// Leaving a safe factory can lose its cover bonus in the short horizon while
+	// unlocking reinforcements. Do not let holding there starve production forever.
+	const clearsProduction = participants.some((unit) => {
+		if (!withinBudget()) return false
+		const before = state.units.find((original) => original.id === unit.id)
+		if (!before || before.cell === unit.cell) return false
+		const cell = state.cells[before.cell]
+		if (cell.owner !== state.player || (cell.building !== 'factory' && cell.building !== 'airport') || after.units.some((other) => other.cell === cell.index)) return false
+		const unavailable = new Set([...produced, ...after.cells.filter((other) => other.index !== cell.index && (other.building === 'factory' || other.building === 'airport')).map((other) => other.index)])
+		return planExpertProduction(after, unavailable)?.affordable ?? false
+	})
+	if (!advancesCapture && !approachesBuilding && !clearsProduction && decision.kind !== 'buy') return false
 	// Ending must not postpone uncontested captures forever. Holding remains an
 	// option when any participating unit can be attacked on the enemy's next turn.
 	for (const enemy of after.units.filter((unit) => unit.player !== state.player)) {
+		if (!withinBudget()) return false
 		const targets = participants.filter((unit) => rules.canTarget(enemy.type, unit.type))
 		if (!targets.length) continue
 		for (const cell of pathsFrom(after, enemy, unitTypes[enemy.type].movement).keys()) {
@@ -192,7 +215,7 @@ function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set
 			if (targets.some((unit) => range.includes(unit.cell))) return false
 		}
 	}
-	return true
+	return withinBudget()
 }
 
 export async function chooseExpertDecision(state: GameState, moved: Set<number>, produced: Set<number>, active: () => boolean = () => true, yieldControl: () => Promise<void> = async () => {}, budget: { milliseconds?: number; now?: () => number } = {}): Promise<AiDecision> {
@@ -200,8 +223,18 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 	const now = budget.now ?? (() => performance.now())
 	const deadline = now() + (budget.milliseconds ?? expertDecisionBudgetMs)
 	const withinBudget = () => active() && now() < deadline
+	// An immediate legal finishing shot is certain; no speculative reply can beat it.
+	const enemies = state.units.filter((unit) => unit.player !== state.player)
+	if (enemies.length === 1) {
+		for (const attacker of state.units) {
+			if (!withinBudget()) break
+			if (attacker.player !== state.player || attacker.attacks <= 0 || !canAttack(state, attacker, enemies[0])) continue
+			const after = simulateAttack(state, attacker, enemies[0])
+			if (!after.units.some((unit) => unit.player !== state.player) && after.units.some((unit) => unit.player === state.player)) return { kind: 'attack', attackerId: attacker.id, defenderId: enemies[0].id }
+		}
+	}
 	// Always prepare a legal heuristic fallback before spending time on rollouts.
-	const choices = candidates(state, moved, produced, withinBudget)
+	const choices = expertCandidates(state, moved, produced, withinBudget)
 	if (!active()) return { kind: 'end' }
 	if (choices.length === 1) return choices[0]
 	let best = choices[0]
@@ -216,7 +249,15 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 		const immediate = simulateDecision(copyState(state), decision, new Set(moved), new Set(produced))
 		// Discount speculative follow-up gains: owning a city now is better than
 		// repeatedly postponing its capture to the end of the search horizon.
-		const value = projected.winner !== null ? evaluateExpertPosition(projected, state.player) : (evaluateExpertPosition(projected, state.player) + evaluateExpertPosition(immediate, state.player)) / 2
+		let projectedValue = evaluateExpertPosition(projected, state.player)
+		if (decision.kind === 'end') {
+			// Passing must also work against an opponent who keeps its cover. Only
+			// this candidate needs a second reply, within the same shared time budget.
+			const holding = await projectExpertDecision(state, decision, moved, produced, withinBudget, yieldControl, undefined, true)
+			if (!withinBudget()) break
+			projectedValue = Math.min(projectedValue, evaluateExpertPosition(holding, state.player))
+		}
+		const value = Math.abs(projectedValue) === 1000000 ? projectedValue : (projectedValue + evaluateExpertPosition(immediate, state.player)) / 2
 		evaluated.push({ decision, value })
 		if (value > bestValue) {
 			bestValue = value
@@ -225,7 +266,7 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 		await yieldControl()
 	}
 	if (withinBudget() && best.kind === 'end') {
-		const progress = evaluated.sort((left, right) => right.value - left.value).find(({ decision }) => safeEconomicProgress(state, decision, moved, produced))
+		const progress = evaluated.sort((left, right) => right.value - left.value).find(({ decision }) => safeEconomicProgress(state, decision, moved, produced, withinBudget))
 		if (progress) return progress.decision
 	}
 	return active() ? best : { kind: 'end' }

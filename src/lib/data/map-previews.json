@@ -93,5 +93,10 @@
 		"cols": 24,
 		"rows": 12,
 		"size": "large"
+	},
+	"20": {
+		"cols": 24,
+		"rows": 12,
+		"size": "large"
 	}
 }

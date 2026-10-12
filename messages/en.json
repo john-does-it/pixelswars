@@ -407,5 +407,7 @@
 	"unit_transport_helicopter_description": "Flies over any terrain and carries up to three infantry units. Cannot attack. Its passengers are lost if it is destroyed.",
 	"map_tiny": "Very small",
 	"map_19": "Mountain Hike",
-	"map_19_description": "Cross bridges between mountains and waterways to capture towns and build your army."
+	"map_19_description": "Cross bridges between mountains and waterways to capture towns and build your army.",
+	"map_20": "Geneva",
+	"map_20_description": "Secure the crossings and capture the buildings around the waterways."
 }

@@ -1,7 +1,7 @@
 import rules from './combat-rules.ts'
 import { buildingIncome, unitTypes } from './catalog.ts'
 import { productionBuilding, unitAt } from './model.ts'
-import type { Cell, GameState, Unit, UnitTypeId } from './types.ts'
+import type { Cell, GameState, UnitTypeId } from './types.ts'
 import { transportPurchaseScore } from './ai-transport.ts'
 
 export interface RecruitmentPlan {
@@ -24,9 +24,9 @@ function estimatedTurnDamage(attackerType: UnitTypeId, defenderType: UnitTypeId,
 export function economicObjectiveValue(state: GameState, cell: Cell): number {
 	const income = state.cells.reduce((total, candidate) => total + (candidate.owner === state.player ? buildingIncome(candidate.building) : 0), 0)
 	const production = state.cells.filter((candidate) => candidate.owner === state.player && (candidate.building === 'factory' || candidate.building === 'airport')).length
-	if (buildingIncome(cell.building)) return (380 * buildingIncome(cell.building)) / 200 + (income === 0 ? 120 : 0) + (cell.owner !== 0 && cell.owner !== state.player ? 120 : 0)
-	if (cell.building === 'factory') return production === 0 ? 500 : 300
-	if (cell.building === 'airport') return production === 0 ? 350 : 220
+	if (buildingIncome(cell.building)) return (440 * buildingIncome(cell.building)) / 200 + (income === 0 ? 120 : 0) + (cell.owner !== 0 && cell.owner !== state.player ? 120 : 0)
+	if (cell.building === 'factory') return production === 0 ? 600 : 440
+	if (cell.building === 'airport') return production === 0 ? 420 : 300
 	return 140
 }
 
@@ -40,7 +40,9 @@ export function planExpertProduction(state: GameState, produced = new Set<number
 	const budget = state.money[state.player]
 	const enemyValue = enemies.reduce((total, enemy) => total + (unitTypes[enemy.type].cost * enemy.health) / unitTypes[enemy.type].maxHealth, 0)
 	const economicTargets = state.cells.filter((cell) => cell.building && cell.owner !== state.player).length
-	const desiredCapturers = Math.min(5, Math.max(2, Math.ceil(economicTargets / 3)))
+	// Larger battlefields need more independent capturing units, not just enough
+	// combat strength to counter the army currently visible near a production site.
+	const desiredCapturers = Math.min(8, Math.max(2, Math.ceil(economicTargets / 3)))
 	const capturers = allies
 		.flatMap((unit) => [unit, ...(unit.cargo ?? [])])
 		.filter((unit) => unitTypes[unit.type].captures)

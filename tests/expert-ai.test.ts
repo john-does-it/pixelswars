@@ -7,7 +7,7 @@ import { buildingIncome, createUnit, unitTypes } from '../src/lib/game/catalog.t
 import { chooseAttack, chooseMovement, chooseCaptureRelay, isAiDifficulty, runAiTurn } from '../src/lib/game/ai.ts'
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
-import { chooseExpertDecision, projectExpertDecision, expertCombatPressure } from '../src/lib/game/expert-ai.ts'
+import { chooseExpertDecision, projectExpertDecision, expertCombatPressure, expertCandidates } from '../src/lib/game/expert-ai.ts'
 import { planExpertProduction } from '../src/lib/game/ai-economy.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 
@@ -336,4 +336,56 @@ test('Expert develops its economy and beats Hard from either side of Neighbor Tr
 		assert.ok(peakIncome >= 400)
 		controller.dispose()
 	}
+})
+
+test('Expert reserves recruitment and compares two destinations without changing the board', () => {
+	const state = fixture()
+	state.units = [createUnit('artillery', 1, 0, 0), createUnit('tank', 1, 10, 1), createUnit('jeep', 2, 3, 2), createUnit('infantry-rocket', 2, 11, 3)]
+	Object.assign(state.cells[7], { building: 'factory', owner: 1 })
+	state.money[1] = 3000
+	const snapshot = JSON.stringify(state)
+	const choices = expertCandidates(state, new Set(), new Set())
+	assert.ok(choices.some((choice) => choice.kind === 'buy'))
+	assert.ok(choices.length <= 7, 'six active choices plus ending the turn')
+	const moves = choices.filter((choice) => choice.kind === 'move')
+	assert.ok(moves.some((move) => moves.some((other) => other.unitId === move.unitId && other.path.at(-1) !== move.path.at(-1))))
+	assert.equal(JSON.stringify(state), snapshot)
+	assert.ok(
+		expertCandidates(state, new Set(), new Set(), () => false).some((choice) => choice.kind === 'buy'),
+		'optional search cannot displace an affordable purchase'
+	)
+})
+
+test('alternative attacks leave excluded targets available for follow-up fire', () => {
+	const state = fixture()
+	state.units = [createUnit('artillery', 1, 0, 0), createUnit('tank', 1, 10, 1), createUnit('jeep', 2, 3, 2), createUnit('infantry-rocket', 2, 11, 3)]
+	const snapshot = JSON.stringify(state)
+	const alternative = chooseAttack(
+		state,
+		'expert',
+		() => true,
+		(_, defender) => defender.id !== 2
+	)!
+	assert.equal(alternative.defenderId, 3)
+	assert.equal(alternative.attackerId, 1, 'tank hits the rocket while artillery remains available for the jeep')
+	assert.equal(JSON.stringify(state), snapshot)
+})
+
+test('Expert returns a legal fallback when time expires during refinement', async () => {
+	const state = productionFixture()
+	const snapshot = JSON.stringify(state)
+	const choices = expertCandidates(state, new Set(), new Set())
+	let clock = 0
+	const decision = await chooseExpertDecision(
+		state,
+		new Set(),
+		new Set(),
+		() => true,
+		async () => {
+			clock = 200
+		},
+		{ milliseconds: 180, now: () => clock }
+	)
+	assert.ok(choices.some((choice) => JSON.stringify(choice) === JSON.stringify(decision)))
+	assert.equal(JSON.stringify(state), snapshot)
 })
