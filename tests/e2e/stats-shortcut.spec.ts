@@ -20,8 +20,14 @@ test('I opens the inspected tile statistics without changing the selection or ov
 	await page.keyboard.press('Escape')
 	await expect(origin).toHaveAttribute('aria-pressed', 'true')
 	await page.keyboard.press('ArrowDown')
+	const destination = page.locator('[data-cell="9"]')
+	await expect(destination.locator('[data-unit="1"]')).toBeVisible()
+	// Closing the dialog can deliver a late boundary event to the stationary
+	// pointer over the origin. It must not replace the keyboard's preview.
+	await origin.dispatchEvent('pointerenter', { pointerType: 'mouse', buttons: 0 })
 	await page.keyboard.press('I')
 	await expect(stats).toBeVisible()
+	await expect(stats.getByRole('heading', { name: 'Hospital', exact: true })).toBeVisible()
 	await expect(stats.getByText('3/5', { exact: true })).toBeVisible()
 	await page.keyboard.press('Escape')
 	await page.keyboard.press('Escape')

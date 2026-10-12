@@ -62,7 +62,9 @@
 	data-cell={cell.index}
 	{onclick}
 	onfocus={onpreview}
-	onpointerenter={(event) => {
+	onpointermove={(event) => {
+		// Modal/camera changes can trigger pointerenter beneath a stationary cursor.
+		// Only actual pointer movement should replace the keyboard preview.
 		if (event.pointerType !== 'touch' && event.buttons === 0) onpreview?.()
 	}}
 >
