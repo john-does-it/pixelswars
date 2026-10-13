@@ -98,5 +98,20 @@
 		"cols": 24,
 		"rows": 12,
 		"size": "large"
+	},
+	"21": {
+		"cols": 31,
+		"rows": 11,
+		"size": "large"
+	},
+	"22": {
+		"cols": 21,
+		"rows": 11,
+		"size": "large"
+	},
+	"23": {
+		"cols": 17,
+		"rows": 11,
+		"size": "large"
 	}
 }

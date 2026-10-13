@@ -22,12 +22,11 @@
 	.match-summary {
 		flex: none;
 		padding: 16px var(--game-gutter);
-		background: var(--color-surface);
+		background: rgb(0 0 0 / 15%);
+		backdrop-filter: blur(6px);
 		width: calc(100% - 2 * var(--game-gutter));
 		margin-top: 12px;
-		border: 1px solid var(--color-border);
 		border-radius: 12px;
-		box-shadow: 0 3px 0 #0005;
 		display: flex;
 		align-items: flex-start;
 		gap: 12px;
@@ -44,6 +43,7 @@
 	.options-button {
 		display: grid;
 		place-items: center;
+		align-self: center;
 		flex: none;
 		width: 40px;
 		height: 40px;
@@ -84,6 +84,9 @@
 		color: #ffb3b1;
 	}
 	@media (max-width: 900px) {
+		.match-summary {
+			padding-block: 8px;
+		}
 		.summary-details {
 			gap: 4px 12px;
 		}

@@ -1,4 +1,12 @@
 {
+	"map_editor_mirror": "Mirror mode",
+	"map_editor_mirror_off": "Off",
+	"map_editor_mirror_rotation": "180° rotation",
+	"map_editor_mirror_help": "Odd rows and columns only. Copies the upper half to the lower half, plus left → right on the centre row, rotating and swapping teams. Centre: neutral, no units. Undo restores the previous map.",
+	"map_editor_mirror_dimensions": "Mirror mode requires odd rows and columns (3–31). Create an odd-sized grid before enabling it.",
+	"map_editor_mirror_centre_unit": "The centre cell must remain unit-free in mirror mode.",
+	"map_editor_mirror_enabled": "180° mirror enabled. Loading or importing another map turns it off.",
+	"map_editor_mirror_disabled": "Mirror mode disabled.",
 	"play_online": "Play 1v1 online",
 	"online_intro": "Invite a friend. The host plays blue, the guest plays red. Blue goes first.",
 	"online_create": "Create a game",
@@ -409,5 +417,11 @@
 	"map_19": "Mountain Hike",
 	"map_19_description": "Cross bridges between mountains and waterways to capture towns and build your army.",
 	"map_20": "Geneva",
-	"map_20_description": "Secure the crossings and capture the buildings around the waterways."
+	"map_20_description": "Secure the crossings and capture the buildings around the waterways.",
+	"map_21": "A long day",
+	"map_21_description": "Advance across a wide battlefield and secure the central oil fields to sustain your army.",
+	"map_22": "Our Paths Will Cross",
+	"map_22_description": "Wind through the roads between woods and waterways, capture the factories, and meet the opposing army at the crossroads.",
+	"map_23": "Central Park",
+	"map_23_description": "Cross the central park, secure the airports, and capture the oil fields along the edges."
 }

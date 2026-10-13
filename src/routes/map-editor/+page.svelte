@@ -9,7 +9,7 @@
 	import { initializePreferences, preferences, updatePreferences, type Preferences } from '$lib/preferences.svelte.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '$lib/game/types.js'
-	import { mapJson, newMap, paintCell, readMap, terrainBrushes, MapEditorError, type Brush } from '$lib/map-editor/model.ts'
+	import { mapJson, newMap, paintMirroredCell, mirrorMap, mirroredIndex, validateMirrorDimensions, readMap, terrainBrushes, MapEditorError, type Brush, type MirrorMode } from '$lib/map-editor/model.ts'
 
 	const savedDraftKey = 'pixelswar-map-editor-draft-v1'
 	const unitTypeIds = Object.keys(unitTypes) as UnitTypeId[]
@@ -26,6 +26,7 @@
 	let tileSize = $state(48)
 	let brush = $state<Brush>({ kind: 'terrain', classes: ['-grass'], owner: 0 })
 	let history = $state<string[]>([])
+	let mirrorMode = $state<MirrorMode>('off')
 	let statusKey = $state('map_editor_draft_local')
 	let statusError = $state(false)
 	let hoveredCell = $state<number | null>(null)
@@ -86,17 +87,18 @@
 	}
 	function saveDraft() {
 		try {
-			localStorage.setItem(savedDraftKey, JSON.stringify(map))
+			localStorage.setItem(savedDraftKey, JSON.stringify({ ...map, editorMirrorMode: mirrorMode }))
 		} catch {
 			notify('map_editor_save_failed', true)
 		}
 	}
 	function remember() {
-		history.push(JSON.stringify(map))
+		history.push(JSON.stringify({ map, mirrorMode }))
 		if (history.length > 60) history.shift()
 	}
-	function replaceMap(nextMap: GameMap) {
+	function replaceMap(nextMap: GameMap, mode: MirrorMode = 'off') {
 		map = nextMap
+		mirrorMode = mode
 		columns = map.cols
 		rows = map.rows
 		hoveredCell = null
@@ -105,7 +107,8 @@
 	function undo() {
 		const previous = history.pop()
 		if (previous) {
-			replaceMap(JSON.parse(previous))
+			const snapshot = JSON.parse(previous)
+			replaceMap(snapshot.map, snapshot.mirrorMode)
 			notify('map_editor_undone')
 		}
 	}
@@ -123,11 +126,25 @@
 	function createMap() {
 		try {
 			const nextMap = newMap(Number(columns), Number(rows))
+			validateMirrorDimensions(nextMap.cols, nextMap.rows, mirrorMode)
 			nextMap.name = t('map_editor_new_name')
 			remember()
-			replaceMap(nextMap)
+			replaceMap(nextMap, mirrorMode)
 			notify('map_editor_new_notice')
 		} catch (error) {
+			reportError(error)
+		}
+	}
+	function changeMirrorMode(event: Event & { currentTarget: HTMLSelectElement }) {
+		finishStroke()
+		const nextMode = event.currentTarget.value as MirrorMode
+		try {
+			const nextMap = mirrorMap($state.snapshot(map), nextMode)
+			remember()
+			replaceMap(nextMap, nextMode)
+			notify(nextMode === 'off' ? 'map_editor_mirror_disabled' : 'map_editor_mirror_enabled')
+		} catch (error) {
+			event.currentTarget.value = mirrorMode
 			reportError(error)
 		}
 	}
@@ -197,7 +214,7 @@
 		const rowDistance = Math.floor(index / map.cols) - startRow
 		const steps = Math.max(Math.abs(columnDistance), Math.abs(rowDistance), 1)
 		try {
-			for (let step = 1; step <= steps; step++) paintCell(map, (startRow + Math.round((rowDistance * step) / steps)) * map.cols + startColumn + Math.round((columnDistance * step) / steps), strokeBrush)
+			for (let step = 1; step <= steps; step++) paintMirroredCell(map, (startRow + Math.round((rowDistance * step) / steps)) * map.cols + startColumn + Math.round((columnDistance * step) / steps), strokeBrush, mirrorMode)
 			notify('map_editor_saved')
 		} catch (error) {
 			reportError(error)
@@ -247,12 +264,16 @@
 			const saved = localStorage.getItem(savedDraftKey)
 			if (saved) {
 				map = readMap(saved)
+				if (JSON.parse(saved).editorMirrorMode === 'rotation') {
+					validateMirrorDimensions(map.cols, map.rows, 'rotation')
+					mirrorMode = 'rotation'
+				}
 				notify('map_editor_restored')
 			}
 		} catch {
 			notify('map_editor_restore_failed', true)
 		}
-		replaceMap(map)
+		replaceMap(map, mirrorMode)
 		return () => {
 			finishStroke()
 			mounted = false
@@ -296,9 +317,11 @@
 				<h2>{t('map_editor_map')}</h2>
 				<label>{t('map_editor_name')}<input id="name" maxlength="100" value={map.name} onchange={(event) => updateIdentity('name', event.currentTarget.value)} /></label>
 				<div class="row">
-					<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min="2" max="32" bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min="2" max="32" bind:value={rows} /></label>
+					<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={rows} /></label>
 				</div>
 				<button id="new" onclick={createMap}>{t('map_editor_new')}</button>
+				<label class="mirror-setting">{t('map_editor_mirror')}<select id="mirror-mode" value={mirrorMode} onchange={changeMirrorMode} aria-describedby="mirror-help"><option value="off">{t('map_editor_mirror_off')}</option><option value="rotation">{t('map_editor_mirror_rotation')}</option></select></label>
+				<p id="mirror-help" class="hint">{t('map_editor_mirror_help')}</p>
 				<details>
 					<summary>{t('map_editor_start_from')}</summary>
 					<label
@@ -355,7 +378,7 @@
 			</div>
 			<div id="canvas-scroll" bind:this={canvasScroll}>
 				<div id="board" bind:this={board} role="group" aria-label={t('map_editor_board_label')} style:--tile-size={tileSize + 'px'} style:grid-template-columns={`repeat(${map.cols}, var(--tile-size))`} onpointerdown={startStroke} onpointermove={movePointer} onpointerup={finishStroke} onpointercancel={finishStroke} onlostpointercapture={finishStroke} oncontextmenu={(event) => event.preventDefault()}>
-					{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container pixel-corners {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
+					{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container pixel-corners {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" class:mirror-target={mirrorMode !== 'off' && hoveredCell !== null && (index === hoveredCell || index === mirroredIndex(map, hoveredCell, mirrorMode))} class:mirror-centre={mirrorMode !== 'off' && index === mirroredIndex(map, index, mirrorMode)} data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
 							>{#if unit}<img src={asset('/assets/units/' + unit.type + '-' + unit.player + '.png')} alt="" draggable="false" />{/if}</button
 						>{/each}
 				</div>
@@ -467,6 +490,17 @@
 		margin-bottom: 10px;
 		min-width: 0;
 		flex: 1;
+	}
+	.mirror-setting {
+		margin-top: 12px;
+	}
+	#board .mirror-centre {
+		outline: 1px dashed var(--color-accent);
+		outline-offset: -3px;
+	}
+	#board .mirror-target {
+		outline: 2px solid var(--color-accent);
+		outline-offset: -2px;
 	}
 	input:not([type='range']),
 	select {

@@ -1,4 +1,12 @@
 {
+	"map_editor_mirror": "Mode miroir",
+	"map_editor_mirror_off": "Désactivé",
+	"map_editor_mirror_rotation": "Rotation à 180°",
+	"map_editor_mirror_help": "Lignes et colonnes impaires. Copie le haut vers le bas, et la gauche vers la droite sur la ligne centrale, en tournant et en inversant les équipes. Centre neutre, sans unité. Annuler restaure la carte précédente.",
+	"map_editor_mirror_dimensions": "Le mode miroir exige des lignes et colonnes impaires (3–31). Crée une grille impaire avant de l’activer.",
+	"map_editor_mirror_centre_unit": "La case centrale doit rester sans unité en mode miroir.",
+	"map_editor_mirror_enabled": "Miroir à 180° activé. Charger ou importer une autre carte le désactive.",
+	"map_editor_mirror_disabled": "Mode miroir désactivé.",
 	"play_online": "Jouer à deux en ligne",
 	"online_intro": "Invitez un ami. L’hôte joue les bleus, l’invité les rouges. Les bleus commencent.",
 	"online_create": "Créer une partie",
@@ -409,5 +417,11 @@
 	"map_19": "Randonnée en montagne",
 	"map_19_description": "Franchissez les ponts entre les montagnes et les cours d’eau pour capturer les villes et développer votre armée.",
 	"map_20": "Genève",
-	"map_20_description": "Sécurisez les passages et capturez les bâtiments autour des cours d’eau."
+	"map_20_description": "Sécurisez les passages et capturez les bâtiments autour des cours d’eau.",
+	"map_21": "Une longue journée",
+	"map_21_description": "Progressez sur un vaste front et sécurisez les champs pétroliers centraux pour soutenir votre armée.",
+	"map_22": "On se croisera",
+	"map_22_description": "Suivez les routes entre bois et cours d’eau, capturez les usines et retrouvez l’armée adverse aux carrefours.",
+	"map_23": "Central Park",
+	"map_23_description": "Traversez le parc central, sécurisez les aéroports et capturez les champs pétroliers en bordure."
 }

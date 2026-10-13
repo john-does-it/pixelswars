@@ -11,6 +11,50 @@ import type { UnitTypeId } from '../src/lib/game/types.ts'
 
 const fixture = () => initialState(newMap(5, 5))
 
+test('starting armies face their opponents regardless of team, including every unit type', () => {
+	for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
+		for (const player of [1, 2] as const) {
+			const map = newMap(5, 5)
+			map.units = [
+				{ type, player, cell: 6 },
+				{ type, player: player === 1 ? 2 : 1, cell: 18 }
+			]
+			const before = structuredClone(map)
+			const state = initialState(map)
+			assert.deepEqual(
+				state.units.map((unit) => unit.facing),
+				['right', 'left'],
+				type
+			)
+			assert.deepEqual(map, before)
+			// Starting direction is not reapplied on subsequent turns.
+			state.units[0].facing = 'left'
+			endTurn(state)
+			assert.equal(state.units[0].facing, 'left')
+		}
+	}
+})
+
+test('initial facing chooses the nearest lateral enemy and tolerates vertical or absent opponents', () => {
+	const map = newMap(7, 5)
+	map.units = [
+		{ type: 'infantry', player: 1, cell: 17 },
+		{ type: 'infantry', player: 2, cell: 20 },
+		{ type: 'infantry', player: 2, cell: 16 },
+		{ type: 'infantry', player: 2, cell: 10 }
+	]
+	assert.equal(initialState(map).units[0].facing, 'left')
+	map.units = [map.units[0], map.units[3]]
+	assert.deepEqual(
+		initialState(map).units.map((unit) => unit.facing),
+		['right', 'right']
+	)
+	map.units.pop()
+	assert.equal(initialState(map).units[0].facing, 'right')
+	map.units = []
+	assert.deepEqual(initialState(map).units, [])
+})
+
 test('every unit keeps its last horizontal facing through vertical movement, selection and turns', () => {
 	for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
 		const state = fixture()

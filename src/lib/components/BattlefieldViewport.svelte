@@ -185,6 +185,7 @@
 
 <div class="camera">
 	<div class="map-zone">
+		<div class="map-budgets game-context-container">{@render mapBudgets?.()}</div>
 		<div class="board-frame">
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
 			<div
@@ -236,7 +237,6 @@
 				{/each}
 			{/if}
 		</div>
-		<div class="map-budgets game-context-container">{@render mapBudgets?.()}</div>
 		<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>
 	</div>
 	{@render boardDetails?.()}
@@ -261,14 +261,14 @@
 	}
 	.map-budgets {
 		flex: none;
-		padding-top: 12px;
+		padding-bottom: 12px;
 	}
 	.board-zoom {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 16px;
-		padding: 12px var(--game-gutter);
+		padding: 12px calc(var(--game-gutter) + var(--game-panel-inset));
 		flex: none;
 	}
 	.board-frame {

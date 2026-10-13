@@ -1,4 +1,12 @@
 {
+	"map_editor_mirror": "Spiegelmodus",
+	"map_editor_mirror_off": "Aus",
+	"map_editor_mirror_rotation": "180°-Drehung",
+	"map_editor_mirror_help": "Nur ungerade Zeilen- und Spaltenzahlen. Kopiert oben nach unten und links nach rechts in der mittleren Zeile, gedreht und mit vertauschten Teams. Zentrum: neutral, ohne Einheit. Rückgängig stellt die vorherige Karte wieder her.",
+	"map_editor_mirror_dimensions": "Der Spiegelmodus erfordert ungerade Zeilen- und Spaltenzahlen (3–31). Erstelle zuerst ein passendes Raster.",
+	"map_editor_mirror_centre_unit": "Das zentrale Feld muss im Spiegelmodus ohne Einheit bleiben.",
+	"map_editor_mirror_enabled": "180°-Spiegelmodus aktiviert. Laden oder Importieren einer anderen Karte deaktiviert ihn.",
+	"map_editor_mirror_disabled": "Spiegelmodus deaktiviert.",
 	"play_online": "Zu zweit online spielen",
 	"online_intro": "Lade einen Freund ein. Der Gastgeber spielt Blau, der Gast Rot. Blau beginnt.",
 	"online_create": "Spiel erstellen",
@@ -409,5 +417,11 @@
 	"map_19": "Bergwanderung",
 	"map_19_description": "Überquere Brücken zwischen Bergen und Wasserläufen, erobere Städte und baue deine Armee auf.",
 	"map_20": "Genf",
-	"map_20_description": "Sichere die Übergänge und erobere die Gebäude entlang der Wasserwege."
+	"map_20_description": "Sichere die Übergänge und erobere die Gebäude entlang der Wasserwege.",
+	"map_21": "Ein langer Tag",
+	"map_21_description": "Rücke auf breiter Front vor und sichere die zentralen Ölfelder, um deine Armee zu versorgen.",
+	"map_22": "Unsere Wege kreuzen sich",
+	"map_22_description": "Folge den Straßen zwischen Wäldern und Wasserläufen, erobere die Fabriken und triff die gegnerische Armee an den Kreuzungen.",
+	"map_23": "Central Park",
+	"map_23_description": "Durchquere den zentralen Park, sichere die Flughäfen und erobere die Ölfelder am Rand."
 }

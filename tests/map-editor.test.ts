@@ -1,7 +1,7 @@
 import { mapIds, readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { newMap, paintCell, readMap, mapJson } from '../src/lib/map-editor/model.ts'
+import { newMap, paintCell, readMap, mapJson, mirrorMap, mirroredIndex, paintMirroredCell, validateMirrorDimensions } from '../src/lib/map-editor/model.ts'
 import { initialState, movementCostForDomain } from '../src/lib/game/model.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
 
@@ -97,4 +97,83 @@ test('editor can round-trip all existing maps without changing their terrain or 
 		const source = JSON.stringify(readMapFixture(mapId))
 		assert.deepEqual(JSON.parse(mapJson(readMap(source))), JSON.parse(source), `map ${mapId}`)
 	}
+})
+
+test('rotation requires odd dimensions and enabling it copies one half with opposing armies', () => {
+	for (const [cols, rows] of [
+		[4, 5],
+		[5, 4],
+		[4, 4]
+	]) {
+		assert.throws(() => mirrorMap(newMap(cols, rows), 'rotation'), /map_editor_mirror_dimensions/)
+		assert.doesNotThrow(() => validateMirrorDimensions(cols, rows, 'off'))
+	}
+	const original = newMap(5, 3)
+	paintCell(original, 1, { kind: 'terrain', classes: ['-building', '-factory', '-ongrass'], owner: 1 })
+	paintCell(original, 5, { kind: 'terrain', classes: ['-building', '-city', '-ongrass'], owner: 2 })
+	paintCell(original, 7, { kind: 'terrain', classes: ['-building', '-city', '-ongrass'], owner: 1 })
+	for (const cell of [1, 7, 14]) paintCell(original, cell, { kind: 'unit', type: 'infantry', player: 1 })
+	const before = structuredClone(original)
+	const mirrored = mirrorMap(original, 'rotation')
+	assert.deepEqual(original, before)
+	assert.deepEqual(mirrored.cells[13], { ...original.cells[1], owner: 2 })
+	assert.equal(mirrored.cells[9].owner, 1)
+	assert.equal(mirrored.cells[7].owner, 0)
+	assert.deepEqual(mirrored.units, [
+		{ type: 'infantry', player: 1, cell: 1 },
+		{ type: 'infantry', player: 2, cell: 13 }
+	])
+	for (let index = 0; index < mirrored.cells.length; index++) {
+		assert.equal(mirroredIndex(mirrored, mirroredIndex(mirrored, index, 'rotation'), 'rotation'), index)
+	}
+	assert.deepEqual(mirrorMap(mirrored, 'rotation'), mirrored)
+	assert.deepEqual(readMap(mapJson(mirrored)), mirrored)
+})
+
+test('mirrored painting works from either side, keeps a neutral centre and erases both units', () => {
+	const map = newMap(5, 5)
+	paintMirroredCell(map, 24, { kind: 'terrain', classes: ['-building', '-city', '-ongrass'], owner: 1 }, 'rotation')
+	assert.equal(map.cells[24].owner, 1)
+	assert.equal(map.cells[0].owner, 2)
+	paintMirroredCell(map, 24, { kind: 'unit', type: 'infantry', player: 2 }, 'rotation')
+	assert.deepEqual(map.units, [
+		{ type: 'infantry', player: 2, cell: 24 },
+		{ type: 'infantry', player: 1, cell: 0 }
+	])
+	paintMirroredCell(map, 0, { kind: 'erase-unit' }, 'rotation')
+	assert.deepEqual(map.units, [])
+	paintMirroredCell(map, 12, { kind: 'terrain', classes: ['-building', '-factory', '-ongrass'], owner: 2 }, 'rotation')
+	assert.equal(map.cells[12].owner, 0)
+	assert.throws(() => paintMirroredCell(map, 12, { kind: 'unit', type: 'helicopter', player: 1 }, 'rotation'), /map_editor_mirror_centre_unit/)
+	paintMirroredCell(map, 1, { kind: 'unit', type: 'tank', player: 1 }, 'rotation')
+	paintMirroredCell(map, 1, { kind: 'terrain', classes: ['-water'], owner: 0 }, 'rotation')
+	assert.deepEqual(map.units, [])
+	// An invalid opposite destination must not leave half of a placement behind.
+	paintCell(map, 23, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+	const before = structuredClone(map)
+	assert.throws(() => paintMirroredCell(map, 23, { kind: 'unit', type: 'tank', player: 1 }, 'rotation'), /map_editor_error_ground/)
+	assert.deepEqual(map, before)
+	paintMirroredCell(map, 3, { kind: 'unit', type: 'tank', player: 1 }, 'off')
+	assert.deepEqual(map.units, [{ type: 'tank', player: 1, cell: 3 }])
+})
+
+test('rotation reconnects opposite road corners and shores while preserving bridge axes', () => {
+	const map = newMap(7, 7)
+	for (const index of [8, 9, 16]) paintMirroredCell(map, index, { kind: 'terrain', classes: ['-road', '-h'], owner: 0 }, 'rotation')
+	assert.deepEqual(map.cells[9].classes, ['-road', '-corner', '-bottom'])
+	assert.deepEqual(map.cells[39].classes, ['-road', '-corner', '-top'])
+	for (const index of [23, 24]) paintMirroredCell(map, index, { kind: 'terrain', classes: ['-road', '-h'], owner: 0 }, 'rotation')
+	assertConnectedRoads(initialState(map))
+	for (const index of [0, 1, 7, 8]) paintMirroredCell(map, index, { kind: 'terrain', classes: ['-water'], owner: 0 }, 'rotation')
+	assert.deepEqual(map.cells[8].classes, ['-water', '-grass', '-left', '-bottom', '-corner'])
+	assert.deepEqual(map.cells[40].classes, ['-water', '-grass', '-top', '-right', '-corner'])
+	for (const [index, axis] of [
+		[10, '-h'],
+		[11, '-v']
+	] as const) {
+		paintMirroredCell(map, index, { kind: 'terrain', classes: ['-road', '-bridge', axis], owner: 0 }, 'rotation')
+		assert.deepEqual(map.cells[48 - index].classes, ['-road', '-bridge', axis])
+	}
+	assert.deepEqual(mirrorMap(map, 'rotation'), map)
+	assert.deepEqual(readMap(mapJson(map)), map)
 })

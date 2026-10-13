@@ -255,12 +255,16 @@
 			justify-content: flex-end;
 			.primary {
 				white-space: normal;
+				line-height: 1.1;
 			}
 		}
 	}
 	@media (max-width: 480px) {
 		.action-controls {
 			gap: 2px;
+			.primary {
+				padding-inline: 6px;
+			}
 			button:not(.primary) {
 				flex-basis: 40px;
 				width: 40px;
@@ -268,13 +272,14 @@
 		}
 	}
 	@media (max-width: 360px) {
+		nav {
+			min-width: 0;
+		}
 		.action-controls {
+			flex-wrap: wrap;
 			button:not(.primary) {
 				flex-basis: 36px;
 				width: 36px;
-			}
-			.primary {
-				padding-inline: 6px;
 			}
 		}
 	}

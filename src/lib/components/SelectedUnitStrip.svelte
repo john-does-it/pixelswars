@@ -21,6 +21,7 @@
 		{#if unit}
 			{@const definition = unitTypes[unit.type]}
 			<span class="details">
+				<span class="preview-name">{name}</span>
 				<span class="stats">
 					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /><span>{unit.health}<span class="stat-maximum">/{definition.maxHealth}</span></span></span>
 					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /><span>{unit.movement}<span class="stat-maximum">/{definition.movement}</span></span></span>
@@ -29,6 +30,7 @@
 			</span>
 		{:else}
 			<span class="details">
+				<span class="preview-name">{name}</span>
 				<span class="stats">
 					<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
 					<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.png')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
@@ -79,6 +81,17 @@
 		font: 400 var(--font-size-ui) / 1.5 var(--font-body);
 		font-variant-numeric: tabular-nums;
 	}
+	.preview-name {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: var(--color-text);
+		font: 600 var(--font-size-ui) / 1.2 var(--font-body);
+	}
+	.preview-name + .stats {
+		line-height: 1.15;
+	}
 	.stats > span {
 		display: inline-flex;
 		align-items: center;
@@ -91,6 +104,16 @@
 	}
 	@container unit-footer (max-width: 324px) {
 		.stat-maximum {
+			display: none;
+		}
+	}
+	@media (max-width: 900px) {
+		.selected-unit-strip,
+		.tile-thumbnail {
+			width: 44px;
+			height: 44px;
+		}
+		.details {
 			display: none;
 		}
 	}

@@ -5,8 +5,8 @@
 </script>
 
 <div class="budgets game-context-container">
-	<span class:active={state.player === 1}><span class="player-one">{playerName(1, aiMode)}</span> <b>{state.money[1]}$</b></span>
-	<span class:active={state.player === 2}><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
+	<span><span class="player-one">{playerName(1, aiMode)}</span> <b>{state.money[1]}$</b></span>
+	<span><span class="player-two">{playerName(2, aiMode)}</span> <b>{state.money[2]}$</b></span>
 </div>
 
 <style>
@@ -21,13 +21,10 @@
 		display: flex;
 		align-items: center;
 		gap: 16px;
-		padding: 8px 14px;
-		border: 1px solid var(--color-border);
+		padding: 8px var(--game-panel-inset);
 		border-radius: 8px;
-		background: var(--color-surface);
-	}
-	.budgets > .active {
-		border-color: var(--color-accent);
+		background: rgb(0 0 0 / 15%);
+		backdrop-filter: blur(6px);
 	}
 	.player-one {
 		color: #8dcbff;
@@ -35,13 +32,13 @@
 	.player-two {
 		color: #ffb3b1;
 	}
-	@media (max-width: 600px) {
+	@media (max-width: 900px) {
 		.budgets {
 			gap: 8px;
 		}
 		.budgets > span {
 			gap: 8px;
-			padding: 6px 8px;
+			padding-block: 4px;
 		}
 	}
 </style>

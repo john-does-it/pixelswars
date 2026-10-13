@@ -75,7 +75,10 @@
 		{ id: 17, title: messages.map_17, text: messages.map_17_description },
 		{ id: 18, title: messages.map_18, text: messages.map_18_description },
 		{ id: 19, title: messages.map_19, text: messages.map_19_description },
-		{ id: 20, title: messages.map_20, text: messages.map_20_description }
+		{ id: 20, title: messages.map_20, text: messages.map_20_description },
+		{ id: 21, title: messages.map_21, text: messages.map_21_description },
+		{ id: 22, title: messages.map_22, text: messages.map_22_description },
+		{ id: 23, title: messages.map_23, text: messages.map_23_description }
 	].sort((firstMap, secondMap) => {
 		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
 		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]

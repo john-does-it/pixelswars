@@ -126,7 +126,7 @@
 				<GameHeader name={mapName(map.id)} aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 				{#snippet boardDetails()}
 					<div class="board-details game-context-container">
-						<div class="board-actions" class:red={game.state.player === 2}>
+						<div class="board-actions">
 							{@render mapStatus()}
 							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
 						</div>
@@ -191,6 +191,7 @@
 	}
 	.game-shell {
 		--game-gutter: 16px;
+		--game-panel-inset: 16px;
 		width: 100%;
 		margin: auto;
 		min-height: 100svh;
@@ -200,6 +201,7 @@
 		padding-bottom: 8px;
 		@media (max-width: 900px) {
 			--game-gutter: 8px;
+			--game-panel-inset: 10px;
 		}
 	}
 
@@ -241,28 +243,28 @@
 		flex: none;
 	}
 	.board-actions {
-		border: 1px solid var(--color-border);
-		border-top-color: #71b9ee;
 		border-radius: 12px;
-		background: var(--color-surface);
-		box-shadow: 0 3px 0 #0005;
-		padding: 16px;
+		background: rgb(0 0 0 / 15%);
+		backdrop-filter: blur(6px);
+		padding: 16px var(--game-panel-inset);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 16px;
 		flex-wrap: wrap;
-		&.red {
-			border-top-color: #f59b9b;
-		}
 	}
-	@media (max-width: 600px) {
+	@media (max-width: 900px) {
 		.board-actions {
-			padding: 10px;
+			padding: 6px var(--game-panel-inset);
 			gap: 8px;
+			flex-wrap: nowrap;
 		}
-		.board-actions :global(nav) {
-			width: 100%;
+		.match-status {
+			flex-basis: 44px;
+			min-width: 44px;
+		}
+		.unit-footer {
+			height: 44px;
 		}
 	}
 </style>

@@ -20,6 +20,9 @@ import delusionsOfGrandeur from '$lib/data/delusions-of-grandeur.json'
 import longIslandIcedTea from '$lib/data/long-island-iced-tea.json'
 import mountainHike from '$lib/data/mountain-hike.json'
 import geneva from '$lib/data/geneva.json'
+import aLongDay from '$lib/data/a-long-day.json'
+import ourPathsWillCross from '$lib/data/our-paths-will-cross.json'
+import centralPark from '$lib/data/central-park.json'
 import mapFiles from '$lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '$lib/game/types.js'
@@ -52,7 +55,10 @@ export const load: PageLoad = async ({ params }) => {
 		17: delusionsOfGrandeur as GameMap,
 		18: longIslandIcedTea as GameMap,
 		19: mountainHike as GameMap,
-		20: geneva as GameMap
+		20: geneva as GameMap,
+		21: aLongDay as GameMap,
+		22: ourPathsWillCross as GameMap,
+		23: centralPark as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')

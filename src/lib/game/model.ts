@@ -1,10 +1,13 @@
 import rules from './combat-rules.ts'
 import { createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
+import { faceOpponents } from './facing.ts'
 import type { Cell, GameMap, GameState, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
 
 const buildingIds = ['city', 'oil-field', 'factory', 'hospital', 'airport'] as const
 
 export function initialState(map: GameMap): GameState {
+	const units = map.units.map((unit, id) => createUnit(unit.type, unit.player, unit.cell, id))
+	faceOpponents(units, map.cols)
 	return {
 		network: null,
 		mapId: map.id,
@@ -15,7 +18,7 @@ export function initialState(map: GameMap): GameState {
 			const terrain: TerrainId = (Object.keys(terrainTypes) as TerrainId[]).filter((type) => cell.classes.includes('-' + type)).at(-1) || 'grass'
 			return { ...cell, classes: [...cell.classes], index, terrain, ...terrainTypes[terrain], building: buildingIds.find((type) => cell.classes.includes('-' + type)) ?? null }
 		}),
-		units: map.units.map((unit, id) => createUnit(unit.type, unit.player, unit.cell, id)),
+		units,
 		nextId: map.units.length,
 		player: 1,
 		round: 1,

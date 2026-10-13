@@ -32,6 +32,15 @@ the last stroke, import or new grid; history lasts only until the page is reload
 Right-click paints grass in terrain mode or removes a unit in unit mode.
 Cells also support keyboard activation with Enter/Space.
 
+**Mirror mode → 180° rotation** pairs opposite cells and swaps blue/red units and
+building owners. Both dimensions must be odd (3–31) while enabled. Start with an
+odd-sized grid, then activate the mode: the top half replaces the bottom half,
+and the left of the middle row replaces its right. Roads and shores reconnect
+automatically. The centre cell stays neutral and cannot contain a unit. You can
+paint from either side; undo restores both cells or reverses enabling the mode.
+The browser draft remembers the mode. Loading or importing a map disables it;
+exported JSON contains only the playable map, without editor settings.
+
 Export accepts an unfinished map with no armies, with a reminder to add both teams.
 It validates dimensions, known terrain and unit types, ownership, duplicate units,
 and ground units on water or obstacles. It does not automatically judge map balance or whether

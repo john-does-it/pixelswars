@@ -31,6 +31,59 @@ export const terrainBrushes = [
 ]
 
 export type Brush = { kind: 'terrain'; classes: string[]; owner: Owner } | { kind: 'unit'; type: UnitTypeId; player: Player } | { kind: 'erase-unit' }
+export type MirrorMode = 'off' | 'rotation'
+
+export function validateMirrorDimensions(cols: number, rows: number, mode: MirrorMode): void {
+	if (mode === 'rotation' && (cols % 2 !== 1 || rows % 2 !== 1)) throw new MapEditorError('map_editor_mirror_dimensions')
+}
+
+export function mirroredIndex(map: Pick<GameMap, 'cols' | 'rows'>, index: number, mode: MirrorMode): number {
+	return mode === 'rotation' ? map.cols * map.rows - 1 - index : index
+}
+
+const oppositeOwner = (owner: Owner): Owner => (owner === 0 ? 0 : owner === 1 ? 2 : 1)
+
+// Enabling symmetry copies the first half in reading order, retaining a neutral centre cell.
+export function mirrorMap(map: GameMap, mode: MirrorMode): GameMap {
+	validateMirrorDimensions(map.cols, map.rows, mode)
+	const result = structuredClone(map)
+	if (mode === 'off') return result
+	result.units = []
+	for (let index = 0; index < map.cells.length; index++) {
+		const partner = mirroredIndex(map, index, mode)
+		if (index > partner) continue
+		if (index === partner) {
+			result.cells[index].owner = 0
+			result.cells[index].capturePoints = 20
+			continue
+		}
+		result.cells[partner] = { ...map.cells[index], classes: [...map.cells[index].classes], owner: oppositeOwner(map.cells[index].owner) }
+		const unit = map.units.find((unit) => unit.cell === index)
+		if (unit) result.units.push({ ...unit }, { ...unit, cell: partner, player: unit.player === 1 ? 2 : 1 })
+	}
+	// Rebuild directional road and shore sprites from the mirrored terrain.
+	for (let index = 0; index < result.cells.length; index++) reconnectCell(result, index)
+	return result
+}
+
+export function paintMirroredCell(map: GameMap, index: number, brush: Brush, mode: MirrorMode): void {
+	if (mode === 'off') return paintCell(map, index, brush)
+	validateMirrorDimensions(map.cols, map.rows, mode)
+	if (!Number.isInteger(index) || !map.cells[index]) return
+	const partner = mirroredIndex(map, index, mode)
+	if (brush.kind === 'unit') {
+		if (partner === index) throw new MapEditorError('map_editor_mirror_centre_unit')
+		// Validate both destinations before changing either one.
+		validateUnitCell(map.cells[index], brush.type)
+		validateUnitCell(map.cells[partner], brush.type)
+	}
+	if (partner === index) {
+		paintCell(map, index, brush.kind === 'terrain' ? { ...brush, owner: 0 } : brush)
+		return
+	}
+	paintCell(map, index, brush)
+	paintCell(map, partner, brush.kind === 'unit' ? { ...brush, player: brush.player === 1 ? 2 : 1 } : brush.kind === 'terrain' ? { ...brush, owner: oppositeOwner(brush.owner) } : brush)
+}
 const grass = (): MapCell => ({ classes: ['-grass'], owner: 0, capturePoints: 20 })
 
 export function newMap(cols: number, rows: number): GameMap {
@@ -87,6 +140,11 @@ function reconnectCell(map: GameMap, index: number): void {
 	}
 }
 
+function validateUnitCell(cell: MapCell, type: UnitTypeId): void {
+	if (cell.classes.includes('-blocker') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_blocker')
+	if (cell.classes.includes('-water') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_ground')
+}
+
 export function paintCell(map: GameMap, index: number, brush: Brush): void {
 	if (!Number.isInteger(index) || !map.cells[index]) return
 	if (brush.kind === 'erase-unit') {
@@ -94,8 +152,7 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 		return
 	}
 	if (brush.kind === 'unit') {
-		if (map.cells[index].classes.includes('-blocker') && unitTypes[brush.type].domain !== 'air') throw new MapEditorError('map_editor_error_blocker')
-		if (map.cells[index].classes.includes('-water') && unitTypes[brush.type].domain !== 'air') throw new MapEditorError('map_editor_error_ground')
+		validateUnitCell(map.cells[index], brush.type)
 		map.units = map.units.filter((unit) => unit.cell !== index)
 		map.units.push({ type: brush.type, player: brush.player, cell: index })
 		return
