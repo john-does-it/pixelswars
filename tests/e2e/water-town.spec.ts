@@ -4,7 +4,7 @@ test('Water Town opens from the map chooser with both armies and its preview', a
 	await page.goto('/')
 	const card = page.locator('.maps a[href$="/play/15/"]')
 	await expect(card).toContainText('Water Town')
-	await expect(card.locator('.map-metadata')).toHaveText('Small · 14 × 7')
+	await expect(card.locator('.map-metadata')).toHaveText('S · 14 × 7')
 	await expect(card.locator('img')).toBeVisible()
 	await expect.poll(() => card.locator('img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(224)
 	await card.click()

@@ -1,6 +1,7 @@
 import { readMapFixture } from '../map-fixtures'
 import { zoomToReadableTiles } from './map-view'
 import { test, expect, type Page } from '@playwright/test'
+import { unitTypes } from '../../src/lib/game/catalog.ts'
 import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
 async function endRound(page: Page) {
@@ -512,6 +513,7 @@ test('spent resource indicators stay at half opacity without blinking', async ({
 test('combat updates rune-driven health, locks controls and clears a dead attacker', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
+	await page.clock.install()
 	await page.goto('/play/1/')
 	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
 	const end = page.getByRole('button', { name: 'End round', exact: true })
@@ -531,8 +533,13 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await cell(34).click()
 	await expect(cell(42).getByAltText('Attack target')).toBeVisible()
 	const attackerHealth = Number(await cell(34).locator('[data-unit]').getAttribute('data-health'))
+	// Hold each combat phase while checking its transient UI, regardless of CI speed.
+	await page.clock.pauseAt(new Date())
 	await cell(42).click()
 	await expect(cell(34).locator('.ammo')).toHaveAttribute('data-remaining', '1')
+	await expect(end).toBeDisabled()
+	await expect(cell(42).locator('.ammo')).toHaveAttribute('data-remaining', '2')
+	await page.clock.runFor(unitTypes.infantry.delay)
 	await expect(cell(42).locator('.ammo')).toHaveAttribute('data-remaining', '1')
 	await expect(cell(42).locator('.ammo .spent')).toHaveCSS('opacity', '0.5')
 	await expect(cell(42)).toHaveAttribute('aria-label', /1\/2 attacks remaining/)
@@ -551,8 +558,10 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await expect(cell(42).locator('[data-unit]')).toHaveAttribute('data-health', '169')
 	await expect(cell(34).locator('[data-unit]')).toHaveAttribute('data-health', '9')
 	await expect(cell(34).locator('.damage-indicator')).toHaveText(`−${attackerHealth - 9}`)
+	await page.clock.runFor(unitTypes.tank.delay)
 	await expect(end).toBeEnabled()
 	await expect(end).toHaveCSS('color', 'rgb(17, 26, 20)')
+	await page.clock.resume()
 	await endRound(page)
 	await expect(cell(34).locator('.ammo img:not(.spent)')).toHaveCount(2)
 	await expect(cell(42).locator('.ammo img:not(.spent)')).toHaveCount(2)

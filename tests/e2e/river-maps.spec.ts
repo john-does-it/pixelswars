@@ -8,7 +8,7 @@ for (const [id, name, cols, rows, units] of [
 		await page.goto('/')
 		const card = page.locator(`.maps a[href$="/play/${id}/"]`)
 		await expect(card).toContainText(name)
-		await expect(card.locator('.map-metadata')).toHaveText(`${id === 13 ? 'Small' : 'Medium'} · ${cols} × ${rows}`)
+		await expect(card.locator('.map-metadata')).toHaveText(`${id === 13 ? 'XS' : 'M'} · ${cols} × ${rows}`)
 		const mapUrl = await card.getAttribute('href')
 		await page.goto(`${mapUrl}?ai=easy`)
 		await expect(page).toHaveURL(new RegExp(`/play/${id}/\\?ai=easy$`))
