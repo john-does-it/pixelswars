@@ -262,7 +262,15 @@ for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
 			for (const unit of state.units) {
 				assert.ok(unit.cell >= 0 && unit.cell < state.cells.length)
 				assert.ok(unit.movement >= 0 && unit.attacks >= 0)
-				if (unitTypes[unit.type].domain !== 'air') assert.notEqual(state.cells[unit.cell].terrain, 'water')
+				const cell = state.cells[unit.cell]
+				const domain = unitTypes[unit.type].domain ?? 'ground'
+				const context = `Map ${mapId}: ${unit.type} at cell ${unit.cell}`
+				assert.notEqual(cell.terrain, 'void', context)
+				if (domain === 'naval') assert.ok(cell.terrain === 'water' || cell.building === 'naval-base', context)
+				if (domain === 'ground') {
+					assert.notEqual(cell.terrain, 'water', context)
+					assert.notEqual(cell.terrain, 'blocker', context)
+				}
 			}
 		}
 	})
