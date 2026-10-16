@@ -57,9 +57,8 @@ test('mouse wheel zooms around its pointer and zoom controls stay right-aligned 
 	const zoom = await page.getByRole('button', { name: 'Zoom in', exact: true }).boundingBox()
 	const actions = await page.getByRole('button', { name: 'End round', exact: true }).boundingBox()
 	expect(zoom!.y + zoom!.height).toBeLessThan(actions!.y)
-	const zoomRow = (await page.locator('.board-zoom').boundingBox())!
 	const controls = (await page.locator('.zoom-controls').boundingBox())!
-	expect(controls.x + controls.width).toBeCloseTo(zoomRow.x + zoomRow.width - 16, 0)
+	expect(controls.x + controls.width).toBeCloseTo(actions!.x + actions!.width, 0)
 	await expect(page.locator('html')).toHaveCSS('scrollbar-width', 'none')
 	await viewport.evaluate((element) => element.scrollTo({ left: 0, top: 0 }))
 	const zoomedWidth = (await page.locator('.board').boundingBox())!.width
