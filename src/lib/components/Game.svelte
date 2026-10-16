@@ -124,9 +124,6 @@
 		{/key}
 		{#snippet mapStatus()}
 			<div class="match-status">
-				{#if network}
-					<p class="match-mode" role="status">{translate(network.player === 1 ? messages.online_blue : messages.online_red)}{!localTurn ? ` · ${translate(messages.online_opponent_turn)}` : ''}</p>
-				{/if}
 				<p class="combat-status" role="status">{game.state.fighting && !game.state.aiThinking ? translate(messages.combat_in_progress) : ''}</p>
 				<div class="unit-footer" class:inactive={waiting} inert={waiting} aria-hidden={waiting}>
 					<SelectedUnitStrip cell={previewCell} unit={previewCell ? unitAt(game.state, previewCell.index) : undefined} disabled={locked(game.state) || waiting || !!network?.pending} oninspect={() => (showPreview = true)} />
@@ -176,7 +173,6 @@
 		font-size: var(--font-size-ui);
 		color: var(--color-accent);
 	}
-	.match-mode,
 	.combat-status {
 		margin: 0;
 	}

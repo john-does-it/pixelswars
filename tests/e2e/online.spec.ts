@@ -107,8 +107,8 @@ async function expectOnlineBattlefields(host: Page, guest: Page) {
 		await attachConnectionDiagnostics(host, guest)
 		throw error
 	}
-	await expect(host.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
-	await expect(guest.getByText(/Online · You play red/)).toBeVisible()
+	await expect(host.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
+	await expect(guest.getByRole('button', { name: 'End round', exact: true })).toBeHidden()
 }
 
 test('relay lookup starts only on request and a provider outage allows retry', async ({ page }) => {
@@ -259,12 +259,86 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await extra.getByRole('button', { name: 'Join', exact: true }).click()
 		// Rejection also needs an established data channel to deliver its reason.
 		await expect(extra.getByRole('alert')).toContainText('already has two players', { timeout: connectionTimeout })
-		await expect(page.getByText('Online · You play blue (Player 1)', { exact: true })).toBeVisible()
+		await expect(page.locator('.game-shell')).toBeVisible()
+		await expect(page.getByRole('dialog', { name: 'Game paused' })).toHaveCount(0)
 		await extra.close()
 		await guest.goto('/')
 		await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeVisible({ timeout: 15000 })
 		await expect(end(page)).toBeHidden()
 		expect(errors).toEqual([])
+	} finally {
+		await guestContext.close()
+	}
+})
+
+test('opponent selections keep the mobile battlefield and footer stable', async ({ page, browser, isMobile }) => {
+	test.setTimeout(120000)
+	const guestContext = await browser.newContext({ viewport: { width: 393, height: 780 }, isMobile, hasTouch: isMobile, bypassCSP: true })
+	const guest = await guestContext.newPage()
+	await page.setViewportSize({ width: 393, height: 780 })
+	await localIce(page)
+	await localIce(guest)
+	const layout = (device: Page) =>
+		device.evaluate(async () => {
+			// Allow the camera's ResizeObserver to react to any footer changes.
+			await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+			return ['.board-frame', '.board-viewport', '.board', '.board-zoom', '.board-details'].map((selector) => {
+				const { x, y, width, height } = document.querySelector(selector)!.getBoundingClientRect()
+				// Camera scrolling may follow a remote unit, but must not resize the map or UI.
+				const viewport = document.querySelector('.board-viewport')!
+				return { selector, x: x + (selector === '.board' ? viewport.scrollLeft : 0), y: y + (selector === '.board' ? viewport.scrollTop : 0), width, height }
+			})
+		})
+	try {
+		await page.goto('/play/13/?online=1')
+		await page.getByRole('button', { name: 'Create a game' }).click()
+		const invitation = page.getByLabel('Invitation link', { exact: true })
+		await expect(invitation).toHaveValue(/#invite=PW2\./)
+		await guest.goto(await invitation.inputValue())
+		await guest.getByRole('button', { name: 'Join', exact: true }).click()
+		await expectOnlineBattlefields(page, guest)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+		// Exercise each player as the spectator, including narrow screens where controls wrap.
+		for (const [active, spectator, cells, captureCell] of [
+			[page, guest, [0, 1, 2, 3, 4], 11],
+			[guest, page, [79, 78, 77, 76, 75], 68]
+		] as const) {
+			for (const width of [393, 320, 680]) {
+				await active.setViewportSize({ width, height: 780 })
+				await spectator.setViewportSize({ width, height: 780 })
+				const before = await layout(spectator)
+				for (const index of [...cells, null]) {
+					if (index === null) await active.getByRole('button', { name: 'Confirm move', exact: true }).click()
+					else await active.locator(`[data-cell="${index}"]`).click()
+					if (index === null) await expect(spectator.locator('.board [aria-pressed="true"]')).toHaveCount(0)
+					else await expect(spectator.locator(`[data-cell="${index}"]`)).toHaveAttribute('aria-pressed', 'true')
+					const after = await layout(spectator)
+					for (let i = 0; i < before.length; i++) {
+						for (const dimension of ['x', 'y', 'width', 'height'] as const) {
+							expect(after[i][dimension], `${width}px: ${before[i].selector} ${dimension} after selecting ${index}`).toBeCloseTo(before[i][dimension], 0)
+						}
+					}
+				}
+				// Moving infantry onto a building adds the Capture action on the active device.
+				await active.locator(`[data-cell="${cells[1]}"]`).click()
+				await active.locator(`[data-cell="${captureCell}"]`).click()
+				await expect(active.getByRole('button', { name: 'Capture', exact: true })).toBeVisible()
+				await expect(spectator.locator(`[data-cell="${captureCell}"]`)).toHaveAttribute('aria-pressed', 'true')
+				expect(await layout(spectator)).toEqual(before)
+				await active.getByRole('button', { name: 'Cancel move', exact: true }).click()
+				await expect(spectator.locator(`[data-cell="${cells[1]}"] [data-unit]`)).toBeVisible()
+				expect((await spectator.locator('.board-details').boundingBox())!.height).toBeLessThanOrEqual(64)
+				await expect(spectator.locator('.match-mode')).toHaveCount(0)
+				await expect(spectator.locator('.action-controls')).toBeHidden()
+				await expect(spectator.locator('nav.waiting')).toHaveAttribute('inert', '')
+			}
+			await spectator.locator('.options-button').click()
+			await expect(spectator.getByRole('dialog', { name: 'Options and help' })).toBeVisible()
+			await spectator.getByRole('button', { name: 'Close', exact: true }).click()
+			await active.getByRole('button', { name: 'End round', exact: true }).click()
+			await expect(spectator.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
+			await expect(spectator.locator('dialog.turn-transition')).toHaveCount(0)
+		}
 	} finally {
 		await guestContext.close()
 	}

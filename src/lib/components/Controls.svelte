@@ -71,19 +71,22 @@
 
 <nav aria-label={translate(messages.game_controls)} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
-		<CargoTray {game} disabled={inputLocked || !!waiting} />
-		{#if selected}
-			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
-				<UiIcon name="previous-action" />
-			</button>
-			<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
-				<UiIcon name="validate-action" />
-			</button>
-		{/if}
-		{#if canCapture(gameState)}
-			<button class="pixel-icon-button" disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
-				<UiIcon name="icon-capture" />
-			</button>
+		<!-- Remote selections must not change the size of the hidden action bar. -->
+		{#if !waiting}
+			<CargoTray {game} disabled={inputLocked} />
+			{#if selected}
+				<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
+					<UiIcon name="previous-action" />
+				</button>
+				<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
+					<UiIcon name="validate-action" />
+				</button>
+			{/if}
+			{#if canCapture(gameState)}
+				<button class="pixel-icon-button" disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
+					<UiIcon name="icon-capture" />
+				</button>
+			{/if}
 		{/if}
 		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} aria-keyshortcuts="End" title={`${translate(messages.end_round)} (${translate(messages.key_end)})`} onclick={requestEndTurn}>
 			{translate(messages.end_round)}
