@@ -5,1621 +5,937 @@
 	"rows": 11,
 	"cells": [
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-forest",
-				"-ongrass"
-			],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom",
-				"-right",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-forest",
-				"-ongrass"
-			],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-se"
-			],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-north"
-			],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-south"
-			],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-bottom"
-			],
+			"classes": ["-road", "-corner", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left",
-				"-bottom",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-airport",
-				"-ongrass"
-			],
+			"classes": ["-building", "-airport", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-nw"
-			],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-east"
-			],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-nw"
-			],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-blocker",
-				"-ongrass"
-			],
+			"classes": ["-blocker", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-factory",
-				"-ongrass"
-			],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 1,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-factory",
-				"-ongrass"
-			],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 2,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-se"
-			],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-north"
-			],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-west"
-			],
+			"classes": ["-road", "-junction", "-west"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top"
-			],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top"
-			],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-west"
-			],
+			"classes": ["-road", "-junction", "-west"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top"
-			],
+			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-top"
-			],
+			"classes": ["-road", "-corner", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-bottom"
-			],
+			"classes": ["-road", "-corner", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom",
-				"-right",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-top"
-			],
+			"classes": ["-road", "-corner", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-bottom"
-			],
+			"classes": ["-road", "-corner", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom",
-				"-right",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom"
-			],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-east"
-			],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom",
-				"-right",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom"
-			],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-bottom"
-			],
+			"classes": ["-water", "-grass", "-bottom"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-east"
-			],
+			"classes": ["-road", "-junction", "-east"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-south"
-			],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-nw"
-			],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-factory",
-				"-ongrass"
-			],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 1,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-factory",
-				"-ongrass"
-			],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 2,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-blocker",
-				"-ongrass"
-			],
+			"classes": ["-blocker", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-se"
-			],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-west"
-			],
+			"classes": ["-road", "-junction", "-west"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-se"
-			],
+			"classes": ["-road", "-corner", "-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-airport",
-				"-ongrass"
-			],
+			"classes": ["-building", "-airport", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-right",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-right", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-top"
-			],
+			"classes": ["-road", "-corner", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-h"
-			],
+			"classes": ["-road", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-bridge",
-				"-h"
-			],
+			"classes": ["-road", "-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-north"
-			],
+			"classes": ["-road", "-junction", "-north"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-junction",
-				"-south"
-			],
+			"classes": ["-road", "-junction", "-south"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-corner",
-				"-nw"
-			],
+			"classes": ["-road", "-corner", "-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-moutain",
-				"-ongrass"
-			],
+			"classes": ["-moutain", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-left"
-			],
+			"classes": ["-water", "-grass", "-left"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-forest",
-				"-ongrass"
-			],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-hospital",
-				"-ongrass"
-			],
+			"classes": ["-building", "-hospital", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-building",
-				"-city",
-				"-ongrass"
-			],
+			"classes": ["-building", "-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-under-bridge",
-				"-h"
-			],
+			"classes": ["-water", "-under-bridge", "-h"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-top",
-				"-left",
-				"-corner"
-			],
+			"classes": ["-water", "-grass", "-top", "-left", "-corner"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-road",
-				"-v"
-			],
+			"classes": ["-road", "-v"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-forest",
-				"-ongrass"
-			],
+			"classes": ["-forest", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-grass"
-			],
+			"classes": ["-grass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water",
-				"-grass",
-				"-right"
-			],
+			"classes": ["-water", "-grass", "-right"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": [
-				"-water"
-			],
+			"classes": ["-water"],
 			"owner": 0,
 			"capturePoints": 20
 		}
