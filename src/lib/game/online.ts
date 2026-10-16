@@ -2,7 +2,7 @@ import { createController } from './controller.ts'
 import { turnTransitionDuration } from './timing.ts'
 import { initialState, selectedUnit, unitAt, canAttack, locked, reachableCells } from './model.ts'
 import { isUnitTypeId, unitTypes } from './catalog.ts'
-import { isInfantry, selectedPassenger, selectPassenger } from './transport.ts'
+import { canCarry, selectedPassenger, selectPassenger } from './transport.ts'
 import type { MatchConnection } from './peer.ts'
 import type { ControllerOptions, GameController, GameMap, GameState, Player } from './types.ts'
 
@@ -27,7 +27,7 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 		if (transport.cargo === undefined) continue
 		if (!Array.isArray(transport.cargo) || !unitTypes[transport.type].capacity || transport.cargo.length > unitTypes[transport.type].capacity!) return false
 		for (const passenger of transport.cargo) {
-			if (!passenger || !isInfantry(passenger) || passenger.cargo !== undefined || !Number.isInteger(passenger.id) || passenger.id < 0 || identities.has(passenger.id) || passenger.player !== transport.player || !cellIndex(passenger.cell) || !facing(passenger.facing) || ![passenger.health, passenger.movement, passenger.attacks, passenger.capture].every(amount) || passenger.health <= 0) return false
+			if (!passenger || !canCarry(transport, passenger) || (passenger.cargo !== undefined && (!Array.isArray(passenger.cargo) || passenger.cargo.length > 0)) || !Number.isInteger(passenger.id) || passenger.id < 0 || identities.has(passenger.id) || passenger.player !== transport.player || !cellIndex(passenger.cell) || !facing(passenger.facing) || ![passenger.health, passenger.movement, passenger.attacks, passenger.capture].every(amount) || passenger.health <= 0) return false
 			identities.add(passenger.id)
 		}
 	}
@@ -218,6 +218,11 @@ export function createOnlineController(state: GameState, map: GameMap, connectio
 		clickCell(index) {
 			const passenger = selectedPassenger(state)
 			if (passenger) {
+				const unit = unitAt(state, index)
+				if (unit && unit.player === connection.player && unit.id !== state.selectedId) {
+					this.select(unit.id)
+					return
+				}
 				request({ action: 'deploy', value: passenger.id, destination: index })
 				return
 			}

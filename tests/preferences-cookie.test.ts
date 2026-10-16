@@ -31,6 +31,13 @@ test('unit facing defaults on for older cookies and accepts only boolean setting
 	assert.equal(readPreferencesCookie(serializePreferencesCookie({ ...defaultPreferences, unitFacing: false })).unitFacing, false)
 })
 
+test('end-turn confirmation is opt-in and survives preference serialization', () => {
+	for (const confirmEndTurn of [undefined, 'true', null, 1]) {
+		assert.equal(readPreferencesCookie(`pixelswars-settings=${encodeURIComponent(JSON.stringify({ confirmEndTurn }))}`).confirmEndTurn, false)
+	}
+	assert.equal(readPreferencesCookie(serializePreferencesCookie({ ...defaultPreferences, confirmEndTurn: true })).confirmEndTurn, true)
+})
+
 test('all messages have matching translations and placeholders in every configured locale', () => {
 	const { locales } = JSON.parse(readFileSync(new URL('../project.inlang/settings.json', import.meta.url), 'utf8')) as { locales: string[] }
 	const catalogs = locales.map((locale) => JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), 'utf8')) as Record<string, string>)
@@ -42,4 +49,14 @@ test('all messages have matching translations and placeholders in every configur
 			assert.deepEqual(catalog[key].match(/\{\w+\}/g)?.sort(), catalogs[0][key].match(/\{\w+\}/g)?.sort(), key)
 		}
 	}
+})
+
+test('unit selection audio defaults on, validates saved values and persists independently of volume', () => {
+	for (const unitSelectionSounds of [undefined, 'false', null, 0]) {
+		assert.equal(readPreferencesCookie(`pixelswars-settings=${encodeURIComponent(JSON.stringify({ unitSelectionSounds }))}`).unitSelectionSounds, true)
+	}
+	const saved = readPreferencesCookie(serializePreferencesCookie({ ...defaultPreferences, unitSelectionSounds: false, volume: 50, music: true }))
+	assert.equal(saved.unitSelectionSounds, false)
+	assert.equal(saved.volume, 50)
+	assert.equal(saved.music, true)
 })

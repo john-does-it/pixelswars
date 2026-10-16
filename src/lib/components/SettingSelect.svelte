@@ -1,11 +1,11 @@
 <script lang="ts">
 	type Option = { value: string; label: string }
 
-	let { label, ariaLabel = label, value, options, disabled = false, standalone = false, class: className = '', onchange }: { label: string; ariaLabel?: string; value: string; options: Option[]; disabled?: boolean; standalone?: boolean; class?: string; onchange: (value: string) => void } = $props()
+	let { label, ariaLabel = label, hideLabel = false, value, options, disabled = false, standalone = false, class: className = '', onchange }: { label: string; ariaLabel?: string; hideLabel?: boolean; value: string; options: Option[]; disabled?: boolean; standalone?: boolean; class?: string; onchange: (value: string) => void } = $props()
 </script>
 
 <label class={className} class:standalone>
-	<span>{label}</span>
+	<span hidden={hideLabel}>{label}</span>
 	<select aria-label={ariaLabel} {value} {disabled} onchange={(event) => onchange(event.currentTarget.value)}>
 		{#each options as option (option.value)}
 			<option value={option.value}>{option.label}</option>

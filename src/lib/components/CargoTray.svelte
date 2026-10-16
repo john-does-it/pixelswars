@@ -11,6 +11,7 @@
 	let { game, disabled = false }: { game: GameController; disabled?: boolean } = $props()
 	const transport = $derived(selectedUnit(game.state))
 	const passenger = $derived(selectedPassenger(game.state))
+	const hasLandingTile = $derived(!!transport?.cargo?.some((unit) => deploymentCells(game.state, transport, unit).length))
 	let showPassengers = $state(false)
 	function openPassengersWithKeyboard(event: KeyboardEvent) {
 		if (event.key.toLowerCase() !== 't' || event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
@@ -35,14 +36,16 @@
 		</button>
 		{#if showPassengers}
 			<Modal title={label} alwaysShowScrollbar={false} onclose={() => (showPassengers = false)}>
-				<p class="instruction">{translate(messages.transport_choose_passenger)}</p>
+				<p class="instruction">{translate(hasLandingTile ? messages.transport_choose_passenger : messages.transport_blocked)}</p>
 				<div class="passengers">
 					{#each transport.cargo ?? [] as unit (unit.id)}
 						{@const definition = unitTypes[unit.type]}
+						{@const blocked = !deploymentCells(game.state, transport, unit).length}
 						{@const passengerLabel = `${unitName(unit.type)}, ${unit.health} / ${unitTypes[unit.type].maxHealth} ${translate(messages.stat_health)}, ${unit.movement}/${definition.movement} ${translate(messages.stat_movement)}, ${unit.attacks}/${definition.attacks} ${translate(messages.stat_attacks)}, ${translate(messages.capture)}: ${unit.capture}`}
 						<button
 							class="passenger"
-							{disabled}
+							disabled={disabled || blocked}
+							title={blocked ? translate(messages.transport_blocked) : undefined}
 							data-passenger={unit.id}
 							aria-label={passengerLabel}
 							aria-pressed={passenger?.id === unit.id}
@@ -124,6 +127,10 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+	}
+	.passenger:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 	.passenger-stats > .ammunition {
 		align-self: flex-end;

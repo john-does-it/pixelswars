@@ -364,6 +364,10 @@ button.pixel-icon-control:hover:not(:disabled) {
 
 /* Original terrain and unit sprites; layout lives in Svelte components. */
 
+.cell-container.-void {
+	background: var(--color-background);
+}
+
 .cell-container.-grass {
 	background-image: url('/assets/figma/cells/grass/cell-grass-variant-2@2x.png');
 
@@ -595,22 +599,41 @@ button.pixel-icon-control:hover:not(:disabled) {
 	}
 }
 
-.cell-container.-building.-oil-field.-ongrass {
-	background-image: url('/assets/cells/cell-oil-field-on-grass.png');
+.cell-container.-building.-big-city.-ongrass {
+	background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass@2x.png');
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-oil-field-on-grass-captured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass-captured-by-1@2x.png');
 	}
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-oil-field-on-grass-captured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass-captured-by-2@2x.png');
 	}
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured.png');
+		background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass-half-captured@2x.png');
 	}
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured-by-1.png');
+		background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass-half-captured-by-1@2x.png');
 	}
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-oil-field-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/figma/cells/buildings/cell-big-city-on-grass-half-captured-by-2@2x.png');
+	}
+}
+
+.cell-container.-building.-naval-base.-ongrass {
+	background-image: url('/assets/cells/cell-naval-base-on-grass.png');
+	&.-capturedby1 {
+		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-1.png');
+	}
+	&.-capturedby2 {
+		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-2.png');
+	}
+	&.-halfcaptured {
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured.png');
+	}
+	&.-halfcaptured.-capturedby1 {
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-1.png');
+	}
+	&.-halfcaptured.-capturedby2 {
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-2.png');
 	}
 }
 
@@ -671,5 +694,56 @@ button.pixel-icon-control:hover:not(:disabled) {
 }
 
 input[type='range'] {
+	--range-corners: linear-gradient(transparent, transparent);
+	--range-thumb: var(--range-corners), linear-gradient(var(--color-accent), var(--color-accent)) center / 14px 20px no-repeat, linear-gradient(#080d0b, #080d0b) center / 18px 24px no-repeat;
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
 	accent-color: var(--color-accent);
+	transition: filter 150ms ease;
+
+	&::-webkit-slider-runnable-track {
+		height: 8px;
+		background: var(--color-accent);
+		box-shadow:
+			inset 0 2px #fff0b4,
+			inset 0 -2px #927039;
+	}
+	&::-moz-range-track {
+		height: 8px;
+		background: var(--color-accent);
+		box-shadow:
+			inset 0 2px #fff0b4,
+			inset 0 -2px #927039;
+	}
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 28px;
+		height: 34px;
+		margin-top: -13px;
+		border: 0;
+		border-radius: 0;
+		background: var(--range-thumb);
+	}
+	&::-moz-range-thumb {
+		width: 28px;
+		height: 34px;
+		border: 0;
+		border-radius: 0;
+		background: var(--range-thumb);
+	}
+	&:focus-visible,
+	&:active:not(:disabled) {
+		--range-corners: var(--pixel-corner-frame);
+		outline: none;
+	}
+	@media (hover: hover) {
+		&:hover:not(:disabled) {
+			--range-corners: var(--pixel-corner-frame);
+			filter: brightness(1.1);
+		}
+	}
 }

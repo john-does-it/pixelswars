@@ -36,11 +36,13 @@
 		{#if previewCell}<TerrainIcon cell={previewCell} />{/if}
 	</div>
 	{#if previewCell}
-		<StatList items={terrainStats(previewCell)} />
+		{#if previewCell.terrain !== 'void'}<StatList items={terrainStats(previewCell)} />{/if}
 		{#if previewCell.terrain === 'water'}
 			<p class="stat-description">{translate(messages.terrain_water_description)}</p>
 		{:else if previewCell.terrain === 'blocker'}
 			<p class="stat-description">{translate(messages.terrain_blocker_description)}</p>
+		{:else if previewCell.terrain === 'void'}
+			<p class="stat-description">{translate(messages.terrain_void_description)}</p>
 		{/if}
 		{#if previewCell.building}
 			<p class="building-status">

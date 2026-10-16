@@ -3,15 +3,15 @@ export type AiDifficulty = 'easy' | 'medium' | 'hard' | 'expert'
 export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
-export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'transport-helicopter' | 'plane'
-export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest' | 'blocker'
-export type BuildingId = 'city' | 'oil-field' | 'factory' | 'hospital' | 'airport'
-export type ProductionBuildingId = 'factory' | 'airport'
+export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'transport-helicopter' | 'plane' | 'attack-ship' | 'transport-ship'
+export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest' | 'blocker' | 'void'
+export type BuildingId = 'city' | 'big-city' | 'factory' | 'hospital' | 'airport' | 'naval-base'
+export type ProductionBuildingId = 'factory' | 'airport' | 'naval-base'
 
 export interface UnitDefinition {
 	name: string
 	domain?: UnitDomain
-	production?: ProductionBuildingId
+	production?: ProductionBuildingId | null
 	attack: number
 	range: number
 	exclusion: number
@@ -150,6 +150,7 @@ export interface GameController {
 
 export interface AudioController {
 	setVolume(volume: number): void
+	setUnitSelectionEnabled(enabled: boolean): void
 	sound(name: string): void
 	music(enabled: boolean, player: Player): void
 	dispose(): void

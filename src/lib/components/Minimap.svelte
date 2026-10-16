@@ -8,6 +8,12 @@
 
 	let { state: gameState, visibleLeft, visibleTop, visibleWidth, visibleHeight, onseek }: { state: GameState; visibleLeft: number; visibleTop: number; visibleWidth: number; visibleHeight: number; onseek: (left: number, top: number) => void } = $props()
 	const unitsByCell = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
+	const viewportBounds = $derived({
+		x: visibleLeft * gameState.cols * 10 + 0.75,
+		y: visibleTop * gameState.rows * 10 + 0.75,
+		width: Math.max(0, Math.min(visibleWidth, 1 - visibleLeft) * gameState.cols * 10 - 1.5),
+		height: Math.max(0, Math.min(visibleHeight, 1 - visibleTop) * gameState.rows * 10 - 1.5)
+	})
 	let dragging = $state(false)
 
 	function seekAtPointer(event: PointerEvent) {
@@ -26,7 +32,7 @@
 	}
 </script>
 
-<div class="minimap">
+<div class="minimap" style:--viewport-color={gameState.player === 1 ? '#8dcbff' : '#ffb3b1'}>
 	<button
 		class="overview"
 		aria-label={translate(messages.minimap_navigation)}
@@ -60,7 +66,8 @@
 			{/each}
 		</span>
 		<svg viewBox={`0 0 ${gameState.cols * 10} ${gameState.rows * 10}`} aria-hidden="true">
-			<rect class="visible-area" x={visibleLeft * gameState.cols * 10 + 0.75} y={visibleTop * gameState.rows * 10 + 0.75} width={Math.max(0, Math.min(visibleWidth, 1 - visibleLeft) * gameState.cols * 10 - 1.5)} height={Math.max(0, Math.min(visibleHeight, 1 - visibleTop) * gameState.rows * 10 - 1.5)} fill="#ffe98518" stroke="#ffe985" stroke-width="1.5" />
+			<rect class="visible-area-outline" {...viewportBounds} />
+			<rect class="visible-area" {...viewportBounds} />
 		</svg>
 	</button>
 </div>
@@ -88,6 +95,21 @@
 		width: 100%;
 		height: 100%;
 		pointer-events: none;
+		overflow: visible;
+	}
+	.visible-area-outline,
+	.visible-area {
+		vector-effect: non-scaling-stroke;
+	}
+	.visible-area-outline {
+		fill: none;
+		stroke: #080d0b;
+		stroke-width: 4px;
+	}
+	.visible-area {
+		fill: color-mix(in srgb, var(--viewport-color) 10%, transparent);
+		stroke: var(--viewport-color);
+		stroke-width: 2px;
 	}
 	.terrain-grid {
 		display: grid;
@@ -110,6 +132,6 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		border: 1px solid var(--color-accent);
+		border: 1px solid var(--viewport-color);
 	}
 </style>

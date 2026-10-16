@@ -57,7 +57,7 @@ test('draw, undo, restore, export and reimport a playable map', async ({ page },
 	await cell(12).click()
 	await cell(13).click()
 	await page.getByLabel('Propriétaire du bâtiment').selectOption('1')
-	await page.getByRole('button', { name: 'Champ pétrolier', exact: true }).click()
+	await page.getByRole('button', { name: 'Grande ville', exact: true }).click()
 	await cell(19).click()
 	await expect(cell(19)).toHaveClass(/-capturedby1/)
 	await page.getByRole('button', { name: 'Infanterie', exact: true }).click()
@@ -78,7 +78,7 @@ test('draw, undo, restore, export and reimport a playable map', async ({ page },
 		{ type: 'infantry', player: 1, cell: 0 },
 		{ type: 'infantry', player: 2, cell: 35 }
 	])
-	expect(map.cells[19]).toEqual({ classes: ['-building', '-oil-field', '-ongrass'], owner: 1, capturePoints: 20 })
+	expect(map.cells[19]).toEqual({ classes: ['-building', '-big-city', '-ongrass'], owner: 1, capturePoints: 20 })
 	await page.getByRole('button', { name: 'Nouvelle grille', exact: true }).click()
 	await page.getByText('Partir d’une carte', { exact: true }).click()
 	await page.locator('#import').setInputFiles(exportPath)

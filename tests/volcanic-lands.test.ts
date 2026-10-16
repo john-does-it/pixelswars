@@ -10,7 +10,7 @@ test('Volcanic Lands starts with equal armies and income, with all objectives re
 	assert.equal(state.cells.length, 169)
 	assert.equal(state.units.length, 20)
 	assert.equal(new Set(state.units.map((unit) => unit.cell)).size, 20)
-	assert.equal(state.cells.filter((cell) => cell.building === 'oil-field').length, 4)
+	assert.equal(state.cells.filter((cell) => cell.building === 'big-city').length, 4)
 	for (const player of [1, 2]) {
 		const army = state.units.filter((unit) => unit.player === player)
 		assert.deepEqual(army.map((unit) => unit.type).sort(), ['artillery', 'helicopter', 'infantry', 'infantry', 'infantry', 'infantry', 'infantry', 'infantry-sniper', 'jeep', 'tank'])

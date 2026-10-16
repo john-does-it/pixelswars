@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
 	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
+	import { hasAvailableAction } from '$lib/game/available-actions.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
 	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
@@ -15,6 +16,7 @@
 
 	let { game, aiMode = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void } = $props()
 	const gameState = $derived(game.state)
+	let pendingEndTurn = $state<{ game: GameController; round: number } | null>(null)
 	const selected = $derived(selectedUnit(gameState))
 	const previewCell = $derived(gameState.previewIndex === null ? undefined : gameState.cells[gameState.previewIndex])
 
@@ -24,6 +26,21 @@
 	$effect(() => {
 		if (waiting || !previewCell) showPreview = false
 	})
+	$effect(() => {
+		if (pendingEndTurn && (pendingEndTurn.game !== game || pendingEndTurn.round !== gameState.round || inputLocked || waiting || showHelp)) pendingEndTurn = null
+	})
+
+	function requestEndTurn() {
+		if (inputLocked || waiting) return
+		if (preferences.confirmEndTurn && hasAvailableAction(gameState)) pendingEndTurn = { game, round: gameState.round }
+		else game.endTurn()
+	}
+
+	function confirmEndTurn() {
+		const pending = pendingEndTurn
+		pendingEndTurn = null
+		if (pending?.game === game && pending.round === gameState.round && !inputLocked && !waiting) game.endTurn()
+	}
 
 	function setKeyboardLayout(layout: KeyboardLayout) {
 		gameState.keyboardLayout = layout
@@ -34,17 +51,23 @@
 		if (layout === 'azerty' || layout === 'qwerty') setKeyboardLayout(layout)
 	}
 
-	function openStatsWithKeyboard(event: KeyboardEvent) {
-		if (event.key.toLowerCase() !== 'i' || event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
-		if (!previewCell || inputLocked || waiting || showHelp || showPreview) return
+	function handleShortcuts(event: KeyboardEvent) {
+		if (event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
+		if (inputLocked || waiting || showHelp || showPreview || pendingEndTurn) return
 		const target = event.target instanceof Element ? event.target : null
 		if (target?.closest('dialog, input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
+		if (event.key === 'End' && target?.closest('.board')) {
+			event.preventDefault()
+			requestEndTurn()
+			return
+		}
+		if (event.key.toLowerCase() !== 'i' || !previewCell) return
 		event.preventDefault()
 		showPreview = true
 	}
 </script>
 
-<svelte:window onkeydown={openStatsWithKeyboard} />
+<svelte:window onkeydown={handleShortcuts} />
 
 <nav aria-label={translate(messages.game_controls)} class:waiting={!!waiting} aria-hidden={!!waiting} inert={!!waiting}>
 	<div class="action-controls">
@@ -62,11 +85,20 @@
 				<UiIcon name="icon-capture" />
 			</button>
 		{/if}
-		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} title={translate(messages.end_round)} onclick={() => game.endTurn()}>
+		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} aria-keyshortcuts="End" title={`${translate(messages.end_round)} (${translate(messages.key_end)})`} onclick={requestEndTurn}>
 			{translate(messages.end_round)}
 		</button>
 	</div>
 </nav>
+{#if pendingEndTurn}
+	<Modal title={translate(messages.end_round)} alwaysShowScrollbar={false} onclose={() => (pendingEndTurn = null)}>
+		<p>{translate(messages.end_turn_warning)}</p>
+		<div class="confirmation-actions">
+			<button onclick={() => (pendingEndTurn = null)}>{translate(messages.answer_no)}</button>
+			<button class="primary" onclick={confirmEndTurn}>{translate(messages.answer_yes)}</button>
+		</div>
+	</Modal>
+{/if}
 {#if showPreview && previewCell}
 	<Modal title={translate(messages.cell_statistics)} alwaysShowScrollbar={false} onclose={() => (showPreview = false)}>
 		<StatsPanel state={gameState} {aiMode} />
@@ -98,12 +130,27 @@
 					<input id="sound-volume" type="range" min="0" max="100" step="5" value={preferences.volume} aria-label={translate(messages.sound)} aria-valuetext={`${preferences.volume}%`} oninput={(event) => updatePreferences({ volume: event.currentTarget.valueAsNumber, sound: event.currentTarget.valueAsNumber > 0 })} />
 					<output aria-hidden="true">{preferences.volume}%</output>
 				</div>
-				<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
-					{translate(messages.music)}
-					<UiIcon name={gameState.music ? 'icon-play-sound' : 'icon-mute-sound'} />
-				</button>
+				<div class="audio-toggles">
+					<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
+						{translate(messages.music)}
+						<UiIcon name={gameState.music ? 'icon-play-sound' : 'icon-mute-sound'} />
+					</button>
+					<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-pressed={preferences.unitSelectionSounds} onclick={() => updatePreferences({ unitSelectionSounds: !preferences.unitSelectionSounds })}>
+						{translate(messages.unit_selection_sound)}
+						<UiIcon name={preferences.unitSelectionSounds ? 'icon-play-sound' : 'icon-mute-sound'} />
+					</button>
+				</div>
 				<div class="preference-controls">
 					<LanguageSelect compact />
+					<SettingSelect
+						label={translate(messages.confirm_end_turn)}
+						value={preferences.confirmEndTurn ? 'on' : 'off'}
+						options={[
+							{ value: 'on', label: translate(messages.setting_on) },
+							{ value: 'off', label: translate(messages.setting_off) }
+						]}
+						onchange={(value) => updatePreferences({ confirmEndTurn: value === 'on' })}
+					/>
 					<SettingSelect
 						label={translate(messages.animations)}
 						value={preferences.animations ? 'on' : 'off'}
@@ -149,6 +196,12 @@
 {/if}
 
 <style>
+	.confirmation-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		margin-top: 16px;
+	}
 	.match-actions {
 		display: flex;
 		flex-direction: column;
@@ -193,15 +246,25 @@
 		gap: 8px;
 	}
 
+	.audio-toggles {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 1em;
+		width: 100%;
+	}
+
 	.volume-control {
+		width: 100%;
 		font: 700 16px / 1.5 var(--font-body);
 		min-height: 44px;
 		max-width: 100%;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		padding-inline: 0;
 	}
 	.volume-control input {
-		width: 110px;
+		flex: 1 1 80px;
+		min-width: 30px;
+		width: 0;
 		min-height: 44px;
 		margin: 0;
 	}

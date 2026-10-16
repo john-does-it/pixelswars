@@ -7,8 +7,26 @@ import { economicObjectiveValue } from '../src/lib/game/ai-economy.ts'
 import { evaluateExpertPosition } from '../src/lib/game/expert-ai.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 import type { GameMap } from '../src/lib/game/types.ts'
+import { readMap } from '../src/lib/map-editor/model.ts'
 
-test('approved central oil fields are neutral, unoccupied and reachable by both armies', () => {
+test('legacy oil-field maps load and export as big cities without changing ownership', () => {
+	const map = bigCityMap()
+	map.id = '15'
+	map.rows = 2
+	map.cells.push(...Array.from({ length: 6 }, () => ({ classes: ['-grass'], owner: 0 as const, capturePoints: 20 })))
+	for (const cell of map.cells) cell.classes = cell.classes.map((name) => (name === '-big-city' ? '-oil-field' : name))
+	const imported = readMap(JSON.stringify(map))
+	assert.deepEqual(
+		imported.cells.map((cell) => cell.owner),
+		map.cells.map((cell) => cell.owner)
+	)
+	assert.ok(imported.cells[0].classes.includes('-big-city'))
+	assert.ok(!JSON.stringify(imported).includes('oil-field'))
+	assert.equal(initialState(map).cells[0].building, 'big-city')
+	assert.deepEqual(initialState(map).cells, initialState(imported).cells)
+})
+
+test('approved central big cities are neutral, unoccupied and reachable by both armies', () => {
 	const placements: Record<number, number[][]> = {
 		1: [[5, 5]],
 		3: [
@@ -47,7 +65,7 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 	for (let mapId = 1; mapId <= 14; mapId++) {
 		const map = readMapFixture(mapId) as GameMap
 		const state = initialState(map)
-		const fields = state.cells.filter((cell) => cell.building === 'oil-field')
+		const fields = state.cells.filter((cell) => cell.building === 'big-city')
 		const expected = (placements[mapId] ?? []).map(([column, row]) => (row - 1) * map.cols + column - 1).sort((first, second) => first - second)
 		assert.deepEqual(
 			fields.map((cell) => cell.index),
@@ -70,17 +88,17 @@ test('approved central oil fields are neutral, unoccupied and reachable by both 
 	}
 })
 
-function oilFieldMap(): GameMap {
+function bigCityMap(): GameMap {
 	return {
-		id: 'oil-field-test',
-		name: 'Oil field test',
+		id: 'big-city-test',
+		name: 'Big city test',
 		cols: 6,
 		rows: 1,
 		cells: [
-			{ classes: ['-building', '-oil-field', '-ongrass'], owner: 0, capturePoints: 20 },
-			{ classes: ['-building', '-oil-field', '-ongrass'], owner: 1, capturePoints: 20 },
+			{ classes: ['-building', '-big-city', '-ongrass'], owner: 0, capturePoints: 20 },
+			{ classes: ['-building', '-big-city', '-ongrass'], owner: 1, capturePoints: 20 },
 			{ classes: ['-building', '-city', '-ongrass'], owner: 1, capturePoints: 20 },
-			{ classes: ['-building', '-oil-field', '-ongrass'], owner: 2, capturePoints: 10 },
+			{ classes: ['-building', '-big-city', '-ongrass'], owner: 2, capturePoints: 10 },
 			{ classes: ['-grass'], owner: 0, capturePoints: 20 },
 			{ classes: ['-grass'], owner: 0, capturePoints: 20 }
 		],
@@ -91,9 +109,9 @@ function oilFieldMap(): GameMap {
 	}
 }
 
-test('oil fields use city terrain rules and pay only their owner, including while contested', () => {
-	const state = initialState(oilFieldMap())
-	assert.equal(state.cells[0].building, 'oil-field')
+test('big cities use city terrain rules and pay only their owner, including while contested', () => {
+	const state = initialState(bigCityMap())
+	assert.equal(state.cells[0].building, 'big-city')
 	assert.equal(state.cells[0].cost, state.cells[2].cost)
 	assert.equal(state.cells[0].defense, state.cells[2].defense)
 	endTurn(state)
@@ -104,8 +122,8 @@ test('oil fields use city terrain rules and pay only their owner, including whil
 	assert.deepEqual(state.incomeCells, [1, 2])
 })
 
-test('oil fields take two capture actions and start paying on the next owner turn, without healing or production', () => {
-	const state = initialState(oilFieldMap())
+test('big cities take two capture actions and start paying on the next owner turn, without healing or production', () => {
+	const state = initialState(bigCityMap())
 	const infantry = state.units[0]
 	infantry.health = 50
 	select(state, infantry.id)
@@ -131,12 +149,12 @@ test('oil fields take two capture actions and start paying on the next owner tur
 	assert.deepEqual(state.incomeCells, [0, 1, 2])
 })
 
-test('AI values the higher oil income above an otherwise identical city', () => {
-	const state = initialState(oilFieldMap())
-	const oilField = state.cells[0]
-	const city = { ...oilField, building: 'city' as const }
-	assert.ok(economicObjectiveValue(state, oilField) > economicObjectiveValue(state, city))
-	const oilScore = evaluateExpertPosition(state, 1)
+test('AI values the higher big-city income above an otherwise identical city', () => {
+	const state = initialState(bigCityMap())
+	const bigCity = state.cells[0]
+	const city = { ...bigCity, building: 'city' as const }
+	assert.ok(economicObjectiveValue(state, bigCity) > economicObjectiveValue(state, city))
+	const bigCityScore = evaluateExpertPosition(state, 1)
 	state.cells[1].building = 'city'
-	assert.ok(oilScore > evaluateExpertPosition(state, 1))
+	assert.ok(bigCityScore > evaluateExpertPosition(state, 1))
 })

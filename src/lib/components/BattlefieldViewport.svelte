@@ -8,7 +8,7 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state: gameState, name, children, camera = $bindable(), boardDetails, mapBudgets }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; mapBudgets?: Snippet } = $props()
+	let { state: gameState, name, children, camera = $bindable(), boardDetails }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet } = $props()
 	let viewport = $state<HTMLDivElement>()
 	let mapSpace = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
@@ -185,7 +185,6 @@
 
 <div class="camera">
 	<div class="map-zone">
-		<div class="map-budgets game-context-container">{@render mapBudgets?.()}</div>
 		<div class="board-frame">
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
 			<div
@@ -259,23 +258,19 @@
 		min-width: 0;
 		background: var(--color-background);
 	}
-	.map-budgets {
-		flex: none;
-		padding-bottom: 12px;
-	}
 	.board-zoom {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 16px;
-		padding: 12px calc(var(--game-gutter) + var(--game-panel-inset));
+		padding: 12px var(--game-panel-inset);
 		flex: none;
 	}
 	.board-frame {
 		position: relative;
 		isolation: isolate;
 		flex: 1;
-		min-height: 240px;
+		min-height: 0;
 		min-width: 0;
 		background: var(--color-background);
 	}

@@ -35,6 +35,7 @@ test('every selected board and preview sprite has a source asset', () => {
 			for (const ratio of [1, 0.8, 0.6, 0.4, 0.2]) {
 				for (const fit of [false, true]) {
 					const gameplayPath = unitSprite({ type, player, health: ratio * maxHealth }, fit)
+					if (ratio < 1) assert.match(gameplayPath, /-damage-[1-4](?:-fit)?\.png$/, 'injured units must use damage artwork')
 					const sprite = aliases[gameplayPath] ?? gameplayPath
 					assert.ok(existsSync(new URL(`..${sprite}.base64`, import.meta.url)), sprite)
 				}

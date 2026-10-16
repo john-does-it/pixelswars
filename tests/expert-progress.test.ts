@@ -18,7 +18,6 @@ test('Expert takes a certain finishing shot without projecting a speculative ene
 	const decision = await chooseExpertDecision(
 		state,
 		new Set(),
-		new Set(),
 		() => true,
 		async () => {
 			yields++
@@ -84,7 +83,7 @@ test('Expert retains another unit movement when combat and recruitment compete f
 	state.money[1] = 3000
 	state.nextId = 5
 	const snapshot = JSON.stringify(state)
-	const choices = expertCandidates(state, new Set(), new Set())
+	const choices = expertCandidates(state, new Set())
 	const moves = choices.filter((choice) => choice.kind === 'move')
 	assert.ok(
 		choices.some((choice) => choice.kind === 'buy'),

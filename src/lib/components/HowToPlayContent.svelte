@@ -26,6 +26,7 @@
 		<li>{translate(messages.rules_building_2)}</li>
 		<li>{translate(messages.rules_building_3)}</li>
 		<li>{translate(messages.rules_mountain)}</li>
+		<li>{translate(messages.terrain_void_description)}</li>
 	</ul>
 </section>
 
@@ -44,6 +45,7 @@
 	<svelte:element this={headingLevel === 3 ? 'h3' : 'h4'} class="section-title">{translate(messages.transport_title)}</svelte:element>
 	<p>{translate(messages.transport_rules)}</p>
 	<p>{translate(messages.transport_shortcut_hint)}</p>
+	<p>{translate(messages.naval_rules)}</p>
 </section>
 
 <section>
@@ -74,7 +76,20 @@
 			<dt>{translate(messages.transport_passengers)}</dt>
 			<dd>T</dd>
 		</div>
+		<div>
+			<dt>{translate(messages.next_active_unit)}</dt>
+			<dd>Tab</dd>
+		</div>
+		<div>
+			<dt>{translate(messages.previous_active_unit)}</dt>
+			<dd>{translate(messages.key_shift_tab)}</dd>
+		</div>
+		<div>
+			<dt>{translate(messages.end_round)}</dt>
+			<dd>{translate(messages.key_end)}</dd>
+		</div>
 	</dl>
+	<p>{translate(messages.board_shortcuts_hint)}</p>
 </section>
 
 <style>

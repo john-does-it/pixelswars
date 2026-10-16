@@ -1,7 +1,7 @@
 import { pathsFrom } from './movement.ts'
 import rules from './combat-rules.ts'
-import { buildingIncome, unitTypes } from './catalog.ts'
-import { economicObjectiveValue, planExpertProduction } from './ai-economy.ts'
+import { isProductionBuilding, unitTypes } from './catalog.ts'
+import { economicObjectiveValue, initializeAiPlanning, inheritAiPlanning, rememberAiPurchase, planStrategicProduction, planExpertProduction } from './ai-economy.ts'
 import { planTransport, transportedValue, transportPurchaseScore } from './ai-transport.ts'
 import { threatens, damage, enemyPositions, exposure } from './ai-threats.ts'
 import { neighbors, canAttack, canRetaliate, applyDamage, canCapture, unitAt, productionBuilding } from './model.ts'
@@ -21,6 +21,7 @@ function attackValue(state: GameState, attacker: Unit, defender: Unit): number {
 
 export function simulateAttack(state: GameState, attacker: Unit, defender: Unit): GameState {
 	const simulated = { ...state, units: state.units.map((unit) => ({ ...unit })) }
+	inheritAiPlanning(state, simulated)
 	const simulatedAttacker = simulated.units.find((unit) => unit.id === attacker.id)!
 	const simulatedDefender = simulated.units.find((unit) => unit.id === defender.id)!
 	applyDamage(simulated, simulatedAttacker, simulatedDefender)
@@ -70,7 +71,7 @@ export function chooseMovement(state: GameState, difficulty: AiDifficulty, moved
 		const definition = unitTypes[unit.type]
 		const paths = pathsFrom(state, unit)
 		const currentCell = state.cells[unit.cell]
-		const blocksProduction = currentCell.owner === unit.player && (currentCell.building === 'factory' || currentCell.building === 'airport') && Object.entries(unitTypes).some(([type, offer]) => productionBuilding(type as UnitTypeId) === currentCell.building && offer.cost <= state.money[unit.player])
+		const blocksProduction = currentCell.owner === unit.player && isProductionBuilding(currentCell.building) && Object.entries(unitTypes).some(([type, offer]) => productionBuilding(type as UnitTypeId) === currentCell.building && offer.cost <= state.money[unit.player])
 		if (definition.capacity && !blocksProduction) continue
 		const objectives: { cell: number; value: number }[] = []
 		for (const cell of state.cells) {
@@ -124,12 +125,14 @@ export function chooseMovement(state: GameState, difficulty: AiDifficulty, moved
 }
 
 export function choosePurchase(state: GameState, buildingIndex: number, difficulty: AiDifficulty): UnitTypeId | null {
+	const cell = state.cells[buildingIndex]
+	if (!cell || cell.owner !== state.player || !isProductionBuilding(cell.building) || unitAt(state, buildingIndex)) return null
 	if (difficulty === 'expert') {
 		const plan = planExpertProduction(state)
 		return plan?.affordable && plan.buildingIndex === buildingIndex ? plan.type : null
 	}
-	const cell = state.cells[buildingIndex]
-	if (!cell || cell.owner !== state.player || unitAt(state, buildingIndex)) return null
+	const strategic = planStrategicProduction(state, difficulty)
+	if (strategic) return strategic.affordable && strategic.buildingIndex === buildingIndex ? strategic.type : null
 	const offers = (Object.keys(unitTypes) as UnitTypeId[]).filter((type) => productionBuilding(type) === cell.building && unitTypes[type].cost <= state.money[state.player])
 	const enemies = state.units.filter((unit) => unit.player !== state.player)
 	const allies = state.units.filter((unit) => unit.player === state.player)
@@ -140,18 +143,11 @@ export function choosePurchase(state: GameState, buildingIndex: number, difficul
 			const routes = pathsFrom(state, nearbyInfantry[0])
 			if (state.cells.some((target) => target.building && target.owner !== state.player && (routes.get(target.index)?.cost ?? 0) > unitTypes.infantry.movement * 3)) return 'transport'
 		}
-		return offers.sort((left, right) => unitTypes[left].cost - unitTypes[right].cost)[0] ?? null
+		return offers.filter((type) => type !== 'transport-ship' || transportPurchaseScore(state, buildingIndex, difficulty) > 0).sort((left, right) => unitTypes[left].cost - unitTypes[right].cost)[0] ?? null
 	}
 	const needsCapture = state.cells.some((candidate) => candidate.building && candidate.owner !== state.player) && allies.filter((unit) => unitTypes[unit.type].captures).length < 2
 	const airThreat = enemies.some((unit) => unitTypes[unit.type].domain === 'air') && !allies.some((unit) => unit.type === 'anti-air')
-	const hasIncome = state.cells.some((candidate) => buildingIncome(candidate.building) > 0 && candidate.owner === state.player)
 	const transportScore = !airThreat ? transportPurchaseScore(state, buildingIndex, difficulty) : 0
-	// Do not spend every 200$ income tick on infantry when an important counter needs saving.
-	if (cell.building === 'factory' && hasIncome && allies.some((unit) => unitTypes[unit.type].captures)) {
-		if (airThreat && state.money[state.player] < unitTypes['anti-air'].cost) return null
-		if (transportScore > 120 && state.money[state.player] < unitTypes.transport.cost) return null
-		if (difficulty === 'hard' && !needsCapture && !allies.some((unit) => unitTypes[unit.type].range > 1) && state.money[state.player] < unitTypes['infantry-sniper'].cost) return null
-	}
 	return (
 		offers
 			.map((type) => {
@@ -217,7 +213,7 @@ export function chooseCaptureRelay(state: GameState, withinBudget: () => boolean
 	return best ? { kind: 'relay', steps: best.steps } : null
 }
 
-export function chooseHeuristicDecision(state: GameState, difficulty: AiDifficulty, moved: Set<number>, produced: Set<number>, withinSearchBudget: () => boolean = () => true, movementAlternatives?: MovementChoice[]): AiDecision {
+export function chooseHeuristicDecision(state: GameState, difficulty: AiDifficulty, moved: Set<number>, withinSearchBudget: () => boolean = () => true, movementAlternatives?: MovementChoice[]): AiDecision {
 	const deadline = performance.now() + 80
 	const withinBudget = () => withinSearchBudget() && (difficulty === 'easy' || difficulty === 'medium' || performance.now() < deadline)
 	const transport = chooseTransportDecision(state, moved, difficulty, withinBudget)
@@ -234,13 +230,10 @@ export function chooseHeuristicDecision(state: GameState, difficulty: AiDifficul
 	const movement = chooseMovement(state, difficulty, moved, withinBudget, movementAlternatives)
 	if (movement) return { kind: 'move', unitId: movement.unitId, path: movement.path }
 	if (difficulty === 'expert') {
-		const plan = planExpertProduction(state, produced)
+		const plan = planExpertProduction(state)
 		if (plan?.affordable) return { kind: 'buy', buildingIndex: plan.buildingIndex, type: plan.type }
 	} else {
-		const purchase = state.cells
-			.filter((cell) => !produced.has(cell.index))
-			.map((cell) => ({ index: cell.index, type: choosePurchase(state, cell.index, difficulty) }))
-			.find((offer) => offer.type)
+		const purchase = state.cells.map((cell) => ({ index: cell.index, type: choosePurchase(state, cell.index, difficulty) })).find((offer) => offer.type)
 		if (purchase?.type) return { kind: 'buy', buildingIndex: purchase.index, type: purchase.type }
 	}
 	return { kind: 'end' }
@@ -248,16 +241,16 @@ export function chooseHeuristicDecision(state: GameState, difficulty: AiDifficul
 
 export async function runAiTurn(controller: GameController, difficulty: AiDifficulty, active: () => boolean, delay: (milliseconds: number) => Promise<void>): Promise<void> {
 	const state = controller.state
+	initializeAiPlanning(state)
 	const player = state.player
 	const moved = new Set<number>()
-	const produced = new Set<number>()
 	const continuing = () => active() && state.player === player && state.winner === null
 	const expert = difficulty === 'expert' ? await import('./expert-ai.ts') : null
 	for (let step = 0; continuing() && step < state.cells.length * 4; step++) {
 		// Yield between decisions so touch scrolling, options and navigation stay responsive.
 		await delay(550)
 		if (!continuing()) return
-		const decision = expert ? await expert.chooseExpertDecision(state, moved, produced, continuing, () => delay(0)) : chooseHeuristicDecision(state, difficulty, moved, produced)
+		const decision = expert ? await expert.chooseExpertDecision(state, moved, continuing, () => delay(0)) : chooseHeuristicDecision(state, difficulty, moved)
 		if (!continuing()) return
 		if (decision.kind === 'embark' || decision.kind === 'deploy') {
 			controller.select(decision.unitId)
@@ -294,9 +287,10 @@ export async function runAiTurn(controller: GameController, difficulty: AiDiffic
 			continue
 		}
 		if (decision.kind === 'buy') {
-			produced.add(decision.buildingIndex)
 			controller.openProduction(decision.buildingIndex)
+			const budgetBefore = state.money[state.player]
 			controller.buy(decision.type)
+			if (state.money[state.player] < budgetBefore) rememberAiPurchase(state, decision.type)
 			continue
 		}
 		break

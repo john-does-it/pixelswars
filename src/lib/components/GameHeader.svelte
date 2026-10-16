@@ -4,29 +4,40 @@
 	import { playerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 	import UiIcon from './UiIcon.svelte'
+	import PlayerBudgets from './PlayerBudgets.svelte'
 
 	let { state, name, aiMode = false, onoptions }: { state: GameState; name: string; aiMode?: boolean; onoptions: () => void } = $props()
 </script>
 
-<header class="match-summary game-context-container">
-	<div class="summary-details">
-		<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
-			<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
-			<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
+<header class="match-summary">
+	<div class="summary-content game-context-container">
+		<div class="summary-row">
+			<div class="summary-details">
+				<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
+					<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
+					<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
+				</div>
+			</div>
+			<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
 		</div>
+		<PlayerBudgets {state} {aiMode} />
 	</div>
-	<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
 </header>
 
 <style>
 	.match-summary {
 		flex: none;
-		padding: 16px var(--game-gutter);
+		width: 100%;
 		background: rgb(0 0 0 / 15%);
 		backdrop-filter: blur(6px);
-		width: calc(100% - 2 * var(--game-gutter));
-		margin-top: 12px;
-		border-radius: 12px;
+	}
+	.summary-content {
+		padding: 16px var(--game-panel-inset);
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.summary-row {
 		display: flex;
 		align-items: flex-start;
 		gap: 12px;
@@ -84,8 +95,9 @@
 		color: #ffb3b1;
 	}
 	@media (max-width: 900px) {
-		.match-summary {
+		.summary-content {
 			padding-block: 8px;
+			gap: 8px;
 		}
 		.summary-details {
 			gap: 4px 12px;

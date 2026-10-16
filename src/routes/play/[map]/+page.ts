@@ -23,6 +23,9 @@ import geneva from '$lib/data/geneva.json'
 import aLongDay from '$lib/data/a-long-day.json'
 import ourPathsWillCross from '$lib/data/our-paths-will-cross.json'
 import centralPark from '$lib/data/central-park.json'
+import lakeView from '$lib/data/lake-view.json'
+import brokenBridge from '$lib/data/broken-bridge.json'
+import theIslands from '$lib/data/the-islands.json'
 import mapFiles from '$lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '$lib/game/types.js'
@@ -58,7 +61,10 @@ export const load: PageLoad = async ({ params }) => {
 		20: geneva as GameMap,
 		21: aLongDay as GameMap,
 		22: ourPathsWillCross as GameMap,
-		23: centralPark as GameMap
+		23: centralPark as GameMap,
+		24: lakeView as GameMap,
+		25: brokenBridge as GameMap,
+		26: theIslands as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')

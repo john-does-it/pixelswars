@@ -65,7 +65,7 @@ test('production counters aircraft and armor without spending unavailable money'
 	Object.assign(state.cells[0], { building: 'factory', owner: 2 })
 	state.money[2] = 1000
 	spawn(state, 'helicopter', 1, 20)
-	assert.equal(choosePurchase(state, 0, 'easy'), 'infantry')
+	assert.equal(choosePurchase(state, 0, 'easy'), 'anti-air')
 	assert.equal(choosePurchase(state, 0, 'medium'), 'anti-air')
 	assert.equal(choosePurchase(state, 0, 'hard'), 'anti-air')
 	state.units[0].type = 'tank'

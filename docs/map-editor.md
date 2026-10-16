@@ -15,13 +15,23 @@ site by `npm run build`; drawing and drafts run entirely in the browser.
    Horizontal and vertical bridge brushes keep their chosen orientation. Paint them
    over water to create crossings, then connect roads at their ends. Bridges use
    road movement and defense rules; neighboring water stays open beneath them.
+   Supports appear automatically on water directly below horizontal bridges and
+   disappear when the bridge is removed; no separate water-under-bridge brush is needed.
    Water uses the existing shore sprites: use areas at least two cells thick for
    complete banks. Unsupported narrow shapes keep plain water rather than broken corners.
    Obstacles block ground units; only aircraft can cross or occupy them.
+   **Void** cuts holes into the map using its background color, with no terrain stats.
+   All units, including aircraft, are blocked. Painting void removes any unit on that
+   cell; mirror mode and JSON export preserve the cutouts.
 3. Choose a blue or red unit and place it. The eraser removes only units; painting
    water or obstacles removes ground units from that cell. Aircraft can be placed over both.
    Transport jeeps start empty; place their infantry separately. Players can load
    up to three adjacent infantry units during the match.
+   Attack ships and transport ships can be placed only on water. Transport ships
+   carry up to three infantry or ground vehicles (one slot each); loaded transports
+   cannot be nested. Boarding from an adjacent shore costs one movement point.
+   Deployment uses a free adjacent land cell and preserves remaining actions.
+   Ships cannot cross bridge decks, capture buildings or be produced yet.
 4. Set a name and numeric map ID, then **Exporter le JSON** to download `board-ID.json`.
    Submit it for review and integration into the game, translations and thumbnails.
    **JSON à copier** also provides the export as text if you prefer to copy and paste it.
@@ -38,6 +48,8 @@ odd-sized grid, then activate the mode: the top half replaces the bottom half,
 and the left of the middle row replaces its right. Roads and shores reconnect
 automatically. The centre cell stays neutral and cannot contain a unit. You can
 paint from either side; undo restores both cells or reverses enabling the mode.
+Bridge supports keep their downward perspective, never appearing above their
+rotated counterpart or changing land into water. Vertical bridges keep their existing artwork.
 The browser draft remembers the mode. Loading or importing a map disables it;
 exported JSON contains only the playable map, without editor settings.
 
@@ -56,3 +68,8 @@ the JSON inside a fenced code block. Include the map name, a short description
 of its intended gameplay and optionally a screenshot. Make sure both armies are present
 and can reach each other and the objectives. IDs can be reassigned on integration.
 Submissions are reviewed; exporting does not automatically publish a map.
+
+Naval bases belong on a coastline. Infantry can capture them, and their owner can
+produce attack ships or transport ships using the usual production dialog. Ships
+appear on the base and can sail onto adjacent water; bridge decks remain blocked.
+Naval bases provide neither income nor repairs. Big cities provide 300$ per turn.

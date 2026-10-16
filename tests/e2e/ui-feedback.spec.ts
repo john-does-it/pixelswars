@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import mapPreviews from '../../src/lib/data/map-previews.json' with { type: 'json' }
 
-test('map chooser shows lightweight terrain previews, dimensions and localized size labels', async ({ page }) => {
+test('map chooser shows lightweight terrain previews, dimensions and cell-count size labels', async ({ page }) => {
 	await page.goto('/')
 	const cards = page.locator('.maps .map')
 	await expect(cards).toHaveCount(Object.keys(mapPreviews).length)
@@ -11,14 +11,10 @@ test('map chooser shows lightweight terrain previews, dimensions and localized s
 		await image.scrollIntoViewIfNeeded()
 		await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
 	}
-	for (const [locale, small, large] of [
-		['en', 'Very small', 'Large'],
-		['fr', 'Très petite', 'Grande'],
-		['de', 'Sehr klein', 'Groß']
-	]) {
+	for (const locale of ['en', 'fr', 'de', 'ja']) {
 		await page.getByRole('combobox').selectOption(locale)
-		await expect(cards.first().locator('.map-metadata')).toHaveText(`${small} · 8 × 8`)
-		await expect(page.locator('.map[href="/play/12/"] .map-metadata')).toHaveText(`${large} · 18 × 18`)
+		await expect(cards.first().locator('.map-metadata')).toHaveText('XXS · 8 × 8')
+		await expect(page.locator('.map[href="/play/12/"] .map-metadata')).toHaveText('XXL · 18 × 18')
 		await expect(cards.last().locator('.map-metadata')).toHaveText('XXL · 32 × 32')
 	}
 	await cards.last().click()

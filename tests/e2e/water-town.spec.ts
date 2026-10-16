@@ -13,6 +13,6 @@ test('Water Town opens from the map chooser with both armies and its preview', a
 	await expect(page).toHaveTitle('Pixel’s War · Water Town')
 	await expect(page.locator('.board [data-cell]')).toHaveCount(98)
 	await expect(page.locator('.board [data-unit]')).toHaveCount(8)
-	await expect(page.locator('.board .-oil-field')).toHaveCount(2)
+	await expect(page.locator('.board .-big-city')).toHaveCount(2)
 	await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeEnabled()
 })

@@ -1,5 +1,37 @@
 import { test, expect } from '@playwright/test'
 
+test('mirrored bridge supports stay below the decks when restoring, painting and undoing', async ({ page }, testInfo) => {
+	await page.addInitScript(() => {
+		const key = 'pixelswar-map-editor-draft-v1'
+		if (localStorage.getItem(key)) return
+		const cells = Array.from({ length: 49 }, () => ({ classes: ['-water'], owner: 0, capturePoints: 20 }))
+		for (const index of [10, 38]) cells[index].classes = ['-road', '-bridge', '-h']
+		// Reproduce the old rotation bug: the second support is above its deck.
+		for (const index of [17, 31]) cells[index].classes = ['-water', '-under-bridge', '-h']
+		localStorage.setItem(key, JSON.stringify({ id: '15', name: 'Bridge test', cols: 7, rows: 7, cells, units: [], editorMirrorMode: 'rotation' }))
+	})
+	await page.goto('/map-editor/')
+	const cell = (index: number) => page.locator(`#board [data-cell="${index}"]`)
+	await expect(page.locator('#mirror-mode')).toHaveValue('rotation')
+	await expect(cell(17)).toHaveClass(/-under-bridge/)
+	await expect(cell(45)).toHaveClass(/-under-bridge/)
+	await expect(cell(31)).not.toHaveClass(/-under-bridge/)
+	await expect(page.locator('#board .-under-bridge')).toHaveCount(2)
+	await page.locator('[data-brush="terrain_water"]').click()
+	await cell(38).press('Enter')
+	await expect(page.locator('#board .-under-bridge')).toHaveCount(0)
+	await page.locator('#undo').click()
+	await expect(cell(17)).toHaveClass(/-under-bridge/)
+	await expect(cell(45)).toHaveClass(/-under-bridge/)
+	await page.locator('[data-brush="map_editor_bridge_horizontal"]').click()
+	await cell(23).press('Enter')
+	await expect(cell(30)).toHaveClass(/-under-bridge/)
+	await expect(cell(32)).toHaveClass(/-under-bridge/)
+	await page.reload()
+	await expect(page.locator('#board .-under-bridge')).toHaveCount(4)
+	await page.locator('#board').screenshot({ path: testInfo.outputPath('mirrored-bridges.png') })
+})
+
 test('mirror mode restricts dimensions, pairs opposing teams and persists without changing export format', async ({ page }) => {
 	await page.goto('/map-editor/')
 	await expect.poll(() => page.evaluate(() => localStorage.getItem('pixelswar-map-editor-draft-v1'))).not.toBeNull()

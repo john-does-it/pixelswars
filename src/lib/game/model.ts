@@ -1,9 +1,9 @@
 import rules from './combat-rules.ts'
-import { createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
+import { buildingIncome, createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
 import { faceOpponents } from './facing.ts'
-import type { Cell, GameMap, GameState, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
+import type { Cell, GameMap, GameState, Player, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
 
-const buildingIds = ['city', 'oil-field', 'factory', 'hospital', 'airport'] as const
+const buildingIds = ['city', 'big-city', 'factory', 'hospital', 'airport', 'naval-base'] as const
 
 export function initialState(map: GameMap): GameState {
 	const units = map.units.map((unit, id) => createUnit(unit.type, unit.player, unit.cell, id))
@@ -14,9 +14,11 @@ export function initialState(map: GameMap): GameState {
 		cols: map.cols,
 		rows: map.rows,
 		cells: map.cells.map((cell, index) => {
+			// Older exported maps used oil fields for the same 300$ income building.
+			const classes = cell.classes.map((name) => (name === '-oil-field' ? '-big-city' : name))
 			// Later terrain definitions override grass on forest/building cells, as in the POC.
-			const terrain: TerrainId = (Object.keys(terrainTypes) as TerrainId[]).filter((type) => cell.classes.includes('-' + type)).at(-1) || 'grass'
-			return { ...cell, classes: [...cell.classes], index, terrain, ...terrainTypes[terrain], building: buildingIds.find((type) => cell.classes.includes('-' + type)) ?? null }
+			const terrain: TerrainId = (Object.keys(terrainTypes) as TerrainId[]).filter((type) => classes.includes('-' + type)).at(-1) || 'grass'
+			return { ...cell, classes, index, terrain, ...terrainTypes[terrain], building: buildingIds.find((type) => classes.includes('-' + type)) ?? null }
 		}),
 		units,
 		nextId: map.units.length,
@@ -56,15 +58,19 @@ export function neighbors(state: GameState, index: number): number[] {
 	return [column > 0 ? index - 1 : -1, column < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((neighborIndex) => neighborIndex >= 0 && neighborIndex < state.cells.length)
 }
 
-export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'>): number {
+export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'> & Partial<Pick<Cell, 'building'>>): number {
+	if (cell.terrain === 'void') return Infinity
 	if (domain === 'air') return 1
 	if (cell.terrain === 'blocker') return Infinity
-	if (domain === 'naval') return cell.terrain === 'water' ? cell.cost : Infinity
+	if (domain === 'naval') return cell.terrain === 'water' || cell.building === 'naval-base' ? cell.cost : Infinity
 	return cell.terrain === 'water' ? Infinity : cell.cost
 }
 
 export const movementCost = (unit: Unit, cell: Cell): number => movementCostForDomain(unitTypes[unit.type].domain ?? 'ground', cell)
-export const productionBuilding = (type: UnitTypeId): string => unitTypes[type].production ?? 'factory'
+export function productionBuilding(type: UnitTypeId): string | null {
+	const production = unitTypes[type].production
+	return production === undefined ? 'factory' : production
+}
 
 export function reachableCells(state: GameState, unit = selectedUnit(state)): number[] {
 	return unit ? neighbors(state, unit.cell).filter((index) => movementCost(unit, state.cells[index]) <= unit.movement && !unitAt(state, index)) : []
@@ -80,7 +86,7 @@ export function effectiveRange(state: GameState, unit: Unit): { minimum: number;
 export function attackCells(state: GameState, unit = selectedUnit(state)): number[] {
 	if (!unit || unitTypes[unit.type].attack === 0) return []
 	const range = effectiveRange(state, unit)
-	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1)
+	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1).filter((index) => state.cells[index].terrain !== 'void')
 }
 
 export function canAttack(state: GameState, attacker?: Unit, defender?: Unit): boolean {
@@ -91,11 +97,14 @@ export function canRetaliate(state: GameState, defender: Unit, attacker: Unit): 
 	return defender.attacks > 0 && canAttack(state, defender, attacker)
 }
 
-export function canCapture(state: GameState): boolean {
-	const unit = selectedUnit(state)
+export function canCapture(state: GameState, unit = selectedUnit(state)): boolean {
 	if (!unit || locked(state) || unit.capture <= 0 || unit.player !== state.player) return false
 	const cell = state.cells[unit.cell]
 	return !!cell?.building && (cell.owner !== state.player || cell.capturePoints < 20)
+}
+
+export function playerIncome(state: GameState, player: Player): number {
+	return state.cells.reduce((income, cell) => income + (cell.owner === player ? buildingIncome(cell.building) : 0), 0)
 }
 
 export function purchaseStatus(state: GameState, type: string): PurchaseStatus {
@@ -104,7 +113,7 @@ export function purchaseStatus(state: GameState, type: string): PurchaseStatus {
 	const cost = definition?.cost
 	const missing = Math.max(0, (cost ?? Infinity) - state.money[state.player])
 	const occupied = !!cell && !!unitAt(state, cell.index)
-	return { missing, occupied, available: !locked(state) && !!cell && !!definition && cell.building === productionBuilding(type as UnitTypeId) && cell.owner === state.player && !occupied && missing === 0 }
+	return { missing, occupied, available: !locked(state) && !!cell?.building && !!definition && cell.building === productionBuilding(type as UnitTypeId) && cell.owner === state.player && !occupied && missing === 0 }
 }
 
 export function applyDamage(state: GameState, attacker: Unit, defender: Unit): void {

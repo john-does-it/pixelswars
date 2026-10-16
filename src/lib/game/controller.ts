@@ -5,10 +5,12 @@ import * as transportActions from './transport.ts'
 import { pathsFrom } from './movement.ts'
 import { movementStepDuration } from './timing.ts'
 import { faceCell } from './facing.ts'
+import { createUnitNavigation } from './available-actions.ts'
 import type { ControllerOptions, GameController, GameState, Unit, UnitTypeId } from './types.ts'
 
 // A controller belongs to one mounted game. No DOM, global state or audio objects.
 export function createController(state: GameState, { sound = () => {}, onSound = () => {}, onChange = () => {}, delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)) }: ControllerOptions = {}): GameController {
+	const nextAvailableUnit = createUnitNavigation(state)
 	let disposed = false
 	const play = (name: string): void => {
 		if (disposed) return
@@ -127,6 +129,11 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			if (disposed || locked(state)) return
 			const passenger = transportActions.selectedPassenger(state)
 			if (passenger) {
+				const unit = unitAt(state, index)
+				if (unit && unit.player === state.player && unit.id !== state.selectedId) {
+					this.select(unit.id)
+					return
+				}
 				this.deploy(passenger.id, index)
 				return
 			}
@@ -199,8 +206,16 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		},
 		keydown(event: KeyboardEvent) {
 			const target = event.target instanceof Element ? event.target : null
-			if (locked(state) || event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
+			if (disposed || locked(state) || event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog')) return
 			if (target?.closest('input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
+			if (event.key === 'Tab') {
+				if (!target?.closest('.board') || event.repeat || state.productionIndex !== null || state.aiThinking || (state.network && (state.network.pending || state.network.phase !== 'playing' || state.network.player !== state.player))) return
+				const next = nextAvailableUnit(event.shiftKey)
+				if (!next) return
+				event.preventDefault()
+				this.select(next.id)
+				return
+			}
 			if (event.key === 'Escape') {
 				if (state.productionIndex !== null) return
 				if (state.inspectedEnemyId !== null) {

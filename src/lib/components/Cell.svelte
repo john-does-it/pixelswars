@@ -33,7 +33,8 @@
 	}
 	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, buildingLights = true, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
-	const resources = $derived(unit && showResources ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks }), translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])].join(', ') : '')
+	const buildingLightSprite = $derived(cell.building === 'big-city' ? `/assets/figma/cells/buildings/cell-big-city-on-grass-light-on${cell.capturePoints < 20 ? '-half-captured' : cell.owner ? '-captured' : ''}${cell.owner ? `-by-${cell.owner}` : ''}@2x.png` : `/assets/cells/building-lights/${cell.building === 'naval-base' ? 'naval-base-0' : `${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}`}.svg`)
+	const resources = $derived(unit ? [...(unitTypes[unit.type].attacks > 0 ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks })] : []), ...(showResources ? [translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])] : [])].join(', ') : '')
 	const label = $derived(
 		translate(messages.cell_label, {
 			cell: cell.index + 1,
@@ -73,7 +74,7 @@
 		<span
 			class="building-lights"
 			aria-hidden="true"
-			style:background-image={`url('${asset(`/assets/cells/building-lights/${cell.building === 'oil-field' ? 'oil-field-0' : `${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}`}.svg`)}')`}
+			style:background-image={`url('${asset(buildingLightSprite)}')`}
 			onanimationstart={(event) => {
 				// Share the document timeline, including after actions or settings remount lights.
 				for (const animation of event.currentTarget.getAnimations()) animation.startTime = 0

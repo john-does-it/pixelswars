@@ -143,7 +143,7 @@ test('Expert completes the starting city with an infantry relay during the openi
 	const relay = chooseCaptureRelay(state)!
 	assert.ok(relay)
 	const snapshot = JSON.stringify(state)
-	assert.equal((await chooseExpertDecision(state, new Set(), new Set())).kind, 'relay')
+	assert.equal((await chooseExpertDecision(state, new Set())).kind, 'relay')
 	assert.equal(JSON.stringify(state), snapshot)
 	const game = createController(state, { delay: async () => {} })
 	await runAiTurn(
@@ -167,7 +167,7 @@ test('capture relays resume a partial capture using remaining movement, even aft
 	Object.assign(state.cells[10], { building: 'factory' })
 	state.units[0].capture = 0
 	state.units[0].movement = 2
-	const decision = await chooseExpertDecision(state, new Set([0]), new Set())
+	const decision = await chooseExpertDecision(state, new Set([0]))
 	assert.equal(decision.kind, 'relay')
 	if (decision.kind !== 'relay') return
 	for (const step of decision.steps) {
@@ -207,13 +207,13 @@ test('Expert passes up a tempting kill to suppress the rocket that would destroy
 	state.units[2].health = 40
 	const snapshot = JSON.stringify(state)
 	assert.equal(chooseAttack(state, 'hard')?.defenderId, 2)
-	const decision = await chooseExpertDecision(state, new Set([0, 1]), new Set())
+	const decision = await chooseExpertDecision(state, new Set([0, 1]))
 	assert.deepEqual(decision, { kind: 'attack', attackerId: 0, defenderId: 3 })
 	assert.equal(JSON.stringify(state), snapshot, 'Search must not modify the live match')
-	const projection = await projectExpertDecision(state, decision, new Set([0, 1]), new Set())
+	const projection = await projectExpertDecision(state, decision, new Set([0, 1]))
 	// Stronger armor extends the fight beyond this search horizon, but suppression
 	// must still save the tank compared with taking the immediate jeep kill.
-	const greedyProjection = await projectExpertDecision(state, { kind: 'attack', attackerId: 0, defenderId: 2 }, new Set([0, 1]), new Set())
+	const greedyProjection = await projectExpertDecision(state, { kind: 'attack', attackerId: 0, defenderId: 2 }, new Set([0, 1]))
 	assert.ok(!greedyProjection.units.some((unit) => unit.id === 1))
 	assert.ok(projection.units.some((unit) => unit.id === 1 && unit.health > 0))
 })
@@ -225,7 +225,7 @@ test('lookahead crosses the enemy turn and our next turn, including income and h
 	Object.assign(state.cells[0], { building: 'hospital', owner: 1 })
 	Object.assign(state.cells[1], { building: 'city', owner: 1 })
 	Object.assign(state.cells[78], { building: 'city', owner: 2 })
-	const projection = await projectExpertDecision(state, { kind: 'end' }, new Set(), new Set())
+	const projection = await projectExpertDecision(state, { kind: 'end' }, new Set())
 	assert.equal(projection.round, 3)
 	assert.equal(projection.player, 1)
 	assert.deepEqual(projection.money, { 1: 200, 2: 200 })
@@ -277,7 +277,6 @@ test('Expert search yields and abandons its decision if the match is disposed', 
 	const snapshot = JSON.stringify(state)
 	const decision = await chooseExpertDecision(
 		state,
-		new Set(),
 		new Set(),
 		() => active,
 		async () => {
@@ -344,14 +343,14 @@ test('Expert reserves recruitment and compares two destinations without changing
 	Object.assign(state.cells[7], { building: 'factory', owner: 1 })
 	state.money[1] = 3000
 	const snapshot = JSON.stringify(state)
-	const choices = expertCandidates(state, new Set(), new Set())
+	const choices = expertCandidates(state, new Set())
 	assert.ok(choices.some((choice) => choice.kind === 'buy'))
 	assert.ok(choices.length <= 7, 'six active choices plus ending the turn')
 	const moves = choices.filter((choice) => choice.kind === 'move')
 	assert.ok(moves.some((move) => moves.some((other) => other.unitId === move.unitId && other.path.at(-1) !== move.path.at(-1))))
 	assert.equal(JSON.stringify(state), snapshot)
 	assert.ok(
-		expertCandidates(state, new Set(), new Set(), () => false).some((choice) => choice.kind === 'buy'),
+		expertCandidates(state, new Set(), () => false).some((choice) => choice.kind === 'buy'),
 		'optional search cannot displace an affordable purchase'
 	)
 })
@@ -374,11 +373,10 @@ test('alternative attacks leave excluded targets available for follow-up fire', 
 test('Expert returns a legal fallback when time expires during refinement', async () => {
 	const state = productionFixture()
 	const snapshot = JSON.stringify(state)
-	const choices = expertCandidates(state, new Set(), new Set())
+	const choices = expertCandidates(state, new Set())
 	let clock = 0
 	const decision = await chooseExpertDecision(
 		state,
-		new Set(),
 		new Set(),
 		() => true,
 		async () => {

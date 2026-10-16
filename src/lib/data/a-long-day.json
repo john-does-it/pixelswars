@@ -1,6 +1,6 @@
 {
 	"id": "21",
-	"name": "A long day",
+	"name": "A Long Day",
 	"cols": 31,
 	"rows": 11,
 	"cells": [
@@ -360,7 +360,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -695,17 +695,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -850,17 +850,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1005,17 +1005,17 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1350,7 +1350,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-building", "-oil-field", "-ongrass"],
+			"classes": ["-building", "-big-city", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},

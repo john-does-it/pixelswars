@@ -87,13 +87,13 @@ for (const [id, cols, rows] of [
 			}
 		}
 		assert.equal(objectives.filter((cell) => cell.building === 'city').length, 4)
-		assert.equal(objectives.filter((cell) => cell.building === 'oil-field').length, id === 11 ? 3 : id === 12 ? 4 : 0)
+		assert.equal(objectives.filter((cell) => cell.building === 'big-city').length, id === 11 ? 3 : id === 12 ? 4 : 0)
 		assert.equal(objectives.filter((cell) => cell.building === 'factory').length, id === 12 ? 5 : 4)
 		assert.equal(objectives.filter((cell) => cell.building === 'hospital').length, 2)
 		assert.equal(objectives.filter((cell) => cell.building === 'airport').length, id === 12 ? 1 : 2)
 		for (const cell of state.cells) {
 			const opposite = state.cells[state.cells.length - 1 - cell.index]
-			// Map 11 has one additional contested oil field east of the central road.
+			// Map 11 has one additional contested big city east of the central road.
 			// Map 12 adds western cities and replaces the southern airport with a factory.
 			const asymmetricObjective = id === 12 && [18, 270, 273].some((index) => cell.index === index || opposite.index === index)
 			if (!asymmetricObjective && (id !== 11 || (cell.index !== 119 && opposite.index !== 119))) assert.equal(cell.building, opposite.building)

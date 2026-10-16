@@ -40,7 +40,7 @@ test('water below a bridge preserves its sprite and remains impassable to ground
 	const map = newMap(5, 5)
 	const classes = ['-water', '-under-bridge', '-h']
 	paintCell(map, 12, { kind: 'unit', type: 'infantry', player: 1 })
-	paintCell(map, 12, { kind: 'terrain', classes, owner: 0 })
+	paintCell(map, 12, { kind: 'terrain', classes: ['-water'], owner: 0 })
 	assert.equal(map.units.length, 0)
 	paintCell(map, 7, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 })
 	paintCell(map, 17, { kind: 'terrain', classes: ['-water'], owner: 0 })
@@ -56,6 +56,63 @@ test('water below a bridge preserves its sprite and remains impassable to ground
 	const invalid = structuredClone(map)
 	invalid.cells[12].classes = ['-road', '-under-bridge', '-h']
 	assert.throws(() => readMap(JSON.stringify(invalid)), /map_editor_error_cell/)
+	paintCell(map, 7, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+	assert.ok(!map.cells[12].classes.includes('-under-bridge'))
+	assert.equal(map.units[0].cell, 12)
+	// Drawing water after a bridge must also add its supports.
+	paintCell(map, 12, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+	paintCell(map, 7, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 })
+	paintCell(map, 12, { kind: 'terrain', classes: ['-water'], owner: 0 })
+	assert.deepEqual(map.cells[12].classes, classes)
+})
+
+test('rotation keeps bridge supports below both decks and repairs an existing mirrored layout', () => {
+	const map = newMap(7, 7)
+	for (const cell of map.cells) cell.classes = ['-water']
+	paintCell(map, 10, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 })
+	paintCell(map, 17, { kind: 'terrain', classes: ['-water', '-under-bridge', '-h'], owner: 0 })
+	const mirrored = mirrorMap(map, 'rotation')
+	assert.deepEqual(mirrored.cells[38].classes, ['-road', '-bridge', '-h'])
+	assert.deepEqual(
+		mirrored.cells.flatMap((cell, index) => (cell.classes.includes('-under-bridge') ? [index] : [])),
+		[17, 45]
+	)
+	assert.deepEqual(mirrorMap(mirrored, 'rotation'), mirrored)
+	assert.deepEqual(readMap(mapJson(mirrored)), mirrored)
+	// Painting the decorative water tile must not recreate supports above the other deck.
+	paintMirroredCell(mirrored, 17, { kind: 'terrain', classes: ['-water', '-under-bridge', '-h'], owner: 0 }, 'rotation')
+	assert.deepEqual(mirrored.cells[31].classes, ['-water'])
+	assert.ok(mirrored.cells[45].classes.includes('-under-bridge'))
+	paintMirroredCell(mirrored, 38, { kind: 'terrain', classes: ['-water'], owner: 0 }, 'rotation')
+	assert.equal(
+		mirrored.cells.some((cell) => cell.classes.includes('-under-bridge')),
+		false
+	)
+})
+
+test('automatic supports preserve land, occupants, vertical bridges and map edges', () => {
+	const map = newMap(7, 7)
+	paintCell(map, 17, { kind: 'unit', type: 'tank', player: 1 })
+	const land = structuredClone(map.cells[17])
+	paintMirroredCell(map, 10, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 }, 'rotation')
+	assert.deepEqual(map.cells[17], land)
+	assert.equal(map.units[0].cell, 17)
+	assert.equal(
+		map.cells.some((cell) => cell.classes.includes('-under-bridge')),
+		false
+	)
+	for (const cell of map.cells) cell.classes = ['-water']
+	map.units = []
+	paintMirroredCell(map, 10, { kind: 'terrain', classes: ['-road', '-bridge', '-v'], owner: 0 }, 'rotation')
+	assert.equal(
+		map.cells.some((cell) => cell.classes.includes('-under-bridge')),
+		false
+	)
+	paintMirroredCell(map, 3, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 }, 'rotation')
+	assert.equal(map.cells.length, 49)
+	assert.deepEqual(map.cells[10].classes, ['-road', '-bridge', '-v'])
+	paintMirroredCell(map, 24, { kind: 'terrain', classes: ['-road', '-bridge', '-h'], owner: 0 }, 'rotation')
+	assert.deepEqual(map.cells[31].classes, ['-water', '-under-bridge', '-h'])
 })
 
 test('editor updates shores, enforces one unit per cell and prevents ground units on water', () => {
@@ -78,13 +135,13 @@ test('editor exports owned buildings and armies in the actual game schema', () =
 	const map = newMap(8, 8)
 	map.id = '15'
 	map.name = 'My battlefield'
-	paintCell(map, 20, { kind: 'terrain', classes: ['-building', '-oil-field', '-ongrass'], owner: 2 })
+	paintCell(map, 20, { kind: 'terrain', classes: ['-building', '-big-city', '-ongrass'], owner: 2 })
 	paintCell(map, 0, { kind: 'unit', type: 'infantry', player: 1 })
 	paintCell(map, 63, { kind: 'unit', type: 'infantry-rocket', player: 2 })
 	const imported = readMap(mapJson(map))
 	assert.deepEqual(imported, map)
 	const state = initialState(imported)
-	assert.equal(state.cells[20].building, 'oil-field')
+	assert.equal(state.cells[20].building, 'big-city')
 	assert.equal(state.cells[20].owner, 2)
 	assert.equal(state.units.length, 2)
 	assert.throws(() => readMap(JSON.stringify({ ...map, cells: [] })), /map_editor_error_cells/)

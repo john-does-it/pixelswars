@@ -105,7 +105,7 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('budgets, minimap and zoom align with the bottom panel independently of map zoom', async ({ page }) => {
+test('budgets sit below the summary in its panel and controls stay aligned independently of map zoom', async ({ page }) => {
 	for (const size of [
 		{ width: 1920, height: 1080 },
 		{ width: 1400, height: 900 },
@@ -119,7 +119,7 @@ test('budgets, minimap and zoom align with the bottom panel independently of map
 		const geometry = () =>
 			page.evaluate(() =>
 				Object.fromEntries(
-					['header', '.board-frame', '.board-zoom', '.zoom-controls', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
+					['header', '.summary-content', '.summary-row', '.board-frame', '.board-zoom', '.zoom-controls', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
 						const r = document.querySelector(selector)!.getBoundingClientRect()
 						return [selector, { x: r.x, y: r.y + scrollY, width: r.width, height: r.height }]
 					})
@@ -133,21 +133,29 @@ test('budgets, minimap and zoom align with the bottom panel independently of map
 			budgets = before['.budgets']
 		expect(frame.x).toBe(0)
 		expect(frame.width).toBe(size.width)
-		expect(before.header.y).toBe(12)
+		expect(before.header.y).toBe(0)
+		expect(before.header.x).toBe(0)
+		expect(before.header.width).toBe(size.width)
+		expect(before['.summary-content'].width).toBeLessThanOrEqual(1480)
+		expect(before['.summary-content'].x + before['.summary-content'].width / 2).toBeCloseTo(size.width / 2, 0)
 		expect(frame.y).toBeGreaterThanOrEqual(before.header.y + before.header.height)
-		expect(budgets.y).toBeGreaterThanOrEqual(before.header.y + before.header.height)
+		expect(budgets.y).toBeGreaterThanOrEqual(before['.summary-row'].y + before['.summary-row'].height)
+		expect(budgets.y + budgets.height).toBeLessThanOrEqual(before.header.y + before.header.height)
 		expect(frame.y).toBeGreaterThanOrEqual(budgets.y + budgets.height)
 		expect(before['.board-zoom'].y).toBeGreaterThanOrEqual(frame.y + frame.height)
 		expect(panel.y).toBeGreaterThanOrEqual(before['.board-zoom'].y + before['.board-zoom'].height)
 		const panelInset = await page.locator('.board-actions').evaluate((element) => parseFloat(getComputedStyle(element).paddingLeft))
 		expect(minimap.x).toBeCloseTo(panel.x + panelInset, 0)
 		expect(zoom.x + zoom.width).toBeCloseTo(panel.x + panel.width - panelInset, 0)
-		expect(before['.board-details'].width).toBeLessThanOrEqual(1480)
+		expect(panel.width).toBeLessThanOrEqual(1480)
+		expect(before['.board-details'].x).toBe(0)
+		expect(before['.board-details'].width).toBe(size.width)
+		expect(before['.board-details'].y + before['.board-details'].height).toBeCloseTo(size.height, 0)
 		expect(before['.board-details'].x + before['.board-details'].width / 2).toBeCloseTo(size.width / 2, 0)
 		const playerCards = page.locator('.budgets > span')
-		expect((await playerCards.first().boundingBox())!.x).toBeCloseTo(panel.x, 0)
+		expect((await playerCards.first().boundingBox())!.x).toBeCloseTo(panel.x + panelInset, 0)
 		const rightCard = (await playerCards.last().boundingBox())!
-		expect(rightCard.x + rightCard.width).toBeCloseTo(panel.x + panel.width, 0)
+		expect(rightCard.x + rightCard.width).toBeCloseTo(panel.x + panel.width - panelInset, 0)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 		await expect(page.locator('.map-space')).toHaveCSS('padding', '7px')
 		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
@@ -227,6 +235,10 @@ test('minimap seeks vertically and horizontal scrolling never moves a selected u
 	await expect(page.locator('dialog.turn-transition')).toHaveCount(0, { timeout: 10000 })
 	await zoomToReadableTiles(page)
 	const overview = page.locator('.overview')
+	const visibleArea = overview.locator('.visible-area')
+	await expect(visibleArea).toHaveCSS('stroke', 'rgb(141, 203, 255)')
+	await expect(visibleArea).toHaveCSS('stroke-width', '2px')
+	await expect(visibleArea).toHaveCSS('vector-effect', 'non-scaling-stroke')
 	await page.locator('[data-unit]').first().click()
 	const selected = await page.locator('.board [aria-pressed="true"]').getAttribute('data-cell')
 	await overview.press('End')
@@ -236,6 +248,8 @@ test('minimap seeks vertically and horizontal scrolling never moves a selected u
 	await overview.press('ArrowDown')
 	await overview.press('ArrowRight')
 	expect(await page.locator('.board [aria-pressed="true"]').getAttribute('data-cell')).toBe(selected)
+	await page.getByRole('button', { name: 'End round', exact: true }).click()
+	await expect(visibleArea).toHaveCSS('stroke', 'rgb(255, 179, 177)')
 })
 
 test('touch swipes keep following the finger in all four directions without selecting a cell', async ({ page, context }) => {

@@ -10,6 +10,7 @@ export class MapEditorError extends Error {
 }
 
 export const terrainBrushes = [
+	{ name: 'terrain_void', classes: ['-void'] },
 	{ name: 'terrain_grass', classes: ['-grass'] },
 	{ name: 'map_editor_grass_flowers', classes: ['-grass', '-variant'] },
 	{ name: 'map_editor_grass_light', classes: ['-grass', '-variant2'] },
@@ -22,12 +23,12 @@ export const terrainBrushes = [
 	{ name: 'map_editor_bridge_horizontal', classes: ['-road', '-bridge', '-h'] },
 	{ name: 'map_editor_bridge_vertical', classes: ['-road', '-bridge', '-v'] },
 	{ name: 'terrain_water', classes: ['-water'] },
-	{ name: 'map_editor_water_under_bridge', classes: ['-water', '-under-bridge', '-h'] },
 	{ name: 'building_city', classes: ['-building', '-city', '-ongrass'] },
-	{ name: 'building_oil_field', classes: ['-building', '-oil-field', '-ongrass'] },
+	{ name: 'building_big_city', classes: ['-building', '-big-city', '-ongrass'] },
 	{ name: 'building_factory', classes: ['-building', '-factory', '-ongrass'] },
 	{ name: 'building_hospital', classes: ['-building', '-hospital', '-ongrass'] },
-	{ name: 'building_airport', classes: ['-building', '-airport', '-ongrass'] }
+	{ name: 'building_airport', classes: ['-building', '-airport', '-ongrass'] },
+	{ name: 'building_naval_base', classes: ['-building', '-naval-base', '-ongrass'] }
 ]
 
 export type Brush = { kind: 'terrain'; classes: string[]; owner: Owner } | { kind: 'unit'; type: UnitTypeId; player: Player } | { kind: 'erase-unit' }
@@ -63,6 +64,7 @@ export function mirrorMap(map: GameMap, mode: MirrorMode): GameMap {
 	}
 	// Rebuild directional road and shore sprites from the mirrored terrain.
 	for (let index = 0; index < result.cells.length; index++) reconnectCell(result, index)
+	reconnectBridgeSupports(result)
 	return result
 }
 
@@ -83,6 +85,21 @@ export function paintMirroredCell(map: GameMap, index: number, brush: Brush, mod
 	}
 	paintCell(map, index, brush)
 	paintCell(map, partner, brush.kind === 'unit' ? { ...brush, player: brush.player === 1 ? 2 : 1 } : brush.kind === 'terrain' ? { ...brush, owner: oppositeOwner(brush.owner) } : brush)
+}
+
+// The support sprite has a fixed downward perspective, not rotational symmetry.
+// Only change the water artwork: never replace land or move a playable bridge.
+export function reconnectBridgeSupports(map: GameMap): void {
+	for (let index = 0; index < map.cells.length; index++) {
+		const cell = map.cells[index]
+		if (!cell.classes.includes('-water')) continue
+		const above = map.cells[index - map.cols]?.classes
+		if (above?.includes('-bridge') && above.includes('-h')) cell.classes = ['-water', '-under-bridge', '-h']
+		else if (cell.classes.includes('-under-bridge')) {
+			cell.classes = ['-water']
+			reconnectCell(map, index)
+		}
+	}
 }
 const grass = (): MapCell => ({ classes: ['-grass'], owner: 0, capturePoints: 20 })
 
@@ -128,7 +145,7 @@ function reconnectCell(map: GameMap, index: number): void {
 	}
 	if (cell.classes.includes('-water') && !cell.classes.includes('-under-bridge')) {
 		// Horizontal shore names are reversed in the original game sprites.
-		const shores = adjacent.flatMap((neighbor, direction) => (neighbor !== -1 && !map.cells[neighbor].classes.includes('-water') && !map.cells[neighbor].classes.includes('-bridge') ? [['-top', '-left', '-bottom', '-right'][direction]] : []))
+		const shores = adjacent.flatMap((neighbor, direction) => (neighbor !== -1 && !map.cells[neighbor].classes.includes('-water') && !map.cells[neighbor].classes.includes('-bridge') && !map.cells[neighbor].classes.includes('-void') ? [['-top', '-left', '-bottom', '-right'][direction]] : []))
 		// The existing art has no horizontal one-cell channel or enclosed puddle.
 		// Keep open water for those shapes instead of displaying a broken corner.
 		if (shores.length > 2 || (shores.includes('-top') && shores.includes('-bottom'))) {
@@ -141,8 +158,11 @@ function reconnectCell(map: GameMap, index: number): void {
 }
 
 function validateUnitCell(cell: MapCell, type: UnitTypeId): void {
+	if (cell.classes.includes('-void')) throw new MapEditorError('map_editor_error_void')
 	if (cell.classes.includes('-blocker') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_blocker')
-	if (cell.classes.includes('-water') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_ground')
+	if (unitTypes[type].domain === 'naval') {
+		if (!cell.classes.includes('-water') && !cell.classes.includes('-naval-base')) throw new MapEditorError('map_editor_error_naval')
+	} else if (cell.classes.includes('-water') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_ground')
 }
 
 export function paintCell(map: GameMap, index: number, brush: Brush): void {
@@ -158,11 +178,18 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 		return
 	}
 	map.cells[index] = { classes: [...brush.classes], owner: brush.classes.includes('-building') ? brush.owner : 0, capturePoints: 20 }
-	if (brush.classes.includes('-water') || brush.classes.includes('-blocker')) map.units = map.units.filter((unit) => unit.cell !== index || unitTypes[unit.type].domain === 'air')
+	map.units = map.units.filter((unit) => {
+		if (unit.cell !== index) return true
+		if (brush.classes.includes('-void')) return false
+		if (unitTypes[unit.type].domain === 'air') return true
+		if (unitTypes[unit.type].domain === 'naval') return brush.classes.includes('-water') || brush.classes.includes('-naval-base')
+		return !brush.classes.includes('-water') && !brush.classes.includes('-blocker')
+	})
 	// Only the painted cell and its neighbors can have changed their connections.
 	for (const neighbor of [index, ...(index % map.cols ? [index - 1] : []), ...(index % map.cols < map.cols - 1 ? [index + 1] : []), index - map.cols, index + map.cols]) {
 		if (map.cells[neighbor]) reconnectCell(map, neighbor)
 	}
+	reconnectBridgeSupports(map)
 }
 
 export function readMap(text: string): GameMap {
@@ -171,23 +198,26 @@ export function readMap(text: string): GameMap {
 	newMap(input.cols, input.rows)
 	if (typeof input.id !== 'string' || !/^\d+$/.test(input.id) || Number(input.id) < 1 || typeof input.name !== 'string' || !input.name.trim()) throw new MapEditorError('map_editor_error_identity')
 	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
-	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker']
-	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-oil-field', '-factory', '-hospital', '-airport', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
+	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker', '-void']
+	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-big-city', '-factory', '-hospital', '-airport', '-naval-base', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
 	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge', '-under-bridge'])
 	const cells = input.cells.map((cell) => {
+		// Accept old exports, but always save the new building name.
+		if (Array.isArray(cell?.classes)) cell = { ...cell, classes: cell.classes.map((name) => (name === '-oil-field' ? '-big-city' : name)) }
 		if (!cell || !Array.isArray(cell.classes) || !cell.classes.some((name) => baseClasses.includes(name)) || cell.classes.some((name) => !allowedClasses.has(name)) || ![0, 1, 2].includes(cell.owner) || !Number.isInteger(cell.capturePoints) || cell.capturePoints < 0 || cell.capturePoints > 20) throw new MapEditorError('map_editor_error_cell')
-		if (cell.classes.includes('-building') && !['-city', '-oil-field', '-factory', '-hospital', '-airport'].some((name) => cell.classes.includes(name))) throw new MapEditorError('map_editor_error_building')
+		if (cell.classes.includes('-building') && !['-city', '-big-city', '-factory', '-hospital', '-airport', '-naval-base'].some((name) => cell.classes.includes(name))) throw new MapEditorError('map_editor_error_building')
 		if (cell.classes.includes('-bridge') && (!cell.classes.includes('-road') || cell.classes.includes('-h') === cell.classes.includes('-v') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
 		if (cell.classes.includes('-under-bridge') && (!cell.classes.includes('-water') || !cell.classes.includes('-h') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
 		if (cell.classes.includes('-blocker') && (cell.classes.length !== 2 || !cell.classes.includes('-ongrass'))) throw new MapEditorError('map_editor_error_cell')
+		if (cell.classes.includes('-void') && (cell.classes.length !== 1 || cell.owner !== 0)) throw new MapEditorError('map_editor_error_cell')
 		return { classes: [...cell.classes], owner: cell.owner, capturePoints: cell.capturePoints }
 	})
 	if (!Array.isArray(input.units)) throw new MapEditorError('map_editor_error_units')
 	const occupied = new Set<number>()
 	const units = input.units.map((unit) => {
 		if (!unit || !isUnitTypeId(unit.type) || ![1, 2].includes(unit.player) || !Number.isInteger(unit.cell) || unit.cell < 0 || unit.cell >= cells.length || occupied.has(unit.cell)) throw new MapEditorError('map_editor_error_unit')
-		if (cells[unit.cell].classes.includes('-water') && unitTypes[unit.type].domain !== 'air') throw new MapEditorError('map_editor_error_water')
-		if (cells[unit.cell].classes.includes('-blocker') && unitTypes[unit.type].domain !== 'air') throw new MapEditorError('map_editor_error_blocker')
+		if (cells[unit.cell].classes.includes('-water') && (unitTypes[unit.type].domain ?? 'ground') === 'ground') throw new MapEditorError('map_editor_error_water')
+		validateUnitCell(cells[unit.cell], unit.type)
 		occupied.add(unit.cell)
 		return { type: unit.type, player: unit.player, cell: unit.cell }
 	})

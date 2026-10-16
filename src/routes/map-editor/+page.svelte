@@ -9,7 +9,7 @@
 	import { initializePreferences, preferences, updatePreferences, type Preferences } from '$lib/preferences.svelte.js'
 	import { unitTypes } from '$lib/game/catalog.js'
 	import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '$lib/game/types.js'
-	import { mapJson, newMap, paintMirroredCell, mirrorMap, mirroredIndex, validateMirrorDimensions, readMap, terrainBrushes, MapEditorError, type Brush, type MirrorMode } from '$lib/map-editor/model.ts'
+	import { mapJson, newMap, paintMirroredCell, mirrorMap, mirroredIndex, reconnectBridgeSupports, validateMirrorDimensions, readMap, terrainBrushes, MapEditorError, type Brush, type MirrorMode } from '$lib/map-editor/model.ts'
 
 	const savedDraftKey = 'pixelswar-map-editor-draft-v1'
 	const unitTypeIds = Object.keys(unitTypes) as UnitTypeId[]
@@ -97,6 +97,7 @@
 		if (history.length > 60) history.shift()
 	}
 	function replaceMap(nextMap: GameMap, mode: MirrorMode = 'off') {
+		reconnectBridgeSupports(nextMap)
 		map = nextMap
 		mirrorMode = mode
 		columns = map.cols

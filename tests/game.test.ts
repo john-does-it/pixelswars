@@ -36,7 +36,7 @@ for (const map of additionalMaps) {
 		assert.deepEqual(armies[0].map((unit) => unit.type).sort(), armies[1].map((unit) => unit.type).sort())
 		for (const building of ['city', 'factory', 'hospital'] as const) {
 			if (map.id === '8' && building === 'city') {
-				// Two cities near each deployment; the inland objectives are oil fields.
+				// Two cities near each deployment; the inland objectives are big cities.
 				assert.deepEqual(
 					state.cells.filter((cell) => cell.building === 'city').map((cell) => cell.index),
 					[16, 28, 101, 113]

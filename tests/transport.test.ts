@@ -423,7 +423,7 @@ test('AI delivers infantry and expert simulations never mutate real cargo', asyn
 	embark(state, 1)
 	state.cells[0].building = 'city'
 	const before = JSON.stringify(state)
-	await projectExpertDecision(state, { kind: 'deploy', unitId: 0, passengerId: 1, destination: 7 }, new Set(), new Set(), () => false)
+	await projectExpertDecision(state, { kind: 'deploy', unitId: 0, passengerId: 1, destination: 7 }, new Set(), () => false)
 	assert.equal(JSON.stringify(state), before)
 	const game = createController(state, { delay: async () => {} })
 	await runAiTurn(

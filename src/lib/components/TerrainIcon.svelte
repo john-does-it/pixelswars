@@ -10,12 +10,14 @@
 		building: '-building -city -ongrass',
 		factory: '-building -factory -ongrass',
 		airport: '-building -airport -ongrass',
+		'naval-base': '-building -naval-base -ongrass',
 		hospital: '-building -hospital -ongrass',
 		city: '-building -city -ongrass',
-		'oil-field': '-building -oil-field -ongrass',
+		'big-city': '-building -big-city -ongrass',
 		road: '-road -h',
 		forest: '-forest -ongrass',
-		blocker: '-blocker -ongrass'
+		blocker: '-blocker -ongrass',
+		void: '-void'
 	}
 	const classes = $derived(cell ? cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' ') : terrainClasses[terrain])
 </script>

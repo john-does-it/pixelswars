@@ -14,7 +14,7 @@ test('Figma runtime replacements resolve to valid PNG sources under the asset di
 	}
 })
 
-test('each imported unit keeps all damage stages and cropped variants on a consistent canvas', () => {
+test('each imported unit keeps its supported damage stages and preview variants on a consistent canvas', () => {
 	for (const legacy of Object.keys(aliases).filter((url) => /^\/assets\/units\/[a-z-]+-[12]\.png$/.test(url))) {
 		const healthy = Buffer.from(readFileSync(new URL(`..${aliases[legacy]}.base64`, import.meta.url), 'utf8').trim(), 'base64')
 		for (let stage = 0; stage < 5; stage++) {

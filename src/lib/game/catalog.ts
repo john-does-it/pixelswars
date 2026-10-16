@@ -2,18 +2,20 @@ import type { BuildingId, Player, ProductionBuildingId, TerrainDefinition, Terra
 
 export function buildingIncome(building: BuildingId | null): number {
 	if (building === 'city') return 200
-	if (building === 'oil-field') return 300
+	if (building === 'big-city') return 300
 	return 0
 }
 
 // Add unit types here; production buildings and stat panels use these definitions.
 export const unitTypes: Record<UnitTypeId, UnitDefinition> = {
-	'infantry-sniper': { name: 'Sniper', attack: 60, range: 3, exclusion: 1, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 500, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'gun-battle' },
-	'infantry-rocket': { name: 'Rocket', attack: 40, range: 1, exclusion: 0, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 400, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'tank-shot' },
+	'attack-ship': { name: 'Attack ship', domain: 'naval', production: 'naval-base', attack: 65, range: 1, exclusion: 0, attacks: 2, defense: 30, movement: 8, maxHealth: 160, cost: 1600, captures: false, delay: 750, selectSound: 'tank-engine', fightSound: 'tank-shot' },
+	'transport-ship': { name: 'Transport ship', domain: 'naval', production: 'naval-base', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 25, movement: 8, maxHealth: 160, cost: 1200, captures: false, delay: 750, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
+	'infantry-sniper': { name: 'Sniper', attack: 60, range: 3, exclusion: 1, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 500, captures: true, delay: 500, selectSound: 'infantry-voice-1', fightSound: 'gun-battle' },
+	'infantry-rocket': { name: 'Rocket', attack: 40, range: 1, exclusion: 0, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 400, captures: true, delay: 500, selectSound: 'infantry-voice-1', fightSound: 'tank-shot' },
 	plane: { name: 'Plane', domain: 'air', production: 'airport', attack: 80, range: 1, exclusion: 0, attacks: 1, defense: 25, movement: 10, maxHealth: 120, cost: 3000, captures: false, delay: 1000, selectSound: 'plane-engine', fightSound: 'missile-launch' },
 	helicopter: { name: 'Helicopter', domain: 'air', production: 'airport', attack: 65, range: 1, exclusion: 0, attacks: 1, defense: 15, movement: 8, maxHealth: 110, cost: 1800, captures: false, delay: 750, selectSound: 'helico-engine', fightSound: 'gun-battle' },
 	'transport-helicopter': { name: 'Transport helicopter', domain: 'air', production: 'airport', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 15, movement: 8, maxHealth: 110, cost: 1800, captures: false, delay: 750, selectSound: 'helico-engine', fightSound: 'gun-battle' },
-	infantry: { name: 'Infantry', attack: 40, range: 1, exclusion: 0, attacks: 2, defense: 10, movement: 5, maxHealth: 100, cost: 200, captures: true, delay: 500, selectSound: 'infantry', fightSound: 'gun-battle' },
+	infantry: { name: 'Infantry', attack: 40, range: 1, exclusion: 0, attacks: 2, defense: 10, movement: 5, maxHealth: 100, cost: 200, captures: true, delay: 500, selectSound: 'infantry-voice-1', fightSound: 'gun-battle' },
 	jeep: { name: 'Jeep', attack: 50, range: 1, exclusion: 0, attacks: 2, defense: 20, movement: 8, maxHealth: 125, cost: 600, captures: false, delay: 500, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
 	transport: { name: 'Transport jeep', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 20, movement: 8, maxHealth: 125, cost: 600, captures: false, delay: 500, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
 	tank: { name: 'Tank', attack: 70, range: 1, exclusion: 0, attacks: 2, defense: 40, movement: 6, maxHealth: 180, cost: 1200, captures: false, delay: 500, selectSound: 'tank-engine', fightSound: 'tank-shot' },
@@ -28,7 +30,8 @@ export const terrainTypes: Record<TerrainId, TerrainDefinition> = {
 	building: { name: 'Building', cost: 2, defense: 40 },
 	road: { name: 'Road', cost: 1, defense: 0 },
 	forest: { name: 'Forest', cost: 3, defense: 30 },
-	blocker: { name: 'Obstacle', cost: 1, defense: 0 }
+	blocker: { name: 'Obstacle', cost: 1, defense: 0 },
+	void: { name: 'Void', cost: 0, defense: 0 }
 }
 
 export function isUnitTypeId(value: string): value is UnitTypeId {
@@ -43,5 +46,10 @@ export function createUnit(type: UnitTypeId, player: Player, cell: number, id: n
 
 export const productionBuildings: Record<ProductionBuildingId, { name: string }> = {
 	factory: { name: 'Army base' },
-	airport: { name: 'Airport' }
+	airport: { name: 'Airport' },
+	'naval-base': { name: 'Naval base' }
+}
+
+export function isProductionBuilding(building: BuildingId | null): building is ProductionBuildingId {
+	return building !== null && Object.hasOwn(productionBuildings, building)
 }

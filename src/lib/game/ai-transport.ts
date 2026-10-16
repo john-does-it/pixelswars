@@ -1,7 +1,7 @@
 import { buildingIncome, createUnit, unitTypes } from './catalog.ts'
 import { canCapture, movementCost, neighbors } from './model.ts'
 import { pathsFrom } from './movement.ts'
-import { canEmbark, deploymentCells, isInfantry } from './transport.ts'
+import { boardingCost, canEmbark, deploymentCells, isInfantry } from './transport.ts'
 import { damage, enemyPositions, exposure, threatens } from './ai-threats.ts'
 import type { AiDifficulty, GameState, Unit } from './types.ts'
 
@@ -18,7 +18,7 @@ export function transportedValue(unit: Unit): number {
 	return unitTypes[unit.type].cost + (unit.cargo ?? []).reduce((value, passenger) => value + unitTypes[passenger.type].cost, 0)
 }
 
-function arrivalTurns(state: GameState, unit: Unit, path: number[], remaining: number): number {
+export function arrivalTurns(state: GameState, unit: Unit, path: number[], remaining: number): number {
 	let turns = 0
 	for (const cell of path) {
 		const cost = movementCost(unit, state.cells[cell])
@@ -55,7 +55,7 @@ function passengerValue(state: GameState, passenger: Unit, positions: Map<number
 	const paths = pathsFrom(state, passenger)
 	let objective = 0
 	for (const cell of state.cells) {
-		if (!cell.building) continue
+		if (!cell.building || !unitTypes[passenger.type].captures) continue
 		const route = paths.get(cell.index)
 		if (!route) continue
 		const enemyNear = state.units.some((enemy) => enemy.player !== passenger.player && (positions.get(enemy.id) ?? []).includes(cell.index))
@@ -117,7 +117,7 @@ function shouldStayAboard(state: GameState, transport: Unit, passenger: Unit, po
 	)
 	const routes = pathsFrom(state, transport)
 	let ridingValue = 0
-	for (const objective of state.cells.filter((cell) => cell.building && cell.owner !== state.player)) {
+	for (const objective of state.cells.filter((cell) => unitTypes[passenger.type].captures && cell.building && cell.owner !== state.player)) {
 		const approach = neighbors(state, objective.index)
 			.map((index) => routes.get(index))
 			.filter((route) => route !== undefined)
@@ -147,7 +147,7 @@ export function planTransport(state: GameState, moved: Set<number>, difficulty: 
 		for (const passenger of state.units) {
 			if (best && !withinBudget()) break
 			if (!canEmbark(state, transport, passenger) || canCapture({ ...state, selectedId: passenger.id })) continue
-			const loaded = { ...passenger, movement: passenger.movement - movementCost(passenger, state.cells[transport.cell]) }
+			const loaded = { ...passenger, movement: passenger.movement - boardingCost(state, transport, passenger) }
 			const loadedTransport = { ...transport, cargo: [...(transport.cargo ?? []), loaded] }
 			const projected = { ...state, units: state.units.filter((unit) => unit.id !== passenger.id).map((unit) => (unit.id === transport.id ? loadedTransport : unit)) }
 			const plan = deliveryPlan(projected, loadedTransport, loaded, moved, positions, difficulty)
@@ -165,7 +165,7 @@ export function transportPurchaseScore(state: GameState, buildingIndex: number, 
 	if (allies.some((unit) => unitTypes[unit.type].capacity)) return 0
 	const passengers = allies.filter((unit) => isInfantry(unit) && neighbors(state, buildingIndex).includes(unit.cell) && !canCapture({ ...state, selectedId: unit.id }))
 	if (!passengers.length) return 0
-	const transport = createUnit(state.cells[buildingIndex].building === 'airport' ? 'transport-helicopter' : 'transport', state.player, buildingIndex, state.nextId)
+	const transport = createUnit(state.cells[buildingIndex].building === 'airport' ? 'transport-helicopter' : state.cells[buildingIndex].building === 'naval-base' ? 'transport-ship' : 'transport', state.player, buildingIndex, state.nextId)
 	const projected = { ...state, units: [...state.units, transport] }
 	const positions = threatsForDifficulty(projected, difficulty)
 	// Buy a combat unit first when the production site can be struck next turn.

@@ -18,7 +18,7 @@ function recruitment() {
 	state.nextId = 3
 	state.money[1] = 600
 	Object.assign(state.cells[25], { building: 'factory', owner: 1 })
-	Object.assign(state.cells[95], { building: 'oil-field' })
+	Object.assign(state.cells[95], { building: 'big-city' })
 	return state
 }
 
@@ -41,7 +41,7 @@ test('recruitment counts each income objective once and avoids redundant transpo
 	const state = recruitment()
 	const originalScore = transportPurchaseScore(state, 25)
 	state.units.push(createUnit('infantry', 1, 26, 10))
-	assert.ok(transportPurchaseScore(state, 25) <= originalScore, 'another passenger cannot multiply the same oil field income')
+	assert.ok(transportPurchaseScore(state, 25) <= originalScore, 'another passenger cannot multiply the same big city income')
 	state.units.push(createUnit('transport', 1, 30, 11))
 	assert.equal(transportPurchaseScore(state, 25), 0)
 })
@@ -65,7 +65,7 @@ test('difficulty increases from objective delivery to combat opportunities and a
 		passenger.movement = 3
 	}
 	state.units = [jeep, createUnit('tank', 2, 17, 3)]
-	state.cells[25].building = 'oil-field'
+	state.cells[25].building = 'big-city'
 	const before = JSON.stringify(state)
 	const easy = planTransport(state, new Set(), 'easy')!
 	const medium = planTransport(state, new Set(), 'medium')!
@@ -99,7 +99,7 @@ test('AI keeps passengers aboard for a useful second driving turn, then deploys 
 	passenger.movement = 1
 	jeep.cargo = [passenger]
 	state.units = [jeep, createUnit('transport', 2, 89, 2)]
-	state.cells[59].building = 'oil-field'
+	state.cells[59].building = 'big-city'
 	assert.equal(planTransport(state, new Set([0]), 'hard'), null)
 	jeep.cell = 58
 	assert.deepEqual(planTransport(state, new Set([0]), 'hard')?.decision, { kind: 'deploy', unitId: 0, passengerId: 1, destination: 59 })
@@ -113,7 +113,7 @@ test('AI deploys and immediately uses a preserved capture', async () => {
 	passenger.movement = 0
 	jeep.cargo = [passenger]
 	state.units = [jeep, createUnit('transport', 2, 20, 2)]
-	state.cells[8].building = 'oil-field'
+	state.cells[8].building = 'big-city'
 	const controller = createController(state, { delay: async () => {} })
 	await runAiTurn(
 		controller,

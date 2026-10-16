@@ -10,7 +10,6 @@
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import Board from './Board.svelte'
 	import GameHeader from './GameHeader.svelte'
-	import PlayerBudgets from './PlayerBudgets.svelte'
 	import SelectedUnitStrip from './SelectedUnitStrip.svelte'
 	import Controls from './Controls.svelte'
 	import ProductionModal from './ProductionModal.svelte'
@@ -36,6 +35,11 @@
 	function handleKeydown(event: KeyboardEvent) {
 		const previousCell = selectedUnit(game.state)?.cell
 		game.keydown(event)
+		if (event.key === 'Escape' && !event.defaultPrevented && event.target instanceof Element && event.target.closest('.board')) {
+			// Escape after cancelling selection leaves map navigation, so Tab can
+			// reach the regular controls instead of trapping focus on units.
+			gameElement?.querySelector<HTMLElement>('.action-controls .primary')?.focus({ preventScroll: true })
+		}
 		const currentCell = selectedUnit(game.state)?.cell
 		if (event.defaultPrevented && currentCell !== undefined && previousCell !== undefined && currentCell !== previousCell) {
 			// Let the board's selection effect focus the destination and follow it,
@@ -52,6 +56,7 @@
 		game.state.music = saved.music
 		preferencesLoaded = true
 		audio = createAudio()
+		audio.setUnitSelectionEnabled(saved.unitSelectionSounds)
 		void assetsReady.then(() => {
 			if (mounted) game.start?.()
 		})
@@ -65,6 +70,7 @@
 
 	$effect(() => {
 		audio?.setVolume(preferences.volume)
+		audio?.setUnitSelectionEnabled(preferences.unitSelectionSounds)
 		game.state.sound = preferences.volume > 0
 	})
 
@@ -102,7 +108,13 @@
 		<p role="status">{translate(messages.loading_battlefield)}</p>
 	</main>
 {:then}
-	<main bind:this={gameElement} class="game-shell">
+	<main
+		bind:this={gameElement}
+		class="game-shell"
+		ondragstart={(event) => {
+			if (event.target instanceof HTMLImageElement) event.preventDefault()
+		}}
+	>
 		{#key game}
 			{#key game.state.round}
 				{#if game.state.winner === null && localTurn && (!network || network.phase === 'playing')}
@@ -125,15 +137,14 @@
 			<div class="board-column">
 				<GameHeader name={mapName(map.id)} aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
 				{#snippet boardDetails()}
-					<div class="board-details game-context-container">
-						<div class="board-actions">
+					<div class="board-details">
+						<div class="board-actions game-context-container">
 							{@render mapStatus()}
 							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : restart} />
 						</div>
 					</div>
 				{/snippet}
-				{#snippet mapBudgets()}<PlayerBudgets state={game.state} aiMode={!!difficulty} />{/snippet}
-				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} {boardDetails} {mapBudgets} />
+				<Board {game} aiMode={!!difficulty} name={mapName(map.id)} {boardDetails} />
 			</div>
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
@@ -190,19 +201,28 @@
 		visibility: hidden;
 	}
 	.game-shell {
-		--game-gutter: 16px;
 		--game-panel-inset: 16px;
+		-webkit-user-select: none;
+		user-select: none;
 		width: 100%;
 		margin: auto;
-		min-height: 100svh;
+		min-height: 100dvh;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-		padding-bottom: 8px;
 		@media (max-width: 900px) {
-			--game-gutter: 8px;
 			--game-panel-inset: 10px;
 		}
+	}
+
+	.game-shell :global(input),
+	.game-shell :global(textarea),
+	.game-shell :global([contenteditable='true']) {
+		-webkit-user-select: text;
+		user-select: text;
+	}
+	.game-shell :global(img) {
+		-webkit-user-drag: none;
 	}
 
 	.loading {
@@ -231,21 +251,19 @@
 	}
 
 	.board-column {
-		height: max(680px, calc(100svh - 8px));
-		gap: 12px;
+		height: 100dvh;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
 		min-height: 0;
 	}
 	.board-details {
-		padding-inline: var(--game-gutter);
 		flex: none;
-	}
-	.board-actions {
-		border-radius: 12px;
+		width: 100%;
 		background: rgb(0 0 0 / 15%);
 		backdrop-filter: blur(6px);
+	}
+	.board-actions {
 		padding: 16px var(--game-panel-inset);
 		display: flex;
 		justify-content: space-between;

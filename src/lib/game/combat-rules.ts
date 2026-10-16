@@ -30,7 +30,9 @@ const CombatRules = (() => {
 	}
 
 	function typeModifier(attackerType: string, defenderType: string): number {
-		if (attackerType === 'transport' || attackerType === 'transport-helicopter') return 0
+		if (attackerType === 'transport' || attackerType === 'transport-helicopter' || attackerType === 'transport-ship') return 0
+		if (attackerType === 'attack-ship') return defenderType === 'plane' || defenderType === 'helicopter' || defenderType === 'transport-helicopter' ? 0 : defenderType === 'tank' ? 0.8 : 1
+		if (defenderType === 'attack-ship' || defenderType === 'transport-ship') return ({ infantry: 0.25, 'infantry-sniper': 0.25, 'infantry-rocket': 1.5, jeep: 0.5, tank: 1, artillery: 1.1, 'anti-air': 0, plane: 1.5, helicopter: 1 } as Record<string, number>)[attackerType] ?? 1
 		// Snipers share infantry vulnerabilities, but have their own attack matchups.
 		const defenderMatchup = defenderType === 'infantry-sniper' ? 'infantry' : defenderType === 'transport' ? 'jeep' : defenderType === 'transport-helicopter' ? 'helicopter' : defenderType
 		return modifiers[attackerType]?.[defenderMatchup] ?? 1

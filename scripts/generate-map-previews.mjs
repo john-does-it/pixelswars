@@ -42,14 +42,17 @@ try {
 				const index = Number(cell.getAttribute('data-cell'))
 				const left = (index % cols) * tileSize
 				const top = Math.floor(index / cols) * tileSize
-				context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
+				if (cell.classList.contains('-void')) {
+					context.fillStyle = getComputedStyle(cell).backgroundColor
+					context.fillRect(left, top, tileSize, tileSize)
+				} else context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
 				const unit = cell.querySelector('[data-unit]')
 				if (unit) context.drawImage(await sprite(unit.querySelector('.unit-sprite')), left + 1, top + 1, tileSize - 2, tileSize - 2)
 			}
 			return canvas.toDataURL('image/png').split(',')[1]
 		}, map)
 		await writeFile(new URL(`map-${id}.png.base64`, output), `${png}\n`)
-		metadata[id] = { cols: map.cols, rows: map.rows, size: map.cols * map.rows >= 1024 ? 'xxl' : map.cols * map.rows < 80 ? 'tiny' : map.cols * map.rows <= 100 ? 'small' : map.cols * map.rows <= 160 ? 'medium' : 'large' }
+		metadata[id] = { cols: map.cols, rows: map.rows }
 		console.log(`Map ${id}: ${map.cols} × ${map.rows}`)
 	}
 	await writeFile(new URL('../src/lib/data/map-previews.json', import.meta.url), `${JSON.stringify(metadata, null, '\t')}\n`)

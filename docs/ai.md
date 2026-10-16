@@ -29,8 +29,31 @@ rules and budgets as players, with no hidden information or stat bonuses.
 
 Projections use the actual combat formula, remaining HP, retaliation, income,
 healing, capture progress and action refresh. Purchases are coordinated across
-production buildings with one budget. A building produces at most once per AI turn;
-new units can act immediately.
+production buildings with one budget. New units can act immediately, and a factory
+or airport can produce again in the same turn once its tile is free.
+
+## Recruitment plans
+
+- Prioritize safe city and big-city captures: estimate travel, capture time and
+  income over six turns, subtract the infantry cost, and assign existing capturers
+  separate targets before recruiting more. Easy looks two movement budgets ahead,
+  Medium three, and Hard/Expert four.
+- Medium and above also compare transport purchases against walking, using existing
+  passengers and the income gained through earlier delivery.
+- Reserve at most two income payments for missing counters: jeeps against massed
+  infantry, rockets against armor, anti-air against aircraft, or artillery against
+  entrenched forces. Reconsider when threats, income, occupancy or army health change;
+  an immediate threat to production prevents waiting for an unaffordable counter.
+- Medium and above can reinforce a modest local advantage. Purchases must reach an
+  enemy within two turns on Medium or three on Hard/Expert; this extra demand stops
+  once the local army is already overwhelming. Expert evaluates these purchases
+  alongside its tactical projections rather than committing to every suggested attack.
+
+Each live match keeps small, fixed unit preferences (±6%) and its last four real
+purchases. These vary close recruitment choices and discourage repetition without
+overriding economic priorities or urgent counters. Projections inherit preferences
+without modifying real memory. This memory resets on reload or a new match; it is
+not cross-game learning. Travel and local strength remain heuristic estimates.
 
 ## Transport
 
@@ -66,6 +89,8 @@ The planner is split by responsibility: `ai.ts` (shared tactics), `expert-ai.ts`
 endgame progress. `tests/fixtures/expert-endgame.json` preserves a position where
 speculative replies previously made Expert wait instead of finishing the game;
 `expert-progress.test.ts` checks it without a match dashboard or benchmark server.
+`ai-production-plan.test.ts` covers short economic, counter, offensive, saving,
+factory reuse and session-memory scenarios without running entire matches.
 
 After building, measure responsiveness separately from other browser tests:
 

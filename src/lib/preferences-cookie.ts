@@ -7,13 +7,15 @@ export interface Preferences {
 	sound: boolean
 	volume: number
 	music: boolean
+	unitSelectionSounds: boolean
 	animations: boolean
 	buildingLights: boolean
 	unitFacing: boolean
+	confirmEndTurn: boolean
 }
 
 export const preferencesCookieName = 'pixelswars-settings'
-export const defaultPreferences: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, volume: 100, music: false, animations: true, buildingLights: true, unitFacing: true }
+export const defaultPreferences: Preferences = { locale: 'en', keyboardLayout: 'azerty', sound: true, volume: 100, music: false, unitSelectionSounds: true, animations: true, buildingLights: true, unitFacing: true, confirmEndTurn: false }
 
 export function isLocale(value: unknown): value is Locale {
 	return value === 'en' || value === 'de' || value === 'fr' || value === 'ja'
@@ -30,7 +32,7 @@ export function readPreferencesCookie(cookies: string): Preferences {
 		const saved = savedCookie ? JSON.parse(decodeURIComponent(savedCookie)) : {}
 		if (isLocale(saved.locale)) preferences.locale = saved.locale
 		if (saved.keyboardLayout === 'azerty' || saved.keyboardLayout === 'qwerty') preferences.keyboardLayout = saved.keyboardLayout
-		for (const key of ['sound', 'music', 'animations', 'buildingLights', 'unitFacing'] as const) if (typeof saved[key] === 'boolean') preferences[key] = saved[key]
+		for (const key of ['sound', 'music', 'unitSelectionSounds', 'animations', 'buildingLights', 'unitFacing', 'confirmEndTurn'] as const) if (typeof saved[key] === 'boolean') preferences[key] = saved[key]
 		preferences.volume = typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(100, saved.volume)) : preferences.sound ? 100 : 0
 		preferences.sound = preferences.volume > 0
 	} catch {

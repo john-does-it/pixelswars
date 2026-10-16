@@ -10,7 +10,7 @@ test('Water Town: matching armies can reach every neutral objective through conn
 	const state = initialState(map)
 	assert.equal(state.cells.length, 98)
 	assert.equal(state.units.length, 8)
-	assert.equal(state.cells.filter((cell) => cell.building === 'oil-field').length, 2)
+	assert.equal(state.cells.filter((cell) => cell.building === 'big-city').length, 2)
 	assertConnectedRoads(state)
 	for (const player of [1, 2]) {
 		const army = state.units.filter((unit) => unit.player === player)

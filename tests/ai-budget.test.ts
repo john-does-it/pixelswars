@@ -10,11 +10,10 @@ test('expired Expert budget returns a legal fallback on both large transport map
 	for (const mapId of [11, 12]) {
 		const state = initialState(readMapFixture(mapId))
 		const before = JSON.stringify(state)
-		const fallback = chooseHeuristicDecision(state, 'expert', new Set(), new Set(), () => false)
+		const fallback = chooseHeuristicDecision(state, 'expert', new Set(), () => false)
 		let yields = 0
 		const decision = await chooseExpertDecision(
 			state,
-			new Set(),
 			new Set(),
 			() => true,
 			async () => {
@@ -34,12 +33,11 @@ test('Expert discards a projection interrupted by its deadline and preserves the
 	state.units = [createUnit('infantry', 1, 0, 0), createUnit('tank', 1, 8, 1), createUnit('infantry', 2, 39, 2)]
 	state.cells[1].building = 'city'
 	const before = JSON.stringify(state)
-	const fallback = chooseHeuristicDecision(state, 'expert', new Set(), new Set())
+	const fallback = chooseHeuristicDecision(state, 'expert', new Set())
 	let time = 0
 	let yields = 0
 	const decision = await chooseExpertDecision(
 		state,
-		new Set(),
 		new Set(),
 		() => true,
 		async () => {
@@ -55,7 +53,6 @@ test('Expert discards a projection interrupted by its deadline and preserves the
 	await chooseExpertDecision(
 		state,
 		new Set(),
-		new Set(),
 		() => true,
 		async () => {
 			fullYields++
@@ -67,11 +64,10 @@ test('Expert discards a projection interrupted by its deadline and preserves the
 
 test('cancelling Expert takes priority over a cached fallback', async () => {
 	const state = initialState(readMapFixture(11))
-	assert.deepEqual(await chooseExpertDecision(state, new Set(), new Set(), () => false), { kind: 'end' })
+	assert.deepEqual(await chooseExpertDecision(state, new Set(), () => false), { kind: 'end' })
 	let active = true
 	const decision = await chooseExpertDecision(
 		state,
-		new Set(),
 		new Set(),
 		() => active,
 		async () => {

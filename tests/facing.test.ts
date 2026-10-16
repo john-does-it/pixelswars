@@ -58,6 +58,7 @@ test('initial facing chooses the nearest lateral enemy and tolerates vertical or
 test('every unit keeps its last horizontal facing through vertical movement, selection and turns', () => {
 	for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
 		const state = fixture()
+		if (unitTypes[type].domain === 'naval') for (const cell of state.cells) Object.assign(cell, { terrain: 'water', cost: 2, classes: ['-water'] })
 		const unit = createUnit(type, 1, 12, 0)
 		unit.movement = 20
 		state.units = [unit]
