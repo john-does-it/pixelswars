@@ -14,7 +14,7 @@ export interface RecruitmentPlan {
 	reason?: 'economy' | 'transport' | 'counter' | 'offensive'
 }
 
-interface PlanningMemory {
+export interface PlanningMemory {
 	unitPreferences: Partial<Record<UnitTypeId, number>>
 	recentPurchases: readonly UnitTypeId[]
 }
@@ -22,6 +22,14 @@ interface PlanningMemory {
 // Session-only preferences, shared read-only with projections. Purchases in a
 // simulated future must never alter the real army's memory.
 const planningMemory = new WeakMap<GameState, PlanningMemory>()
+
+export function getAiPlanning(state: GameState): PlanningMemory | null {
+	return planningMemory.get(state) ?? null
+}
+
+export function restoreAiPlanning(state: GameState, memory: PlanningMemory | null): void {
+	if (memory) planningMemory.set(state, JSON.parse(JSON.stringify(memory)))
+}
 
 export function initializeAiPlanning(state: GameState, random = Math.random): void {
 	if (!planningMemory.has(state)) planningMemory.set(state, { unitPreferences: Object.fromEntries(Object.keys(unitTypes).map((type) => [type, 0.94 + random() * 0.12])), recentPurchases: [] })

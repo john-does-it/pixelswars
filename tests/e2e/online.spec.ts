@@ -174,6 +174,15 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 	await localIce(page)
 	await localIce(guest)
 	try {
+		for (const [device, nickname] of [
+			[page, 'Blue commander'],
+			[guest, 'Red commander']
+		] as const) {
+			await device.goto('/profile/')
+			await device.getByLabel('Nickname (optional)').fill(nickname)
+			await device.getByRole('button', { name: 'Save nickname' }).click()
+			await expect(device.getByRole('status')).toHaveText('Nickname saved.')
+		}
 		await page.goto('/')
 		await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 		await page.getByRole('link', { name: 'Play 1v1 online' }).click()
@@ -192,6 +201,10 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		await expect(guest.locator('textarea')).toHaveCount(0)
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
 		await expectOnlineBattlefields(page, guest)
+		await expect(page.locator('.budgets .player-one')).toHaveText('Blue commander')
+		await expect(page.locator('.budgets .player-two')).toHaveText('Player 2')
+		await expect(guest.locator('.budgets .player-two')).toHaveText('Red commander')
+		await expect(guest.locator('.budgets .player-one')).toHaveText('Player 1')
 		if (relayConfigured) {
 			for (const device of [page, guest]) {
 				expect(await device.evaluate(() => Reflect.get(window, 'onlineIceConfiguration'))).toEqual({ iceServers: [{ ...relayResponse[0], urls: [relayResponse[0].urls] }], iceTransportPolicy: 'all' })
@@ -434,12 +447,12 @@ test('expired invitations and unavailable signaling give recoverable errors', as
 		await new Promise((resolve) => setTimeout(resolve, 500))
 		await route.continue()
 	})
-	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await page.locator('.site-navbar .brand').click()
 	await expect(page).toHaveURL('/')
 	await page.goto(address)
 	await page.getByRole('button', { name: 'Join', exact: true }).click()
 	await expect(page.getByRole('alert')).toContainText('no longer available', { timeout: 10000 })
-	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await page.locator('.site-navbar .brand').click()
 	await expect(page).toHaveURL('/')
 	await page.goto('/play/1/?online=1')
 	// Stop the real signaling listener to exercise an actual connection failure.
@@ -457,7 +470,7 @@ test('invalid invitations show a recoverable error', async ({ page }) => {
 	await page.getByRole('button', { name: 'Join', exact: true }).click()
 	await expect(page.getByRole('alert')).toContainText('invalid')
 	await expect(page.getByRole('button', { name: 'Join', exact: true })).toBeEnabled()
-	await page.getByRole('link', { name: '← Pixel’s War' }).click()
+	await page.locator('.site-navbar .brand').click()
 	await expect(page).toHaveURL('/')
 	await page.goto('/play/1/?online=1')
 	await expect(page.getByRole('button', { name: 'Create a game' })).toBeVisible()

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { asset } from '$lib/game/asset-path'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { playerName, translate } from '$lib/i18n.svelte.js'
+	import { matchPlayerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 	import UiIcon from './UiIcon.svelte'
 	import PlayerBudgets from './PlayerBudgets.svelte'
@@ -14,7 +14,7 @@
 		<div class="summary-row">
 			<div class="summary-details">
 				<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
-					<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={playerName(state.player, aiMode)} />
+					<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={matchPlayerName(state.player, aiMode, state.network?.player)} />
 					<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
 				</div>
 			</div>

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { resolve } from '$app/paths'
-	import LanguageSelect from '$lib/components/LanguageSelect.svelte'
 	import { translate } from '$lib/i18n.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 </script>
@@ -8,10 +6,6 @@
 <svelte:head><title>{translate(messages.legal_title)} · Pixel’s War</title></svelte:head>
 
 <main>
-	<header>
-		<a href={resolve('/', {})}>← Pixel’s War</a>
-		<LanguageSelect />
-	</header>
 	<h1>{translate(messages.legal_title)}</h1>
 	<p>{translate(messages.legal_updated)}</p>
 	<p>{translate(messages.legal_intro)}</p>
@@ -24,6 +18,7 @@
 		<p>{translate(messages.legal_cookie)}</p>
 		<p>{translate(messages.legal_cookie_manage)}</p>
 		<p>{translate(messages.legal_editor_storage)}</p>
+		<p>{translate(messages.profile_intro)}</p>
 	</section>
 	<section>
 		<h2>{translate(messages.legal_online_title)}</h2>
@@ -53,13 +48,6 @@
 		width: min(800px, calc(100% - 2em));
 		margin: 24px auto 48px;
 		line-height: 1.8;
-	}
-	header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		flex-wrap: wrap;
 	}
 	h1 {
 		font-size: clamp(22px, 4vw, 30px);

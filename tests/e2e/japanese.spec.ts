@@ -42,7 +42,7 @@ test('Japanese persists across the catalog, help, game, editor and legal page', 
 	await fitsViewport()
 
 	await page.goto('/map-editor/')
-	await expect(page.locator('#language')).toHaveValue('ja')
+	await expect(page.locator('.site-navbar .language-control select')).toHaveValue('ja')
 	await expect(page.getByRole('heading', { name: 'マップエディター', exact: true })).toBeVisible()
 	await expect(page.getByRole('button', { name: '歩兵', exact: true })).toBeVisible()
 	await fitsViewport()

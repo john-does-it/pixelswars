@@ -270,7 +270,7 @@ export async function runAiTurn(controller: GameController, difficulty: AiDiffic
 				else {
 					for (const cell of action.path) {
 						if (!continuing()) return
-						controller.move(cell)
+						await controller.move(cell)
 						await delay(200)
 					}
 					if (!continuing()) return

@@ -1,23 +1,20 @@
 # Pixel’s War
 
-![Pixel’s War — blue and red armies facing off across a battlefield](docs/artwork/pixels-war-banner.png)
+![Pixel’s War — a battle between blue and red armies](docs/battlefield.png)
 
 **Capture cities. Build your army. Outsmart the AI or a friend.**
 
 A pixel-art, turn-based strategy game for desktop and mobile.
 **[Play in your browser](https://pixelswar.io/)** — no installation required.
 
-- 20 battlefields, 11 unit types and a map editor.
+- 26 battlefields, 13 unit types and a map editor.
 - Four AI difficulties, local two-player battles and online duels through WebRTC.
-- English, French, German and Japanese; keyboard, mouse and touch controls.
-
-![Map selection](docs/screenshots/home.png)
-![Battlefield](docs/screenshots/battlefield.png)
+- English, French, German and Japanese, with keyboard, mouse and touch controls.
 
 ## Play
 
 Destroy all opposing units to win. Move, attack and capture with any available unit,
-then end your turn. Cities and oil fields earn income; army bases and airports
+then end your turn. Cities and big cities earn income. Army bases, airports and naval bases
 produce reinforcements. Infantry can board transports and deploy beside them.
 Blue plays first; against the AI, you command red.
 
@@ -39,6 +36,25 @@ Keep both pages open: refreshing or closing ends the session. The host validates
 and shares game state; this mode is intended for friends. Connecting contacts
 PeerJS Cloud and configured STUN/TURN services. Use the published site for invitations
 between devices. See [terms and privacy](https://pixelswar.io/terms/).
+
+## Progress and support
+
+Win a standard map against the AI to earn the medal for that difficulty.
+**My progress** stores medals and an optional nickname in this browser. Export a
+JSON backup before clearing browser data or switching devices. Imports show a
+preview and replace progress and preferences only after confirmation. Backups do
+not contain an ongoing match and are not verified competitive scores.
+
+The support page is configured in `src/lib/support.ts`. Add the owner's PayPal
+URL, cryptocurrency address with its network, or bank beneficiary and IBAN.
+An optional bank QR image must encode the same verified details. Payment options
+remain hidden until configured. Set a contact link before opening contributions,
+and add only manually verified, consented public nicknames to `contributors`.
+Contributions never grant gameplay advantages.
+
+Map medal revisions live in `src/lib/profile.ts`. Bump a map's revision when a
+substantial layout or army change invalidates its previous challenge. Old medals
+stay in backups. Register new maps there alongside the regular map registry.
 
 ## Develop
 
@@ -93,9 +109,8 @@ when command semantics or combat rules change.
   (`PREVIEW_BASE_URL` overrides its default address).
 - `npm run check` regenerates translations; `npm run generate:i18n` does so separately.
   `paraglide.config.js` is shared with Vite; generated `src/lib/paraglide/` is ignored.
-- [itch.io launcher](distribution/itch/README.md): packaging instructions. Promotional
-  [cover](docs/artwork/pixels-war-cover-650x500.png) and [prompts](docs/artwork/cover-prompt.md)
-  live in `docs/artwork/`. Do not commit generated reports or temporary previews.
+- [itch.io launcher](distribution/itch/README.md): packaging instructions.
+  Do not commit generated reports or temporary previews.
 
 Unit statistics and terrain costs live in `catalog.ts`; damage and matchups in
 `combat-rules.ts`. Production menus enumerate the catalog. Add corresponding
@@ -128,7 +143,6 @@ settings. Pushing or merging does not automatically deploy.
 Programming: [John Does it](https://johndoesit.be).
 Sprites: [Kenney — Tiny Battle](https://kenney.nl/assets/tiny-battle).
 Muzzle flashes and explosion effects: [bdragon1727](https://bdragon1727.itch.io).
-Cover and banner: AI-generated promotional artwork. See [prompts](docs/artwork/cover-prompt.md).
 Typography: [Pixelify Sans](https://github.com/google/fonts/tree/main/ofl/pixelifysans), hosted locally under the [SIL Open Font License](src/lib/fonts/OFL.txt).
 Body text and controls: [IBM Plex Mono](https://github.com/google/fonts/tree/main/ofl/ibmplexmono), hosted locally under the [SIL Open Font License](src/lib/fonts/ibm-plex-mono/OFL.txt).
 Japanese text: [DotGothic16](https://github.com/google/fonts/tree/main/ofl/dotgothic16), hosted locally under the [SIL Open Font License](src/lib/fonts/dotgothic16/OFL.txt). The game title keeps Pixelify Sans in every language.

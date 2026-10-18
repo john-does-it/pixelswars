@@ -1,5 +1,5 @@
 import { buildingIncome, createUnit, unitTypes } from './catalog.ts'
-import { canCapture, movementCost, neighbors } from './model.ts'
+import { canCapture, movementSteps, neighbors } from './model.ts'
 import { pathsFrom } from './movement.ts'
 import { boardingCost, canEmbark, deploymentCells, isInfantry } from './transport.ts'
 import { damage, enemyPositions, exposure, threatens } from './ai-threats.ts'
@@ -20,8 +20,10 @@ export function transportedValue(unit: Unit): number {
 
 export function arrivalTurns(state: GameState, unit: Unit, path: number[], remaining: number): number {
 	let turns = 0
+	let from = unit.cell
 	for (const cell of path) {
-		const cost = movementCost(unit, state.cells[cell])
+		const cost = movementSteps(state, unit, from).find((step) => step.index === cell)?.cost ?? Infinity
+		from = cell
 		if (cost > unitTypes[unit.type].movement) return Infinity
 		if (remaining < cost) {
 			turns++

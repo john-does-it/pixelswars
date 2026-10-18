@@ -31,7 +31,7 @@ test('buy a transport, embark infantry and deploy through accessible controls', 
 	await page.getByRole('button', { name: 'Buy Transport jeep', exact: true }).click()
 	await cell(8).click()
 	await expect(cell(8).locator('.ammo')).toHaveCount(0)
-	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /passengers-0@2x\.png$/)
+	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /numbers\/0\.png$/)
 	await expect(page.locator('.attackable')).toHaveCount(0)
 	await page.keyboard.press('t')
 	await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -41,7 +41,7 @@ test('buy a transport, embark infantry and deploy through accessible controls', 
 	const tray = page.getByRole('region', { name: 'Troop transport', exact: true })
 	const cargoToggle = tray.getByRole('button', { name: 'Passengers: 1/3', exact: true })
 	await expect(cargoToggle).toBeVisible()
-	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /passengers-1@2x\.png$/)
+	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /numbers\/1\.png$/)
 	const originalViewport = page.viewportSize()!
 	await page.setViewportSize({ width: 320, height: originalViewport.height })
 	await expect
@@ -90,7 +90,7 @@ test('buy a transport, embark infantry and deploy through accessible controls', 
 	await passenger.click()
 	await cell(9).click()
 	await expect(tray.getByRole('button', { name: 'Passengers: 0/3', exact: true })).toBeDisabled()
-	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /passengers-0@2x\.png$/)
+	await expect(cell(8).locator('.cargo-count img')).toHaveAttribute('src', /numbers\/0\.png$/)
 	await expect(cell(9).locator('[data-unit="1"]')).toBeVisible()
 	await expect(cell(9).locator('.fuel')).toHaveAttribute('data-remaining', '1')
 	await expect(cell(9).locator('.ammo')).toHaveAttribute('data-remaining', '2')

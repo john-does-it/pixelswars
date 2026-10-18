@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Game from '$lib/components/Game.svelte'
+	import SoloGame from '$lib/components/SoloGame.svelte'
 	import OnlineGame from '$lib/components/OnlineGame.svelte'
 	import { page } from '$app/state'
 	import { browser } from '$app/environment'
@@ -15,8 +16,12 @@
 </script>
 
 {#key `${data.map.id}:${difficulty}:${online}`}
-	{#if online}
+	{#if data.draft}
+		<Game map={data.map} {difficulty} draft />
+	{:else if online}
 		<OnlineGame map={data.map} />
+	{:else if difficulty && data.map.id !== 'dev'}
+		<SoloGame map={data.map} {difficulty} />
 	{:else}
 		<Game map={data.map} {difficulty} />
 	{/if}

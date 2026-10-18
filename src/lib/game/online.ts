@@ -6,7 +6,7 @@ import { canCarry, selectedPassenger, selectPassenger } from './transport.ts'
 import type { MatchConnection } from './peer.ts'
 import type { ControllerOptions, GameController, GameMap, GameState, Player } from './types.ts'
 
-const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'moving', 'combatTargetIndex', 'combatSourceIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
+const sharedKeys = ['units', 'nextId', 'player', 'round', 'money', 'selectedId', 'origin', 'productionIndex', 'fighting', 'moving', 'bridgeTransit', 'combatTargetIndex', 'combatSourceIndex', 'winner', 'explosion', 'incomeCells', 'healedCells', 'capturedCells', 'securedCells'] as const
 type Snapshot = Pick<GameState, (typeof sharedKeys)[number]> & { ownership: { owner: number; capturePoints: number }[] }
 export function matchSnapshot(state: GameState): Snapshot {
 	return JSON.parse(JSON.stringify({ ...Object.fromEntries(sharedKeys.map((key) => [key, state[key]])), ownership: state.cells.map(({ owner, capturePoints }) => ({ owner, capturePoints })) }))
@@ -37,6 +37,10 @@ export function applySnapshot(state: GameState, input: unknown): boolean {
 	if (snapshot.origin !== null && (!snapshot.origin || !cellIndex(snapshot.origin.cell) || !amount(snapshot.origin.movement))) return false
 	if (![snapshot.incomeCells, snapshot.capturedCells, snapshot.securedCells].every((cells) => Array.isArray(cells) && cells.length <= state.cells.length && cells.every(cellIndex))) return false
 	if (!snapshot.healedCells || typeof snapshot.healedCells !== 'object' || !Object.entries(snapshot.healedCells).every(([index, health]) => cellIndex(Number(index)) && amount(health))) return false
+	if (snapshot.bridgeTransit != null) {
+		const transit = snapshot.bridgeTransit
+		if (!snapshot.moving || !cellIndex(transit.cell) || !state.cells[transit.cell].classes.includes('-bridge') || !snapshot.units.some((unit) => unit.id === transit.unitId && unitTypes[unit.type].domain === 'naval')) return false
+	}
 	const previousRound = state.round
 	for (const key of sharedKeys) Object.assign(state, { [key]: snapshot[key] })
 	snapshot.ownership.forEach(({ owner, capturePoints }, index) => Object.assign(state.cells[index], { owner, capturePoints }))

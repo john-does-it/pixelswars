@@ -6,7 +6,7 @@
 	import { buildingIncome, unitTypes } from '$lib/game/catalog.js'
 	import { unitSprite } from '$lib/game/unit-sprites.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
+	import { buildingName, matchPlayerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { Cell, GameState, StatItem, Unit } from '$lib/game/types.js'
 
 	let { state, aiMode = false }: { state: GameState; aiMode?: boolean } = $props()
@@ -46,7 +46,7 @@
 		{/if}
 		{#if previewCell.building}
 			<p class="building-status">
-				<span>{translate(messages.owner, { owner: previewCell.owner ? playerName(previewCell.owner, aiMode) : translate(messages.neutral) })}</span>
+				<span>{translate(messages.owner, { owner: previewCell.owner ? matchPlayerName(previewCell.owner, aiMode, state.network?.player) : translate(messages.neutral) })}</span>
 				<span>{translate(messages.capture_points, { points: previewCell.capturePoints })}</span>
 			</p>
 		{/if}
@@ -56,7 +56,7 @@
 {#snippet unitContent(previewUnit: Unit)}
 	<div class="heading unit-heading">
 		<div class="unit-name">
-			<h3>{playerName(previewUnit.player, aiMode)}</h3>
+			<h3>{matchPlayerName(previewUnit.player, aiMode, state.network?.player)}</h3>
 			<span>{unitName(previewUnit.type)}</span>
 		</div>
 		<img class="unit-icon" src={asset(unitSprite(previewUnit, true))} alt="" />

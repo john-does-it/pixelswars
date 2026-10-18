@@ -33,6 +33,7 @@ export function initialState(map: GameMap): GameState {
 		previewIndex: null,
 		fighting: false,
 		moving: false,
+		bridgeTransit: null,
 		combatTargetIndex: null,
 		combatSourceIndex: null,
 		winner: null,
@@ -58,11 +59,13 @@ export function neighbors(state: GameState, index: number): number[] {
 	return [column > 0 ? index - 1 : -1, column < state.cols - 1 ? index + 1 : -1, index - state.cols, index + state.cols].filter((neighborIndex) => neighborIndex >= 0 && neighborIndex < state.cells.length)
 }
 
-export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'> & Partial<Pick<Cell, 'building'>>): number {
+export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'> & Partial<Pick<Cell, 'building' | 'classes'>>): number {
 	if (cell.terrain === 'void') return Infinity
 	if (domain === 'air') return 1
 	if (cell.terrain === 'blocker') return Infinity
-	if (domain === 'naval') return cell.terrain === 'water' || cell.building === 'naval-base' ? cell.cost : Infinity
+	if (domain === 'naval') {
+		return cell.terrain === 'water' || cell.building === 'naval-base' ? cell.cost : Infinity
+	}
 	return cell.terrain === 'water' ? Infinity : cell.cost
 }
 
@@ -72,8 +75,34 @@ export function productionBuilding(type: UnitTypeId): string | null {
 	return production === undefined ? 'factory' : production
 }
 
+// Bridge crossings are one atomic move: a ship never occupies the road deck.
+export function movementSteps(state: GameState, unit: Unit, from = unit.cell, occupants = new Map(state.units.filter((other) => other.health > 0 && other.id !== unit.id).map((other) => [other.cell, other]))): { index: number; cost: number; direction: number }[] {
+	return neighbors(state, from).flatMap((neighbor) => {
+		const direction = neighbor - from
+		let index = neighbor
+		let cost = 0
+		if (unitTypes[unit.type].domain === 'naval') {
+			while (state.cells[index].terrain === 'road' && state.cells[index].classes.includes('-bridge')) {
+				const cell = state.cells[index]
+				const occupant = occupants.get(index)
+				// Cross perpendicular to the road, beneath either team's ground units.
+				if (!cell.classes.includes(Math.abs(direction) === 1 ? '-v' : '-h') || (occupant && (unitTypes[occupant.type].domain ?? 'ground') !== 'ground')) return []
+				cost += terrainTypes.water.cost
+				if (!neighbors(state, index).includes(index + direction)) return []
+				index += direction
+			}
+		}
+		cost += movementCost(unit, state.cells[index])
+		return occupants.has(index) || !Number.isFinite(cost) || cost > unitTypes[unit.type].movement ? [] : [{ index, cost, direction }]
+	})
+}
+
 export function reachableCells(state: GameState, unit = selectedUnit(state)): number[] {
-	return unit ? neighbors(state, unit.cell).filter((index) => movementCost(unit, state.cells[index]) <= unit.movement && !unitAt(state, index)) : []
+	return unit
+		? movementSteps(state, unit)
+				.filter((step) => step.cost <= unit.movement)
+				.map((step) => step.index)
+		: []
 }
 
 export function effectiveRange(state: GameState, unit: Unit): { minimum: number; maximum: number; bonus: number } {

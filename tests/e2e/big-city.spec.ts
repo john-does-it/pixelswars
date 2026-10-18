@@ -48,7 +48,7 @@ test('big cities appear in the localized catalog and every capture sprite loads'
 			for (const className of captureClasses.split(' ').filter(Boolean)) element.classList.add(className)
 			return getComputedStyle(element).backgroundImage.slice(5, -2)
 		}, classes)
-		expect(spriteUrl).toContain(`/assets/figma/cells/buildings/cell-big-city-on-grass${suffix.replace('halfcaptured', 'half-captured')}@2x.png`)
+		expect(spriteUrl).toContain(`/assets/cells/buildings/cell-big-city-on-grass${suffix.replace('halfcaptured', 'half-captured')}@2x.png`)
 		for (const url of [spriteUrl, spriteUrl.replace('cell-big-city-on-grass', 'cell-big-city-on-grass-light-on')]) {
 			const loaded = await page.evaluate(async (url) => {
 				const image = new Image()

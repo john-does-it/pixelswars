@@ -5,7 +5,7 @@ import { unitTypes } from '../src/lib/game/catalog.ts'
 import { damageStage, unitSprite } from '../src/lib/game/unit-sprites.ts'
 import type { Player, UnitTypeId } from '../src/lib/game/types.ts'
 
-const aliases: Record<string, string> = JSON.parse(readFileSync(new URL('../src/lib/game/figma-assets.json', import.meta.url), 'utf8'))
+const aliases: Record<string, string> = JSON.parse(readFileSync(new URL('../src/lib/game/asset-aliases.json', import.meta.url), 'utf8'))
 
 test('damage stages use each unit’s maximum health and recover when healed', () => {
 	for (const [type, { maxHealth }] of Object.entries(unitTypes) as [UnitTypeId, (typeof unitTypes)[UnitTypeId]][]) {

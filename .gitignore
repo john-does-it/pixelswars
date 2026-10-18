@@ -13,3 +13,7 @@ playwright-report/
 .env.*
 !.env.example
 /distribution/itch.zip
+
+# Local diagnostics
+debug.log
+__pycache__/

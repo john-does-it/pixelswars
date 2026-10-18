@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('homepage navbar fits translated links, offsets anchors and switches to an accessible mobile menu', async ({ page }) => {
 	await page.setViewportSize({ width: 1920, height: 1080 })
 	await page.goto('/')
-	const nav = page.locator('.home-navbar')
+	const nav = page.locator('.site-navbar')
 	const toggle = nav.getByRole('button')
 	await expect(nav).toHaveCSS('position', 'fixed')
 	await expect(toggle).toBeHidden()
@@ -13,7 +13,7 @@ test('homepage navbar fits translated links, offsets anchors and switches to an 
 	const navbarBottom = (await nav.boundingBox())!.height
 	await expect(nav.getByRole('combobox')).toBeVisible()
 	expect((await nav.getByRole('combobox').boundingBox())!.y).toBeLessThan(navbarBottom)
-	for (const link of await nav.locator('.nav-links a').all()) {
+	for (const link of await nav.locator('.nav-links a[href^="#"]').all()) {
 		const id = (await link.getAttribute('href'))!
 		await link.click()
 		const target = page.locator(id)
@@ -46,9 +46,56 @@ test('homepage navbar fits translated links, offsets anchors and switches to an 
 	await page.setViewportSize({ width: 1920, height: 1080 })
 	await expect(toggle).toBeHidden()
 	await expect(nav.locator('.nav-links')).toBeVisible()
+	await nav.locator('a[href$="/profile/"]').click()
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ma progression')
+	await page.locator('.site-navbar .brand').click()
+	await nav.locator('a[href$="/support/"]').click()
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Soutenir le jeu')
 	await page.goto('/play/1/')
 	await expect(page.locator('.board')).toBeVisible()
 	await expect(nav).toHaveCount(0)
 	await expect(page.locator('.match-summary')).toHaveCSS('width', '1920px')
 	expect((await page.locator('.match-summary').boundingBox())!.y).toBe(0)
+})
+
+test('shared navigation and footer remain available across site pages but stay outside the board', async ({ page }, testInfo) => {
+	await page.setViewportSize({ width: 320, height: 800 })
+	const nav = page.locator('.site-navbar')
+	const footer = page.locator('.site-footer')
+	const openLink = async (name: string) => {
+		const toggle = nav.getByRole('button')
+		if (await toggle.isVisible()) await toggle.click()
+		await nav.getByRole('link', { name, exact: true }).click()
+	}
+	for (const path of ['/profile/', '/support/', '/terms/', '/map-editor/']) {
+		await page.goto(path)
+		await expect(nav).toBeVisible()
+		await expect(footer).toHaveCount(1)
+		await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
+		await expect(nav.locator('.language-control select')).toBeVisible()
+		const navBox = (await nav.boundingBox())!
+		expect((await page.getByRole('heading', { level: 1 }).boundingBox())!.y).toBeGreaterThanOrEqual(navBox.y + navBox.height + 16)
+		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+		await expect(footer.getByRole('link', { name: 'Feedback', exact: true })).toHaveAttribute('href', 'https://github.com/john-does-it/pixelswars/issues')
+	}
+	await openLink('Support the game')
+	await expect(page).toHaveURL(new RegExp('/support/$'))
+	await expect(nav.getByRole('button')).toHaveAttribute('aria-expanded', 'false')
+	await footer.getByRole('link', { name: 'Terms', exact: true }).click()
+	await expect(page).toHaveURL(new RegExp('/terms/$'))
+	await openLink('Units')
+	await expect(page).toHaveURL(new RegExp('/#army$'))
+	await expect(page.locator('#army')).toHaveText('Units')
+	expect((await page.locator('#army').boundingBox())!.y).toBeGreaterThanOrEqual(88)
+	await openLink('My progress')
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('My progress')
+	await page.screenshot({ path: testInfo.outputPath('shared-navigation-mobile.png') })
+	await footer.scrollIntoViewIfNeeded()
+	await page.screenshot({ path: testInfo.outputPath('shared-footer-mobile.png') })
+	for (const path of ['/play/1/', '/tutorial/']) {
+		await page.goto(path)
+		await expect(page.locator('.board')).toBeVisible()
+		await expect(nav).toHaveCount(0)
+		await expect(footer).toHaveCount(0)
+	}
 })

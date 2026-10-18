@@ -1,6 +1,7 @@
 import { createController } from './controller.ts'
 import { runAiTurn } from './ai.ts'
 import { turnTransitionDuration } from './timing.ts'
+import { initializeAiPlanning } from './ai-economy.ts'
 import type { ControllerOptions, GameController, GameState } from './types.ts'
 
 export function createMatchController(state: GameState, options: ControllerOptions = {}): GameController {
@@ -19,6 +20,10 @@ export function createMatchController(state: GameState, options: ControllerOptio
 	}
 	async function playAi() {
 		if (disposed || running || !aiTurn() || state.winner !== null) return
+		initializeAiPlanning(state)
+		// AI decisions also hold transient planning state. Checkpoint the whole
+		// turn before it starts, never half a move or half a retaliation.
+		options.onCheckpoint?.(state)
 		running = true
 		state.aiThinking = true
 		try {
@@ -31,7 +36,10 @@ export function createMatchController(state: GameState, options: ControllerOptio
 			if (!disposed && aiTurn()) controller.endTurn()
 		} finally {
 			running = false
-			if (!disposed) state.aiThinking = false
+			if (!disposed) {
+				state.aiThinking = false
+				options.onCheckpoint?.(state)
+			}
 		}
 	}
 	return {

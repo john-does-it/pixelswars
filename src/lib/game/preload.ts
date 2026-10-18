@@ -15,7 +15,8 @@ function loadImage(path: string): Promise<void> {
 }
 
 async function loadAllVisualAssets(): Promise<void> {
-	const response = await fetch(asset('/assets/preload-manifest.json'), { cache: 'force-cache' })
+	// Revalidate the list after deployments so retired sprite URLs are not reused.
+	const response = await fetch(asset('/assets/preload-manifest.json'), { cache: 'no-cache' })
 	if (!response.ok) return
 	const paths = (await response.json()) as string[]
 	await Promise.all([...new Set(paths.map(asset))].map(loadImage))

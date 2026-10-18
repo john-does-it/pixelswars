@@ -1,5 +1,5 @@
 import { unitTypes } from './catalog.ts'
-import { selectedUnit, unitAt, canAttack, canRetaliate, applyDamage, locked } from './model.ts'
+import { selectedUnit, unitAt, canAttack, canRetaliate, applyDamage, locked, movementSteps } from './model.ts'
 import * as actions from './actions.ts'
 import * as transportActions from './transport.ts'
 import { pathsFrom } from './movement.ts'
@@ -31,12 +31,23 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 					transportActions.embark(state, unit.id, transport.id, true)
 					break
 				}
+				const crossing = movementSteps(state, unit).find((step) => step.index === index && step.cost <= unit.movement)
+				if (!crossing) break
+				faceCell(unit, index, state.cols)
+				for (let cell = unit.cell + crossing.direction; cell !== index; cell += crossing.direction) {
+					state.bridgeTransit = { unitId: unit.id, cell }
+					onChange()
+					await delay(movementStepDuration)
+					if (disposed || (state.network && state.network.phase !== 'playing')) return
+				}
+				state.bridgeTransit = null
 				if (!actions.move(state, index, true)) break
 				if (step === 0) play('woosh-movement')
 				onChange()
 				if (step < path.length - 1) await delay(movementStepDuration)
 			}
 		} finally {
+			state.bridgeTransit = null
 			state.moving = false
 			if (!disposed) onChange()
 		}
@@ -113,6 +124,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		},
 		dispose() {
 			disposed = true
+			state.bridgeTransit = null
 			state.moving = false
 			state.combatTargetIndex = null
 			state.combatSourceIndex = null
@@ -176,6 +188,8 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 				onChange()
 				return
 			}
+			const step = selected && movementSteps(state, selected).find((step) => step.index === index && step.cost <= selected.movement)
+			if (selected && step && selected.cell + step.direction !== index) return followPath(selected, [index])
 			if (actions.move(state, index)) {
 				state.previewIndex = index
 				play('woosh-movement')
@@ -238,7 +252,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			const offset = offsets[key]
 			if (offset !== undefined) {
 				event.preventDefault()
-				this.move(unit.cell + offset)
+				this.move(movementSteps(state, unit).find((step) => step.direction === offset)?.index ?? unit.cell + offset)
 				return
 			}
 			// Closing settings and using zoom leave a button focused. Movement keys

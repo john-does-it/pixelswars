@@ -55,7 +55,7 @@
 			{/each}
 		</span>{/if}
 	{#if showResources}
-		{#if unitDefinition.capacity}<span class="cargo-count"><img src={asset(`/assets/icons/cargo-count-${unit.cargo?.length ?? 0}.png`)} alt={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })} /></span>{/if}
+		{#if unitDefinition.capacity}<span class="cargo-count"><img src={asset(`/assets/icons/numbers/${unit.cargo?.length ?? 0}.png`)} alt={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })} /></span>{/if}
 		<span class="fuel" class:spent={unit.movement === 0} data-level={fuelLevel} data-remaining={unit.movement} style:--empty-fuel={`${88 - fuelLevel * 19}%`} aria-hidden="true">
 			<img class="fuel-empty" src={asset('/assets/icons/icon-movement.png')} alt="" />
 			<img class="fuel-fill" src={asset('/assets/icons/icon-movement.png')} alt="" />
@@ -73,10 +73,10 @@
 	.cargo-count {
 		bottom: var(--indicator-inset);
 		right: var(--indicator-inset);
-		aspect-ratio: 8 / 9;
-		--icon-left: -100%;
-		--icon-top: calc(-7 / 9 * 100%);
-		--icon-width: 200%;
+		aspect-ratio: 7 / 8;
+		--icon-left: 0%;
+		--icon-top: 0%;
+		--icon-width: 100%;
 	}
 	.carries-units .fuel {
 		left: var(--indicator-inset);

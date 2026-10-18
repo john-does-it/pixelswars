@@ -115,7 +115,7 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 		await expect(page.locator('.turn-announcement')).toHaveText('Your turn to play')
 		await page.reload()
 		await expect(page).toHaveURL(new RegExp(`/play/1/\\?ai=${difficulty.toLowerCase()}$`))
-		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
+		await expect(page.getByText('Round 4', { exact: true })).toBeVisible()
 	})
 }
 

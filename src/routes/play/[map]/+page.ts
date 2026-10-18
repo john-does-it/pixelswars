@@ -26,6 +26,13 @@ import centralPark from '$lib/data/central-park.json'
 import lakeView from '$lib/data/lake-view.json'
 import brokenBridge from '$lib/data/broken-bridge.json'
 import theIslands from '$lib/data/the-islands.json'
+import troubledBridges from '$lib/data/troubled-bridges.json'
+import neighborsSquare from '$lib/data/neighbors-square.json'
+import twoBridges from '$lib/data/two-bridges.json'
+import littleDetour from '$lib/data/little-detour.json'
+import sandbox from '$lib/data/sandbox.json'
+import gentleSlope from '$lib/data/gentle-slope.json'
+import meanders from '$lib/data/meanders.json'
 import mapFiles from '$lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '$lib/game/types.js'
@@ -34,9 +41,15 @@ export const entries: EntryGenerator = () => {
 	return Object.keys(mapFiles).map((map) => ({ map }))
 }
 export const load: PageLoad = async ({ params }) => {
+	if (dev && params.map.startsWith('draft-')) {
+		const maps = (await import('$lib/game/draft-maps')).loadDraftMaps()
+		const map = maps.find((candidate) => `draft-${candidate.id}` === params.map)
+		if (!map) error(404, 'Unknown draft map')
+		return { map, draft: true }
+	}
 	if (dev && params.map === 'dev') {
 		const { createDevMap } = await import('$lib/game/dev-map.js')
-		return { map: createDevMap() }
+		return { map: createDevMap(), draft: false }
 	}
 	const maps: Record<string, GameMap> = {
 		1: neighborTrouble as GameMap,
@@ -64,9 +77,16 @@ export const load: PageLoad = async ({ params }) => {
 		23: centralPark as GameMap,
 		24: lakeView as GameMap,
 		25: brokenBridge as GameMap,
-		26: theIslands as GameMap
+		26: theIslands as GameMap,
+		27: troubledBridges as GameMap,
+		28: neighborsSquare as GameMap,
+		29: twoBridges as GameMap,
+		30: littleDetour as GameMap,
+		31: sandbox as GameMap,
+		35: gentleSlope as GameMap,
+		36: meanders as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')
-	return { map }
+	return { map, draft: false }
 }

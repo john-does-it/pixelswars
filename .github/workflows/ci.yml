@@ -24,6 +24,8 @@ jobs:
         run: npm run test:e2e -- --grep-invert "stays responsive on large map"
       - name: Measure AI responsiveness without competing browser workers
         run: npm run test:e2e -- tests/e2e/ai-performance.spec.ts --project desktop --workers 1 --output test-results/ai-performance
+      - name: Check development-only map drafts
+        run: npm run test:e2e:dev -- --workers 2 --output test-results/drafts
       - name: Upload failed browser test diagnostics
         if: failure()
         uses: actions/upload-artifact@v7

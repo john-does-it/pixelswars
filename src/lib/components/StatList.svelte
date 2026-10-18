@@ -9,7 +9,7 @@
 	{#each items as item}
 		<dt>
 			{#if item.icon}
-				<img src={asset(`/assets/icons/${item.icon}.png`)} alt="" />
+				<img src={asset(`/assets/icons/${item.icon}.${item.icon === 'icon-money' ? 'svg' : 'png'}`)} alt="" />
 			{:else}
 				<span class="symbol" aria-hidden="true">$</span>
 			{/if}

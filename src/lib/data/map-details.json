@@ -1,0 +1,949 @@
+{
+	"1": {
+		"symmetrical": false,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"jeep": 1,
+					"infantry": 2,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"2": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 2,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"3": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"4": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"5": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 2,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"6": {
+		"symmetrical": false,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"7": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"8": {
+		"symmetrical": false,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"9": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"tank": 1,
+					"infantry-rocket": 1,
+					"jeep": 1,
+					"infantry": 1,
+					"artillery": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"10": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"11": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1,
+					"transport": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1,
+					"transport": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"12": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1,
+					"transport": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 2,
+					"infantry-rocket": 2,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"anti-air": 1,
+					"transport": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"13": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"14": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"artillery": 1,
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"15": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry-rocket": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry-rocket": 1,
+					"infantry": 1,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"16": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 5,
+					"jeep": 1,
+					"helicopter": 1,
+					"tank": 1,
+					"artillery": 1,
+					"infantry-sniper": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 5,
+					"jeep": 1,
+					"helicopter": 1,
+					"tank": 1,
+					"infantry-sniper": 1,
+					"artillery": 1
+				},
+				"buildings": {
+					"city": 1,
+					"factory": 1
+				}
+			}
+		}
+	},
+	"17": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 4,
+					"plane": 1,
+					"jeep": 2,
+					"tank": 1,
+					"artillery": 2,
+					"transport": 1,
+					"helicopter": 1,
+					"infantry-rocket": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 4,
+					"plane": 1,
+					"infantry-sniper": 1,
+					"helicopter": 1,
+					"jeep": 2,
+					"tank": 1,
+					"transport": 1,
+					"artillery": 2,
+					"infantry-rocket": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"18": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"transport": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1,
+					"infantry-rocket": 1,
+					"tank": 1,
+					"transport": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"19": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 4
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 4
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"20": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 8
+				},
+				"buildings": {
+					"city": 2,
+					"big-city": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 8
+				},
+				"buildings": {
+					"city": 2,
+					"big-city": 1
+				}
+			}
+		}
+	},
+	"21": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry-rocket": 1,
+					"infantry": 6,
+					"infantry-sniper": 1,
+					"plane": 1,
+					"transport": 1,
+					"jeep": 2,
+					"transport-helicopter": 2,
+					"tank": 1,
+					"anti-air": 2,
+					"helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry-rocket": 1,
+					"infantry": 6,
+					"infantry-sniper": 1,
+					"plane": 1,
+					"transport": 1,
+					"jeep": 2,
+					"transport-helicopter": 2,
+					"tank": 1,
+					"anti-air": 2,
+					"helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"22": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 3,
+					"infantry-rocket": 3,
+					"jeep": 2,
+					"artillery": 1,
+					"helicopter": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 3,
+					"infantry-rocket": 3,
+					"jeep": 2,
+					"artillery": 1,
+					"helicopter": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"23": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 5,
+					"infantry-rocket": 2,
+					"helicopter": 2,
+					"transport-helicopter": 2,
+					"anti-air": 2,
+					"jeep": 2,
+					"tank": 2,
+					"artillery": 1,
+					"infantry-sniper": 3,
+					"transport": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 5,
+					"infantry-rocket": 2,
+					"helicopter": 2,
+					"transport-helicopter": 2,
+					"anti-air": 2,
+					"jeep": 2,
+					"tank": 2,
+					"artillery": 1,
+					"infantry-sniper": 3,
+					"transport": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"24": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 4,
+					"infantry-rocket": 2,
+					"jeep": 1,
+					"tank": 1,
+					"artillery": 1,
+					"transport": 1,
+					"helicopter": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {
+					"factory": 2
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 4,
+					"infantry-rocket": 2,
+					"jeep": 1,
+					"tank": 1,
+					"artillery": 1,
+					"transport": 1,
+					"transport-helicopter": 1,
+					"helicopter": 1
+				},
+				"buildings": {
+					"factory": 2
+				}
+			}
+		}
+	},
+	"25": {
+		"symmetrical": false,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 4,
+					"transport": 1,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 2,
+					"big-city": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 4,
+					"jeep": 1,
+					"transport": 1,
+					"tank": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 2,
+					"big-city": 1
+				}
+			}
+		}
+	},
+	"26": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 6,
+					"transport-helicopter": 1,
+					"transport": 1,
+					"transport-ship": 1,
+					"attack-ship": 2,
+					"jeep": 1,
+					"tank": 1,
+					"anti-air": 1,
+					"helicopter": 1
+				},
+				"buildings": {
+					"city": 5,
+					"naval-base": 1,
+					"hospital": 1,
+					"factory": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 6,
+					"transport-helicopter": 1,
+					"transport": 1,
+					"transport-ship": 1,
+					"attack-ship": 2,
+					"jeep": 1,
+					"tank": 1,
+					"anti-air": 1,
+					"helicopter": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 5,
+					"hospital": 1,
+					"naval-base": 1
+				}
+			}
+		}
+	},
+	"27": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 9,
+					"transport": 2,
+					"infantry-sniper": 1,
+					"jeep": 2,
+					"tank": 1,
+					"transport-ship": 1,
+					"attack-ship": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 9,
+					"transport": 2,
+					"infantry-sniper": 1,
+					"jeep": 2,
+					"tank": 1,
+					"transport-ship": 1,
+					"attack-ship": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"28": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 3
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 3
+				},
+				"buildings": {
+					"city": 1,
+					"factory": 1
+				}
+			}
+		}
+	},
+	"29": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {
+					"city": 1,
+					"factory": 1
+				}
+			}
+		}
+	},
+	"30": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 2,
+					"infantry-rocket": 1
+				},
+				"buildings": {
+					"factory": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 2,
+					"infantry-rocket": 1
+				},
+				"buildings": {
+					"factory": 1
+				}
+			}
+		}
+	},
+	"31": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 2,
+					"transport-ship": 1,
+					"attack-ship": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"naval-base": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 2,
+					"transport-ship": 1,
+					"attack-ship": 1
+				},
+				"buildings": {
+					"naval-base": 1,
+					"factory": 1
+				}
+			}
+		}
+	},
+	"35": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1
+				},
+				"buildings": {
+					"city": 1,
+					"factory": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 2,
+					"jeep": 1
+				},
+				"buildings": {
+					"factory": 1,
+					"city": 1
+				}
+			}
+		}
+	},
+	"36": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 7,
+					"transport": 2,
+					"transport-ship": 1,
+					"jeep": 2,
+					"tank": 1
+				},
+				"buildings": {
+					"naval-base": 1
+				}
+			},
+			"2": {
+				"units": {
+					"infantry": 7,
+					"transport": 2,
+					"transport-ship": 1,
+					"jeep": 2,
+					"tank": 1
+				},
+				"buildings": {
+					"naval-base": 1
+				}
+			}
+		}
+	}
+}

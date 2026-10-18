@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 
 test('editor places both naval units for both teams on water and preserves them in exported maps', async ({ page }) => {
 	const errors: string[] = []
@@ -47,5 +48,64 @@ test('editor places both naval units for both teams on water and preserves them 
 	await page.reload()
 	await expect(cell(0)).toHaveClass(/-naval-base/)
 	await expect(cell(0).locator('img')).toHaveCount(1)
+	await page.getByRole('button', { name: 'Bridge ↔', exact: true }).click()
+	await cell(0).press('Enter')
+	await expect(cell(0)).toHaveClass(/-bridge/)
+	await expect(cell(0).locator('img')).toHaveCount(0)
+	await page.reload()
+	await expect(cell(0)).toHaveClass(/-bridge/)
+	await expect(cell(0).locator('img')).toHaveCount(0)
 	expect(errors).toEqual([])
+})
+
+test('a ship crosses a bridge at half opacity without stopping on its deck', async ({ page }, testInfo) => {
+	await page.clock.install()
+	await page.goto('/play/26/')
+	await expect(page.locator('dialog.turn-transition')).toBeVisible()
+	await page.clock.fastForward(turnTransitionDuration + 100)
+	const cell = (index: number) => page.locator('[data-cell="' + index + '"]')
+	const endRound = async () => {
+		await page.getByRole('button', { name: 'End round', exact: true }).click()
+		await expect(page.locator('dialog.turn-transition')).toBeVisible()
+		await page.clock.fastForward(turnTransitionDuration + 100)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+	}
+	let position = 91
+	for (const target of [87, 115, 143, 203]) {
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+		await cell(position).click()
+		await cell(target).click()
+		await expect(cell(target).locator('[data-unit="18"]')).toBeVisible()
+		position = target
+		if (target !== 203) {
+			await endRound()
+			await endRound()
+		}
+	}
+	await endRound()
+	await endRound()
+	await cell(203).click()
+	await expect(cell(171)).not.toHaveClass(/reachable/)
+	await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000))
+	await cell(171).click()
+	await expect(cell(203).locator('[data-unit="18"]')).toBeVisible()
+	await cell(140).click()
+	await page.clock.runFor(140)
+	await expect(page.locator('.bridge-transit')).toHaveAttribute('data-transit-cell', '171')
+	await expect(page.locator('.bridge-transit')).toHaveCSS('opacity', '0.5')
+	await expect(cell(171).locator('[data-unit="18"]')).toHaveCount(0)
+	await page.screenshot({ path: testInfo.outputPath('ship-crossing-bridge.png') })
+	await page.clock.runFor(140)
+	await expect(cell(140).locator('[data-unit="18"]')).toBeVisible()
+	await expect(page.locator('.bridge-transit')).toHaveCount(0)
+	await expect(cell(140).locator('.unit-sprite')).toHaveCSS('opacity', '1')
+	await page.getByRole('button', { name: 'Cancel move', exact: true }).click()
+	await expect(cell(203).locator('[data-unit="18"]')).toBeVisible()
+	await cell(203).click()
+	await cell(202).click()
+	await expect(cell(202).locator('[data-unit="18"]')).toBeVisible()
+	await cell(202).press('ArrowUp')
+	await expect(page.locator('.bridge-transit')).toHaveCSS('opacity', '0.5')
+	await page.clock.runFor(140)
+	await expect(cell(140).locator('[data-unit="18"]')).toBeVisible()
 })

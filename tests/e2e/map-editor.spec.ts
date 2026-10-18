@@ -84,7 +84,7 @@ test('public editor opens from home with working sprites, JSON export and submis
 	await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0)
 	await page.getByRole('heading', { name: 'Submit your map' }).scrollIntoViewIfNeeded()
 	await page.screenshot({ path: testInfo.outputPath('submission-guide.png') })
-	await page.locator('#back-to-game').click()
+	await page.locator('.site-navbar .brand').click()
 	await expect(page).toHaveURL(/\/$/)
 	await expect(page.locator('#board')).toHaveCount(0)
 	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
@@ -107,7 +107,7 @@ test('editor shares all four languages with the game without changing the draft 
 		['ja', 'マップエディター', '歩兵', 'マップを投稿', '縦横のサイズはそれぞれ2〜32マスにしてください。'],
 		['fr', 'Atelier de cartes', 'Infanterie', 'Proposer ta carte', 'Les dimensions doivent être comprises entre 2 et 32 cases.']
 	]) {
-		await page.locator('#language').selectOption(locale)
+		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		await expect(page.locator('html')).toHaveAttribute('lang', locale)
 		await expect(page).toHaveTitle(`Pixel’s War · ${title}`)
 		await expect(page.getByRole('button', { name: infantry, exact: true })).toHaveAttribute('aria-pressed', 'true')
@@ -121,12 +121,12 @@ test('editor shares all four languages with the game without changing the draft 
 	}
 	await page.locator('#undo').click()
 	await expect(page.locator('#board img')).toHaveCount(0)
-	await page.locator('#language').selectOption('de')
+	await page.locator('.site-navbar .language-control select').selectOption('de')
 	await page.reload()
 	await expect(page).toHaveTitle('Pixel’s War · Karteneditor')
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	await page.screenshot({ path: testInfo.outputPath('editor-german.png') })
-	await page.locator('#back-to-game').click()
+	await page.locator('.site-navbar .brand').click()
 	await expect(page.locator('#board')).toHaveCount(0)
 	await expect(page.getByRole('combobox')).toHaveValue('de')
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!

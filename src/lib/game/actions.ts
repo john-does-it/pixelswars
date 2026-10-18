@@ -1,5 +1,5 @@
 import { buildingIncome, createUnit, isUnitTypeId, unitTypes, productionBuildings } from './catalog.ts'
-import { movementCost, selectedUnit, locked, reachableCells, canCapture, purchaseStatus } from './model.ts'
+import { movementSteps, selectedUnit, locked, canCapture, purchaseStatus } from './model.ts'
 import type { GameState } from './types.ts'
 import { faceCell } from './facing.ts'
 
@@ -26,8 +26,10 @@ export function move(state: GameState, index: number, continuingPath = false): b
 	// Only the controller's active route may advance while movement locks other actions.
 	if (state.fighting || state.winner !== null || (state.moving && !continuingPath)) return false
 	const unit = selectedUnit(state)
-	if (!unit || !reachableCells(state, unit).includes(index)) return false
-	unit.movement -= movementCost(unit, state.cells[index])
+	if (!unit) return false
+	const step = movementSteps(state, unit).find((step) => step.index === index && step.cost <= unit.movement)
+	if (!step) return false
+	unit.movement -= step.cost
 	state.inspectedEnemyId = null
 	faceCell(unit, index, state.cols)
 	unit.cell = index

@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
 import mapPreviews from '../../src/lib/data/map-previews.json' with { type: 'json' }
+import { isMapInCatalog } from '../../src/lib/game/map-catalog'
 
 test('map chooser shows lightweight terrain previews, dimensions and cell-count size labels', async ({ page }) => {
 	await page.goto('/')
 	const cards = page.locator('.maps .map')
-	await expect(cards).toHaveCount(Object.keys(mapPreviews).length)
+	await expect(cards).toHaveCount(Object.keys(mapPreviews).filter(isMapInCatalog).length)
 	const areas = await cards.locator('.map-thumbnail img').evaluateAll((images) => images.map((image) => Number(image.getAttribute('width')) * Number(image.getAttribute('height'))))
 	expect(areas).toEqual([...areas].sort((firstArea, secondArea) => firstArea - secondArea))
 	for (const image of await cards.locator('.map-thumbnail img').all()) {
@@ -14,8 +15,8 @@ test('map chooser shows lightweight terrain previews, dimensions and cell-count 
 	for (const locale of ['en', 'fr', 'de', 'ja']) {
 		await page.getByRole('combobox').selectOption(locale)
 		await expect(cards.first().locator('.map-metadata')).toHaveText('XXS · 8 × 8')
-		await expect(page.locator('.map[href="/play/12/"] .map-metadata')).toHaveText('XXL · 18 × 18')
-		await expect(cards.last().locator('.map-metadata')).toHaveText('XXL · 32 × 32')
+		await expect(page.locator('.map[href="/play/27/"] .map-metadata')).toHaveText('XXL · 17 × 17')
+		await expect(cards.last().locator('.map-metadata')).toHaveText('XXL · 31 × 23')
 	}
 	await cards.last().click()
 	await expect(page.getByRole('dialog')).toBeVisible()

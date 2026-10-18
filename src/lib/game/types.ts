@@ -98,6 +98,7 @@ export interface GameState {
 	previewIndex: number | null
 	fighting: boolean
 	moving: boolean
+	bridgeTransit?: { unitId: number; cell: number } | null
 	combatTargetIndex: number | null
 	combatSourceIndex: number | null
 	winner: Player | null
@@ -119,6 +120,7 @@ export interface PurchaseStatus {
 }
 
 export interface ControllerOptions {
+	onCheckpoint?: (state: GameState) => void
 	onChange?: () => void
 	onSound?: (name: string) => void
 	aiDifficulty?: AiDifficulty | null
@@ -126,7 +128,10 @@ export interface ControllerOptions {
 	delay?: (milliseconds: number) => Promise<void>
 }
 
+export type GuidedAction = 'select' | 'clickCell' | 'move' | 'cancel' | 'confirm' | 'capture' | 'fight' | 'openProduction' | 'closeProduction' | 'buy' | 'selectPassenger' | 'deploy' | 'embark' | 'endTurn'
+
 export interface GameController {
+	allowsAction?: (action: GuidedAction, value?: number | string) => boolean
 	selectPassenger(passengerId: number): void
 	embark(passengerId: number): void
 	deploy(passengerId: number, destination: number): void
@@ -138,7 +143,7 @@ export interface GameController {
 	fight(defender: Unit): Promise<void>
 	select(id: number): void
 	clickCell(index: number): void
-	move(index: number): void
+	move(index: number): void | Promise<void>
 	cancel(): void
 	openProduction(index: number): void
 	confirm(): void

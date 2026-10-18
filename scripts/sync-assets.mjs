@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 
 function filesIn(directory) {
 	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+		// Incoming artwork is staging material, not generated runtime content.
+		if (entry.isDirectory() && entry.name === 'temp') return []
 		const filename = join(directory, entry.name)
 		return entry.isDirectory() ? filesIn(filename) : [filename]
 	})

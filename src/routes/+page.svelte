@@ -1,14 +1,22 @@
 <script lang="ts">
+	import type { PageData } from './$types'
+	let { data }: { data: PageData } = $props()
 	import { resolve } from '$app/paths'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/state'
 	import { asset } from '$lib/game/asset-path'
-	import { dev } from '$app/environment'
+	import { browser, dev } from '$app/environment'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog.js'
 	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
+	import UiIcon from '$lib/components/UiIcon.svelte'
 	import StatList from '$lib/components/StatList.svelte'
 	import mapPreviews from '$lib/data/map-previews.json'
-	import HomeNavbar from '$lib/components/HomeNavbar.svelte'
+	import MapCharacteristics from '$lib/components/MapCharacteristics.svelte'
+	import mapDetails from '$lib/data/map-details.json'
+	import { isMapInCatalog } from '$lib/game/map-catalog'
 	import HowToPlayModal from '$lib/components/HowToPlayModal.svelte'
 	import MatchSetupModal from '$lib/components/MatchSetupModal.svelte'
+	import SavedMatchCard from '$lib/components/SavedMatchCard.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import { preferences } from '$lib/preferences.svelte.js'
@@ -95,33 +103,108 @@
 		{ id: 23, title: messages.map_23, text: messages.map_23_description },
 		{ id: 24, title: messages.map_24, text: messages.map_24_description },
 		{ id: 25, title: messages.map_25, text: messages.map_25_description },
-		{ id: 26, title: messages.map_26, text: messages.map_26_description }
-	].sort((firstMap, secondMap) => {
-		const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
-		const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
-		return firstSize.cols * firstSize.rows - secondSize.cols * secondSize.rows || firstMap.id - secondMap.id
-	})
+		{ id: 26, title: messages.map_26, text: messages.map_26_description },
+		{ id: 27, title: messages.map_27, text: messages.map_27_description },
+		{ id: 28, title: messages.map_28, text: messages.map_28_description },
+		{ id: 29, title: messages.map_29, text: messages.map_29_description },
+		{ id: 30, title: messages.map_30, text: messages.map_30_description },
+		{ id: 31, title: messages.map_31, text: messages.map_31_description },
+		{ id: 35, title: messages.map_35, text: messages.map_35_description },
+		{ id: 36, title: messages.map_36, text: messages.map_36_description }
+	]
+		.filter((map) => isMapInCatalog(map.id))
+		.sort((firstMap, secondMap) => {
+			const firstSize = mapPreviews[String(firstMap.id) as keyof typeof mapPreviews]
+			const secondSize = mapPreviews[String(secondMap.id) as keyof typeof mapPreviews]
+			return firstSize.cols * firstSize.rows - secondSize.cols * secondSize.rows || firstMap.id - secondMap.id
+		})
 	let showHelp = $state(false)
 	let selectedMap = $state<number | null>(null)
+	let filtersOpen = $state(false)
+	const selectedSizes = $derived(
+		browser
+			? mapSizeBands
+					.map((band) => band.label)
+					.filter((size) =>
+						page.url.searchParams
+							.getAll('size')
+							.flatMap((value) => value.split(','))
+							.includes(size)
+					)
+			: []
+	)
+	const symmetricalOnly = $derived(browser && page.url.searchParams.get('symmetrical') === '1')
+	const mobileFriendlyOnly = $derived(browser && page.url.searchParams.get('mobile') === '1')
+	const activeFilterCount = $derived(selectedSizes.length + Number(symmetricalOnly) + Number(mobileFriendlyOnly))
+	function updateFilters(sizes = selectedSizes, symmetrical = symmetricalOnly, mobile = mobileFriendlyOnly) {
+		const url = new URL(page.url)
+		const orderedSizes = mapSizeBands.map((band) => band.label).filter((size) => sizes.includes(size))
+		if (orderedSizes.length) url.searchParams.set('size', orderedSizes.join(','))
+		else url.searchParams.delete('size')
+		if (symmetrical) url.searchParams.set('symmetrical', '1')
+		else url.searchParams.delete('symmetrical')
+		if (mobile) url.searchParams.set('mobile', '1')
+		else url.searchParams.delete('mobile')
+		void goto(url, { replaceState: true, noScroll: true, keepFocus: true, state: page.state })
+	}
+	function mapSize(id: number) {
+		const { cols, rows } = mapPreviews[String(id) as keyof typeof mapPreviews]
+		return mapSizeBands.find((band) => cols * rows <= band.maximum)?.label ?? 'XXL'
+	}
+	const filteredMaps = $derived(
+		maps.filter((map) => {
+			const details = mapDetails[String(map.id) as keyof typeof mapDetails]
+			return (!selectedSizes.length || selectedSizes.includes(mapSize(map.id))) && (!symmetricalOnly || details.symmetrical) && (!mobileFriendlyOnly || details.mobileFriendly)
+		})
+	)
+	function resetFilters() {
+		updateFilters([], false, false)
+	}
 </script>
 
 <svelte:head>
 	<title>{translate(messages.page_title)}</title>
 </svelte:head>
 <div class="home-page">
-	<HomeNavbar />
 	<main id="home">
 		<header>
 			<p class="eyebrow">{translate(messages.eyebrow)}</p>
 			<p>{translate(messages.hero)}</p>
 		</header>
+		<SavedMatchCard />
 		<section aria-labelledby="maps">
 			<h2 id="maps">{translate(messages.choose_battlefield)}</h2>
 			{#if dev}
 				<p><a class="button" href={`${resolve('/play/[map]', { map: 'dev' })}/`}>{translate(messages.dev_map_open)}</a></p>
+				{#if data.draftMaps.length}<p><a href="#draft-maps">{translate(messages.map_drafts)} ({data.draftMaps.length})</a></p>{/if}
 			{/if}
+			<div class="map-filters" role="group" aria-label={translate(messages.map_filters)}>
+				<button class="filter-toggle" aria-expanded={filtersOpen} aria-controls="map-filter-options" onclick={() => (filtersOpen = !filtersOpen)}>{translate(messages.map_filter_toggle, { count: activeFilterCount })}</button>
+				<div id="map-filter-options" class="filter-options" class:expanded={filtersOpen}>
+					<fieldset class="size-filter">
+						<legend>{translate(messages.map_filter_size)}</legend>
+						<div class="size-options">
+							<button class="filter-pill pixel-icon-control" aria-pressed={selectedSizes.length === 0} onclick={() => updateFilters([])}>{translate(messages.map_filter_all_sizes)}</button>
+							{#each mapSizeBands as band}
+								<label class="filter-pill"><input type="checkbox" checked={selectedSizes.includes(band.label)} onchange={(event) => updateFilters(event.currentTarget.checked ? [...selectedSizes, band.label] : selectedSizes.filter((size) => size !== band.label))} />{band.label}</label>
+							{/each}
+						</div>
+					</fieldset>
+					<fieldset class="tag-filters">
+						<legend>{translate(messages.map_filter_tags)}</legend>
+						<div class="size-options">
+							<label class="filter-pill"><input type="checkbox" checked={symmetricalOnly} onchange={(event) => updateFilters(selectedSizes, event.currentTarget.checked)} />{translate(messages.map_symmetrical)}</label>
+							<label class="filter-pill"><input type="checkbox" checked={mobileFriendlyOnly} onchange={(event) => updateFilters(selectedSizes, symmetricalOnly, event.currentTarget.checked)} />{translate(messages.map_mobile)}</label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="filter-summary">
+					<p class="filter-results" role="status">{translate(messages.map_filter_results, { count: filteredMaps.length, total: maps.length })}</p>
+					<button class="pixel-icon-button" onclick={resetFilters} disabled={!selectedSizes.length && !symmetricalOnly && !mobileFriendlyOnly} aria-label={translate(messages.map_filter_reset)} title={translate(messages.map_filter_reset)}><UiIcon name="previous-action" /></button>
+				</div>
+			</div>
 			<div class="maps">
-				{#each maps as map}
+				{#each filteredMaps as map (map.id)}
 					{@const preview = mapPreviews[String(map.id) as keyof typeof mapPreviews]}
 					<a
 						class="panel map"
@@ -134,14 +217,24 @@
 						}}
 					>
 						<div class="map-thumbnail" aria-hidden="true"><img src={asset(`/assets/map-previews/map-${map.id}.png`)} alt="" width={preview.cols * 16} height={preview.rows * 16} loading="lazy" decoding="async" /></div>
-						<span class="map-metadata">{mapSizeBands.find((band) => preview.cols * preview.rows <= band.maximum)?.label ?? 'XXL'} · {preview.cols} × {preview.rows}</span>
-						<h3>{translate(map.title)}</h3>
+						<MapCharacteristics details={mapDetails[String(map.id) as keyof typeof mapDetails]} />
+						<span class="map-metadata">{mapSize(map.id)} · {preview.cols} × {preview.rows}</span>
+						<h3 title={translate(map.title)}>{translate(map.title)}</h3>
 						<p>{translate(map.text)}</p>
 						<strong>{translate(messages.start_game)}</strong>
 					</a>
+				{:else}
+					<p class="empty-maps">{translate(messages.map_filter_empty)}</p>
 				{/each}
 			</div>
 		</section>
+		{#if dev && data.draftMaps.length}
+			<div id="draft-maps">
+				{#await import('$lib/components/DraftMapGallery.svelte') then module}
+					<module.default maps={data.draftMaps} />
+				{/await}
+			</div>
+		{/if}
 		<section class="panel map-editor-intro" aria-labelledby="editor-title">
 			<h2 id="editor-title">{translate(messages.editor_title)}</h2>
 			<p>{translate(messages.editor_description)}</p>
@@ -213,24 +306,106 @@
 				</div>
 			</div>
 		</section>
-		<footer id="credits">
-			<p>{translate(messages.programming)}: <a href="https://johndoesit.be" target="_blank" rel="noopener noreferrer">John Does it</a> · {translate(messages.graphics)}: <a href="https://kenney.nl/assets/tiny-battle" target="_blank" rel="noopener noreferrer">Kenney</a>, <a href="https://bdragon1727.itch.io" target="_blank" rel="noopener noreferrer">bdragon1727</a> · {translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects" target="_blank" rel="noopener noreferrer">Pixabay</a> · {translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack" target="_blank" rel="noopener noreferrer">Monolith</a> · {translate(messages.quality_assurance)}: Gauthier Miessen</p>
-			<p>{translate(messages.feedback)}: <a href="https://github.com/john-does-it/pixelswars/issues" target="_blank" rel="noopener noreferrer">GitHub</a></p>
-			<p><a href={resolve('/terms/', {})}>{translate(messages.legal_title)}</a></p>
-		</footer>
 	</main>
 </div>
 
 <style>
+	.map-filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: start;
+		gap: 20px 32px;
+		margin: 24px 0;
+	}
+	.filter-toggle {
+		display: none;
+	}
+	.filter-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px 32px;
+		width: 100%;
+	}
+	@media (max-width: 640px) {
+		.map-filters {
+			gap: 12px;
+		}
+		.filter-toggle {
+			display: block;
+		}
+		.filter-options:not(.expanded) {
+			display: none;
+		}
+	}
+	.filter-pill {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: 44px;
+		padding: 8px 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 6px;
+		background: var(--color-surface);
+		color: var(--color-text);
+		font: inherit;
+		cursor: pointer;
+	}
+	.filter-pill:has(input:checked),
+	.filter-pill[aria-pressed='true'] {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+		background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+	}
+	.filter-pill:has(input:focus-visible) {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+	}
+	.map-filters fieldset {
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.map-filters legend {
+		padding: 0 0 8px;
+		color: var(--color-muted);
+		font-size: 14px;
+	}
+	.size-options {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	.map-filters input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--color-accent);
+	}
+	.filter-summary {
+		flex-basis: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.filter-results {
+		color: var(--color-muted);
+		font-size: 14px;
+		margin: 0;
+	}
+	.empty-maps {
+		grid-column: 1 / -1;
+		margin: 0;
+	}
 	.home-page {
-		--home-nav-height: 72px;
 		--home-section-spacing: 64px;
-		padding-top: var(--home-nav-height);
 	}
 	main,
-	h2[id],
-	footer[id] {
-		scroll-margin-top: calc(var(--home-nav-height) + 40px);
+	h2[id] {
+		scroll-margin-top: calc(var(--site-nav-height) + 40px);
 	}
 
 	.map-editor-intro .button {
@@ -326,6 +501,12 @@
 	.map p {
 		margin-bottom: 24px;
 	}
+	.map h3 {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
 	.map strong {
 		margin-top: auto;
@@ -372,14 +553,5 @@
 
 	article p {
 		font-size: 16px;
-	}
-
-	footer {
-		font-size: var(--font-size-ui);
-		margin-top: var(--home-section-spacing);
-
-		a {
-			text-decoration: underline;
-		}
 	}
 </style>

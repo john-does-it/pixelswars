@@ -2,7 +2,7 @@
 	import type { Cell, BuildingId, TerrainId } from '$lib/game/types.js'
 
 	type IconId = TerrainId | BuildingId
-	let { cell, terrain = 'grass', size = 40 }: { cell?: Cell; terrain?: IconId; size?: number | 'fill' } = $props()
+	let { cell, terrain = 'grass', owner, size = 40 }: { cell?: Cell; terrain?: IconId; owner?: 1 | 2; size?: number | 'fill' } = $props()
 	const terrainClasses: Record<IconId, string> = {
 		grass: '-grass',
 		moutain: '-moutain -ongrass',
@@ -22,7 +22,7 @@
 	const classes = $derived(cell ? cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' ') : terrainClasses[terrain])
 </script>
 
-<span class="cell-container terrain-icon {classes}" class:fill={size === 'fill'} class:-capturedby1={cell?.owner === 1} class:-capturedby2={cell?.owner === 2} class:-halfcaptured={cell !== undefined && cell.capturePoints < 20} style:width={size === 'fill' ? '100%' : `${size}px`} style:height={size === 'fill' ? '100%' : `${size}px`} aria-hidden="true"></span>
+<span class="cell-container terrain-icon {classes}" class:fill={size === 'fill'} class:-capturedby1={(cell?.owner ?? owner) === 1} class:-capturedby2={(cell?.owner ?? owner) === 2} class:-halfcaptured={cell !== undefined && cell.capturePoints < 20} style:width={size === 'fill' ? '100%' : `${size}px`} style:height={size === 'fill' ? '100%' : `${size}px`} aria-hidden="true"></span>
 
 <style>
 	.terrain-icon {

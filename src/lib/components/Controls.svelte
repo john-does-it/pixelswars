@@ -14,14 +14,14 @@
 	import UiIcon from './UiIcon.svelte'
 	import CargoTray from './CargoTray.svelte'
 
-	let { game, aiMode = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart }: { game: GameController; aiMode?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void } = $props()
+	let { game, aiMode = false, inactive = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart, saveStatus }: { game: GameController; aiMode?: boolean; inactive?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void; saveStatus?: string } = $props()
 	const gameState = $derived(game.state)
 	let pendingEndTurn = $state<{ game: GameController; round: number } | null>(null)
 	const selected = $derived(selectedUnit(gameState))
 	const previewCell = $derived(gameState.previewIndex === null ? undefined : gameState.cells[gameState.previewIndex])
 
 	const inputLocked = $derived(locked(gameState) || gameState.aiThinking || !!gameState.network?.pending)
-	const waiting = $derived(gameState.aiThinking || (gameState.network && (gameState.network.phase !== 'playing' || gameState.player !== gameState.network.player)))
+	const waiting = $derived(inactive || gameState.aiThinking || (gameState.network && (gameState.network.phase !== 'playing' || gameState.player !== gameState.network.player)))
 	const captureLabel = $derived(translate(selected && gameState.cells[selected.cell].owner === gameState.player && gameState.cells[selected.cell].capturePoints < 20 ? messages.secure : messages.capture))
 	$effect(() => {
 		if (waiting || !previewCell) showPreview = false
@@ -32,6 +32,10 @@
 
 	function requestEndTurn() {
 		if (inputLocked || waiting) return
+		if (game.allowsAction?.('endTurn') === false) {
+			game.endTurn()
+			return
+		}
 		if (preferences.confirmEndTurn && hasAvailableAction(gameState)) pendingEndTurn = { game, round: gameState.round }
 		else game.endTurn()
 	}
@@ -75,20 +79,20 @@
 		{#if !waiting}
 			<CargoTray {game} disabled={inputLocked} />
 			{#if selected}
-				<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
+				<button class="pixel-icon-button" disabled={inputLocked || game.allowsAction?.('cancel') === false} aria-label={translate(messages.cancel_move)} title={translate(messages.cancel_move)} onclick={() => game.cancel()}>
 					<UiIcon name="previous-action" />
 				</button>
-				<button class="pixel-icon-button" disabled={inputLocked} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
+				<button class="pixel-icon-button" disabled={inputLocked || game.allowsAction?.('confirm') === false} aria-label={translate(messages.confirm_move)} title={translate(messages.confirm_move)} onclick={() => game.confirm()}>
 					<UiIcon name="validate-action" />
 				</button>
 			{/if}
 			{#if canCapture(gameState)}
-				<button class="pixel-icon-button" disabled={inputLocked} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
+				<button class="pixel-icon-button" disabled={inputLocked || game.allowsAction?.('capture') === false} aria-label={captureLabel} title={captureLabel} onclick={() => game.capture()}>
 					<UiIcon name="icon-capture" />
 				</button>
 			{/if}
 		{/if}
-		<button class="primary" disabled={inputLocked} aria-label={translate(messages.end_round)} aria-keyshortcuts="End" title={`${translate(messages.end_round)} (${translate(messages.key_end)})`} onclick={requestEndTurn}>
+		<button class="primary" disabled={inputLocked || game.allowsAction?.('endTurn') === false} aria-label={translate(messages.end_round)} aria-keyshortcuts="End" title={`${translate(messages.end_round)} (${translate(messages.key_end)})`} onclick={requestEndTurn}>
 			{translate(messages.end_round)}
 		</button>
 	</div>
@@ -110,6 +114,7 @@
 {#if showHelp}
 	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)}>
 		{#snippet actions()}
+			{#if saveStatus}<p>{translate(saveStatus === 'saved' ? messages.save_automatic : saveStatus === 'conflict' ? messages.save_conflict : messages.save_storage)}</p>{/if}
 			<div class="match-actions">
 				<a class="button map-selection" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
 				{#if onrestart}

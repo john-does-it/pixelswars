@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { playerName, translate } from '$lib/i18n.svelte.js'
+	import { matchPlayerName, translate } from '$lib/i18n.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { preferences } from '$lib/preferences.svelte.js'
 	import { playerIncome } from '$lib/game/model.js'
@@ -12,11 +12,9 @@
 <div class="budgets">
 	{#each players as player}
 		<span>
-			<span class:player-one={player === 1} class:player-two={player === 2}>{playerName(player, aiMode)}</span>
-			<span class="amounts">
-				<b>{amounts.format(state.money[player])} $</b>
-				<span class="income" title={translate(messages.expected_income_hint)}>{translate(messages.income_per_turn, { income: amounts.format(playerIncome(state, player)) })}</span>
-			</span>
+			<span class="player-name" title={matchPlayerName(player, aiMode, state.network?.player)} class:player-one={player === 1} class:player-two={player === 2}>{matchPlayerName(player, aiMode, state.network?.player)}</span>
+			<b>{amounts.format(state.money[player])} $</b>
+			<span class="income" title={translate(messages.expected_income_hint)}>{translate(messages.income_per_turn, { income: amounts.format(playerIncome(state, player)) })}</span>
 		</span>
 	{/each}
 </div>
@@ -31,14 +29,19 @@
 		flex: none;
 	}
 	.budgets > span {
-		display: flex;
-		align-items: center;
-		gap: 16px;
+		display: grid;
+		grid-template-columns: minmax(0, auto) auto;
+		align-content: start;
+		align-items: baseline;
+		column-gap: 8px;
 		min-width: 0;
+		max-width: calc(50% - 6px);
 	}
-	.budgets > span:last-child {
-		justify-content: flex-end;
-		text-align: right;
+	.player-name {
+		max-width: 90px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 	.player-one {
 		color: #8dcbff;
@@ -46,32 +49,21 @@
 	.player-two {
 		color: #ffb3b1;
 	}
-	.amounts {
-		display: flex;
-		align-items: baseline;
-		gap: 8px;
+	b {
 		white-space: nowrap;
 	}
 	.income {
+		grid-column: 1 / -1;
 		font-size: 0.85em;
 		opacity: 0.8;
+	}
+	.budgets > span:last-child .income {
+		text-align: right;
 	}
 	@media (max-width: 900px) {
 		.budgets {
 			gap: 8px;
 			padding-top: 6px;
-		}
-		.budgets > span {
-			gap: 8px;
-			flex-wrap: wrap;
-			row-gap: 0;
-		}
-		.amounts {
-			flex-direction: column;
-			gap: 0;
-		}
-		.budgets > span:last-child .amounts {
-			align-items: flex-end;
 		}
 	}
 </style>

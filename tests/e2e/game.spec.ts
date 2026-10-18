@@ -2,7 +2,7 @@ import { readMapFixture } from '../map-fixtures'
 import { zoomToReadableTiles } from './map-view'
 import { test, expect, type Page } from '@playwright/test'
 import { unitTypes } from '../../src/lib/game/catalog.ts'
-import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
+import { turnTransitionDuration, cellFeedbackDuration } from '../../src/lib/game/timing.ts'
 
 async function endRound(page: Page) {
 	await page.getByRole('button', { name: 'End round', exact: true }).click()
@@ -113,10 +113,8 @@ for (const [mapId, columns, rows, name, unitCount] of [
 	[11, 18, 14, 'Nice View Up Here', 24],
 	[12, 18, 18, 'The Other Bank', 26]
 ] as const) {
-	test(`${name}: opens from home with reinforced armies and a playable sniper`, async ({ page }, testInfo) => {
-		await page.goto('/')
-		await page.getByRole('link', { name: new RegExp(name) }).click()
-		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
+	test(`${name}: legacy link opens with reinforced armies and a playable sniper`, async ({ page }, testInfo) => {
+		await page.goto(`/play/${mapId}/`)
 		await expect(page).toHaveURL(new RegExp(`/play/${mapId}/$`))
 		await expect(page.locator('[data-cell]')).toHaveCount(columns * rows)
 		await expect(page.locator('[data-unit]')).toHaveCount(unitCount)
@@ -180,10 +178,10 @@ for (const [id, cols, count] of [
 		await expect(page.getByText('Round 2', { exact: true })).toBeVisible()
 		await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 		await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
-		await page.getByRole('link', { name: new RegExp(id === 1 ? 'A Little Stroll' : 'Neighbor Trouble') }).click()
+		await page.getByRole('link', { name: new RegExp(id === 1 ? 'Not the Shoes!' : 'Neighbor Trouble') }).click()
 		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
-		await expect(page.locator('[data-cell]')).toHaveCount(id === 1 ? 96 : 64)
+		await expect(page.locator('[data-cell]')).toHaveCount(id === 1 ? 80 : 64)
 		expect(errors).toEqual([])
 		const width = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, viewport: innerWidth }))
 		expect(width.scroll).toBeLessThanOrEqual(width.viewport)
@@ -375,9 +373,9 @@ test('visual assets preload once and are reused when opening another map', async
 	await expect(page.locator('[data-cell]')).toHaveCount(64)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
-	await page.getByRole('link', { name: /A Little Stroll/ }).click()
+	await page.getByRole('link', { name: /Not the Shoes!/ }).click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
-	await expect(page.locator('[data-cell]')).toHaveCount(96)
+	await expect(page.locator('[data-cell]')).toHaveCount(80)
 	expect(manifestRequests).toBe(1)
 })
 
@@ -513,10 +511,21 @@ test('spent resource indicators stay at half opacity without blinking', async ({
 test('combat updates rune-driven health, locks controls and clears a dead attacker', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
-	await page.clock.install()
+	await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') })
+	// Pause before navigation so no application timers depend on the runner's wall clock.
+	await page.clock.pauseAt(new Date('2026-01-02T00:00:00Z'))
 	await page.goto('/play/1/')
 	const cell = (index: number) => page.locator(`[data-cell="${index}"]`)
 	const end = page.getByRole('button', { name: 'End round', exact: true })
+	const endTurn = async () => {
+		await end.click()
+		await expect(page.locator('dialog.turn-transition')).toBeVisible()
+		await page.clock.runFor(turnTransitionDuration + 100)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+	}
+	await expect(page.locator('dialog.turn-transition')).toBeVisible()
+	await page.clock.runFor(turnTransitionDuration + 100)
+	await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
 	await expect(cell(2).locator('.ammo img')).toHaveCount(2)
 	await expect(cell(0).locator('.ammo img')).toHaveCount(1)
 	await expect(cell(58).locator('.ammo img:not(.spent)')).toHaveCount(2)
@@ -524,17 +533,16 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await cell(10).click()
 	await cell(18).click()
 	await cell(26).click()
-	await endRound(page)
+	await endTurn()
 	await cell(58).click()
 	await cell(50).click()
 	await cell(42).click()
-	await endRound(page)
+	await endTurn()
 	await cell(26).click()
 	await cell(34).click()
 	await expect(cell(42).getByAltText('Attack target')).toBeVisible()
 	const attackerHealth = Number(await cell(34).locator('[data-unit]').getAttribute('data-health'))
 	// Hold each combat phase while checking its transient UI, regardless of CI speed.
-	await page.clock.pauseAt(new Date())
 	await cell(42).click()
 	await expect(cell(34).locator('.ammo')).toHaveAttribute('data-remaining', '1')
 	await expect(end).toBeDisabled()
@@ -561,20 +569,21 @@ test('combat updates rune-driven health, locks controls and clears a dead attack
 	await page.clock.runFor(unitTypes.tank.delay)
 	await expect(end).toBeEnabled()
 	await expect(end).toHaveCSS('color', 'rgb(17, 26, 20)')
-	await page.clock.resume()
-	await endRound(page)
+	await endTurn()
 	await expect(cell(34).locator('.ammo img:not(.spent)')).toHaveCount(2)
 	await expect(cell(42).locator('.ammo img:not(.spent)')).toHaveCount(2)
-	await endRound(page)
+	await endTurn()
 	await expect(cell(34).locator('.ammo')).toHaveAttribute('data-remaining', '2')
 	await expect(cell(34).locator('.ammo .spent')).toHaveCount(0)
 	await cell(34).click()
 	await cell(42).click()
 	await expect(cell(42).locator('[data-unit]')).toHaveAttribute('data-health', '168')
+	await page.clock.runFor(unitTypes.infantry.delay + unitTypes.tank.delay + 500)
 	await expect(cell(34).locator('[data-unit]')).toHaveCount(0)
 	await expect(end).toBeEnabled()
 	await expect(page.getByRole('button', { name: 'Confirm move', exact: true, includeHidden: true })).toHaveCount(0)
 	await expect(page.locator('[data-unit]')).toHaveCount(9)
+	await page.clock.runFor(cellFeedbackDuration)
 	await expect(page.locator('.damage-indicator')).toHaveCount(0)
 	expect(errors).toEqual([])
 })

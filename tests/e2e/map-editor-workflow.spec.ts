@@ -18,7 +18,7 @@ test('owner and team selections stay visible and apply when painting', async ({ 
 	await page.locator('[data-cell="1"]').click()
 	await expect(team).toHaveValue('2')
 	await expect(page.locator('[data-cell="1"] img')).toHaveAttribute('src', /infantry-player-2@2x\.png/)
-	await page.locator('#language').selectOption('fr')
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
 	await expect(owner).toHaveValue('2')
 	await expect(team).toHaveValue('2')
 	await team.selectOption('1')
@@ -36,7 +36,7 @@ test('draw, undo, restore, export and reimport a playable map', async ({ page },
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/map-editor/')
-	await page.locator('#language').selectOption('fr')
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
 	await page.getByLabel('Colonnes', { exact: true }).fill('6')
 	await page.getByLabel('Lignes', { exact: true }).fill('6')
 	await page.getByRole('button', { name: 'Nouvelle grille', exact: true }).click()

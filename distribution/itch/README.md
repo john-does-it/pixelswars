@@ -15,6 +15,4 @@ and **Mobile friendly**. `index.html` must be at the ZIP root, not inside an `it
 The archive is generated locally and should not be committed. Re-upload only when
 the launcher, destination or fonts change; normal game releases need no new upload.
 
-The [cover](../../docs/artwork/pixels-war-cover-650x500.png) and
-[banner](../../docs/artwork/pixels-war-banner.png) are available for the project page.
 Add a direct game link to the description. See [itch.io HTML5 documentation](https://itch.io/docs/creators/html5).

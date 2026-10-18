@@ -3,14 +3,19 @@
 	import PlayerTransition from './PlayerTransition.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { translate } from '$lib/i18n.svelte.js'
+	import type { Medal } from '$lib/profile.ts'
 	import type { Player } from '$lib/game/types.js'
 
-	let { winner, onrestart, aiMode = false, rematchRequested = false, opponentRematchRequested = false }: { winner: Player; onrestart: () => void; aiMode?: boolean; rematchRequested?: boolean; opponentRematchRequested?: boolean } = $props()
+	let { winner, onrestart, earnedMedal = null, storageError = false, aiMode = false, rematchRequested = false, opponentRematchRequested = false }: { earnedMedal?: Medal | null; storageError?: boolean; winner: Player; onrestart: () => void; aiMode?: boolean; rematchRequested?: boolean; opponentRematchRequested?: boolean } = $props()
 	const title = $derived(aiMode ? translate(winner === 1 ? messages.ai_victory_message : messages.human_victory_message) : translate(messages.victory_message, { player: winner }))
 </script>
 
 <PlayerTransition player={winner} persistent label={title}>
 	<h2>{title}</h2>
+	{#if earnedMedal}
+		<p class="medal-award">{translate(messages.medal_new, { difficulty: translate(messages[`ai_${earnedMedal.difficulty}`]) })}</p>
+		{#if storageError}<p role="alert">{translate(messages.profile_storage_error)}</p>{/if}
+	{/if}
 	<div class="victory-actions">
 		<button class="primary" disabled={rematchRequested} onclick={onrestart}>{translate(rematchRequested ? messages.online_rematch_waiting : opponentRematchRequested ? messages.online_rematch_accept : messages.play_again)}</button>
 		<a class="button primary" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>

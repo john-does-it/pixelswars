@@ -5,13 +5,17 @@
 	import DamageIndicator from './DamageIndicator.svelte'
 	import CellFeedback from './CellFeedback.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, playerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
+	import { buildingName, matchPlayerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
 	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
 
 	type Props = {
+		tutorialTarget?: boolean
+		guidedBlocked?: boolean
+		networkPlayer?: 1 | 2
 		cell: Cell
 		aiMode?: boolean
 		unit?: GameUnit
+		hideUnit?: boolean
 		selected?: boolean
 		showResources?: boolean
 		animate?: boolean
@@ -31,16 +35,16 @@
 		onclick: () => void
 		onpreview?: () => void
 	}
-	let { cell, unit, aiMode = false, selected = false, showResources = false, animate = false, buildingLights = true, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
+	let { networkPlayer, guidedBlocked = false, tutorialTarget = false, cell, unit, hideUnit = false, aiMode = false, selected = false, showResources = false, animate = false, buildingLights = true, boardingTarget = false, deploymentTarget = false, reachable, enemyReachable = false, attackable, target = false, underFire = false, inspected = false, income, recoveredHealth = 0, captured, secured, onclick, onpreview }: Props = $props()
 	const classes = $derived(cell.classes.filter((className) => !className.startsWith('-capturedby') && className !== '-halfcaptured').join(' '))
-	const buildingLightSprite = $derived(cell.building === 'big-city' ? `/assets/figma/cells/buildings/cell-big-city-on-grass-light-on${cell.capturePoints < 20 ? '-half-captured' : cell.owner ? '-captured' : ''}${cell.owner ? `-by-${cell.owner}` : ''}@2x.png` : `/assets/cells/building-lights/${cell.building === 'naval-base' ? 'naval-base-0' : `${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}`}.svg`)
+	const buildingLightSprite = $derived(cell.building === 'big-city' ? `/assets/cells/buildings/cell-big-city-on-grass-light-on${cell.capturePoints < 20 ? '-half-captured' : cell.owner ? '-captured' : ''}${cell.owner ? `-by-${cell.owner}` : ''}@2x.png` : `/assets/cells/building-lights/${cell.building === 'naval-base' ? 'naval-base-0' : `${cell.building}-${cell.owner || 0}${cell.capturePoints < 20 ? '-partial' : ''}`}.svg`)
 	const resources = $derived(unit ? [...(unitTypes[unit.type].attacks > 0 ? [translate(messages.attacks_remaining, { remaining: unit.attacks, total: unitTypes[unit.type].attacks })] : []), ...(showResources ? [translate(messages.movement_remaining, { remaining: unit.movement, total: unitTypes[unit.type].movement }), ...(unitTypes[unit.type].captures ? [translate(unit.capture > 0 ? messages.capture_available : messages.capture_used)] : [])] : [])].join(', ') : '')
 	const label = $derived(
 		translate(messages.cell_label, {
 			cell: cell.index + 1,
 			terrain: cell.building ? buildingName(cell.building) : terrainName(cell.terrain),
-			owner: cell.owner ? `, ${playerName(cell.owner, aiMode)}` : '',
-			unit: unit ? `, ${playerName(unit.player, aiMode)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}${resources ? `, ${resources}` : ''}` : ''
+			owner: cell.owner ? `, ${matchPlayerName(cell.owner, aiMode, networkPlayer)}` : '',
+			unit: unit ? `, ${matchPlayerName(unit.player, aiMode, networkPlayer)} ${unitName(unit.type)}, ${unit.health} ${translate(messages.stat_health).toLocaleLowerCase()}${resources ? `, ${resources}` : ''}` : ''
 		})
 	)
 </script>
@@ -57,10 +61,12 @@
 	class:attackable
 	class:inspected
 	class:under-fire={underFire}
-	style:--pixel-corner-color={(selected || inspected) && unit ? (unit.player === 1 ? '#8dcbff' : '#ffb3b1') : undefined}
+	style:--pixel-corner-color={(selected || inspected || tutorialTarget) && unit ? (unit.player === 1 ? '#8dcbff' : '#ffb3b1') : tutorialTarget ? '#8dcbff' : undefined}
 	aria-label={boardingTarget ? `${label}, ${translate(messages.transport_load)}` : deploymentTarget ? `${label}, ${translate(messages.transport_deploy)}` : reachable ? `${label}, ${translate(enemyReachable ? messages.enemy_reachable : messages.reachable_this_turn)}` : label}
 	aria-pressed={selected || inspected}
+	aria-disabled={guidedBlocked || undefined}
 	data-cell={cell.index}
+	aria-describedby={tutorialTarget ? 'tutorial-instruction' : undefined}
 	{onclick}
 	onfocus={onpreview}
 	onpointermove={(event) => {
@@ -69,6 +75,7 @@
 		if (event.pointerType !== 'touch' && event.buttons === 0) onpreview?.()
 	}}
 >
+	{#if tutorialTarget}<span class="tutorial-target" class:shimmer={animate} aria-hidden="true"></span>{/if}
 	{#if cell.terrain === 'water' && animate && !cell.classes.includes('-under-bridge')}<span class="water-shimmer" aria-hidden="true" style:animation-delay={`${-(cell.index % 7) * 0.3}s`}></span>{/if}
 	{#if cell.building && animate && buildingLights}
 		<span
@@ -84,7 +91,7 @@
 	{#if reachable || deploymentTarget}
 		<span class="movement-marker" aria-hidden="true"></span>
 	{/if}
-	{#if unit}
+	{#if unit && !hideUnit}
 		<Unit {unit} {target} {showResources} {animate} />
 	{/if}
 	{#if boardingTarget}
@@ -106,6 +113,25 @@
 </button>
 
 <style>
+	.tutorial-target {
+		position: absolute;
+		inset: var(--pixel-corner-inset, 0);
+		background: var(--pixel-corner-frame);
+		z-index: 9;
+		pointer-events: none;
+	}
+	.tutorial-target.shimmer {
+		animation: tutorial-shimmer 1.4s ease-in-out infinite;
+	}
+	@keyframes tutorial-shimmer {
+		0%,
+		100% {
+			filter: brightness(0.8);
+		}
+		50% {
+			filter: brightness(1.5);
+		}
+	}
 	.transport-marker {
 		position: absolute;
 		inset: 0;
@@ -144,6 +170,9 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
+		.tutorial-target.shimmer {
+			animation: none;
+		}
 		.water-shimmer,
 		.building-lights {
 			display: none;

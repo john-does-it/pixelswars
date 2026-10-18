@@ -8,6 +8,10 @@ favicon, styles and language preferences. It is prerendered with the rest of the
 site by `npm run build`; drawing and drafts run entirely in the browser.
 `npm run map:editor` is a shortcut to start the same dev server and open the editor.
 
+The route hosts `src/lib/components/MapEditor.svelte`. Development-only maps
+can be opened directly with `?draft=ID`; each gets its own local editing save.
+See [Draft maps](draft-maps.md) for generation, testing and publication.
+
 1. Choose dimensions (2–32 columns and rows) and create a new grid, or load a copy
    of an existing map / import a JSON file.
 2. Select a terrain or building and click or drag across the grid. Roads and
@@ -27,11 +31,13 @@ site by `npm run build`; drawing and drafts run entirely in the browser.
    water or obstacles removes ground units from that cell. Aircraft can be placed over both.
    Transport jeeps start empty; place their infantry separately. Players can load
    up to three adjacent infantry units during the match.
-   Attack ships and transport ships can be placed only on water. Transport ships
+   Attack ships and transport ships can be placed on water and naval bases. Transport ships
    carry up to three infantry or ground vehicles (one slot each); loaded transports
    cannot be nested. Boarding from an adjacent shore costs one movement point.
    Deployment uses a free adjacent land cell and preserves remaining actions.
-   Ships cannot cross bridge decks, capture buildings or be produced yet.
+   Ships pass under bridges for 2 movement points per tile and cannot capture buildings.
+   Ships cross straight under bridges without stopping, even beneath ground units.
+   They need enough movement for the whole crossing and a free exit.
 4. Set a name and numeric map ID, then **Exporter le JSON** to download `board-ID.json`.
    Submit it for review and integration into the game, translations and thumbnails.
    **JSON à copier** also provides the export as text if you prefer to copy and paste it.
@@ -71,5 +77,5 @@ Submissions are reviewed; exporting does not automatically publish a map.
 
 Naval bases belong on a coastline. Infantry can capture them, and their owner can
 produce attack ships or transport ships using the usual production dialog. Ships
-appear on the base and can sail onto adjacent water; bridge decks remain blocked.
+appear on the base and can sail onto adjacent water or under bridges.
 Naval bases provide neither income nor repairs. Big cities provide 300$ per turn.

@@ -10,17 +10,20 @@
 		"build": "vite build",
 		"preview": "vite preview --host 127.0.0.1",
 		"prepare": "node scripts/sync-assets.mjs && svelte-kit sync",
-		"predev": "node scripts/sync-assets.mjs",
-		"prebuild": "node scripts/sync-assets.mjs",
+		"predev": "node scripts/sync-assets.mjs && npm run generate:map-details",
+		"prebuild": "node scripts/sync-assets.mjs && npm run generate:map-details",
 		"generate:i18n": "node scripts/generate-i18n.mjs",
 		"precheck": "npm run generate:i18n",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "node --experimental-strip-types --test tests/*.test.ts",
 		"test:e2e": "node node_modules/@playwright/test/cli.js test",
+		"test:e2e:dev": "node node_modules/@playwright/test/cli.js test --config playwright.dev.config.ts",
+		"generate:draft-maps": "node --experimental-strip-types scripts/generate-draft-maps.mjs",
 		"test:turn": "node --experimental-strip-types scripts/test-turn.mjs",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"generate:map-previews": "node scripts/generate-map-previews.mjs && node scripts/sync-assets.mjs"
+		"generate:map-previews": "node scripts/generate-map-previews.mjs && node scripts/sync-assets.mjs",
+		"generate:map-details": "node --experimental-strip-types scripts/generate-map-details.mjs"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.25.2",
