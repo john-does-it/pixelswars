@@ -190,7 +190,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -590,7 +590,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -860,7 +860,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1260,7 +1260,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-grass"],
+			"classes": ["-building", "-factory", "-ongrass"],
 			"owner": 0,
 			"capturePoints": 20
 		},
