@@ -85,7 +85,7 @@ test('public editor opens from home with working sprites, JSON export and submis
 	await page.getByRole('heading', { name: 'Submit your map' }).scrollIntoViewIfNeeded()
 	await page.screenshot({ path: testInfo.outputPath('submission-guide.png') })
 	await page.locator('.site-navbar .brand').click()
-	await expect(page).toHaveURL(/\/$/)
+	await expect(page).toHaveURL('/#home')
 	await expect(page.locator('#board')).toHaveCount(0)
 	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
 	expect(errors).toEqual([])

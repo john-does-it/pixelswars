@@ -14,9 +14,11 @@ test('map chooser shows lightweight terrain previews, dimensions and cell-count 
 	}
 	for (const locale of ['en', 'fr', 'de', 'ja']) {
 		await page.getByRole('combobox').selectOption(locale)
-		await expect(cards.first().locator('.map-metadata')).toHaveText('XXS · 8 × 8')
+		// Check dimensions by map identity; catalogue additions can change the first/last card.
+		await expect(page.locator('.map[href="/play/35/"] .map-metadata')).toHaveText('XXS · 7 × 9')
+		await expect(page.locator('.map[href="/play/1/"] .map-metadata')).toHaveText('XXS · 8 × 8')
 		await expect(page.locator('.map[href="/play/27/"] .map-metadata')).toHaveText('XXL · 17 × 17')
-		await expect(cards.last().locator('.map-metadata')).toHaveText('XXL · 31 × 23')
+		await expect(page.locator('.map[href="/play/26/"] .map-metadata')).toHaveText('XXL · 31 × 23')
 	}
 	await cards.last().click()
 	await expect(page.getByRole('dialog')).toBeVisible()
