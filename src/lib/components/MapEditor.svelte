@@ -366,7 +366,7 @@
 					</select></label
 				>
 				<div id="unit-palette" class="palette">
-					{#each unitTypeIds as unitType}<button type="button" class="pixel-corners" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset('/assets/units/' + unitType + '-' + team + '-fit.png')}')`} aria-hidden="true"></span></button>{/each}
+					{#each unitTypeIds as unitType}<button type="button" class="pixel-corners" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset('/assets/units/' + unitType + '-' + team + '.png')}')`} aria-hidden="true"></span></button>{/each}
 				</div>
 				<button id="erase-unit" data-brush="erase-unit" aria-pressed={brush.kind === 'erase-unit'} onclick={() => (brush = { kind: 'erase-unit' })}>{t('map_editor_erase')}</button>
 			</section>

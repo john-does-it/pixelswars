@@ -1542,16 +1542,6 @@
 			"cell": 47
 		},
 		{
-			"type": "transport-ship",
-			"player": 1,
-			"cell": 75
-		},
-		{
-			"type": "transport-ship",
-			"player": 2,
-			"cell": 213
-		},
-		{
 			"type": "jeep",
 			"player": 1,
 			"cell": 242
@@ -1580,6 +1570,16 @@
 			"type": "tank",
 			"player": 2,
 			"cell": 15
+		},
+		{
+			"type": "transport-ship",
+			"player": 1,
+			"cell": 213
+		},
+		{
+			"type": "transport-ship",
+			"player": 2,
+			"cell": 75
 		}
 	]
 }

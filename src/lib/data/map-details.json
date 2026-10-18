@@ -924,9 +924,9 @@
 				"units": {
 					"infantry": 7,
 					"transport": 2,
-					"transport-ship": 1,
 					"jeep": 2,
-					"tank": 1
+					"tank": 1,
+					"transport-ship": 1
 				},
 				"buildings": {
 					"naval-base": 1
@@ -936,9 +936,9 @@
 				"units": {
 					"infantry": 7,
 					"transport": 2,
-					"transport-ship": 1,
 					"jeep": 2,
-					"tank": 1
+					"tank": 1,
+					"transport-ship": 1
 				},
 				"buildings": {
 					"naval-base": 1

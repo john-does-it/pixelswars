@@ -13,7 +13,6 @@ export const terrainBrushes = [
 	{ name: 'terrain_void', classes: ['-void'] },
 	{ name: 'terrain_grass', classes: ['-grass'] },
 	{ name: 'map_editor_grass_flowers', classes: ['-grass', '-variant'] },
-	{ name: 'map_editor_grass_light', classes: ['-grass', '-variant2'] },
 	{ name: 'map_editor_grass_varied', classes: ['-grass', '-variant3'] },
 	{ name: 'terrain_forest', classes: ['-forest', '-ongrass'] },
 	{ name: 'map_editor_forest_dense', classes: ['-forest', '-ongrass', '-variant'] },
