@@ -1,11 +1,21 @@
 import { test, expect } from '@playwright/test'
 import { openMapFilters } from './filter-helpers'
+import { isMapInCatalog } from '../../src/lib/game/map-catalog'
+import mapDetails from '../../src/lib/data/map-details.json' with { type: 'json' }
+import { mapIds } from '../map-fixtures'
+
+const catalogIds = mapIds.filter(isMapInCatalog)
+const symmetricalMobileIds = catalogIds.filter((id) => {
+	const details = mapDetails[String(id) as keyof typeof mapDetails]
+	return details.symmetrical && details.mobileFriendly
+})
 
 test('map filters combine size and tags, recover from empty results and open a match', async ({ page }) => {
 	await page.goto('/')
 	await openMapFilters(page)
 	const cards = page.locator('a.map')
-	const total = await cards.count()
+	const total = catalogIds.length
+	await expect(cards).toHaveCount(total)
 	const filters = page.getByRole('group', { name: 'Filter maps', exact: true })
 	const sizes = filters.getByRole('group', { name: 'Size', exact: true })
 	const xxs = sizes.getByRole('checkbox', { name: 'XXS', exact: true })
@@ -37,7 +47,8 @@ test('map filters combine size and tags, recover from empty results and open a m
 	await expect(cards.getByRole('heading')).toHaveText(['A Little Detour', 'Not the Shoes!'])
 	await expect(page.locator('.filter-results')).toHaveText(`2 maps out of ${total}`)
 	await xs.uncheck()
-	await expect(cards).toHaveCount(5)
+	await expect(cards).toHaveCount(symmetricalMobileIds.length)
+	for (const id of symmetricalMobileIds) await expect(page.locator(`a.map[href$="/play/${id}/"]`)).toHaveCount(1)
 	await mobile.uncheck()
 	expect(await cards.count()).toBeGreaterThan(1)
 	for (const card of await cards.all()) {
@@ -121,7 +132,7 @@ test('mobile filter panel starts collapsed and reports selections without hiding
 	await toggle.click()
 	await page.getByRole('button', { name: 'Reset filters', exact: true }).click()
 	await expect(page.getByRole('button', { name: 'Filters · 0', exact: true })).toHaveAttribute('aria-expanded', 'false')
-	await expect(page.locator('a.map')).toHaveCount(26)
+	await expect(page.locator('a.map')).toHaveCount(catalogIds.length)
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	await page.setViewportSize({ width: 1280, height: 900 })
 	await expect(page.locator('#map-filter-options')).toBeVisible()
