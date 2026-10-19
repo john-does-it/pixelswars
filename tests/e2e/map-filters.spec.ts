@@ -28,7 +28,7 @@ test('map filters combine size and tags, recover from empty results and open a m
 	await sizes.getByRole('checkbox', { name: 'XXL', exact: true }).check()
 	await mobile.check()
 	await expect(cards).toHaveCount(0)
-	await expect(page.getByText('No maps match these filters.', { exact: false })).toBeVisible()
+	await expect(page.getByText('No maps match these filters, Commander.', { exact: false })).toBeVisible()
 	await sizes.getByRole('checkbox', { name: 'XXL', exact: true }).uncheck()
 	await xs.check()
 	await xxs.uncheck()

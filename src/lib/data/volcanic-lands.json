@@ -570,7 +570,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},

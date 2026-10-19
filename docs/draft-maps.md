@@ -27,7 +27,9 @@ Les cartes 28, 29, 30, 31, 35 et 36 ont été approuvées pour le catalogue publ
 
 La carte 36 provient de `board-15 (3).json`, avec un nouvel ID pour préserver la carte publique 15. Les exports (1) et (2) n’ont pas été intégrés. Les versions affinées du Petit détour et d’En pente douce sont symétriques.
 
-Le générateur historique `scripts/generate-draft-maps.mjs` ne recrée ni les cartes publiées ni les trois cartes supprimées. Les ID supprimés restent réservés. Aucun brouillon n’est actuellement en attente.
+Le générateur historique `scripts/generate-draft-maps.mjs` ne recrée ni les cartes publiées ni les trois cartes supprimées. Les ID supprimés restent réservés.
+
+La carte de test **39 — Case par case** a été retirée après validation des raccords et des déplacements. Aucun brouillon n'est actuellement en attente.
 
 ## Publication après validation
 

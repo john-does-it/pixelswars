@@ -114,6 +114,26 @@ body {
 	margin: 0;
 }
 
+.site-page {
+	width: 100%;
+	max-width: 1320px;
+	padding: 32px 20px;
+	margin: auto;
+}
+
+.site-page > header,
+.site-page .section-intro {
+	max-width: 730px;
+}
+
+.site-page > header {
+	padding-top: 32px;
+}
+
+.site-page p {
+	line-height: 1.7;
+}
+
 .game-context-container {
 	width: 100%;
 	max-width: 1480px;
@@ -460,94 +480,159 @@ button.pixel-icon-control:hover:not(:disabled) {
 	background-image: url('/assets/cells/water/tile-0037@2x.png');
 	--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water.png');
 
-	&.-grass.-left {
+	&:where(.-grass.-left) {
 		background-image: url('/assets/cells/water/tile-0038@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left.png');
 	}
 
-	&.-grass.-right {
+	&:where(.-grass.-right) {
 		background-image: url('/assets/cells/water/tile-0036@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right.png');
 	}
 
-	&.-grass.-top {
+	&:where(.-grass.-top) {
 		background-image: url('/assets/cells/water/tile-0019@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top.png');
 	}
 
-	&.-grass.-bottom {
+	&:where(.-grass.-bottom) {
 		background-image: url('/assets/cells/water/tile-0055@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom.png');
 	}
 
-	&.-grass.-left.-top {
+	&:where(.-grass.-left.-top) {
 		background-image: url('/assets/cells/water/tile-0004@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-top.png');
 	}
 
-	&.-grass.-right.-top {
+	&:where(.-grass.-right.-top) {
 		background-image: url('/assets/cells/water/tile-0003@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-top.png');
 	}
 
-	&.-grass.-left.-bottom {
+	&:where(.-grass.-left.-bottom) {
 		background-image: url('/assets/cells/water/tile-0022@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-bottom.png');
 	}
 
-	&.-grass.-right.-bottom {
+	&:where(.-grass.-right.-bottom) {
 		background-image: url('/assets/cells/water/tile-0021@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-bottom.png');
 	}
 
-	&.-grass.-corner.-left.-top {
+	&:where(.-grass.-corner.-left.-top) {
 		background-image: url('/assets/cells/water/tile-0020@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-top.png');
 	}
 
-	&.-grass.-corner.-right.-top {
+	&:where(.-grass.-corner.-right.-top) {
 		background-image: url('/assets/cells/water/tile-0018@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-top.png');
 	}
 
-	&.-grass.-corner.-left.-bottom {
+	&:where(.-grass.-corner.-left.-bottom) {
 		background-image: url('/assets/cells/water/tile-0056@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-bottom.png');
 	}
 
-	&.-grass.-corner.-right.-bottom {
+	&:where(.-grass.-corner.-right.-bottom) {
 		background-image: url('/assets/cells/water/tile-0054@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-bottom.png');
 	}
 
-	&.-grass.-left.-right {
+	&:where(.-grass.-left.-right) {
 		background-image: url('/assets/cells/water/tile-0057@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-right.png');
 	}
 
-	&.-grass.-left-corners {
+	&:where(.-grass.-left-corners) {
 		background-image: url('/assets/cells/water/tile-0072@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-corners.png');
 	}
 
-	&.-grass.-right-corners {
+	&:where(.-grass.-right-corners) {
 		background-image: url('/assets/cells/water/tile-0074@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-corners.png');
 	}
 
-	&.-grass.-top-corners {
+	&:where(.-grass.-top-corners) {
 		background-image: url('/assets/cells/water/tile-0075@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-corners.png');
 	}
 
-	&.-grass.-bottom-corners {
+	&:where(.-grass.-bottom-corners) {
 		background-image: url('/assets/cells/water/tile-0039@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom-corners.png');
 	}
 
-	&.-grass.-top-and-bottom-corners {
+	&:where(.-grass.-top-and-bottom-corners) {
 		background-image: url('/assets/cells/water/tile-0073@2x.png');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-and-bottom-corners.png');
+	}
+
+	&.-junction-nw-se {
+		background-image: url('/assets/cells/water/cell-water-junction-nw-se@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-nw-se.svg');
+	}
+
+	&.-junction-open-nw {
+		background-image: url('/assets/cells/water/cell-water-junction-open-nw@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw.png');
+	}
+
+	&.-junction-open-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-open-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-ne.png');
+	}
+
+	&.-junction-open-nw-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-open-nw-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw-ne.png');
+	}
+
+	&.-junction-east-nw {
+		background-image: url('/assets/cells/water/cell-water-junction-east-nw@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw.png');
+	}
+
+	&.-junction-east-nw-narrow {
+		background-image: url('/assets/cells/water/cell-water-junction-east-nw-narrow@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw-narrow.png');
+	}
+
+	&.-junction-west-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-west-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne.png');
+	}
+
+	&.-junction-west-ne-narrow {
+		background-image: url('/assets/cells/water/cell-water-junction-west-ne-narrow@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne-narrow.png');
+	}
+
+	&.-junction-south-nw {
+		background-image: url('/assets/cells/water/cell-water-junction-south-nw@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw.png');
+	}
+
+	&.-junction-south-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-south-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-ne.png');
+	}
+
+	&.-junction-south-nw-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-south-nw-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw-ne.png');
+	}
+
+	&.-junction-southwest-ne {
+		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne.png');
+	}
+
+	&.-junction-southwest-ne-narrow {
+		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne-narrow@2x.png');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne-narrow.png');
 	}
 }
 

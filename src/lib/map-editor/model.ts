@@ -1,4 +1,5 @@
 import { isUnitTypeId, unitTypes } from '../game/catalog.ts'
+import { reconnectWaterJunctions, waterJunctionClasses, waterJunctionModifiers } from '../game/water-junctions.ts'
 import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '../game/types.ts'
 
 export class MapEditorError extends Error {
@@ -99,6 +100,7 @@ export function reconnectBridgeSupports(map: GameMap): void {
 			reconnectCell(map, index)
 		}
 	}
+	reconnectWaterJunctions(map)
 }
 const grass = (): MapCell => ({ classes: ['-grass'], owner: 0, capturePoints: 20 })
 
@@ -153,6 +155,7 @@ function reconnectCell(map: GameMap, index: number): void {
 		}
 		cell.classes = ['-water', ...(shores.length ? ['-grass'] : []), ...shores]
 		if (shores.length === 2 && !((shores.includes('-top') && shores.includes('-bottom')) || (shores.includes('-left') && shores.includes('-right')))) cell.classes.push('-corner')
+		cell.classes = waterJunctionClasses(map, index)
 	}
 }
 
@@ -184,9 +187,11 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 		if (unitTypes[unit.type].domain === 'naval') return brush.classes.includes('-water') || brush.classes.includes('-naval-base')
 		return !brush.classes.includes('-water') && !brush.classes.includes('-blocker')
 	})
-	// Only the painted cell and its neighbors can have changed their connections.
-	for (const neighbor of [index, ...(index % map.cols ? [index - 1] : []), ...(index % map.cols < map.cols - 1 ? [index + 1] : []), index - map.cols, index + map.cols]) {
-		if (map.cells[neighbor]) reconnectCell(map, neighbor)
+	// Diagonal land also changes shore junctions. Do not wrap across row edges.
+	const column = index % map.cols
+	const row = Math.floor(index / map.cols)
+	for (let y = Math.max(0, row - 1); y <= Math.min(map.rows - 1, row + 1); y++) {
+		for (let x = Math.max(0, column - 1); x <= Math.min(map.cols - 1, column + 1); x++) reconnectCell(map, y * map.cols + x)
 	}
 	reconnectBridgeSupports(map)
 }
@@ -199,7 +204,7 @@ export function readMap(text: string): GameMap {
 	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
 	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker', '-void']
 	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-big-city', '-factory', '-hospital', '-airport', '-naval-base', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
-	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge', '-under-bridge'])
+	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge', '-under-bridge', ...waterJunctionModifiers])
 	const cells = input.cells.map((cell) => {
 		// Accept old exports, but always save the new building name.
 		if (Array.isArray(cell?.classes)) cell = { ...cell, classes: cell.classes.map((name) => (name === '-oil-field' ? '-big-city' : name)) }
@@ -220,7 +225,9 @@ export function readMap(text: string): GameMap {
 		occupied.add(unit.cell)
 		return { type: unit.type, player: unit.player, cell: unit.cell }
 	})
-	return { id: input.id, name: input.name.trim(), cols: input.cols, rows: input.rows, cells, units }
+	const map = { id: input.id, name: input.name.trim(), cols: input.cols, rows: input.rows, cells, units }
+	reconnectWaterJunctions(map)
+	return map
 }
 
 export function mapJson(map: GameMap): string {

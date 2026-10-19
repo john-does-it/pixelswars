@@ -31,6 +31,7 @@ test('Expert takes a certain finishing shot without projecting a speculative ene
 test('Expert finishes the saved endgame instead of waiting for the last enemy to leave cover', async () => {
 	const state: GameState = JSON.parse(readFileSync(new URL('./fixtures/expert-endgame.json', import.meta.url), 'utf8')).state
 	const game = createController(state, { delay: async () => {} })
+	const initialRound = state.round
 	try {
 		await runAiTurn(
 			game,
@@ -39,6 +40,74 @@ test('Expert finishes the saved endgame instead of waiting for the last enemy to
 			async () => {}
 		)
 		assert.equal(state.winner, 1, 'the last covered tank can be eliminated this turn')
+		assert.equal(state.round, initialRound, 'finish without refreshing ammunition or waiting for the enemy to move')
+	} finally {
+		game.dispose()
+	}
+})
+
+test('Expert proves a move and two-shot finish without mutating the board', async () => {
+	const state = fixture(5, 1)
+	state.units = [createUnit('tank', 1, 0, 0), createUnit('jeep', 2, 4, 1)]
+	const snapshot = JSON.stringify(state)
+	const decision = await chooseExpertDecision(
+		state,
+		new Set(),
+		() => true,
+		async () => {},
+		{ milliseconds: 1000 }
+	)
+	assert.deepEqual(decision, { kind: 'move', unitId: 0, path: [1, 2, 3] })
+	assert.equal(JSON.stringify(state), snapshot)
+	const game = createController(state, { delay: async () => {} })
+	try {
+		await runAiTurn(
+			game,
+			'expert',
+			() => true,
+			async () => {}
+		)
+		assert.equal(state.winner, 1)
+		assert.equal(state.round, 1)
+		assert.equal(state.units[0].attacks, 0, 'both shots are needed with the current damage coefficients')
+	} finally {
+		game.dispose()
+	}
+})
+
+test('Expert cancels a finishing-sequence search without altering the live state', async () => {
+	const state = fixture(5, 1)
+	state.units = [createUnit('tank', 1, 0, 0), createUnit('jeep', 2, 4, 1)]
+	const snapshot = JSON.stringify(state)
+	let active = true
+	const decision = await chooseExpertDecision(
+		state,
+		new Set(),
+		() => active,
+		async () => {
+			active = false
+		}
+	)
+	assert.deepEqual(decision, { kind: 'end' })
+	assert.equal(JSON.stringify(state), snapshot)
+})
+
+test('Expert cannot finish a two-shot target with only one shot remaining', async () => {
+	const state = fixture(5, 1)
+	const tank = createUnit('tank', 1, 0, 0)
+	tank.attacks = 1
+	state.units = [tank, createUnit('jeep', 2, 4, 1)]
+	const game = createController(state, { delay: async () => {} })
+	try {
+		await runAiTurn(
+			game,
+			'expert',
+			() => true,
+			async () => {}
+		)
+		assert.equal(state.winner, null)
+		assert.equal(state.round, 2)
+		assert.ok(state.units.some((unit) => unit.player === 2 && unit.health > 0))
 	} finally {
 		game.dispose()
 	}

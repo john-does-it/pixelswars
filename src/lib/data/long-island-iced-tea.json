@@ -275,7 +275,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
+			"classes": ["-water", "-grass", "-left", "-bottom", "-corner", "-junction-nw-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -390,7 +390,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left"],
+			"classes": ["-water", "-grass", "-left", "-junction-east-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -485,7 +485,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -705,7 +705,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1265,7 +1265,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-right"],
+			"classes": ["-water", "-grass", "-right", "-junction-west-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1305,7 +1305,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1540,12 +1540,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1625,7 +1625,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner", "-junction-southwest-ne-narrow"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1640,7 +1640,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left", "-bottom", "-corner"],
+			"classes": ["-water", "-grass", "-left", "-bottom", "-corner", "-junction-nw-se"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1810,7 +1810,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-right"],
+			"classes": ["-water", "-grass", "-right", "-junction-west-ne-narrow"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1851,6 +1851,31 @@
 		},
 		{
 			"classes": ["-water", "-grass", "-top"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-grass", "-top"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-grass", "-top"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-grass", "-top"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-junction-open-nw"],
+			"owner": 0,
+			"capturePoints": 20
+		},
+		{
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1875,37 +1900,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
 			"classes": ["-water", "-grass", "-top"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-top"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water", "-grass", "-top"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water", "-grass", "-top"],
-			"owner": 0,
-			"capturePoints": 20
-		},
-		{
-			"classes": ["-water", "-grass", "-left"],
+			"classes": ["-water", "-grass", "-left", "-junction-east-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},

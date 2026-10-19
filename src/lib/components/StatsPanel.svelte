@@ -92,7 +92,7 @@
 		line-height: 1.4;
 		--stat-gap: 4px 10px;
 		--stat-margin: 8px 0;
-		--stat-icon-size: 14px;
+		--stat-icon-size: 28px;
 		--stat-description-padding: 8px;
 		--stat-description-margin-bottom: 0;
 	}
@@ -143,8 +143,8 @@
 		white-space: nowrap;
 	}
 	.passenger-health img {
-		width: 14px;
-		height: 14px;
+		width: var(--stat-icon-size);
+		height: var(--stat-icon-size);
 		object-fit: contain;
 		image-rendering: pixelated;
 	}

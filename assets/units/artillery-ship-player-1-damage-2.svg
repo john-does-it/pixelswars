@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" shape-rendering="crispEdges">
+  <title>Navire d’artillerie — équipe bleue — proposition de base</title>
+  <!-- Integer coordinates preserve the pixel grid at every whole-number export scale. -->
+  <g fill="#d6f9ff">
+    <path d="M150 126h16v8h-8v8h-8v8H46v-8h104z"/>
+  </g>
+  <path fill="#45c3df" d="M54 150h80v8H54z"/>
+  <path fill="#3f2631" d="M86 46h56v8h8v16h8v8h8v48h-8v8h-8v8H38V70h8v-8h32v-8h8z"/>
+  <path fill="#0079bf" d="M54 78h8v16h24v4h48V62h-8v32h16v8h8v16h-8v8h-8v8h-16v8H62v-8h-8z"/>
+  <path fill="#0079bf" d="M82 94h52v8H82z"/>
+  <path fill="#009ed8" d="M94 62h32v24H94zM134 78h8v8h8v24h-16zM54 108h10v5H54z"/>
+  <path fill="#00c4e9" d="M54 78h10v20H54zM94 86h32v8H94zM54 118h72v8H54zM126 110h16v8h-16zM142 102h8v8h-8z"/>
+  <!-- Short diagonal barrel and its mounting, following the supplied silhouette. -->
+  <path fill="#647f9c" d="M82 98h12v20H82z"/>
+  <path fill="#8b9bb4" d="M82 98h8v20h-8zM69 88h5v-5h5v-5h10v10h-5v5h-5v5H69z"/>
+  <path fill="#c0cbdc" d="M84 78h5v5h-5zM74 83h5v5h-5zM69 88h15v5H69zM74 93h5v5h-5zM110 102h24v8h-24z"/>
+  <path fill="#00c4e9" d="M64 98h5v5h-5zM69 103h5v5h-5zM74 108h5v5h-5z"/>
+  <path fill="#009ed8" d="M64 93h5v5h-5zM79 93h5v5h-5z"/>
+<g aria-label="Damage stage 2"><path fill="#63505a" d="M102 68h8v4h-8z"/><path fill="#8b9bb4" d="M102 68h4v2h-4z"/><path fill="#3f2631" d="M118 78h8v8h-8zM62 110h8v4h-8z"/><path fill="#63505a" d="M110 82h8v4h-8z"/></g>
+</svg>

@@ -945,5 +945,55 @@
 				}
 			}
 		}
+	},
+	"37": {
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 6,
+					"transport": 1,
+					"jeep": 1,
+					"artillery": 1,
+					"tank": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 6,
+					"transport": 1,
+					"jeep": 1,
+					"artillery": 1,
+					"tank": 1,
+					"transport-helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"38": {
+		"symmetrical": true,
+		"mobileFriendly": true,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 3,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 3,
+					"jeep": 1,
+					"tank": 1
+				},
+				"buildings": {}
+			}
+		}
 	}
 }

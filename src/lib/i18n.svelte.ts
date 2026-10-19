@@ -18,7 +18,7 @@ export function matchPlayerName(player: Player, aiMode = false, networkPlayer?: 
 }
 
 export function unitName(id: UnitTypeId): string {
-	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, transport: messages.unit_transport, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, 'transport-helicopter': messages.unit_transport_helicopter, plane: messages.unit_plane, 'attack-ship': messages.unit_attack_ship, 'transport-ship': messages.unit_transport_ship }[id])
+	return translate({ infantry: messages.unit_infantry, 'infantry-rocket': messages.unit_infantry_rocket, 'infantry-sniper': messages.unit_infantry_sniper, jeep: messages.unit_jeep, transport: messages.unit_transport, artillery: messages.unit_artillery, tank: messages.unit_tank, 'anti-air': messages.unit_anti_air, helicopter: messages.unit_helicopter, 'transport-helicopter': messages.unit_transport_helicopter, plane: messages.unit_plane, 'artillery-ship': messages.unit_artillery_ship, 'attack-ship': messages.unit_attack_ship, 'transport-ship': messages.unit_transport_ship }[id])
 }
 
 export function terrainName(id: TerrainId): string {
@@ -31,6 +31,6 @@ export function buildingName(id: BuildingId): string {
 
 export function mapName(id: string): string {
 	if (id === 'dev') return translate(messages.dev_map_title)
-	const names: Record<string, (...parameters: any[]) => string> = { 1: messages.map_1, 2: messages.map_2, 3: messages.map_3, 4: messages.map_4, 5: messages.map_5, 6: messages.map_6, 7: messages.map_7, 8: messages.map_8, 9: messages.map_9, 10: messages.map_10, 11: messages.map_11, 12: messages.map_12, 13: messages.map_13, 14: messages.map_14, 15: messages.map_15, 16: messages.map_16, 17: messages.map_17, 18: messages.map_18, 19: messages.map_19, 20: messages.map_20, 21: messages.map_21, 22: messages.map_22, 23: messages.map_23, 24: messages.map_24, 25: messages.map_25, 26: messages.map_26, 27: messages.map_27, 28: messages.map_28, 29: messages.map_29, 30: messages.map_30, 31: messages.map_31, 35: messages.map_35, 36: messages.map_36 }
+	const names: Record<string, (...parameters: any[]) => string> = { 1: messages.map_1, 2: messages.map_2, 3: messages.map_3, 4: messages.map_4, 5: messages.map_5, 6: messages.map_6, 7: messages.map_7, 8: messages.map_8, 9: messages.map_9, 10: messages.map_10, 11: messages.map_11, 12: messages.map_12, 13: messages.map_13, 14: messages.map_14, 15: messages.map_15, 16: messages.map_16, 17: messages.map_17, 18: messages.map_18, 19: messages.map_19, 20: messages.map_20, 21: messages.map_21, 22: messages.map_22, 23: messages.map_23, 24: messages.map_24, 25: messages.map_25, 26: messages.map_26, 27: messages.map_27, 28: messages.map_28, 29: messages.map_29, 30: messages.map_30, 31: messages.map_31, 35: messages.map_35, 36: messages.map_36, 37: messages.map_37, 38: messages.map_38 }
 	return names[id] ? translate(names[id]) : id
 }

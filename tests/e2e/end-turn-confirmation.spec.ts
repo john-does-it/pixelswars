@@ -19,7 +19,7 @@ test('confirmation is off by default, persists when enabled, and supports No, Es
 	await page.keyboard.press('Escape')
 	const before = await round.textContent()
 	await end.click()
-	await expect(warning).toContainText('At least one action is still possible.')
+	await expect(warning).toContainText('Commander, some units can still act.')
 	await warning.getByRole('button', { name: 'No', exact: true }).click()
 	await expect(warning).toHaveCount(0)
 	await expect(round).toHaveText(before!)

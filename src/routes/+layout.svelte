@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { dev } from '$app/environment'
 	import { page } from '$app/state'
 	import SiteNavbar from '$lib/components/SiteNavbar.svelte'
 	import SiteFooter from '$lib/components/SiteFooter.svelte'
@@ -35,6 +36,9 @@
 <svelte:window onstorage={syncProfile} />
 
 <svelte:head>
+	{#if !dev}
+		<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+	{/if}
 	<link rel="icon" href={`${asset('/favicon.svg')}?v=infantry-damage-2`} type="image/svg+xml" />
 	<meta name="description" content={translate(messages.meta_description)} />
 </svelte:head>

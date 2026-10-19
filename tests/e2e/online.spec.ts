@@ -210,8 +210,8 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 				expect(await device.evaluate(() => Reflect.get(window, 'onlineIceConfiguration'))).toEqual({ iceServers: [{ ...relayResponse[0], urls: [relayResponse[0].urls] }], iceTransportPolicy: 'all' })
 			}
 		}
-		await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
-		await expect(guest.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+		await expect(page.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toHaveCount(0)
+		await expect(guest.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toHaveCount(0)
 		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
 		const cell = (device: Page, index: number) => device.locator(`[data-cell="${index}"]`)
 		const end = (device: Page) => device.getByRole('button', { name: 'End round', exact: true })
@@ -388,8 +388,8 @@ for (const delayedSide of ['host', 'guest'] as const) {
 			await guest.getByRole('button', { name: 'Join', exact: true }).click()
 			await expectOnlineBattlefields(page, guest)
 			expect(await delayed.evaluate(() => Reflect.get(window, 'helloAttempts'))).toBeGreaterThan(2)
-			await expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
-			await expect(guest.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+			await expect(page.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toHaveCount(0)
+			await expect(guest.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toHaveCount(0)
 		} finally {
 			await guestContext.close()
 		}
@@ -417,12 +417,12 @@ test('a guest can finish loading its sprites after the host has connected', asyn
 		await expect(invitation).toHaveValue(/#invite=PW2\./)
 		await guest.goto(await invitation.inputValue())
 		await guest.getByRole('button', { name: 'Join', exact: true }).click()
-		await Promise.all([expect(guest.locator('.game-shell[aria-busy="true"]'), 'connected guest starts preloading').toBeVisible({ timeout: connectionTimeout }), expect(page.getByRole('dialog', { name: 'Waiting for your friend' })).toBeVisible({ timeout: connectionTimeout })])
+		await Promise.all([expect(guest.locator('.game-shell[aria-busy="true"]'), 'connected guest starts preloading').toBeVisible({ timeout: connectionTimeout }), expect(page.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toBeVisible({ timeout: connectionTimeout })])
 		await expect(guest.locator('.board')).toHaveCount(0)
 		// Reproduce a slow guest beyond the old combined 15-second readiness deadline.
 		releaseTimer = setTimeout(releaseAssets, 16000)
 		await expectOnlineBattlefields(page, guest)
-		for (const device of [page, guest]) await expect(device.getByRole('dialog', { name: 'Waiting for your friend' })).toHaveCount(0)
+		for (const device of [page, guest]) await expect(device.getByRole('dialog', { name: 'Awaiting the opposing commander' })).toHaveCount(0)
 		await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
 		await expect(guest.getByRole('button', { name: 'End round', exact: true })).toBeHidden()
 	} catch (error) {

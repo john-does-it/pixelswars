@@ -33,6 +33,7 @@
 	]
 
 	const unitDescriptions = {
+		'artillery-ship': messages.unit_artillery_ship_description,
 		'attack-ship': messages.unit_attack_ship_description,
 		'transport-ship': messages.unit_transport_ship_description,
 		infantry: messages.unit_infantry_description,
@@ -52,7 +53,7 @@
 		{ name: messages.infantry_group, description: messages.infantry_group_description, ids: ['infantry', 'infantry-rocket', 'infantry-sniper'] },
 		{ name: messages.vehicles_group, description: messages.vehicles_group_description, ids: ['jeep', 'transport', 'artillery', 'tank', 'anti-air'] },
 		{ name: messages.aircraft_group, description: messages.aircraft_group_description, ids: ['helicopter', 'transport-helicopter', 'plane'] },
-		{ name: messages.naval_group, description: messages.naval_group_description, ids: ['attack-ship', 'transport-ship'] }
+		{ name: messages.naval_group, description: messages.naval_group_description, ids: ['attack-ship', 'artillery-ship', 'transport-ship'] }
 	]
 	const terrainGroups: { name: (...parameters: any[]) => string; ids: Exclude<TerrainId, 'void'>[] }[] = [
 		{ name: messages.ground_group, ids: ['road', 'grass', 'forest', 'moutain', 'blocker'] },
@@ -78,39 +79,41 @@
 		{ id: 'naval-base', description: messages.building_naval_base_description }
 	]
 	const maps = [
-		{ id: 1, title: messages.map_1, text: messages.map_1_description },
-		{ id: 2, title: messages.map_2, text: messages.map_2_description },
-		{ id: 3, title: messages.map_3, text: messages.map_3_description },
-		{ id: 4, title: messages.map_4, text: messages.map_4_description },
-		{ id: 5, title: messages.map_5, text: messages.map_5_description },
-		{ id: 6, title: messages.map_6, text: messages.map_6_description },
-		{ id: 7, title: messages.map_7, text: messages.map_7_description },
-		{ id: 8, title: messages.map_8, text: messages.map_8_description },
-		{ id: 9, title: messages.map_9, text: messages.map_9_description },
-		{ id: 10, title: messages.map_10, text: messages.map_10_description },
-		{ id: 11, title: messages.map_11, text: messages.map_11_description },
-		{ id: 12, title: messages.map_12, text: messages.map_12_description },
-		{ id: 13, title: messages.map_13, text: messages.map_13_description },
-		{ id: 14, title: messages.map_14, text: messages.map_14_description },
-		{ id: 15, title: messages.map_15, text: messages.map_15_description },
-		{ id: 16, title: messages.map_16, text: messages.map_16_description },
-		{ id: 17, title: messages.map_17, text: messages.map_17_description },
-		{ id: 18, title: messages.map_18, text: messages.map_18_description },
-		{ id: 19, title: messages.map_19, text: messages.map_19_description },
-		{ id: 20, title: messages.map_20, text: messages.map_20_description },
-		{ id: 21, title: messages.map_21, text: messages.map_21_description },
-		{ id: 22, title: messages.map_22, text: messages.map_22_description },
-		{ id: 23, title: messages.map_23, text: messages.map_23_description },
-		{ id: 24, title: messages.map_24, text: messages.map_24_description },
-		{ id: 25, title: messages.map_25, text: messages.map_25_description },
-		{ id: 26, title: messages.map_26, text: messages.map_26_description },
-		{ id: 27, title: messages.map_27, text: messages.map_27_description },
-		{ id: 28, title: messages.map_28, text: messages.map_28_description },
-		{ id: 29, title: messages.map_29, text: messages.map_29_description },
-		{ id: 30, title: messages.map_30, text: messages.map_30_description },
-		{ id: 31, title: messages.map_31, text: messages.map_31_description },
-		{ id: 35, title: messages.map_35, text: messages.map_35_description },
-		{ id: 36, title: messages.map_36, text: messages.map_36_description }
+		{ id: 1, title: messages.map_1 },
+		{ id: 2, title: messages.map_2 },
+		{ id: 3, title: messages.map_3 },
+		{ id: 4, title: messages.map_4 },
+		{ id: 5, title: messages.map_5 },
+		{ id: 6, title: messages.map_6 },
+		{ id: 7, title: messages.map_7 },
+		{ id: 8, title: messages.map_8 },
+		{ id: 9, title: messages.map_9 },
+		{ id: 10, title: messages.map_10 },
+		{ id: 11, title: messages.map_11 },
+		{ id: 12, title: messages.map_12 },
+		{ id: 13, title: messages.map_13 },
+		{ id: 14, title: messages.map_14 },
+		{ id: 15, title: messages.map_15 },
+		{ id: 16, title: messages.map_16 },
+		{ id: 17, title: messages.map_17 },
+		{ id: 18, title: messages.map_18 },
+		{ id: 19, title: messages.map_19 },
+		{ id: 20, title: messages.map_20 },
+		{ id: 21, title: messages.map_21 },
+		{ id: 22, title: messages.map_22 },
+		{ id: 23, title: messages.map_23 },
+		{ id: 24, title: messages.map_24 },
+		{ id: 25, title: messages.map_25 },
+		{ id: 26, title: messages.map_26 },
+		{ id: 27, title: messages.map_27 },
+		{ id: 28, title: messages.map_28 },
+		{ id: 29, title: messages.map_29 },
+		{ id: 30, title: messages.map_30 },
+		{ id: 31, title: messages.map_31 },
+		{ id: 35, title: messages.map_35 },
+		{ id: 36, title: messages.map_36 },
+		{ id: 37, title: messages.map_37 },
+		{ id: 38, title: messages.map_38 }
 	]
 		.filter((map) => isMapInCatalog(map.id))
 		.sort((firstMap, secondMap) => {
@@ -166,7 +169,7 @@
 	<title>{translate(messages.page_title)}</title>
 </svelte:head>
 <div class="home-page">
-	<main id="home">
+	<main id="home" class="site-page">
 		<header>
 			<p class="eyebrow">{translate(messages.eyebrow)}</p>
 			<p>{translate(messages.hero)}</p>
@@ -220,7 +223,6 @@
 						<MapCharacteristics details={mapDetails[String(map.id) as keyof typeof mapDetails]} />
 						<span class="map-metadata">{mapSize(map.id)} · {preview.cols} × {preview.rows}</span>
 						<h3 title={translate(map.title)}>{translate(map.title)}</h3>
-						<p>{translate(map.text)}</p>
 						<strong>{translate(messages.start_game)}</strong>
 					</a>
 				{:else}
@@ -266,7 +268,7 @@
 							<article class="panel">
 								<img src={asset(`/assets/units/${id}-1.png`)} alt={unitName(id)} />
 								<h4>{unitName(id)}</h4>
-								<StatList items={unitStats(unit)} />
+								<StatList items={unitStats(unit)} --stat-icon-size="28px" />
 								<p class="stat-description">{translate(unitDescriptions[id])}</p>
 							</article>
 						{/each}
@@ -411,17 +413,6 @@
 	.map-editor-intro .button {
 		margin-top: 8px;
 	}
-	main {
-		max-width: 1320px;
-		padding: 32px 20px;
-		margin: auto;
-	}
-
-	header {
-		padding: 32px 0 0;
-		max-width: 730px;
-	}
-
 	.eyebrow {
 		font-size: var(--font-size-ui);
 		letter-spacing: 0.12em;
@@ -429,7 +420,6 @@
 	}
 
 	p {
-		line-height: 1.7;
 		color: var(--color-text);
 	}
 
@@ -498,9 +488,6 @@
 		font-size: var(--font-size-ui);
 	}
 
-	.map p {
-		margin-bottom: 24px;
-	}
 	.map h3 {
 		min-width: 0;
 		overflow: hidden;

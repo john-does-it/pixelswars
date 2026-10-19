@@ -8,5 +8,6 @@
 	"anti-air": [0.9, 0.8],
 	"helicopter": [0.86, 1.1],
 	"plane": [0.72, 1.2],
-	"attack-ship": [0.76, 0.96]
+	"attack-ship": [0.76, 0.96],
+	"artillery-ship": [0.41, 0.86]
 }

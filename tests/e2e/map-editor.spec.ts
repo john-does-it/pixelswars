@@ -105,7 +105,7 @@ test('editor shares all four languages with the game without changing the draft 
 		['de', 'Karteneditor', 'Infanterie', 'Karte vorschlagen', 'Die Abmessungen müssen zwischen 2 und 32 Feldern liegen.'],
 		['en', 'Map editor', 'Infantry', 'Submit your map', 'Dimensions must be between 2 and 32 tiles.'],
 		['ja', 'マップエディター', '歩兵', 'マップを投稿', '縦横のサイズはそれぞれ2〜32マスにしてください。'],
-		['fr', 'Atelier de cartes', 'Infanterie', 'Proposer ta carte', 'Les dimensions doivent être comprises entre 2 et 32 cases.']
+		['fr', 'Atelier de cartes', 'Infanterie', 'Proposer votre carte', 'Les dimensions doivent être comprises entre 2 et 32 cases.']
 	]) {
 		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		await expect(page.locator('html')).toHaveAttribute('lang', locale)

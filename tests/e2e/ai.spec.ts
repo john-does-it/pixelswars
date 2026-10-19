@@ -104,7 +104,7 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 		await expect(humanCell).toHaveAttribute('aria-pressed', 'false')
 		await expect(page.getByText('Round 2', { exact: true })).toBeVisible({ timeout: 30000 })
 		if (difficulty === 'Expert') await expect(page.locator('[data-cell="10"]')).toHaveClass(/-capturedby1/)
-		await expect(page.locator('.turn-announcement')).toHaveText('Your turn to play')
+		await expect(page.locator('.turn-announcement')).toHaveText('Your troops await your orders!')
 		await expect(page.locator('.turn-announcement')).toHaveCount(0)
 		await expect(page.getByRole('button', { name: 'End round', exact: true })).toBeEnabled()
 		await humanCell.click()
@@ -112,7 +112,7 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 		await page.getByRole('button', { name: 'End round', exact: true }).click()
 		await expect(page.locator('.turn-announcement')).toHaveText('AI’s turn to play')
 		await expect(page.getByText('Round 4', { exact: true })).toBeVisible({ timeout: 30000 })
-		await expect(page.locator('.turn-announcement')).toHaveText('Your turn to play')
+		await expect(page.locator('.turn-announcement')).toHaveText('Your troops await your orders!')
 		await page.reload()
 		await expect(page).toHaveURL(new RegExp(`/play/1/\\?ai=${difficulty.toLowerCase()}$`))
 		await expect(page.getByText('Round 4', { exact: true })).toBeVisible()
@@ -126,9 +126,9 @@ test('AI setup can be dismissed and local multiplayer remains available', async 
 	await expect(page.getByRole('dialog')).toHaveCount(0)
 	await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
-	await expect(page.locator('.turn-announcement')).toHaveText('Player 1, it’s your turn!')
+	await expect(page.locator('.turn-announcement')).toHaveText('Player 1, your troops await your orders!')
 	await page.getByRole('button', { name: 'End round', exact: true }).click()
-	await expect(page.locator('.turn-announcement')).toHaveText('Player 2, it’s your turn!')
+	await expect(page.locator('.turn-announcement')).toHaveText('Player 2, your troops await your orders!')
 	await expect(page.getByText('Round 2', { exact: true })).toBeVisible()
 	await expect(page.locator('.match-mode')).toHaveCount(0)
 })
@@ -153,7 +153,7 @@ test('mode selection is translated in French and German', async ({ page }) => {
 	await page.goto('/')
 	for (const [locale, title, action, difficulty] of [
 		['fr', 'Choisissez votre adversaire', 'Jouer contre l’IA', 'Expert'],
-		['de', 'Wähle deinen Gegner', 'Gegen die KI spielen', 'Experte']
+		['de', 'Wählen Sie Ihren Gegner', 'Gegen die KI spielen', 'Experte']
 	]) {
 		await page.getByRole('combobox').selectOption(locale)
 		await page.locator('.map').first().click()

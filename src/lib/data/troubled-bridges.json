@@ -285,7 +285,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -375,7 +375,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -390,12 +390,12 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -405,7 +405,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -510,7 +510,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -685,7 +685,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -995,7 +995,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1170,7 +1170,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1445,7 +1445,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		}

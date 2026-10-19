@@ -8,8 +8,9 @@ export function buildingIncome(building: BuildingId | null): number {
 
 // Add unit types here; production buildings and stat panels use these definitions.
 export const unitTypes: Record<UnitTypeId, UnitDefinition> = {
-	'attack-ship': { name: 'Attack ship', domain: 'naval', production: 'naval-base', attack: 65, range: 1, exclusion: 0, attacks: 2, defense: 30, movement: 8, maxHealth: 160, cost: 1600, captures: false, delay: 750, selectSound: 'tank-engine', fightSound: 'tank-shot' },
-	'transport-ship': { name: 'Transport ship', domain: 'naval', production: 'naval-base', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 25, movement: 8, maxHealth: 160, cost: 1200, captures: false, delay: 750, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
+	'artillery-ship': { name: 'Artillery ship', domain: 'naval', production: 'naval-base', attack: 60, range: 4, exclusion: 2, attacks: 1, defense: 30, movement: 3, maxHealth: 160, cost: 2400, captures: false, delay: 2000, selectSound: 'artillery-touret', fightSound: 'missile-launch', impactSound: 'tank-shot' },
+	'attack-ship': { name: 'Attack ship', domain: 'naval', production: 'naval-base', attack: 65, range: 1, exclusion: 0, attacks: 2, defense: 30, movement: 4, maxHealth: 160, cost: 1600, captures: false, delay: 750, selectSound: 'tank-engine', fightSound: 'tank-shot' },
+	'transport-ship': { name: 'Transport ship', domain: 'naval', production: 'naval-base', capacity: 3, attack: 0, range: 1, exclusion: 0, attacks: 0, defense: 25, movement: 4, maxHealth: 160, cost: 1200, captures: false, delay: 750, selectSound: 'jeep-engine', fightSound: 'gun-battle' },
 	'infantry-sniper': { name: 'Sniper', attack: 60, range: 3, exclusion: 1, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 500, captures: true, delay: 500, selectSound: 'infantry-voice-1', fightSound: 'gun-battle' },
 	'infantry-rocket': { name: 'Rocket', attack: 40, range: 1, exclusion: 0, attacks: 1, defense: 10, movement: 4, maxHealth: 100, cost: 400, captures: true, delay: 500, selectSound: 'infantry-voice-1', fightSound: 'tank-shot' },
 	plane: { name: 'Plane', domain: 'air', production: 'airport', attack: 80, range: 1, exclusion: 0, attacks: 1, defense: 25, movement: 10, maxHealth: 120, cost: 3000, captures: false, delay: 1000, selectSound: 'plane-engine', fightSound: 'missile-launch' },
@@ -26,7 +27,7 @@ export const unitTypes: Record<UnitTypeId, UnitDefinition> = {
 export const terrainTypes: Record<TerrainId, TerrainDefinition> = {
 	grass: { name: 'Grass', cost: 2, defense: 0 },
 	moutain: { name: 'Mountain', cost: 4, defense: 50 },
-	water: { name: 'Water', cost: 2, defense: 0 },
+	water: { name: 'Water', cost: 1, defense: 0 },
 	building: { name: 'Building', cost: 2, defense: 40 },
 	road: { name: 'Road', cost: 1, defense: 0 },
 	forest: { name: 'Forest', cost: 3, defense: 30 },

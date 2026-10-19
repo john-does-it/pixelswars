@@ -57,7 +57,8 @@
 		font-size: 0.85em;
 		opacity: 0.8;
 	}
-	.budgets > span:last-child .income {
+	.budgets > span:last-child {
+		justify-items: end;
 		text-align: right;
 	}
 	@media (max-width: 900px) {

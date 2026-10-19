@@ -275,7 +275,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner", "-junction-southwest-ne-narrow"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -445,7 +445,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -540,7 +540,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -610,7 +610,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -685,7 +685,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1025,7 +1025,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1095,7 +1095,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1175,7 +1175,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1265,7 +1265,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1430,7 +1430,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},

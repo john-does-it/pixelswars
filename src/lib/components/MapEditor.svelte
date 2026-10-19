@@ -303,7 +303,6 @@
 		<div class="header-content">
 			<div>
 				<h1>{t('map_editor_title')}</h1>
-				<p>{t('map_editor_tagline')}</p>
 			</div>
 			<div class="toolbar">
 				<button class="pixel-icon-button" id="undo" aria-label={t('map_editor_undo')} title={t('map_editor_undo')} disabled={history.length === 0} onclick={undo}><UiIcon name="previous-action" /></button><button id="export" class="primary" onclick={exportMap}>{t('map_editor_export')}</button>
@@ -311,25 +310,7 @@
 		</div>
 	</header>
 	<main>
-		<aside>
-			<section>
-				<h2>{t('map_editor_map')}</h2>
-				<label>{t('map_editor_name')}<input id="name" maxlength="100" value={map.name} onchange={(event) => updateIdentity('name', event.currentTarget.value)} /></label>
-				<div class="row">
-					<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={rows} /></label>
-				</div>
-				<button id="new" onclick={createMap}>{t('map_editor_new')}</button>
-				<label class="mirror-setting">{t('map_editor_mirror')}<select id="mirror-mode" value={mirrorMode} onchange={changeMirrorMode} aria-describedby="mirror-help"><option value="off">{t('map_editor_mirror_off')}</option><option value="rotation">{t('map_editor_mirror_rotation')}</option></select></label>
-				<p id="mirror-help" class="hint">{t('map_editor_mirror_help')}</p>
-				<details>
-					<summary>{t('map_editor_start_from')}</summary>
-					<label
-						><span>{t('map_editor_existing')}</span><select id="existing" bind:value={existingId}>
-							<option value="">{t('map_editor_choose')}</option>{#each existingMaps as existing}<option value={existing.id}>{existing.id} · {mapName(existing.id)} ({existing.cols} × {existing.rows})</option>{/each}
-						</select></label
-					><button id="load" onclick={loadMap}>{t('map_editor_load')}</button><label class="button file-label">{t('map_editor_import')}<input id="import" onchange={importMap} type="file" accept=".json,application/json" /></label>
-				</details>
-			</section>
+		<aside class="editor-palettes">
 			<section>
 				<h2>{t('map_editor_terrains')}</h2>
 				<div id="terrain-palette" class="palette">
@@ -399,10 +380,28 @@
 				<div class="submission-links">
 					<a class="button" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D">{t('map_editor_github')}</a>
 				</div>
-				<p>{t('map_editor_review')}</p>
-				<p>{t('map_editor_privacy')}</p>
 			</section>
 		</div>
+		<aside class="settings-panel">
+			<section class="map-settings">
+				<h2>{t('map_editor_map')}</h2>
+				<label>{t('map_editor_name')}<input id="name" maxlength="100" value={map.name} onchange={(event) => updateIdentity('name', event.currentTarget.value)} /></label>
+				<div class="row">
+					<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={rows} /></label>
+				</div>
+				<button id="new" onclick={createMap}>{t('map_editor_new')}</button>
+				<label class="mirror-setting">{t('map_editor_mirror')}<select id="mirror-mode" value={mirrorMode} onchange={changeMirrorMode} aria-describedby="mirror-help"><option value="off">{t('map_editor_mirror_off')}</option><option value="rotation">{t('map_editor_mirror_rotation')}</option></select></label>
+				<p id="mirror-help" class="hint">{t('map_editor_mirror_help')}</p>
+				<details>
+					<summary>{t('map_editor_start_from')}</summary>
+					<label
+						><span>{t('map_editor_existing')}</span><select id="existing" bind:value={existingId}>
+							<option value="">{t('map_editor_choose')}</option>{#each existingMaps as existing}<option value={existing.id}>{existing.id} · {mapName(existing.id)} ({existing.cols} × {existing.rows})</option>{/each}
+						</select></label
+					><button id="load" onclick={loadMap}>{t('map_editor_load')}</button><label class="button file-label">{t('map_editor_import')}<input id="import" onchange={importMap} type="file" accept=".json,application/json" /></label>
+				</details>
+			</section>
+		</aside>
 	</main>
 </div>
 
@@ -459,7 +458,7 @@
 	}
 	main {
 		display: grid;
-		grid-template-columns: 288px minmax(0, 1fr);
+		grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(220px, 260px);
 		gap: 24px;
 		padding: 24px;
 	}
@@ -467,6 +466,7 @@
 		display: grid;
 		gap: 16px;
 		align-content: start;
+		min-width: 0;
 	}
 	section {
 		padding: 16px;
@@ -648,7 +648,7 @@
 		padding: 12px;
 		border: 1px solid var(--color-border);
 	}
-	@media (max-width: 780px) {
+	@media (max-width: 1000px) {
 		header {
 			padding: 18px;
 		}
@@ -662,14 +662,10 @@
 		}
 		.workspace {
 			position: static;
-			grid-row: 1;
 		}
 		#canvas-scroll {
 			max-height: 55vh;
 			padding: 12px;
-		}
-		aside {
-			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 		}
 	}
 </style>

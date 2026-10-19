@@ -174,6 +174,46 @@ export function expertCandidates(state: GameState, moved: Set<number>, withinBud
 	return finish()
 }
 
+// Prove a same-turn win before considering speculative future turns. Each volley
+// uses the real movement, ammunition, health loss and retaliation rules.
+async function finishingSequence(state: GameState, moved: Set<number>, withinBudget: () => boolean, yieldControl: () => Promise<void>): Promise<AiDecision | null> {
+	let projected = copyState(state)
+	const plannedMoves = new Set(moved)
+	let first: AiDecision | null = null
+	while (withinBudget()) {
+		const target = projected.units.find((unit) => unit.player !== state.player)
+		if (!target) return first
+		let best: { state: GameState; decision: AiDecision; unitId: number; moved: boolean; damage: number; cost: number } | null = null
+		for (const unit of projected.units) {
+			if (!withinBudget()) return null
+			if (unit.player !== state.player || unit.attacks <= 0 || !rules.canTarget(unit.type, target.type)) continue
+			const routes = plannedMoves.has(unit.id) ? new Map([[unit.cell, { cost: 0, path: [] as number[] }]]) : pathsFrom(projected, unit, unit.movement)
+			for (const [cell, route] of routes) {
+				if (!withinBudget()) return null
+				if (!attackCells(projected, { ...unit, cell }).includes(target.cell)) continue
+				const decision: AiDecision = route.path.length ? { kind: 'move', unitId: unit.id, path: route.path } : { kind: 'attack', attackerId: unit.id, defenderId: target.id }
+				let after = copyState(projected)
+				if (decision.kind === 'move') after = simulateDecision(after, decision, new Set(plannedMoves))
+				for (let shot = 0; shot < unit.attacks; shot++) {
+					const attacker = after.units.find((candidate) => candidate.id === unit.id)
+					const defender = after.units.find((candidate) => candidate.id === target.id)
+					if (!attacker || !defender || attacker.attacks <= 0 || !canAttack(after, attacker, defender)) break
+					after = simulateAttack(after, attacker, defender)
+				}
+				const damage = target.health - (after.units.find((candidate) => candidate.id === target.id)?.health ?? 0)
+				if (damage > 0 && (!best || damage > best.damage || (damage === best.damage && route.cost < best.cost))) best = { state: after, decision, unitId: unit.id, moved: route.path.length > 0, damage, cost: route.cost }
+			}
+		}
+		await yieldControl()
+		if (!best || !withinBudget()) return null
+		first ??= best.decision
+		projected = best.state
+		if (best.moved) plannedMoves.add(best.unitId)
+		if (!projected.units.some((unit) => unit.player !== state.player) && projected.units.some((unit) => unit.player === state.player)) return first
+	}
+	return null
+}
+
 function safeEconomicProgress(state: GameState, decision: AiDecision, moved: Set<number>, withinBudget: () => boolean): boolean {
 	if (!withinBudget()) return false
 	if (decision.kind !== 'move' && decision.kind !== 'capture' && decision.kind !== 'relay' && decision.kind !== 'buy') return false
@@ -232,6 +272,10 @@ export async function chooseExpertDecision(state: GameState, moved: Set<number>,
 			const after = simulateAttack(state, attacker, enemies[0])
 			if (!after.units.some((unit) => unit.player !== state.player) && after.units.some((unit) => unit.player === state.player)) return { kind: 'attack', attackerId: attacker.id, defenderId: enemies[0].id }
 		}
+		// Reserve half the decision budget for the normal fallback if no win is proven.
+		const finishingDeadline = now() + Math.max(0, (deadline - now()) / 2)
+		const finish = await finishingSequence(state, moved, () => withinBudget() && now() < finishingDeadline, yieldControl)
+		if (finish && active()) return finish
 	}
 	// Always prepare a legal heuristic fallback before spending time on rollouts.
 	const choices = expertCandidates(state, moved, withinBudget)

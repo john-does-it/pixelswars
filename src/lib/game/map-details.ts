@@ -11,6 +11,9 @@ export interface MapDetails {
 	players: Record<Player, StartingForces>
 }
 
+// Manually reviewed portrait maps that remain comfortable beyond the conservative size estimate.
+const mobileFriendlyMaps = new Set(['38'])
+
 // Estimate readability with the whole map fitted inside a portrait phone's
 // usable board area, after allowing space for controls. This is a chooser hint,
 // not a guarantee for every device. Tall maps still need readable tiles.
@@ -42,7 +45,7 @@ export function describeMap(map: GameMap): MapDetails {
 	)
 	return {
 		symmetrical,
-		mobileFriendly: isMobileFriendly(map),
+		mobileFriendly: mobileFriendlyMaps.has(map.id) || isMobileFriendly(map),
 		players
 	}
 }

@@ -260,7 +260,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-left"],
+			"classes": ["-water", "-grass", "-left", "-junction-east-nw-narrow"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -455,7 +455,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom", "-right", "-corner"],
+			"classes": ["-water", "-grass", "-bottom", "-right", "-corner", "-junction-southwest-ne-narrow"],
 			"owner": 0,
 			"capturePoints": 20
 		},

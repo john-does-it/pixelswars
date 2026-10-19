@@ -10,7 +10,7 @@ test('development field has every unit for both teams on suitable terrain on a 2
 	assert.equal(map.cols, 23)
 	assert.equal(map.rows, 23)
 	assert.equal(map.cells.length, 529)
-	assert.equal(map.units.length, 56)
+	assert.equal(map.units.length, 58)
 	assert.ok(map.cells.some((cell) => cell.classes.includes('-bridge') && cell.classes.includes('-h')))
 	assert.ok(map.cells.some((cell) => cell.classes.includes('-bridge') && cell.classes.includes('-v')))
 	assert.equal(new Set(map.units.map((unit) => unit.cell)).size, map.units.length)

@@ -16,10 +16,12 @@
 </script>
 
 <svelte:head><title>{translate(messages.support_title)} · Pixel’s War</title></svelte:head>
-<main>
-	<h1>{translate(messages.support_title)}</h1>
-	<p>{translate(messages.support_intro)}</p>
-	<p>{translate(messages.support_fair)}</p>
+<main class="site-page">
+	<header>
+		<h1>{translate(messages.support_title)}</h1>
+		<p>{translate(messages.support_intro)}</p>
+		<p>{translate(messages.support_gratitude)}</p>
+	</header>
 	<section class="panel">
 		<h2>{translate(messages.support_contribute)}</h2>
 		{#if !available}<p>{translate(messages.support_pending)}</p>{/if}
@@ -46,22 +48,9 @@
 			{#if support.bank.qrAsset}<img class="qr" src={asset(support.bank.qrAsset)} alt={translate(messages.support_bank)} />{/if}
 		{/if}
 	</section>
-	<section class="panel">
-		<h2>{translate(messages.support_thanks)}</h2>
-		<p>{translate(messages.support_recognition)}</p>
-		{#if support.contributors.length}<ul>
-				{#each support.contributors as name}<li>{name}</li>{/each}
-			</ul>{:else}<p>{translate(messages.support_empty)}</p>{/if}
-		{#if support.contact}<a href={support.contact}>{translate(messages.support_contact)}</a>{/if}
-	</section>
 </main>
 
 <style>
-	main {
-		width: min(800px, calc(100% - 32px));
-		margin: 24px auto 48px;
-		line-height: 1.7;
-	}
 	section {
 		margin-top: 24px;
 		padding: 20px;
@@ -71,7 +60,7 @@
 	}
 	.crypto-support h3 {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 12px;
 	}
 	.crypto-icon {

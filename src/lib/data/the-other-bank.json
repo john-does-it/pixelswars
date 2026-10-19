@@ -520,7 +520,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water", "-grass", "-bottom"],
+			"classes": ["-water", "-grass", "-bottom", "-junction-south-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},

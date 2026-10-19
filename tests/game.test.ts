@@ -17,12 +17,12 @@ const spawn = (state: GameState, type: UnitTypeId, player: Player, cell: number)
 	return unit
 }
 
-test('water costs two for ships, one for aircraft and is impassable to ground units', () => {
+test('water costs one for ships and aircraft and is impassable to ground units', () => {
 	const state = fixture()
 	const water = state.cells.find((cell) => cell.terrain === 'water')
 	assert.ok(water)
-	assert.equal(water.cost, 2)
-	assert.equal(movementCostForDomain('naval', water), 2)
+	assert.equal(water.cost, 1)
+	assert.equal(movementCostForDomain('naval', water), 1)
 	assert.equal(movementCostForDomain('air', water), 1)
 	assert.equal(movementCostForDomain('ground', water), Infinity)
 	assert.equal(movementCost(state.units[1], water), Infinity)
@@ -399,7 +399,7 @@ test('a jeep leaves infantry near half health and takes meaningful retaliation o
 	game.dispose()
 })
 
-test('a healthy rocket soldier retains about 30 HP after both infantry attacks on open ground', async () => {
+test('rocket retaliation leaves infantry at 72 HP and the rocket at 36 HP after two infantry attacks', async () => {
 	const state = fixture()
 	state.units = []
 	const infantry = spawn(state, 'infantry', 1, 18)
@@ -408,9 +408,9 @@ test('a healthy rocket soldier retains about 30 HP after both infantry attacks o
 	const game = createController(state, { delay: async () => {} })
 	game.select(infantry.id)
 	await game.fight(rocket)
-	assert.deepEqual([infantry.health, rocket.health], [88, 63])
+	assert.deepEqual([infantry.health, rocket.health], [72, 63])
 	await game.fight(rocket)
-	assert.deepEqual([infantry.health, rocket.health], [88, 30])
+	assert.deepEqual([infantry.health, rocket.health], [72, 36])
 	assert.equal(infantry.attacks, 0)
 	assert.equal(rocket.attacks, 0)
 	assert.ok(state.units.includes(rocket))
@@ -427,9 +427,11 @@ test('vehicle combat uses each unit’s maximum health for its first shot and re
 	const game = createController(state, { delay: async () => {} })
 	game.select(attacker.id)
 	await game.fight(defender)
-	assert.equal(defender.health, 36)
-	assert.equal(attacker.health, 175)
+	assert.equal(defender.health, 51)
+	assert.equal(attacker.health, 169)
 	assert.equal(attacker.attacks, 1)
+	await game.fight(defender)
+	assert.equal(defender.health, 0)
 	game.dispose()
 })
 

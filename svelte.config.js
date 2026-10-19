@@ -9,10 +9,10 @@ export default {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
-				'connect-src': ['self', 'wss://0.peerjs.com', 'https://*.metered.live'],
-				'script-src': ['self'],
+				'connect-src': ['self', 'wss://0.peerjs.com', 'https://*.metered.live', 'https://queue.simpleanalyticscdn.com'],
+				'script-src': ['self', 'https://scripts.simpleanalyticscdn.com'],
 				'style-src': ['self', 'unsafe-inline'],
-				'img-src': ['self', 'data:'],
+				'img-src': ['self', 'data:', 'https://queue.simpleanalyticscdn.com'],
 				'object-src': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']

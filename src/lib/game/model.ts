@@ -1,6 +1,7 @@
 import rules from './combat-rules.ts'
 import { buildingIncome, createUnit, isUnitTypeId, terrainTypes, unitTypes } from './catalog.ts'
 import { faceOpponents } from './facing.ts'
+import { waterJunctionClasses } from './water-junctions.ts'
 import type { Cell, GameMap, GameState, Player, PurchaseStatus, TerrainId, Unit, UnitDomain, UnitTypeId } from './types.ts'
 
 const buildingIds = ['city', 'big-city', 'factory', 'hospital', 'airport', 'naval-base'] as const
@@ -15,7 +16,7 @@ export function initialState(map: GameMap): GameState {
 		rows: map.rows,
 		cells: map.cells.map((cell, index) => {
 			// Older exported maps used oil fields for the same 300$ income building.
-			const classes = cell.classes.map((name) => (name === '-oil-field' ? '-big-city' : name))
+			const classes = waterJunctionClasses(map, index).map((name) => (name === '-oil-field' ? '-big-city' : name))
 			// Later terrain definitions override grass on forest/building cells, as in the POC.
 			const terrain: TerrainId = (Object.keys(terrainTypes) as TerrainId[]).filter((type) => classes.includes('-' + type)).at(-1) || 'grass'
 			return { ...cell, classes, index, terrain, ...terrainTypes[terrain], building: buildingIds.find((type) => classes.includes('-' + type)) ?? null }

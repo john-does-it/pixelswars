@@ -1,5 +1,9 @@
 # Map editor
 
+Water junctions inspect diagonal land as well as direct neighbors. North-west and north-east cliffs continue into open water, river bends and T junctions automatically. A narrow upstream river uses a matching narrow entrance. The original `-junction-nw-se` artwork remains unchanged. Decorative junction modifiers are recalculated when painting, importing, undoing, mirroring or loading a map; map edges never wrap around. Bridge supports, bridges and voids are excluded. Movement, terrain statistics and armies stay unchanged.
+
+The corrective PNGs and shimmer masks are generated from existing sprites with `python scripts/generate-water-junctions.py` (Pillow required). `--check` verifies the assets, palette and unchanged pixels without writing files. The normal mode also creates an enlarged before/after comparison in `tmp/water-junctions/comparison.png`.
+
 Open the map editor from the game homepage. The editor shares the game’s language preference (English, French, German or Japanese).
 It uses the game's existing sprites and saves drafts only in the current browser.
 For local development, run `npm run dev` and open http://127.0.0.1:5173/map-editor/.

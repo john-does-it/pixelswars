@@ -80,7 +80,7 @@ test('support page displays the supplied PayPal QR code and a direct contributio
 	const qr = page.getByRole('img', { name: 'PayPal QR code for supporting Pixel’s War' })
 	await expect(qr).toBeVisible()
 	await expect.poll(() => qr.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(500)
-	await expect(page.getByText('No public supporter names yet.')).toBeVisible()
+	await expect(page.getByText('No public supporter names yet.')).toHaveCount(0)
 	await expect(page.locator('main a[target="_blank"]')).toHaveCount(1)
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	await page.getByRole('combobox').selectOption('fr')

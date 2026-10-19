@@ -24,7 +24,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-content: start;
-		align-items: start;
+		align-items: center;
 		gap: var(--stat-gap, 8px 12px);
 		margin: var(--stat-margin, 1em 0);
 	}
@@ -33,7 +33,7 @@
 		min-width: 0;
 		overflow-wrap: anywhere;
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		gap: 7px;
 	}
 
@@ -53,7 +53,6 @@
 	img {
 		object-fit: contain;
 		image-rendering: pixelated;
-		margin-top: 1px;
 	}
 
 	.symbol {

@@ -90,7 +90,7 @@ test('captured naval bases use normal production, occupancy and budgets; ships s
 	assert.ok(move(state, 10))
 	assert.ok(move(state, 5))
 	assert.ok(move(state, 10))
-	assert.equal(ship.movement, 2)
+	assert.equal(ship.movement, 0)
 	openProduction(state, 5)
 	assert.equal(purchaseStatus(state, 'attack-ship').missing, 400)
 	assert.ok(buy(state, 'transport-ship'))
@@ -128,7 +128,7 @@ test('ships can stop on water and bridge supports but never on road decks', () =
 	const state = fixture()
 	const ship = state.units[0]
 	state.cells[13].classes = ['-water', '-under-bridge', '-h']
-	assert.equal(movementCost(ship, state.cells[13]), 2)
+	assert.equal(movementCost(ship, state.cells[13]), 1)
 	assert.ok(pathsFrom(state, ship).has(19))
 	assert.equal(pathsFrom(state, ship).has(2), false)
 	state.cells[13].terrain = 'road'
@@ -245,7 +245,7 @@ test('ships cannot be bought at factories, airports or an empty water tile and d
 	state.cells[0].owner = 1
 	for (const building of ['factory', 'airport', null] as const) {
 		state.cells[0].building = building
-		for (const type of ['attack-ship', 'transport-ship'] as const) {
+		for (const type of ['attack-ship', 'transport-ship', 'artillery-ship'] as const) {
 			assert.equal(productionBuilding(type), 'naval-base')
 			assert.equal(purchaseStatus(state, type).available, false)
 			assert.equal(buy(state, type), false)
@@ -282,7 +282,7 @@ test('editor preserves ships on water and removes them when painting bridges or 
 })
 
 for (const axis of ['-h', '-v']) {
-	for (const type of ['attack-ship', 'transport-ship'] as const) {
+	for (const type of ['attack-ship', 'transport-ship', 'artillery-ship'] as const) {
 		test(type + ' crosses ' + axis + ' bridges atomically beneath ground units', () => {
 			const map = newMap(5, 5)
 			const [start, finish] = axis === '-h' ? [7, 17] : [11, 13]
@@ -295,11 +295,11 @@ for (const axis of ['-h', '-v']) {
 			const state = initialState(map)
 			const ship = state.units[0]
 			if (type === 'transport-ship') ship.cargo = [createUnit('infantry', 1, start, state.nextId++)]
-			assert.deepEqual(pathsFrom(state, ship).get(finish), { cost: 4, path: [finish] })
+			assert.deepEqual(pathsFrom(state, ship).get(finish), { cost: 2, path: [finish] })
 			assert.equal(pathsFrom(state, ship).has(12), false)
-			assert.equal(pathsFrom(state, ship, 3).has(finish), false)
+			assert.equal(pathsFrom(state, ship, 1).has(finish), false)
 			select(state, ship.id)
-			ship.movement = 3
+			ship.movement = 1
 			assert.equal(move(state, finish), false)
 			assert.equal(move(state, 12), false)
 			ship.movement = unitTypes[type].movement
@@ -308,7 +308,7 @@ for (const axis of ['-h', '-v']) {
 				state.units.push(guard)
 				select(state, ship.id)
 				assert.ok(move(state, finish))
-				assert.equal(ship.movement, unitTypes[type].movement - 4)
+				assert.equal(ship.movement, unitTypes[type].movement - 2)
 				assert.equal(guard.cell, 12)
 				const peer = initialState(map)
 				assert.ok(applySnapshot(peer, matchSnapshot(state)))
@@ -338,11 +338,11 @@ test('ships cross multiple bridge tiles only with enough movement to exit', () =
 	map.units = [{ type: 'transport-ship', player: 1, cell: 5 }]
 	const state = initialState(map)
 	const ship = state.units[0]
-	assert.deepEqual(pathsFrom(state, ship).get(8), { cost: 6, path: [8] })
-	assert.equal(pathsFrom(state, ship, 5).has(8), false)
+	assert.deepEqual(pathsFrom(state, ship).get(8), { cost: 3, path: [8] })
+	assert.equal(pathsFrom(state, ship, 2).has(8), false)
 	select(state, ship.id)
 	assert.ok(move(state, 8))
-	assert.equal(ship.movement, 2)
+	assert.equal(ship.movement, 1)
 	state.cells[8].classes = ['-road', '-bridge', '-v']
 	state.cells[8].terrain = 'road'
 	state.cells[9].classes = ['-road', '-bridge', '-v']
@@ -390,7 +390,7 @@ for (const interrupted of [false, true]) {
 		assert.equal(state.bridgeTransit, null)
 		assert.equal(state.moving, false)
 		assert.equal(state.units[0].cell, interrupted ? 7 : 17)
-		assert.equal(state.units[0].movement, unitTypes['attack-ship'].movement - (interrupted ? 0 : 4))
+		assert.equal(state.units[0].movement, unitTypes['attack-ship'].movement - (interrupted ? 0 : 2))
 		game.dispose()
 	})
 }

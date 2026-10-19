@@ -61,9 +61,11 @@
 </script>
 
 <svelte:head><title>{translate(messages.profile_title)} · Pixel’s War</title></svelte:head>
-<main>
-	<h1>{translate(messages.profile_title)}</h1>
-	<p>{translate(messages.profile_intro)}</p>
+<main class="site-page">
+	<header>
+		<h1>{translate(messages.profile_title)}</h1>
+		<p>{translate(messages.profile_intro)}</p>
+	</header>
 	<form
 		onsubmit={(event) => {
 			event.preventDefault()
@@ -104,7 +106,7 @@
 	</section>
 	<section>
 		<h2>{translate(messages.profile_medals)}</h2>
-		<p>{translate(messages.profile_medal_rules)}</p>
+		<p class="section-intro">{translate(messages.profile_medal_rules)}</p>
 		<div class="map-progress">
 			{#each Object.keys(mapRevisions).filter(isMapInCatalog) as map}
 				<article class="panel">
@@ -117,10 +119,6 @@
 </main>
 
 <style>
-	main {
-		width: min(900px, calc(100% - 32px));
-		margin: 24px auto 48px;
-	}
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -165,7 +163,7 @@
 	.map-progress {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: 12px;
+		gap: 18px;
 	}
 	h3 {
 		margin-top: 0;

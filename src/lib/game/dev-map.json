@@ -775,7 +775,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -805,7 +805,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -885,7 +885,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -1305,7 +1305,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -2535,7 +2535,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-ne"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -2565,7 +2565,7 @@
 			"capturePoints": 20
 		},
 		{
-			"classes": ["-water"],
+			"classes": ["-water", "-junction-open-nw"],
 			"owner": 0,
 			"capturePoints": 20
 		},
@@ -2930,6 +2930,16 @@
 			"type": "attack-ship",
 			"player": 1,
 			"cell": 197
+		},
+		{
+			"type": "artillery-ship",
+			"player": 1,
+			"cell": 170
+		},
+		{
+			"type": "artillery-ship",
+			"player": 2,
+			"cell": 358
 		}
 	]
 }
