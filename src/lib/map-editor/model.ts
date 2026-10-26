@@ -233,3 +233,20 @@ export function readMap(text: string): GameMap {
 export function mapJson(map: GameMap): string {
 	return JSON.stringify(readMap(JSON.stringify(map)), null, '\t') + '\n'
 }
+
+// Resize by coordinates so changing the row length never shifts painted cells or units.
+export function resizeMap(map: GameMap, cols: number, rows: number, mode: MirrorMode = 'off'): GameMap {
+	validateMirrorDimensions(cols, rows, mode)
+	const result = newMap(cols, rows)
+	result.id = map.id
+	result.name = map.name
+	for (let row = 0; row < Math.min(rows, map.rows); row++) {
+		for (let col = 0; col < Math.min(cols, map.cols); col++) {
+			result.cells[row * cols + col] = structuredClone(map.cells[row * map.cols + col])
+		}
+	}
+	result.units = map.units.filter((unit) => unit.cell % map.cols < cols && Math.floor(unit.cell / map.cols) < rows).map((unit) => ({ ...unit, cell: Math.floor(unit.cell / map.cols) * cols + (unit.cell % map.cols) }))
+	for (let index = 0; index < result.cells.length; index++) reconnectCell(result, index)
+	reconnectBridgeSupports(result)
+	return mode === 'off' ? result : mirrorMap(result, mode)
+}

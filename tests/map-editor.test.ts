@@ -1,7 +1,7 @@
 import { mapIds, readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { newMap, paintCell, readMap, mapJson, mirrorMap, mirroredIndex, paintMirroredCell, validateMirrorDimensions } from '../src/lib/map-editor/model.ts'
+import { resizeMap, newMap, paintCell, readMap, mapJson, mirrorMap, mirroredIndex, paintMirroredCell, validateMirrorDimensions } from '../src/lib/map-editor/model.ts'
 import { initialState, movementCostForDomain } from '../src/lib/game/model.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
 
@@ -233,4 +233,31 @@ test('rotation reconnects opposite road corners and shores while preserving brid
 	}
 	assert.deepEqual(mirrorMap(map, 'rotation'), map)
 	assert.deepEqual(readMap(mapJson(map)), map)
+})
+
+test('resizing keeps cell coordinates and unit positions, and leaves the original intact', () => {
+	const map = newMap(5, 5)
+	paintCell(map, 16, { kind: 'terrain', classes: ['-building', '-city', '-ongrass'], owner: 2 })
+	paintCell(map, 16, { kind: 'unit', type: 'infantry', player: 2 })
+	const before = structuredClone(map)
+	const larger = resizeMap(map, 7, 7)
+	assert.deepEqual(larger.cells[22], map.cells[16])
+	assert.equal(larger.units[0].cell, 22)
+	assert.deepEqual(map, before)
+	const smaller = resizeMap(larger, 3, 3)
+	assert.equal(smaller.cells.length, 9)
+	assert.equal(smaller.units.length, 0)
+})
+test('mirror resize reconnects roads and keeps opposing armies symmetrical', () => {
+	const map = newMap(5, 5)
+	paintMirroredCell(map, 1, { kind: 'unit', type: 'infantry', player: 2 }, 'rotation')
+	const resized = resizeMap(map, 7, 5, 'rotation')
+	assert.deepEqual(
+		resized.units.map((unit) => [unit.cell, unit.player]),
+		[
+			[1, 2],
+			[33, 1]
+		]
+	)
+	assert.throws(() => resizeMap(map, 6, 5, 'rotation'))
 })

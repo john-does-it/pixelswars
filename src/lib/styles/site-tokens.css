@@ -1,0 +1,169 @@
+/* Shared interface palette from Figma / Redesign website. */
+:root {
+	--site-yellow: #f4d879;
+	--site-cream: #fff3ca;
+	--site-sky: #d7f0f6;
+	--site-silver: #dce0e6;
+	--site-plum: #3f2631;
+	--site-paper: #fdfaed;
+	--site-red: #e84537;
+	--site-muted: #735e57;
+	--site-width: 1980px;
+	--site-content-width: 1280px;
+	--site-section-space: 120px;
+	--site-heading-outline: 6px;
+	--site-card-outline: 4px;
+	--site-selector-outline: 2px;
+	--site-selector-active-outline: 4px;
+	--site-board-border: 8px;
+	--site-gap-small: 24px;
+	--site-gap-medium: 48px;
+	--site-gap-large: 64px;
+	--site-body-leading: 1.3125;
+	--interface-border: 4px;
+	--interface-heading-outline: 2px;
+	--player-blue: #00679b;
+	--player-red: #a72b24;
+}
+.site-shell,
+.play-shell,
+.modal-panel {
+	--color-background: var(--site-cream);
+	--color-surface: var(--site-paper);
+	--color-control: #696d78;
+	--color-border: #99847c;
+	--color-border-strong: var(--site-plum);
+	--color-text: var(--site-plum);
+	--color-muted: var(--site-muted);
+	--color-accent: #a72b24;
+	color: var(--site-plum);
+	background: var(--site-cream);
+	color-scheme: light;
+}
+:where(.site-shell) h1,
+:where(.site-shell) h2,
+:where(.site-shell) h3,
+.pixel-heading {
+	font-family: var(--font-display);
+	font-weight: 700;
+	color: var(--site-paper);
+	paint-order: stroke fill;
+	-webkit-text-stroke: calc(var(--site-heading-outline) * 2) var(--site-plum);
+	text-shadow: none;
+	line-height: 1.2;
+}
+:where(.site-shell) h1,
+:where(.site-shell) h2 {
+	font-size: 48px;
+}
+:where(.site-shell) h3 {
+	font-size: 36px;
+}
+.site-shell .panel {
+	border-radius: 0;
+}
+.site-shell :focus-visible {
+	outline-color: var(--site-plum);
+}
+.site-shell .site-page {
+	max-width: var(--site-width);
+	padding-block: var(--site-section-space);
+}
+:where(.site-shell) .button,
+:where(.site-shell) button {
+	color: #fffdf2;
+}
+.site-shell .button.primary,
+.site-shell button.primary {
+	--color-accent: #f4d879;
+	--color-background: #111a14;
+	--color-text: #fffdf2;
+}
+.site-shell input:not([type='checkbox']):not([type='range']):not([type='file']),
+.site-shell textarea {
+	background: var(--site-yellow);
+	color: var(--site-plum);
+	border-color: var(--site-muted);
+	border-radius: 0;
+}
+.site-shell .modal-panel {
+	--color-background: var(--site-cream);
+}
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (max-width: 640px) {
+	:root {
+		--site-section-space: 64px;
+		--site-heading-outline: 3px;
+		--site-card-outline: 2px;
+		--site-selector-outline: 1px;
+		--site-selector-active-outline: 2px;
+		--site-board-border: 4px;
+		--site-gap-small: 16px;
+		--site-gap-medium: 32px;
+		--site-gap-large: 32px;
+		--site-body-leading: 1.5;
+	}
+	:where(.site-shell) h1,
+	:where(.site-shell) h2 {
+		font-size: 32px;
+	}
+	:where(.site-shell) h3 {
+		font-size: 28px;
+	}
+}
+
+.site-shell .site-action {
+	font: 700 16px/20px var(--font-body);
+	min-height: 51px;
+	padding: 11px 13px 14px;
+}
+/* CSS strokes are centred; painting the fill last recreates Figma's outside stroke. */
+
+/* Compact game chrome shares the website palette without scaling the battlefield. */
+.play-shell {
+	min-height: 100dvh;
+	background: var(--site-sky);
+}
+.play-shell :focus-visible,
+.modal-panel :focus-visible {
+	outline-color: var(--site-plum);
+}
+.play-shell .panel {
+	border: var(--interface-border) solid var(--site-plum);
+	border-radius: 0;
+}
+.play-shell button,
+.play-shell .button,
+.modal-panel button,
+.modal-panel .button,
+.play-shell select,
+.modal-panel select {
+	color: #fffdf2;
+}
+.play-shell button.primary,
+.play-shell .button.primary,
+.modal-panel button.primary,
+.modal-panel .button.primary {
+	--button-face: var(--site-yellow);
+	--button-background: var(--site-yellow);
+	color: #111a14;
+}
+.play-shell textarea,
+.modal-panel input:not([type='checkbox']):not([type='range']):not([type='file']),
+.modal-panel textarea {
+	background: var(--site-yellow);
+	color: var(--site-plum);
+	border-color: var(--site-muted);
+	border-radius: 0;
+}

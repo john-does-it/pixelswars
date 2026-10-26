@@ -43,7 +43,7 @@ test('I opens the inspected tile statistics without changing the selection or ov
 	await page.keyboard.press('Escape')
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	const options = page.getByRole('dialog', { name: 'Options and help', exact: true })
-	await options.locator('summary').filter({ hasText: 'How to play' }).click()
+	await options.locator('summary').filter({ hasText: 'Learn the game' }).click()
 	await expect(options.locator('dl > div').filter({ hasText: 'Cell statistics' }).locator('dd')).toHaveText('I')
 	await page.keyboard.press('i')
 	await expect(stats).toHaveCount(0)

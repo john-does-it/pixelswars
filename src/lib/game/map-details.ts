@@ -6,6 +6,7 @@ export interface StartingForces {
 	buildings: Partial<Record<BuildingId, number>>
 }
 export interface MapDetails {
+	illustration: 'small-town' | 'by-the-river'
 	symmetrical: boolean
 	mobileFriendly: boolean
 	players: Record<Player, StartingForces>
@@ -44,6 +45,7 @@ export function describeMap(map: GameMap): MapDetails {
 		})
 	)
 	return {
+		illustration: cells.some((cell) => cell.terrain === 'water') ? 'by-the-river' : 'small-town',
 		symmetrical,
 		mobileFriendly: mobileFriendlyMaps.has(map.id) || isMobileFriendly(map),
 		players

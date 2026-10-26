@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { unitSpritePath } from '$lib/game/unit-sprites'
+	import Sprite from './Sprite.svelte'
 	import Modal from './Modal.svelte'
 	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
 	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'
@@ -20,7 +21,7 @@
 			{@const status = purchaseStatus(game.state, id)}
 			{@const guidedBlocked = game.allowsAction?.('buy', id) === false}
 			<div class="offer" class:affordable={status.available && !guidedBlocked} class:unavailable={!status.available || guidedBlocked}>
-				<img src={asset(`/assets/units/${id}-${game.state.player}-fit.png`)} alt="" />
+				<Sprite src={unitSpritePath(id, game.state.player)} size="m" />
 				<div>
 					<strong>{unitName(id)}</strong>
 					<p>{type.cost}$</p>
@@ -35,39 +36,33 @@
 <style>
 	.offer {
 		display: grid;
-		grid-template-columns: 48px 1fr auto;
-		gap: 12px;
+		grid-template-columns: 64px minmax(0, 1fr);
+		gap: 16px;
 		align-items: center;
 		padding: 14px;
-		border: 1px solid var(--color-border-strong);
-		border-radius: 5px;
+		border: 2px solid var(--site-plum);
+		border-radius: 0;
+		background: var(--site-paper);
 		margin: 10px 0;
 
-		@media (max-width: 430px) {
-			grid-template-columns: 36px 1fr;
+		button {
+			grid-column: 2;
+			justify-self: start;
+			max-width: 100%;
+			white-space: normal;
 		}
 	}
 
 	.affordable {
-		background: #17382c;
-		border-color: #a7e6c8;
+		background: var(--site-yellow);
 	}
 
 	.unavailable {
 		color: var(--color-text);
 
-		img {
+		:global(.sprite) {
 			opacity: 0.45;
 			filter: grayscale(1);
-		}
-	}
-
-	img {
-		width: 48px;
-		image-rendering: pixelated;
-
-		@media (max-width: 430px) {
-			width: 36px;
 		}
 	}
 

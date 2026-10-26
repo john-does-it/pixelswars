@@ -13,6 +13,7 @@
 </script>
 
 <dialog
+	class="modal-panel"
 	bind:this={dialog}
 	aria-label={title}
 	oncancel={(event) => {
@@ -23,42 +24,47 @@
 		if (event.target === dialog) onclose?.()
 	}}
 >
+	<div class="heading">
+		<h2 class="pixel-heading">{title}</h2>
+		{#if onclose}
+			<button class="pixel-icon-button" aria-label={translate(messages.close)} onclick={onclose}><UiIcon name="close" /></button>
+		{/if}
+	</div>
 	<div class="dialog-content" class:auto-scrollbar={!alwaysShowScrollbar}>
-		<div class="heading">
-			<h2>{title}</h2>
-			{#if onclose}
-				<button class="pixel-icon-button" aria-label={translate(messages.close)} onclick={onclose}><UiIcon name="close" /></button>
-			{/if}
-		</div>
 		{@render children()}
 	</div>
 </dialog>
 
 <style>
+	dialog[open] {
+		display: flex;
+		flex-direction: column;
+	}
 	dialog {
-		inset-block: 7.5svh auto;
+		--dialog-padding: 32px;
+		inset-block: max(16px, 5dvh) auto;
 		margin: 0 auto;
 		width: calc(100% - 2em);
 		max-width: var(--modal-max-width, 640px);
-		max-height: 85svh;
+		max-height: calc(100dvh - max(32px, 10dvh));
 		overflow: hidden;
-		padding: 8px;
-		border: 2px solid var(--color-border-strong);
-		border-radius: 10px;
-		background: var(--color-surface);
+		padding: 0;
+		border: var(--interface-border) solid var(--site-plum);
+		border-radius: 0;
+		background: var(--site-cream);
 		color: var(--color-text);
 
 		&::backdrop {
-			background: #000a;
+			background: rgb(63 38 49 / 55%);
 		}
 	}
 
 	.dialog-content {
-		max-height: calc(85svh - 20px);
+		min-height: 0;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		scrollbar-gutter: stable;
-		padding: 16px;
+		padding: 0 var(--dialog-padding) var(--dialog-padding);
 
 		&.auto-scrollbar {
 			overflow-y: auto;
@@ -69,17 +75,33 @@
 	.heading {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		gap: 12px;
-		margin-bottom: 16px;
+		align-items: flex-start;
+		gap: 24px;
+		flex: none;
+		padding: var(--dialog-padding) var(--dialog-padding) 24px;
 
 		button {
 			flex: none;
 		}
 	}
 
-	h2 {
-		margin: 0;
-		font-size: 22px;
+	.heading h2 {
+		--site-heading-outline: var(--interface-heading-outline);
+		min-width: 0;
+		margin: 4px 0 0;
+		font-size: 32px;
+		line-height: 1.2;
+		overflow-wrap: anywhere;
+	}
+	@media (max-width: 640px) {
+		dialog {
+			--dialog-padding: 16px;
+		}
+		.heading {
+			gap: 16px;
+		}
+		.heading h2 {
+			font-size: 28px;
+		}
 	}
 </style>

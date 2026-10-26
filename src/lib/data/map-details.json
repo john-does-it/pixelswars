@@ -1,5 +1,6 @@
 {
 	"1": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": true,
 		"players": {
@@ -24,6 +25,7 @@
 		}
 	},
 	"2": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -48,6 +50,7 @@
 		}
 	},
 	"3": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -74,6 +77,7 @@
 		}
 	},
 	"4": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -100,6 +104,7 @@
 		}
 	},
 	"5": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -126,6 +131,7 @@
 		}
 	},
 	"6": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": true,
 		"players": {
@@ -152,6 +158,7 @@
 		}
 	},
 	"7": {
+		"illustration": "small-town",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -178,6 +185,7 @@
 		}
 	},
 	"8": {
+		"illustration": "small-town",
 		"symmetrical": false,
 		"mobileFriendly": true,
 		"players": {
@@ -204,6 +212,7 @@
 		}
 	},
 	"9": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -230,6 +239,7 @@
 		}
 	},
 	"10": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -262,6 +272,7 @@
 		}
 	},
 	"11": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -296,6 +307,7 @@
 		}
 	},
 	"12": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -332,6 +344,7 @@
 		}
 	},
 	"13": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -356,6 +369,7 @@
 		}
 	},
 	"14": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -384,6 +398,7 @@
 		}
 	},
 	"15": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -408,6 +423,7 @@
 		}
 	},
 	"16": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -442,6 +458,7 @@
 		}
 	},
 	"17": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -477,6 +494,7 @@
 		}
 	},
 	"18": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -503,6 +521,7 @@
 		}
 	},
 	"19": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -521,6 +540,7 @@
 		}
 	},
 	"20": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -545,6 +565,7 @@
 		}
 	},
 	"21": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -581,6 +602,7 @@
 		}
 	},
 	"22": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -609,6 +631,7 @@
 		}
 	},
 	"23": {
+		"illustration": "small-town",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -645,6 +668,7 @@
 		}
 	},
 	"24": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -681,6 +705,7 @@
 		}
 	},
 	"25": {
+		"illustration": "by-the-river",
 		"symmetrical": false,
 		"mobileFriendly": false,
 		"players": {
@@ -713,6 +738,7 @@
 		}
 	},
 	"26": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -757,6 +783,7 @@
 		}
 	},
 	"27": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -787,6 +814,7 @@
 		}
 	},
 	"28": {
+		"illustration": "small-town",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -811,6 +839,7 @@
 		}
 	},
 	"29": {
+		"illustration": "small-town",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -839,6 +868,7 @@
 		}
 	},
 	"30": {
+		"illustration": "small-town",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -863,6 +893,7 @@
 		}
 	},
 	"31": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -891,6 +922,7 @@
 		}
 	},
 	"35": {
+		"illustration": "small-town",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {
@@ -917,6 +949,7 @@
 		}
 	},
 	"36": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -947,6 +980,7 @@
 		}
 	},
 	"37": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": false,
 		"players": {
@@ -975,6 +1009,7 @@
 		}
 	},
 	"38": {
+		"illustration": "by-the-river",
 		"symmetrical": true,
 		"mobileFriendly": true,
 		"players": {

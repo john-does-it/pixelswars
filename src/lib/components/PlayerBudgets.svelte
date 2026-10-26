@@ -25,7 +25,7 @@
 		justify-content: space-between;
 		gap: 12px;
 		padding-top: 10px;
-		border-top: 1px solid rgb(255 255 255 / 10%);
+		border-top: 1px solid var(--color-border);
 		flex: none;
 	}
 	.budgets > span {
@@ -44,10 +44,10 @@
 		white-space: nowrap;
 	}
 	.player-one {
-		color: #8dcbff;
+		color: var(--player-blue);
 	}
 	.player-two {
-		color: #ffb3b1;
+		color: var(--player-red);
 	}
 	b {
 		white-space: nowrap;

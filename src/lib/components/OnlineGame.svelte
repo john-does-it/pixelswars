@@ -114,7 +114,7 @@
 	<main class="online-setup">
 		<a href={resolve('/', {})}>← Pixel’s War</a>
 		<section class="panel">
-			<h1>{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
+			<h1 class="pixel-heading">{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
 			<p>{mapName(map.id)}</p>
 			{#if role !== 'join'}<p>{translate(messages.online_intro)}</p>{/if}
 			{#if !supported}
@@ -171,7 +171,8 @@
 		margin-top: 20px;
 	}
 	h1 {
-		font-size: 24px;
+		--site-heading-outline: var(--interface-heading-outline);
+		font-size: 32px;
 	}
 	h2 {
 		font-size: 18px;
@@ -196,7 +197,7 @@
 		min-height: 124px;
 		padding: 12px;
 		border: 1px solid var(--color-border-strong);
-		border-radius: 4px;
+		border-radius: 0;
 		background: var(--color-background);
 		color: var(--color-text);
 		font: inherit;
@@ -214,7 +215,7 @@
 		white-space: normal;
 	}
 	[role='alert'] {
-		color: #ffb3b1;
+		color: var(--player-red);
 	}
 	[role='status'] {
 		color: var(--color-accent);

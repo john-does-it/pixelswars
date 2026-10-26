@@ -11,7 +11,7 @@
 </script>
 
 <PlayerTransition player={winner} persistent label={title}>
-	<h2>{title}</h2>
+	<h2 class="pixel-heading">{title}</h2>
 	{#if earnedMedal}
 		<p class="medal-award">{translate(messages.medal_new, { difficulty: translate(messages[`ai_${earnedMedal.difficulty}`]) })}</p>
 		{#if storageError}<p role="alert">{translate(messages.profile_storage_error)}</p>{/if}

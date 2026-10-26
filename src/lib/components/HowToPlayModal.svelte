@@ -12,11 +12,11 @@
 	{@render actions?.()}
 	{#if settings}
 		<details open>
-			<summary><h3>{translate(messages.options)}</h3></summary>
+			<summary><h3 class="pixel-heading">{translate(messages.options)}</h3></summary>
 			<div class="section-content">{@render settings()}</div>
 		</details>
 		<details>
-			<summary><h3>{translate(messages.how_to_play)}</h3></summary>
+			<summary><h3 class="pixel-heading">{translate(messages.how_to_play)}</h3></summary>
 			<div class="section-content"><HowToPlayContent {keyboardLayout} headingLevel={4} /></div>
 		</details>
 	{:else}
@@ -28,14 +28,15 @@
 	h3 {
 		display: inline;
 		margin: 0;
-		color: var(--color-accent);
-		font-size: 20px;
+		--site-heading-outline: var(--interface-heading-outline);
+		font-size: 24px;
 		line-height: 1.4;
 	}
 	summary {
 		cursor: pointer;
 		color: var(--color-accent);
-		padding: 4px 0;
+		padding: 8px 0;
+		min-height: 44px;
 	}
 	summary:focus-visible {
 		outline: 2px solid var(--color-accent);

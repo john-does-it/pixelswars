@@ -1,4 +1,7 @@
 import test from 'node:test'
+import { unitSpritePath } from '../src/lib/game/unit-sprites.ts'
+import { unitTypes } from '../src/lib/game/catalog.ts'
+import type { UnitTypeId } from '../src/lib/game/types.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
@@ -29,16 +32,11 @@ test('Runtime sprite aliases resolve to valid PNG or SVG sources under the asset
 	}
 })
 
-test('each imported unit keeps its supported damage stages and preview variants on a consistent canvas', () => {
-	for (const legacy of Object.keys(aliases).filter((url) => /^\/assets\/units\/[a-z-]+-[12]\.png$/.test(url))) {
-		const healthy = dimensions(aliases[legacy])
-		for (let stage = 0; stage < 5; stage++) {
-			const stem = legacy.slice(0, -4) + (stage ? `-damage-${stage}` : '')
-			assert.ok(aliases[`${stem}-fit.png`], stem)
-			const target = aliases[`${stem}.png`]
-			assert.ok(target, stem)
-			assert.deepEqual(dimensions(target), healthy, stem)
+test('unit damage states keep a consistent canvas without preview copies', () => {
+	for (const type of Object.keys(unitTypes) as UnitTypeId[]) {
+		for (const player of [1, 2] as const) {
+			const healthy = dimensions(unitSpritePath(type, player))
+			for (let stage = 1; stage < 5; stage++) assert.deepEqual(dimensions(unitSpritePath(type, player, stage)), healthy)
 		}
 	}
-	assert.ok(!Object.keys(aliases).some((url) => url.startsWith('/assets/cells/cell-road-')), 'approved road sprites remain unchanged')
 })

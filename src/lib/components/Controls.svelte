@@ -7,8 +7,7 @@
 	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
 	import type { GameController, KeyboardLayout } from '$lib/game/types.js'
 	import HowToPlayModal from './HowToPlayModal.svelte'
-	import LanguageSelect from './LanguageSelect.svelte'
-	import SettingSelect from './SettingSelect.svelte'
+	import PreferencesPanel from './site/PreferencesPanel.svelte'
 	import StatsPanel from './StatsPanel.svelte'
 	import Modal from './Modal.svelte'
 	import UiIcon from './UiIcon.svelte'
@@ -128,78 +127,7 @@
 				{/if}
 			</div>
 		{/snippet}
-		{#snippet settings()}
-			<div class="settings-controls">
-				<div class="audio volume-control">
-					<button class="pixel-icon-button" aria-label={translate(preferences.volume > 0 ? messages.sound_on : messages.sound_off)} title={translate(preferences.volume > 0 ? messages.sound_on : messages.sound_off)} aria-pressed={preferences.volume > 0} onclick={() => updatePreferences({ volume: preferences.volume > 0 ? 0 : 100, sound: preferences.volume === 0 })}>
-						<UiIcon name={preferences.volume > 0 ? 'icon-play-sound' : 'icon-mute-sound'} />
-					</button>
-					<label for="sound-volume">{translate(messages.sound)}</label>
-					<input id="sound-volume" type="range" min="0" max="100" step="5" value={preferences.volume} aria-label={translate(messages.sound)} aria-valuetext={`${preferences.volume}%`} oninput={(event) => updatePreferences({ volume: event.currentTarget.valueAsNumber, sound: event.currentTarget.valueAsNumber > 0 })} />
-					<output aria-hidden="true">{preferences.volume}%</output>
-				</div>
-				<div class="audio-toggles">
-					<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-label={translate(gameState.music ? messages.music_on : messages.music_off)} title={translate(gameState.music ? messages.music_on : messages.music_off)} aria-pressed={gameState.music} onclick={() => (gameState.music = !gameState.music)}>
-						{translate(messages.music)}
-						<UiIcon name={gameState.music ? 'icon-play-sound' : 'icon-mute-sound'} />
-					</button>
-					<button class="audio pixel-icon-control" disabled={!gameState.sound} aria-pressed={preferences.unitSelectionSounds} onclick={() => updatePreferences({ unitSelectionSounds: !preferences.unitSelectionSounds })}>
-						{translate(messages.unit_selection_sound)}
-						<UiIcon name={preferences.unitSelectionSounds ? 'icon-play-sound' : 'icon-mute-sound'} />
-					</button>
-				</div>
-				<div class="preference-controls">
-					<LanguageSelect compact />
-					<SettingSelect
-						label={translate(messages.confirm_end_turn)}
-						value={preferences.confirmEndTurn ? 'on' : 'off'}
-						options={[
-							{ value: 'on', label: translate(messages.setting_on) },
-							{ value: 'off', label: translate(messages.setting_off) }
-						]}
-						onchange={(value) => updatePreferences({ confirmEndTurn: value === 'on' })}
-					/>
-					<SettingSelect
-						label={translate(messages.animations)}
-						value={preferences.animations ? 'on' : 'off'}
-						options={[
-							{ value: 'on', label: translate(messages.setting_on) },
-							{ value: 'off', label: translate(messages.setting_off) }
-						]}
-						onchange={(value) => updatePreferences({ animations: value === 'on' })}
-					/>
-					<SettingSelect
-						label={translate(messages.building_lights)}
-						value={preferences.buildingLights ? 'on' : 'off'}
-						disabled={!preferences.animations}
-						options={[
-							{ value: 'on', label: translate(messages.setting_on) },
-							{ value: 'off', label: translate(messages.setting_off) }
-						]}
-						onchange={(value) => updatePreferences({ buildingLights: value === 'on' })}
-					/>
-					<SettingSelect
-						label={translate(messages.unit_facing)}
-						value={preferences.unitFacing ? 'on' : 'off'}
-						options={[
-							{ value: 'on', label: translate(messages.setting_on) },
-							{ value: 'off', label: translate(messages.setting_off) }
-						]}
-						onchange={(value) => updatePreferences({ unitFacing: value === 'on' })}
-					/>
-					<SettingSelect
-						label={translate(messages.keyboard)}
-						ariaLabel={translate(messages.keyboard_movement_layout)}
-						value={gameState.keyboardLayout}
-						options={[
-							{ value: 'azerty', label: 'AZERTY · ZQSD' },
-							{ value: 'qwerty', label: 'QWERTY · WASD' }
-						]}
-						onchange={changeKeyboardLayout}
-					/>
-				</div>
-			</div>
-		{/snippet}
+		{#snippet settings()}<PreferencesPanel onmusic={(value) => (gameState.music = value)} onkeyboard={changeKeyboardLayout} />{/snippet}
 	</HowToPlayModal>
 {/if}
 
@@ -223,62 +151,6 @@
 			justify-content: center;
 			text-align: center;
 		}
-	}
-	.settings-controls {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-	}
-	.preference-controls {
-		display: grid;
-		gap: 10px;
-		width: 100%;
-		:global(label) {
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			width: 100%;
-		}
-		:global(select) {
-			width: 100%;
-			min-width: 0;
-		}
-		:global(label > span) {
-			white-space: normal;
-		}
-	}
-
-	.audio {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.audio-toggles {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0 1em;
-		width: 100%;
-	}
-
-	.volume-control {
-		width: 100%;
-		font: 700 16px / 1.5 var(--font-body);
-		min-height: 44px;
-		max-width: 100%;
-		flex-wrap: nowrap;
-		padding-inline: 0;
-	}
-	.volume-control input {
-		flex: 1 1 80px;
-		min-width: 30px;
-		width: 0;
-		min-height: 44px;
-		margin: 0;
-	}
-	.volume-control output {
-		min-width: 4ch;
-		text-align: right;
 	}
 
 	nav {

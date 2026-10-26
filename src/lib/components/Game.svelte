@@ -341,8 +341,8 @@
 	.board-details {
 		flex: none;
 		width: 100%;
-		background: rgb(0 0 0 / 15%);
-		backdrop-filter: blur(6px);
+		background: var(--site-cream);
+		border-top: var(--interface-border) solid var(--site-plum);
 	}
 	.board-actions {
 		padding: 16px var(--game-panel-inset);

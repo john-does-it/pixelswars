@@ -83,7 +83,7 @@
 		display: block;
 		padding: 0;
 		min-height: 0;
-		border: 1px solid var(--color-border-strong);
+		border: 2px solid var(--site-plum);
 		border-radius: 0;
 		touch-action: none;
 		cursor: crosshair;

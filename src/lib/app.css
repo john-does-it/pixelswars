@@ -219,11 +219,6 @@ button:not(.cell-container),
 	text-decoration: none;
 }
 
-button:hover:not(:disabled):not(.cell-container),
-.button:hover {
-	background-color: color-mix(in srgb, var(--button-background) 90%, white);
-}
-
 button.primary,
 .button.primary {
 	--button-background: var(--color-accent);

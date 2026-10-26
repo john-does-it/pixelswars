@@ -16,7 +16,7 @@
 		<button class="primary" aria-expanded={chooseDifficulty} onclick={() => (chooseDifficulty = !chooseDifficulty)}>{translate(messages.play_ai)}</button>
 		{#if chooseDifficulty}
 			<section aria-labelledby="difficulty-title">
-				<h3 id="difficulty-title">{translate(messages.choose_difficulty)}</h3>
+				<h3 class="pixel-heading" id="difficulty-title">{translate(messages.choose_difficulty)}</h3>
 				{#each levels as level}
 					<div class="level">
 						<a class="button" href={`${mapUrl}?ai=${level}`}>{translate(messages[`ai_${level}`])}</a>
@@ -46,8 +46,8 @@
 	}
 
 	h3 {
-		font-size: 16px;
-		color: var(--color-accent);
+		--site-heading-outline: var(--interface-heading-outline);
+		font-size: 24px;
 		margin: 0 0 12px;
 	}
 

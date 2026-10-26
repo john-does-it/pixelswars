@@ -6,6 +6,7 @@
 	import SiteFooter from '$lib/components/SiteFooter.svelte'
 	import { asset } from '$lib/game/asset-path'
 	import '$lib/app.css'
+	import '$lib/styles/site-tokens.css'
 	import { initializeProfile, syncProfile } from '$lib/profile.svelte.ts'
 	import { initializePreferences } from '$lib/preferences.svelte.js'
 	import { m as messages } from '$lib/paraglide/messages.js'
@@ -44,7 +45,7 @@
 </svelte:head>
 
 {#if boardPage}
-	{@render children()}
+	<div class="play-shell">{@render children()}</div>
 {:else}
 	<div class="site-shell">
 		<SiteNavbar />
@@ -55,11 +56,10 @@
 
 <style>
 	.site-shell {
-		--site-nav-height: 72px;
+		--site-nav-height: 0px;
 		display: flex;
 		flex-direction: column;
 		min-height: 100dvh;
-		padding-top: var(--site-nav-height);
 	}
 	.site-content {
 		flex: 1;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { unitSpritePath } from '$lib/game/unit-sprites'
 	import { resolve } from '$app/paths'
 	import { asset } from '$lib/game/asset-path'
 	import { describeMap } from '$lib/game/map-details'
@@ -21,7 +22,7 @@
 						{#each map.cells as cell, index}
 							{@const unit = units.get(index)}
 							<span class="cell-container {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}">
-								{#if unit}<img src={asset(`/assets/units/${unit.type}-${unit.player}.png`)} alt="" loading="lazy" />{/if}
+								{#if unit}<img src={asset(unitSpritePath(unit.type, unit.player))} alt="" loading="lazy" />{/if}
 							</span>
 						{/each}
 					</div>

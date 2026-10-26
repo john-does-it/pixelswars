@@ -15,7 +15,6 @@
 
 <footer id="credits" class="site-footer">
 	<button bind:this={creditsButton} onclick={() => (showCredits = true)} aria-haspopup="dialog">{translate(messages.credits)}</button>
-	<a href="https://github.com/john-does-it/pixelswars/issues" target="_blank" rel="noopener noreferrer">{translate(messages.footer_feedback)}</a>
 	<a href={resolve('/terms/', {})}>{translate(messages.footer_terms)}</a>
 </footer>
 
@@ -38,10 +37,14 @@
 		align-items: center;
 		gap: 8px 24px;
 		width: 100%;
-		max-width: 1320px;
-		margin: 32px auto 0;
-		padding: 0 20px 32px;
-		font-size: var(--font-size-ui);
+		max-width: none;
+		margin: 0;
+		padding: 12px 20px;
+		min-height: 69px;
+		justify-content: center;
+		background: var(--site-plum);
+		color: var(--site-cream);
+		font-size: 16px;
 		scroll-margin-top: calc(var(--site-nav-height) + 40px);
 	}
 	.site-footer > a,

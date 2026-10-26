@@ -6,7 +6,13 @@
 </script>
 
 <PlayerTransition {player} label={message}>
-	<div class="turn-announcement" role="status" aria-live="polite" aria-atomic="true">
+	<div class="turn-announcement pixel-heading" role="status" aria-live="polite" aria-atomic="true">
 		{message}
 	</div>
 </PlayerTransition>
+
+<style>
+	.turn-announcement {
+		font-size: inherit;
+	}
+</style>

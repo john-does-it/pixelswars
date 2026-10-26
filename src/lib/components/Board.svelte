@@ -12,7 +12,7 @@
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import type { Snippet } from 'svelte'
 
-	let { game, name, aiMode = false, camera = $bindable(), boardDetails, tutorialTarget }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; tutorialTarget?: number } = $props()
+	let { game, name, aiMode = false, camera = $bindable(), boardDetails, tutorialTarget, cellSize, onkeydown }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; tutorialTarget?: number; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void } = $props()
 	let boardElement = $state<HTMLElement>()
 	let hadSelection = false
 	const rangeClipId = $props.id()
@@ -70,8 +70,9 @@
 </script>
 
 <div class="board-layout" class:range-red={rangeUnit?.player === 2}>
-	<BattlefieldViewport state={gameState} {name} bind:camera {boardDetails}>
-		<div bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
+	<BattlefieldViewport state={gameState} {name} bind:camera {boardDetails} {cellSize}>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions (Keyboard commands are scoped to the embedded board.) -->
+		<div {onkeydown} bind:this={boardElement} class="board" tabindex="-1" role="group" aria-label={name} style:--cols={gameState.cols} style:--rows={gameState.rows}>
 			{#each gameState.cells as cell (cell.index)}
 				{@const unit = units.get(cell.index)}
 				<Cell
@@ -170,12 +171,13 @@
 	}
 
 	.board {
+		--color-accent: var(--site-yellow);
 		position: relative;
 		display: grid;
 		grid-template-columns: repeat(var(--cols), 1fr);
 		width: 100%;
 		height: 100%;
-		box-shadow: 0 12px 40px #0007;
+		box-shadow: 0 0 0 var(--interface-border) var(--site-plum);
 
 		&:focus {
 			outline: none;

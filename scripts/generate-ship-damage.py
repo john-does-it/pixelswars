@@ -1,7 +1,6 @@
 from pathlib import Path
 import base64
 import io
-import json
 from PIL import Image, ImageDraw
 
 # Reuse the recovered utility's palette and inclusive/exclusive drawing convention.
@@ -33,11 +32,9 @@ MARKS = {
 }
 
 def load(kind, player):
-    path = ROOT / f'assets/units/{kind}-player-{player}@2x.png.base64'
+    path = ROOT / f'assets/units/{kind}/{"blue" if player == 1 else "red"}/{kind}-{"blue" if player == 1 else "red"}-no-damage.png.base64'
     return Image.open(io.BytesIO(base64.b64decode(path.read_text()))).convert('RGBA')
 
-aliases_path = ROOT / 'src/lib/game/asset-aliases.json'
-aliases = json.loads(aliases_path.read_text())
 sheet = Image.new('RGB', (1000, 4 * 220 + 35), '#243226')
 labels = ImageDraw.Draw(sheet)
 for stage, label in enumerate(['Healthy', 'Light damage', 'Moderate damage', 'Heavy damage', 'Critical']):
@@ -61,15 +58,13 @@ for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player
             assert image.crop((0, 280 + offset, 400, 400)).tobytes() == original.crop((0, 280 + offset, 400, 400)).tobytes()
             data = io.BytesIO()
             image.save(data, format='PNG', optimize=True)
-            name = f'{kind}-player-{player}-damage-{stage}@2x.png'
+            color = 'blue' if player == 1 else 'red'
+            name = f'{kind}/{color}/{kind}-{color}-damage-{stage}.png'
             (ROOT / f'assets/units/{name}.base64').write_text(base64.b64encode(data.getvalue()).decode() + '\n')
-            for fit in ['', '-fit']:
-                aliases[f'/assets/units/{kind}-{player}-damage-{stage}{fit}.png'] = f'/assets/units/{name}'
             previous = image.copy()
         preview = image.resize((200, 200), Image.Resampling.NEAREST)
         sheet.paste(preview, (stage * 200, row * 220 + 35), preview)
     labels.text((5, row * 220 + 235), f'{kind} - player {player}', fill='white')
-aliases_path.write_text(json.dumps(aliases, ensure_ascii=False, indent='\t') + '\n')
 (ROOT / 'tmp').mkdir(exist_ok=True)
 sheet.save(ROOT / 'tmp/ship-damage-preview.png')
 print('Created 16 damage variants using the recovered pixel-damage method. Alpha, silhouette, wake and stage progression verified.')

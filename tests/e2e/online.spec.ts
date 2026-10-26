@@ -180,7 +180,7 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		] as const) {
 			await device.goto('/profile/')
 			await device.getByLabel('Nickname (optional)').fill(nickname)
-			await device.getByRole('button', { name: 'Save nickname' }).click()
+			await device.getByRole('button', { name: 'Save', exact: true }).click()
 			await expect(device.getByRole('status')).toHaveText('Nickname saved.')
 		}
 		await page.goto('/')

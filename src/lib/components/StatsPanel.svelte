@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Sprite from './Sprite.svelte'
 	import { asset } from '$lib/game/asset-path'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatList from './StatList.svelte'
@@ -32,8 +33,8 @@
 
 {#snippet terrainContent(previewCell: Cell | undefined)}
 	<div class="heading">
-		<h2>{previewCell ? (previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)) : translate(messages.field_information)}</h2>
-		{#if previewCell}<TerrainIcon cell={previewCell} />{/if}
+		<h2 class="pixel-heading">{previewCell ? (previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)) : translate(messages.field_information)}</h2>
+		{#if previewCell}<TerrainIcon cell={previewCell} size={64} />{/if}
 	</div>
 	{#if previewCell}
 		{#if previewCell.terrain !== 'void'}<StatList items={terrainStats(previewCell)} />{/if}
@@ -56,10 +57,10 @@
 {#snippet unitContent(previewUnit: Unit)}
 	<div class="heading unit-heading">
 		<div class="unit-name">
-			<h3>{matchPlayerName(previewUnit.player, aiMode, state.network?.player)}</h3>
-			<span>{unitName(previewUnit.type)}</span>
+			<h3 class="pixel-heading">{unitName(previewUnit.type)}</h3>
+			<span class:player-one={previewUnit.player === 1} class:player-two={previewUnit.player === 2}>{matchPlayerName(previewUnit.player, aiMode, state.network?.player)}</span>
 		</div>
-		<img class="unit-icon" src={asset(unitSprite(previewUnit, true))} alt="" />
+		<Sprite src={unitSprite(previewUnit)} size="m" />
 	</div>
 	<StatList items={statsFor(previewUnit)} />
 	{#if unitTypes[previewUnit.type].capacity}
@@ -69,7 +70,7 @@
 				<ul class="passenger-list">
 					{#each previewUnit.cargo as passenger (passenger.id)}
 						<li>
-							<img class="unit-icon" src={asset(unitSprite(passenger, true))} alt="" />
+							<Sprite src={unitSprite(passenger)} size="s" />
 							<span>{unitName(passenger.type)}</span>
 							<span class="passenger-health"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} />{passenger.health}/{unitTypes[passenger.type].maxHealth}</span>
 						</li>
@@ -88,19 +89,40 @@
 
 <style>
 	aside {
+		display: grid;
+		gap: 16px;
 		font-size: var(--font-size-ui);
 		line-height: 1.4;
-		--stat-gap: 4px 10px;
+		--stat-gap: 8px 16px;
+		--stat-label-gap: 12px;
 		--stat-margin: 8px 0;
-		--stat-icon-size: 28px;
+		--stat-icon-size: 32px;
 		--stat-description-padding: 8px;
 		--stat-description-margin-bottom: 0;
 	}
-	section + section {
-		border-top: 1px solid var(--color-border);
-		margin-top: 10px;
-		padding-top: 10px;
+	section {
+		padding: 20px;
+		border: 2px solid var(--site-plum);
+		background: var(--site-paper);
 	}
+	.unit-details {
+		background: var(--site-sky);
+	}
+	.player-one {
+		color: var(--player-blue);
+	}
+	.player-two {
+		color: var(--player-red);
+	}
+	.heading :global(.terrain-icon) {
+		border-radius: 0;
+	}
+	@media (max-width: 480px) {
+		section {
+			padding: 16px 12px;
+		}
+	}
+
 	.heading {
 		display: flex;
 		align-items: center;
@@ -110,14 +132,12 @@
 	.unit-name {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 8px;
 	}
-	.unit-icon {
-		width: 32px;
-		height: 32px;
-		object-fit: contain;
-		image-rendering: pixelated;
-		flex: none;
+	.passenger-details h3 {
+		font-family: var(--font-body);
+		color: var(--site-plum);
+		-webkit-text-stroke: 0;
 	}
 	.passenger-details {
 		margin-top: 12px;
@@ -131,7 +151,7 @@
 	}
 	.passenger-list li {
 		display: grid;
-		grid-template-columns: 32px minmax(0, 1fr) auto;
+		grid-template-columns: 40px minmax(0, 1fr) auto;
 		align-items: center;
 		gap: 10px;
 	}
@@ -154,8 +174,10 @@
 		line-height: 1.4;
 		margin: 0;
 	}
-	h3 {
-		color: var(--color-accent);
+	.heading .pixel-heading {
+		--site-heading-outline: var(--interface-heading-outline);
+		font-size: 24px;
+		line-height: 1.2;
 	}
 	p:not(.stat-description) {
 		margin: 8px 0 0;

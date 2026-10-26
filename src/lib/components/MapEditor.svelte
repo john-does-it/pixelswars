@@ -1,5 +1,9 @@
 <script lang="ts">
+	import { unitSpritePath } from '$lib/game/unit-sprites'
 	import { onMount, tick, untrack } from 'svelte'
+	import SelectionCorners from '$lib/components/site/SelectionCorners.svelte'
+	import DimensionStepper from '$lib/components/site/DimensionStepper.svelte'
+	import { resizeMap } from '$lib/map-editor/model.ts'
 	import UiIcon from '$lib/components/UiIcon.svelte'
 	import ZoomControls from '$lib/components/ZoomControls.svelte'
 	import { asset } from '$lib/game/asset-path'
@@ -10,23 +14,24 @@
 	import type { GameMap, MapCell, Owner, Player, UnitTypeId } from '$lib/game/types.js'
 	import { mapJson, newMap, paintMirroredCell, mirrorMap, mirroredIndex, reconnectBridgeSupports, validateMirrorDimensions, readMap, terrainBrushes, MapEditorError, type Brush, type MirrorMode } from '$lib/map-editor/model.ts'
 
-	let { sourceMap = null }: { sourceMap?: GameMap | null } = $props()
+	let { sourceMap = null, embedded = false }: { sourceMap?: GameMap | null; embedded?: boolean } = $props()
+	let paletteTab = $state<'terrain' | 'unit' | 'building'>('terrain')
 	const savedDraftKey = untrack(() => (sourceMap ? `pixelswar-map-editor-source-${sourceMap.id}-v1` : 'pixelswar-map-editor-draft-v1'))
 	const unitTypeIds = Object.keys(unitTypes) as UnitTypeId[]
 	const existingMaps = Object.values(import.meta.glob<{ default: GameMap }>('/src/lib/data/*.json', { eager: true }))
 		.map((module) => module.default)
 		.filter((candidate) => Array.isArray(candidate.cells))
 		.sort((firstMap, secondMap) => Number(firstMap.id) - Number(secondMap.id))
-	let map = $state(newMap(12, 10))
+	let map = $state(untrack(() => (embedded ? newMap(25, 17) : newMap(12, 10))))
 	let columns = $state<number | undefined>(12)
 	let rows = $state<number | undefined>(10)
 	let owner = $state<Owner>(0)
-	let team = $state<Player>(1)
+	let team = $state<Player>(untrack(() => (embedded ? 2 : 1)))
 	let existingId = $state('')
 	let tileSize = $state(48)
 	let brush = $state<Brush>({ kind: 'terrain', classes: ['-grass'], owner: 0 })
 	let history = $state<string[]>([])
-	let mirrorMode = $state<MirrorMode>('off')
+	let mirrorMode = $state<MirrorMode>(untrack(() => (embedded ? 'rotation' : 'off')))
 	let statusKey = $state('map_editor_draft_local')
 	let statusError = $state(false)
 	let hoveredCell = $state<number | null>(null)
@@ -40,7 +45,7 @@
 		zoomOut: () => (tileSize = Math.max(8, tileSize - 8)),
 		fit: fitMap
 	})
-	let jsonOutput: HTMLTextAreaElement
+	let jsonOutput = $state<HTMLTextAreaElement>()
 	let painting = false
 	let lastPainted: number | null = null
 	let strokeBrush: Brush = { kind: 'terrain', classes: ['-grass'], owner: 0 }
@@ -63,6 +68,10 @@
 		if (!canvasScroll) return
 		const style = getComputedStyle(canvasScroll)
 		const width = canvasScroll.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+		if (embedded) {
+			tileSize = width / map.cols
+			return
+		}
 		const height = Math.max(parseFloat(style.minHeight), parseFloat(style.maxHeight)) - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth)
 		tileSize = Math.max(1, Math.min(80, Math.floor(width / map.cols), Math.floor(height / map.rows)))
 		await tick()
@@ -99,6 +108,7 @@
 	function replaceMap(nextMap: GameMap, mode: MirrorMode = 'off') {
 		reconnectBridgeSupports(nextMap)
 		map = nextMap
+		if (embedded) void tick().then(fitMap)
 		mirrorMode = mode
 		columns = map.cols
 		rows = map.rows
@@ -114,6 +124,7 @@
 		}
 	}
 	function handleShortcut(event: KeyboardEvent) {
+		if (embedded && !(event.target instanceof Element && event.target.closest('.map-editor'))) return
 		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) {
 			event.preventDefault()
 			undo()
@@ -124,9 +135,13 @@
 		map[property] = value
 		saveDraft()
 	}
+	function decorateBlankMap(next: GameMap) {
+		if (embedded) for (const [index, cell] of next.cells.entries()) cell.classes = (index * 73) % 101 < 26 ? ['-grass', '-variant'] : ['-grass']
+		return next
+	}
 	function createMap() {
 		try {
-			const nextMap = newMap(Number(columns), Number(rows))
+			const nextMap = decorateBlankMap(newMap(Number(columns), Number(rows)))
 			validateMirrorDimensions(nextMap.cols, nextMap.rows, mirrorMode)
 			nextMap.name = t('map_editor_new_name')
 			remember()
@@ -136,16 +151,31 @@
 			reportError(error)
 		}
 	}
-	function changeMirrorMode(event: Event & { currentTarget: HTMLSelectElement }) {
+
+	function setMirrorMode(nextMode: MirrorMode) {
 		finishStroke()
-		const nextMode = event.currentTarget.value as MirrorMode
 		try {
 			const nextMap = mirrorMap($state.snapshot(map), nextMode)
 			remember()
 			replaceMap(nextMap, nextMode)
 			notify(nextMode === 'off' ? 'map_editor_mirror_disabled' : 'map_editor_mirror_enabled')
 		} catch (error) {
-			event.currentTarget.value = mirrorMode
+			reportError(error)
+		}
+	}
+	function changeMirrorMode(event: Event & { currentTarget: HTMLSelectElement }) {
+		setMirrorMode(event.currentTarget.value as MirrorMode)
+		event.currentTarget.value = mirrorMode
+	}
+	function resizeDimension(dimension: 'cols' | 'rows', value: number) {
+		finishStroke()
+		try {
+			const nextMap = resizeMap($state.snapshot(map), dimension === 'cols' ? value : map.cols, dimension === 'rows' ? value : map.rows, mirrorMode)
+			remember()
+			replaceMap(nextMap, mirrorMode)
+			void fitMap()
+			notify('map_editor_saved')
+		} catch (error) {
 			reportError(error)
 		}
 	}
@@ -194,8 +224,8 @@
 				await navigator.clipboard.writeText(json)
 				notify('map_editor_copied')
 			} catch {
-				jsonOutput.focus()
-				jsonOutput.select()
+				jsonOutput?.focus()
+				jsonOutput?.select()
 				notify('map_editor_copy_fallback')
 			}
 		} catch (error) {
@@ -261,7 +291,10 @@
 		mounted = true
 		initializePreferences()
 		if (sourceMap) map = structuredClone(sourceMap)
-		else map.name = t('map_editor_new_name')
+		else {
+			map.name = t('map_editor_new_name')
+			decorateBlankMap(map)
+		}
 		try {
 			const saved = localStorage.getItem(savedDraftKey)
 			if (saved) {
@@ -276,133 +309,184 @@
 			notify('map_editor_restore_failed', true)
 		}
 		replaceMap(map, mirrorMode)
+		let resize: ResizeObserver | undefined
+		if (embedded) {
+			resize = new ResizeObserver(() => void fitMap())
+			resize.observe(canvasScroll)
+		}
 		return () => {
+			resize?.disconnect()
 			finishStroke()
 			mounted = false
 		}
 	})
 </script>
 
-<svelte:head><title>Pixel’s War · {t('map_editor_title')}</title></svelte:head>
+<svelte:head
+	>{#if !embedded}<title>Pixel’s War · {t('map_editor_title')}</title>{/if}</svelte:head
+>
 <svelte:window onkeydown={handleShortcut} />
-<div class="map-editor">
-	{#if sourceMap}
-		<div class="draft-notice">
-			<strong>{t('map_draft')} · {sourceMap.name}</strong>
-			<p>{t('map_draft_editor_hint')}</p>
-			<button
-				onclick={() => {
-					remember()
-					replaceMap(structuredClone(sourceMap))
-					notify('map_editor_loaded')
-				}}>{t('map_draft_reload')}</button
-			>
+{#snippet boardCanvas()}
+	<div id="canvas-scroll" bind:this={canvasScroll}>
+		<div id="board" bind:this={board} role="group" aria-label={t('map_editor_board_label')} style:--tile-size={tileSize + 'px'} style:grid-template-columns={`repeat(${map.cols}, var(--tile-size))`} onpointerdown={startStroke} onpointermove={movePointer} onpointerup={finishStroke} onpointercancel={finishStroke} onlostpointercapture={finishStroke} oncontextmenu={(event) => event.preventDefault()}>
+			{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container pixel-corners {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" class:mirror-target={mirrorMode !== 'off' && hoveredCell !== null && (index === hoveredCell || index === mirroredIndex(map, hoveredCell, mirrorMode))} class:mirror-centre={mirrorMode !== 'off' && index === mirroredIndex(map, index, mirrorMode)} data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
+					>{#if unit}<img src={asset(unitSpritePath(unit.type, unit.player))} alt="" draggable="false" />{/if}</button
+				>{/each}
 		</div>
-	{/if}
-	<header>
-		<div class="header-content">
-			<div>
-				<h1>{t('map_editor_title')}</h1>
-			</div>
-			<div class="toolbar">
-				<button class="pixel-icon-button" id="undo" aria-label={t('map_editor_undo')} title={t('map_editor_undo')} disabled={history.length === 0} onclick={undo}><UiIcon name="previous-action" /></button><button id="export" class="primary" onclick={exportMap}>{t('map_editor_export')}</button>
-			</div>
-		</div>
-	</header>
-	<main>
-		<aside class="editor-palettes">
-			<section>
-				<h2>{t('map_editor_terrains')}</h2>
-				<div id="terrain-palette" class="palette">
-					{#each terrainBrushes as terrain}<button type="button" class="pixel-corners" data-brush={terrain.name} aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}><span class="palette-icon cell-container {terrain.classes.join(' ')}{terrain.classes.includes('-building') && owner ? ` -capturedby${owner}` : ''}" aria-hidden="true"></span></button>{/each}
+	</div>
+{/snippet}
+<div class="map-editor" class:embedded>
+	{#if embedded}
+		<div class="compact-editor">
+			<aside class="compact-controls">
+				<div class="sprite-tabs" role="group" aria-label={t('map_editor_brush', { name: brushName })}>
+					{#each [{ id: 'terrain', label: 'map_editor_terrains' }, { id: 'unit', label: 'map_editor_units' }, { id: 'building', label: 'buildings' }] as tab}
+						<button class="sprite-tab" aria-label={t(tab.label)} aria-pressed={paletteTab === tab.id} onclick={() => (paletteTab = tab.id as typeof paletteTab)}>
+							{#if tab.id === 'unit'}<img src={asset(unitSpritePath('infantry', 2))} alt="" />{:else}<span class="palette-icon cell-container {tab.id === 'terrain' ? '-grass -variant' : '-building -city -ongrass'}"></span>{/if}
+							{#if paletteTab === tab.id}<SelectionCorners />{/if}
+						</button>{/each}
 				</div>
-				<label
-					><span>{t('map_editor_owner')}</span><select
-						id="owner"
-						value={owner}
-						onchange={(event) => {
-							owner = Number(event.currentTarget.value) as Owner
-							if (brush.kind === 'terrain') brush.owner = owner
-						}}
-					>
-						<option value={0}>{t('map_editor_neutral')}</option>
-						<option value={1}>{t('map_editor_blue')}</option>
-						<option value={2}>{t('map_editor_red')}</option>
-					</select></label
+				<div class="compact-palette" role="group" aria-label={t(paletteTab === 'unit' ? 'map_editor_units' : paletteTab === 'building' ? 'buildings' : 'map_editor_terrains')}>
+					{#if paletteTab === 'unit'}
+						{#each unitTypeIds as unitType}
+							<button class="brush-button" aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}>
+								<img src={asset(unitSpritePath(unitType, team))} alt="" />
+								{#if brush.kind === 'unit' && brush.type === unitType}<SelectionCorners />{/if}
+							</button>{/each}
+					{:else}
+						{#each terrainBrushes.filter((terrain) => terrain.classes.includes('-building') === (paletteTab === 'building')) as terrain}
+							<button class="brush-button" aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}>
+								<span class="palette-icon cell-container {terrain.classes.join(' ')}"></span>
+								{#if brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')}<SelectionCorners />{/if}
+							</button>{/each}
+					{/if}
+				</div>
+				<div class="dimension-controls">
+					<DimensionStepper label={t('map_editor_columns')} value={map.cols} min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} onchange={(value) => resizeDimension('cols', value)} />
+					<DimensionStepper label={t('map_editor_rows')} value={map.rows} min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} onchange={(value) => resizeDimension('rows', value)} />
+				</div>
+				<div class="mirror-toggle"><span class="pixel-heading">{t('map_editor_mirror')}</span><button aria-pressed={mirrorMode !== 'off'} onclick={() => setMirrorMode(mirrorMode === 'off' ? 'rotation' : 'off')}>{t(mirrorMode === 'off' ? 'site_mirror_inactive' : 'site_mirror_active')}</button></div>
+				<a class="button submit-map site-action" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D" target="_blank" rel="noopener noreferrer">{t('site_submit_map')}</a>
+			</aside>
+			<div class="compact-board">
+				{@render boardCanvas()}
+				<div class="compact-actions"><button class="site-action" onclick={createMap}>{t('site_reset')}</button><button class="primary site-action" onclick={exportMap}>{t('site_export')}</button></div>
+				{#if statusError}<p role="alert" class="editor-error">{t(statusKey)}</p>{/if}
+			</div>
+		</div>
+	{:else}
+		{#if sourceMap}
+			<div class="draft-notice">
+				<strong>{t('map_draft')} · {sourceMap.name}</strong>
+				<p>{t('map_draft_editor_hint')}</p>
+				<button
+					onclick={() => {
+						remember()
+						replaceMap(structuredClone(sourceMap))
+						notify('map_editor_loaded')
+					}}>{t('map_draft_reload')}</button
 				>
-			</section>
-			<section>
-				<h2>{t('map_editor_units')}</h2>
-				<label
-					><span>{t('map_editor_team')}</span><select
-						id="team"
-						value={team}
-						onchange={(event) => {
-							team = Number(event.currentTarget.value) as Player
-							if (brush.kind === 'unit') brush.player = team
-						}}
-					>
-						<option value={1}>{t('map_editor_blue')}</option>
-						<option value={2}>{t('map_editor_red')}</option>
-					</select></label
-				>
-				<div id="unit-palette" class="palette">
-					{#each unitTypeIds as unitType}<button type="button" class="pixel-corners" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset('/assets/units/' + unitType + '-' + team + '.png')}')`} aria-hidden="true"></span></button>{/each}
-				</div>
-				<button id="erase-unit" data-brush="erase-unit" aria-pressed={brush.kind === 'erase-unit'} onclick={() => (brush = { kind: 'erase-unit' })}>{t('map_editor_erase')}</button>
-			</section>
-		</aside>
-		<div class="workspace">
-			<div class="canvas-toolbar">
-				<strong id="brush-name">{t('map_editor_brush', { name: brushName })}</strong><ZoomControls camera={editorCamera} />
 			</div>
-			<div id="canvas-scroll" bind:this={canvasScroll}>
-				<div id="board" bind:this={board} role="group" aria-label={t('map_editor_board_label')} style:--tile-size={tileSize + 'px'} style:grid-template-columns={`repeat(${map.cols}, var(--tile-size))`} onpointerdown={startStroke} onpointermove={movePointer} onpointerup={finishStroke} onpointercancel={finishStroke} onlostpointercapture={finishStroke} oncontextmenu={(event) => event.preventDefault()}>
-					{#each map.cells as cell, index}{@const unit = unitsByCell.get(index)}<button type="button" class="cell-container pixel-corners {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}{cell.capturePoints < 20 ? ' -halfcaptured' : ''}" class:mirror-target={mirrorMode !== 'off' && hoveredCell !== null && (index === hoveredCell || index === mirroredIndex(map, hoveredCell, mirrorMode))} class:mirror-centre={mirrorMode !== 'off' && index === mirroredIndex(map, index, mirrorMode)} data-cell={index} aria-label={cellLabel(index, cell, unit)} onclick={(event) => paintWithKeyboard(event, index)}
-							>{#if unit}<img src={asset('/assets/units/' + unit.type + '-' + unit.player + '.png')} alt="" draggable="false" />{/if}</button
-						>{/each}
+		{/if}
+		<header>
+			<div class="header-content">
+				<div>
+					<h1>{t('map_editor_title')}</h1>
+				</div>
+				<div class="toolbar">
+					<button class="pixel-icon-button" id="undo" aria-label={t('map_editor_undo')} title={t('map_editor_undo')} disabled={history.length === 0} onclick={undo}><UiIcon name="previous-action" /></button><button id="export" class="primary" onclick={exportMap}>{t('map_editor_export')}</button>
 				</div>
 			</div>
-			<div class="canvas-footer"><span id="coordinates">{hoveredCell === null ? t('map_editor_paint_hint') : coordinates(hoveredCell)}</span><span id="counts">{t('map_editor_counts', { cols: map.cols, rows: map.rows, blue: map.units.filter((unit) => unit.player === 1).length, red: map.units.filter((unit) => unit.player === 2).length })}</span></div>
-			<p id="status" role="status" class:error={statusError}>{t(statusKey)}</p>
-			<details id="json-panel" bind:open={jsonOpen}>
-				<summary>{t('map_editor_json_panel')}</summary>
-				<textarea id="json-output" bind:this={jsonOutput} value={jsonText} aria-label={t('map_editor_json_label')} readonly rows="10"></textarea><button id="copy" onclick={copyJson}>{t('map_editor_copy')}</button>
-			</details>
-			<p class="hint">{t('map_editor_hint')}</p>
-			<section class="submission" aria-labelledby="submit-map">
-				<h2 id="submit-map">{t('map_editor_submit')}</h2>
-				<ol>
-					<li>{t('map_editor_submit_prepare')}</li>
-					<li>{t('map_editor_submit_export')}</li>
-					<li>{t('map_editor_submit_github')}</li>
-				</ol>
-				<div class="submission-links">
-					<a class="button" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D">{t('map_editor_github')}</a>
-				</div>
-			</section>
-		</div>
-		<aside class="settings-panel">
-			<section class="map-settings">
-				<h2>{t('map_editor_map')}</h2>
-				<label>{t('map_editor_name')}<input id="name" maxlength="100" value={map.name} onchange={(event) => updateIdentity('name', event.currentTarget.value)} /></label>
-				<div class="row">
-					<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={rows} /></label>
-				</div>
-				<button id="new" onclick={createMap}>{t('map_editor_new')}</button>
-				<label class="mirror-setting">{t('map_editor_mirror')}<select id="mirror-mode" value={mirrorMode} onchange={changeMirrorMode} aria-describedby="mirror-help"><option value="off">{t('map_editor_mirror_off')}</option><option value="rotation">{t('map_editor_mirror_rotation')}</option></select></label>
-				<p id="mirror-help" class="hint">{t('map_editor_mirror_help')}</p>
-				<details>
-					<summary>{t('map_editor_start_from')}</summary>
+		</header>
+		<main>
+			<aside class="editor-palettes">
+				<section>
+					<h2>{t('map_editor_terrains')}</h2>
+					<div id="terrain-palette" class="palette">
+						{#each terrainBrushes as terrain}<button type="button" class="pixel-corners" data-brush={terrain.name} aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}><span class="palette-icon cell-container {terrain.classes.join(' ')}{terrain.classes.includes('-building') && owner ? ` -capturedby${owner}` : ''}" aria-hidden="true"></span></button>{/each}
+					</div>
 					<label
-						><span>{t('map_editor_existing')}</span><select id="existing" bind:value={existingId}>
-							<option value="">{t('map_editor_choose')}</option>{#each existingMaps as existing}<option value={existing.id}>{existing.id} · {mapName(existing.id)} ({existing.cols} × {existing.rows})</option>{/each}
+						><span>{t('map_editor_owner')}</span><select
+							id="owner"
+							value={owner}
+							onchange={(event) => {
+								owner = Number(event.currentTarget.value) as Owner
+								if (brush.kind === 'terrain') brush.owner = owner
+							}}
+						>
+							<option value={0}>{t('map_editor_neutral')}</option>
+							<option value={1}>{t('map_editor_blue')}</option>
+							<option value={2}>{t('map_editor_red')}</option>
 						</select></label
-					><button id="load" onclick={loadMap}>{t('map_editor_load')}</button><label class="button file-label">{t('map_editor_import')}<input id="import" onchange={importMap} type="file" accept=".json,application/json" /></label>
+					>
+				</section>
+				<section>
+					<h2>{t('map_editor_units')}</h2>
+					<label
+						><span>{t('map_editor_team')}</span><select
+							id="team"
+							value={team}
+							onchange={(event) => {
+								team = Number(event.currentTarget.value) as Player
+								if (brush.kind === 'unit') brush.player = team
+							}}
+						>
+							<option value={1}>{t('map_editor_blue')}</option>
+							<option value={2}>{t('map_editor_red')}</option>
+						</select></label
+					>
+					<div id="unit-palette" class="palette">
+						{#each unitTypeIds as unitType}<button type="button" class="pixel-corners" data-brush={unitType} aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}><span class="palette-icon" style:background-image={`url('${asset(unitSpritePath(unitType, team))}')`} aria-hidden="true"></span></button>{/each}
+					</div>
+					<button id="erase-unit" data-brush="erase-unit" aria-pressed={brush.kind === 'erase-unit'} onclick={() => (brush = { kind: 'erase-unit' })}>{t('map_editor_erase')}</button>
+				</section>
+			</aside>
+			<div class="workspace">
+				<div class="canvas-toolbar">
+					<strong id="brush-name">{t('map_editor_brush', { name: brushName })}</strong><ZoomControls camera={editorCamera} />
+				</div>
+				{@render boardCanvas()}
+				<div class="canvas-footer"><span id="coordinates">{hoveredCell === null ? t('map_editor_paint_hint') : coordinates(hoveredCell)}</span><span id="counts">{t('map_editor_counts', { cols: map.cols, rows: map.rows, blue: map.units.filter((unit) => unit.player === 1).length, red: map.units.filter((unit) => unit.player === 2).length })}</span></div>
+				<p id="status" role="status" class:error={statusError}>{t(statusKey)}</p>
+				<details id="json-panel" bind:open={jsonOpen}>
+					<summary>{t('map_editor_json_panel')}</summary>
+					<textarea id="json-output" bind:this={jsonOutput} value={jsonText} aria-label={t('map_editor_json_label')} readonly rows="10"></textarea><button id="copy" onclick={copyJson}>{t('map_editor_copy')}</button>
 				</details>
-			</section>
-		</aside>
-	</main>
+				<p class="hint">{t('map_editor_hint')}</p>
+				<section class="submission" aria-labelledby="submit-map">
+					<h2 id="submit-map">{t('map_editor_submit')}</h2>
+					<ol>
+						<li>{t('map_editor_submit_prepare')}</li>
+						<li>{t('map_editor_submit_export')}</li>
+						<li>{t('map_editor_submit_github')}</li>
+					</ol>
+					<div class="submission-links">
+						<a class="button" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D">{t('map_editor_github')}</a>
+					</div>
+				</section>
+			</div>
+			<aside class="settings-panel">
+				<section class="map-settings">
+					<h2>{t('map_editor_map')}</h2>
+					<label>{t('map_editor_name')}<input id="name" maxlength="100" value={map.name} onchange={(event) => updateIdentity('name', event.currentTarget.value)} /></label>
+					<div class="row">
+						<label>ID<input id="map-id" inputmode="numeric" value={map.id} onchange={(event) => updateIdentity('id', event.currentTarget.value)} /></label><label>{t('map_editor_columns')}<input id="columns" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={columns} /></label><label>{t('map_editor_rows')}<input id="rows" type="number" min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} bind:value={rows} /></label>
+					</div>
+					<button id="new" onclick={createMap}>{t('map_editor_new')}</button>
+					<label class="mirror-setting">{t('map_editor_mirror')}<select id="mirror-mode" value={mirrorMode} onchange={changeMirrorMode} aria-describedby="mirror-help"><option value="off">{t('map_editor_mirror_off')}</option><option value="rotation">{t('map_editor_mirror_rotation')}</option></select></label>
+					<p id="mirror-help" class="hint">{t('map_editor_mirror_help')}</p>
+					<details>
+						<summary>{t('map_editor_start_from')}</summary>
+						<label
+							><span>{t('map_editor_existing')}</span><select id="existing" bind:value={existingId}>
+								<option value="">{t('map_editor_choose')}</option>{#each existingMaps as existing}<option value={existing.id}>{existing.id} · {mapName(existing.id)} ({existing.cols} × {existing.rows})</option>{/each}
+							</select></label
+						><button id="load" onclick={loadMap}>{t('map_editor_load')}</button><label class="button file-label">{t('map_editor_import')}<input id="import" onchange={importMap} type="file" accept=".json,application/json" /></label>
+					</details>
+				</section>
+			</aside>
+		</main>
+	{/if}
 </div>
 
 <style>
@@ -667,5 +751,201 @@
 			max-height: 55vh;
 			padding: 12px;
 		}
+	}
+
+	.embedded {
+		font-size: 16px;
+	}
+	.compact-editor {
+		display: grid;
+		grid-template-columns: 197px minmax(0, 1fr);
+		gap: 48px;
+		align-items: start;
+	}
+	.compact-controls {
+		--selection-corner-size: 16px;
+		--selection-corner-inset: -6px;
+		gap: 24px;
+	}
+	.sprite-tabs {
+		display: flex;
+		width: max-content;
+		background: var(--site-yellow);
+		gap: 2px;
+	}
+	.sprite-tab,
+	.brush-button {
+		position: relative;
+		min-width: 0;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
+		min-height: 0;
+	}
+	.sprite-tab::before,
+	.sprite-tab::after,
+	.brush-button::before,
+	.brush-button::after,
+	.mirror-toggle button::before,
+	.mirror-toggle button::after {
+		display: none;
+	}
+	.sprite-tab[aria-pressed='true'],
+	.brush-button[aria-pressed='true'] {
+		z-index: 3;
+	}
+	.sprite-tab:focus-visible,
+	.brush-button:focus-visible {
+		z-index: 4;
+	}
+	.sprite-tab[aria-pressed='true'] {
+		background: var(--site-cream);
+	}
+	.sprite-tab img,
+	.brush-button img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		image-rendering: pixelated;
+		display: block;
+	}
+	.compact-palette {
+		display: grid;
+		grid-template-columns: repeat(4, 40px);
+		gap: 2px;
+		align-content: start;
+	}
+	.dimension-controls {
+		display: flex;
+		gap: 24px 16px;
+		flex-wrap: wrap;
+		align-items: start;
+	}
+	.mirror-toggle {
+		display: grid;
+		gap: 6px;
+	}
+	.mirror-toggle .pixel-heading {
+		--site-heading-outline: var(--site-card-outline);
+		font-size: 32px;
+	}
+	.mirror-toggle button {
+		min-width: 0;
+		min-height: 0;
+		justify-self: start;
+		padding: 0;
+		font: 700 24px var(--font-body);
+		color: var(--site-red);
+		background: transparent;
+		border: 0;
+		box-shadow: none;
+		paint-order: stroke fill;
+		-webkit-text-stroke: calc(var(--site-selector-outline) * 2) var(--site-plum);
+		text-shadow: none;
+	}
+	.submit-map {
+		justify-self: start;
+	}
+	.compact-board {
+		min-width: 0;
+	}
+	.embedded #canvas-scroll {
+		border: var(--site-board-border) solid var(--site-plum);
+		border-radius: 0;
+		min-height: 0;
+		max-height: none;
+		padding: 0;
+		overflow: hidden;
+		background: transparent;
+	}
+	.embedded #board {
+		margin: 0;
+	}
+	.compact-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 40px;
+		margin-top: 48px;
+	}
+	.editor-error {
+		font-size: 12px;
+		color: #92251e;
+		margin-top: 12px;
+	}
+	@media (max-width: 640px) {
+		.compact-editor {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+		.compact-controls {
+			grid-template-columns: 1fr 1fr;
+			gap: 16px;
+			align-items: start;
+		}
+		.sprite-tabs {
+			grid-column: 1/-1;
+		}
+		.compact-palette {
+			grid-row: 2/5;
+		}
+		.dimension-controls {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+		.compact-actions {
+			gap: 16px;
+			margin-top: 16px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.compact-controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 24px;
+		}
+		.sprite-tabs {
+			margin-right: 100%;
+		}
+		.compact-palette {
+			flex-basis: 100%;
+		}
+		.dimension-controls {
+			flex-wrap: nowrap;
+			gap: 24px;
+		}
+		.mirror-toggle .pixel-heading {
+			font-size: 24px;
+		}
+		.mirror-toggle button {
+			font-size: 20px;
+		}
+	}
+
+	@media (pointer: coarse) {
+		.sprite-tab,
+		.brush-button {
+			width: 44px;
+			height: 44px;
+		}
+		.compact-palette {
+			grid-template-columns: repeat(4, 44px);
+		}
+		.mirror-toggle button {
+			min-height: 44px;
+		}
+	}
+	.sprite-tab:hover:not(:disabled),
+	.brush-button:hover:not(:disabled),
+	.mirror-toggle button:hover:not(:disabled) {
+		background: transparent;
+		filter: none;
+	}
+	.sprite-tab[aria-pressed='true']:hover:not(:disabled) {
+		background: var(--site-cream);
 	}
 </style>

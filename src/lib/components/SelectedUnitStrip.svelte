@@ -51,8 +51,9 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: flex-start;
-		gap: 6px;
+		gap: 12px;
 		padding: 0;
+		color: var(--site-plum);
 		text-align: left;
 	}
 	img {
@@ -65,6 +66,8 @@
 		width: 75px;
 		height: 75px;
 		flex: none;
+		outline: 2px solid var(--site-plum);
+		outline-offset: -2px;
 	}
 	.sprite {
 		position: absolute;

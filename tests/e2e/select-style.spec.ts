@@ -18,6 +18,14 @@ test('settings selects use pixel arrows and keep focus feedback for keyboard nav
 	await expect(dialog).toBeVisible()
 	await dialog.getByRole('heading', { name: 'Options and help', exact: true }).click()
 	await dialog.screenshot({ path: testInfo.outputPath('settings.png') })
+	await dialog.locator('.dialog-content').evaluate((element) => {
+		element.scrollTop = element.scrollHeight
+	})
+	await expect(dialog.getByRole('button', { name: 'Close', exact: true })).toBeInViewport()
+	expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true)
+	await dialog.locator('.dialog-content').evaluate((element) => {
+		element.scrollTop = 0
+	})
 	if (!isMobile) {
 		await language.click()
 		await page.keyboard.press('Escape')

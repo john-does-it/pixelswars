@@ -8,7 +8,7 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
 
-	let { state: gameState, name, children, camera = $bindable(), boardDetails }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet } = $props()
+	let { state: gameState, name, children, camera = $bindable(), boardDetails, cellSize }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number } = $props()
 	let viewport = $state<HTMLDivElement>()
 	let mapSpace = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
@@ -44,7 +44,7 @@
 	}
 
 	async function setTileSize(requestedTileSize: number, anchor?: { x: number; y: number }, fitWholeMap = false) {
-		if (!viewport || !surface) return
+		if (cellSize !== undefined || !viewport || !surface) return
 		const frame = viewport.getBoundingClientRect()
 		const bounds = surface.getBoundingClientRect()
 		const point = anchor ?? { x: frame.left + viewport.clientWidth / 2, y: frame.top + viewport.clientHeight / 2 }
@@ -65,7 +65,9 @@
 		const availableWidth = viewport.clientWidth - parseFloat(padding.paddingLeft) - parseFloat(padding.paddingRight)
 		const availableHeight = viewport.clientHeight - parseFloat(padding.paddingTop) - parseFloat(padding.paddingBottom)
 		fitSize = Math.max(0.5, Math.min(availableWidth / gameState.cols, availableHeight / gameState.rows, maximumSize))
-		if (!initialized) {
+		if (cellSize !== undefined) {
+			tileSize = cellSize
+		} else if (!initialized) {
 			initialized = true
 			tileSize = fitSize
 		} else if (fitting) tileSize = fitSize
@@ -183,7 +185,7 @@
 	})
 </script>
 
-<div class="camera">
+<div class="camera" class:fixed-cells={cellSize !== undefined} style:--fixed-board-height={cellSize === undefined ? undefined : `${gameState.rows * cellSize}px`}>
 	<div class="map-zone">
 		<div class="board-frame">
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Scrollable region with keyboard zoom and pointer pan, its cells remain native buttons.) -->
@@ -211,13 +213,13 @@
 					}
 				}}
 				onwheel={(event) => {
-					if (!(event.target instanceof Element) || !event.target.closest('.board')) return
+					if (cellSize !== undefined || !(event.target instanceof Element) || !event.target.closest('.board')) return
 					event.preventDefault()
 					const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 200 : 1)
 					void setTileSize(tileSize * Math.exp(-Math.max(-100, Math.min(100, delta)) * 0.005), { x: event.clientX, y: event.clientY })
 				}}
 				onkeydown={(event) => {
-					if (event.key === '+' || event.key === '-' || event.key === '0') {
+					if (cellSize === undefined && (event.key === '+' || event.key === '-' || event.key === '0')) {
 						event.preventDefault()
 						event.stopPropagation()
 						void setTileSize(event.key === '0' ? fitSize : tileSize * (event.key === '+' ? 1.25 : 0.8), undefined, event.key === '0')
@@ -236,13 +238,23 @@
 				{/each}
 			{/if}
 		</div>
-		<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>
+		{#if cellSize === undefined}<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>{/if}
 	</div>
 	{@render boardDetails?.()}
 </div>
 
 <style>
+	.fixed-cells .board-frame {
+		flex: none;
+		height: calc(var(--fixed-board-height) + 2 * var(--map-edge-space));
+	}
+	.fixed-cells .map-zone,
+	.fixed-cells .board-frame {
+		background: transparent;
+	}
+
 	.camera {
+		--map-edge-space: calc(var(--pixel-corner-outset) + var(--interface-border) + 4px);
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -256,7 +268,7 @@
 		flex: 1;
 		min-height: 0;
 		min-width: 0;
-		background: var(--color-background);
+		background: var(--site-sky);
 	}
 	.board-zoom {
 		display: flex;
@@ -272,7 +284,7 @@
 		flex: 1;
 		min-height: 0;
 		min-width: 0;
-		background: var(--color-background);
+		background: var(--site-sky);
 	}
 	.board-viewport {
 		position: absolute;
@@ -292,7 +304,6 @@
 		}
 	}
 	.map-space {
-		--map-edge-space: calc(var(--pixel-corner-outset) + 2px);
 		padding: var(--map-edge-space);
 		position: relative;
 		min-width: 100%;

@@ -108,6 +108,8 @@
 
 	.section-title {
 		margin-bottom: 10px;
+		-webkit-text-stroke: 0;
+		font-family: var(--font-body);
 		color: var(--color-text);
 		font-size: 16px;
 	}

@@ -30,7 +30,7 @@ for (const filename of filesIn(destinationDirectory)) if (!generated.has(filenam
 const visualAssets = [...generated].filter((filename) => /\.(png|svg|webp|gif)$/i.test(filename)).map((filename) => `/assets/${relative(destinationDirectory, filename).replaceAll('\\', '/')}`)
 writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify(visualAssets.sort()))
 
-// The favicon intentionally retains its original artwork rather than the ×2 game sprite.
-const favicon = readFileSync(new URL('../assets/units/infantry-2-damage-2-fit.png.base64', import.meta.url), 'utf8').trim()
+// Reuse the canonical infantry sprite for the favicon.
+const favicon = readFileSync(new URL('../assets/units/infantry/red/infantry-red-damage-2.png.base64', import.meta.url), 'utf8').trim()
 writeFileSync(new URL('../static/favicon.png', import.meta.url), Buffer.from(favicon, 'base64'))
 writeFileSync(new URL('../static/favicon.svg', import.meta.url), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><image width="128" height="128" preserveAspectRatio="xMidYMid meet" style="image-rendering:pixelated" href="data:image/png;base64,${favicon}"/></svg>`)

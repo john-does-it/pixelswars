@@ -6,6 +6,7 @@ import { createSavedMatch, parseSavedMatch, savedMatchKey } from '../../src/lib/
 test('naval artillery is illustrated on home and can be placed for both teams in the editor', async ({ page }) => {
 	await page.goto('/')
 	const portrait = page.getByRole('img', { name: 'Artillery ship', exact: true })
+	await portrait.scrollIntoViewIfNeeded()
 	await expect(portrait).toBeVisible()
 	await expect.poll(() => portrait.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(200)
 	await page.goto('/map-editor/')
@@ -17,7 +18,7 @@ test('naval artillery is illustrated on home and can be placed for both teams in
 		await page.locator('[data-brush="artillery-ship"]').click()
 		const tile = page.locator(`#board [data-cell="${player - 1}"]`)
 		await tile.press('Enter')
-		await expect(tile.locator('img')).toHaveAttribute('src', new RegExp(`artillery-ship-player-${player}\\.svg$`))
+		await expect(tile.locator('img')).toHaveAttribute('src', new RegExp(`artillery-ship-${player === 1 ? 'blue' : 'red'}-no-damage\\.svg$`))
 		await expect.poll(() => tile.locator('img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(200)
 	}
 	await page.reload()
@@ -45,7 +46,7 @@ test('all naval artillery damage stages render in a resumed game and recruit fro
 	await expect(page.locator('.turn-sweep')).toHaveCount(0)
 	for (let index = 0; index < 10; index++) {
 		const stage = index % 5
-		const file = `artillery-ship-player-${index < 5 ? 1 : 2}${stage ? `-damage-${stage}` : ''}.svg`
+		const file = `artillery-ship/${index < 5 ? 'blue' : 'red'}/artillery-ship-${index < 5 ? 'blue' : 'red'}-${stage ? `damage-${stage}` : 'no-damage'}.svg`
 		await expect(page.locator(`[data-unit="${index}"] .unit-sprite`)).toHaveCSS('background-image', new RegExp(file))
 		const loaded = await page.evaluate(async (file) => {
 			const img = new Image()

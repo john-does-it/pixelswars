@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Sprite from './Sprite.svelte'
 	import { asset } from '$lib/game/asset-path'
 	import { selectedUnit } from '$lib/game/model.js'
 	import { unitTypes } from '$lib/game/catalog.js'
@@ -55,7 +56,7 @@
 								showPassengers = false
 							}}
 						>
-							<img src={asset(unitSprite(unit, true))} alt="" />
+							<Sprite src={unitSprite(unit)} size="s" />
 							<span class="passenger-stats">
 								<span class="health"><span class="status-icon health-icon"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /></span>{unit.health}/{definition.maxHealth}</span>
 								<span class="movement" title={`${translate(messages.stat_movement)}: ${unit.movement}/${definition.movement}`}><span class="status-icon movement-icon" class:spent={unit.movement === 0}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /></span></span>
@@ -116,6 +117,10 @@
 		gap: 8px;
 	}
 	.passenger {
+		background: var(--site-paper);
+		border: 2px solid var(--site-plum);
+		border-radius: 0;
+		color: var(--site-plum);
 		font-family: var(--font-body);
 		display: flex;
 		justify-content: space-between;

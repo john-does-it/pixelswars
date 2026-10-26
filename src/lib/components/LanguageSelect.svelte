@@ -5,7 +5,7 @@
 	import { isLocale } from '$lib/preferences-cookie.ts'
 	import SettingSelect from './SettingSelect.svelte'
 
-	let { compact = false, symbolOnly = false, hideLabel = false }: { compact?: boolean; symbolOnly?: boolean; hideLabel?: boolean } = $props()
+	let { site = false, compact = false, symbolOnly = false, hideLabel = false }: { site?: boolean; compact?: boolean; symbolOnly?: boolean; hideLabel?: boolean } = $props()
 	const languages = $derived([
 		{ value: 'en', symbol: '🇬🇧', label: translate(messages.language_english) },
 		{ value: 'de', symbol: '🇩🇪', label: translate(messages.language_german) },
@@ -18,7 +18,14 @@
 	}
 </script>
 
-{#if symbolOnly}
+{#if site}
+	<label class="site-language button"
+		><span aria-hidden="true">{languages.find((language) => language.value === preferences.locale)?.label}</span>
+		<select aria-label={translate(messages.language)} value={preferences.locale} onchange={(event) => changeLanguage(event.currentTarget.value)}>
+			{#each languages as language}<option value={language.value}>{language.label}</option>{/each}
+		</select></label
+	>
+{:else if symbolOnly}
 	<div class="language-symbol">
 		<span aria-hidden="true">{languages.find((language) => language.value === preferences.locale)?.symbol}</span>
 		<select class="language-select" aria-label={translate(messages.language)} title={translate(messages.language)} value={preferences.locale} onchange={(event) => changeLanguage(event.currentTarget.value)}>
@@ -30,6 +37,28 @@
 {/if}
 
 <style>
+	.site-language {
+		position: relative;
+		display: inline-block;
+		font-size: 16px;
+		padding: 14px 16px 17px;
+		white-space: nowrap;
+		cursor: pointer;
+		margin: 0;
+	}
+	.site-language select {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		cursor: pointer;
+	}
+	.site-language:has(select:focus-visible) {
+		outline: 3px solid var(--site-plum);
+		outline-offset: 4px;
+	}
+
 	.language-symbol {
 		position: relative;
 		width: 64px;
@@ -51,5 +80,11 @@
 	}
 	option {
 		color: var(--color-text);
+	}
+	@media (max-width: 360px) {
+		.site-language {
+			font-size: 12px;
+			padding: 8px;
+		}
 	}
 </style>

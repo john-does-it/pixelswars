@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { unitSpritePath } from '$lib/game/unit-sprites'
+	import Sprite from './Sprite.svelte'
 	import { m as messages } from '$lib/paraglide/messages.js'
 	import { matchPlayerName, translate } from '$lib/i18n.svelte.js'
 	import type { GameState } from '$lib/game/types.js'
@@ -14,8 +15,8 @@
 		<div class="summary-row">
 			<div class="summary-details">
 				<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
-					<img src={asset(`/assets/units/infantry-${state.player}-fit.png`)} alt={matchPlayerName(state.player, aiMode, state.network?.player)} />
-					<div class="turn-details"><span class="map-name">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
+					<Sprite src={unitSpritePath('infantry', state.player)} alt={matchPlayerName(state.player, aiMode, state.network?.player)} size="m" />
+					<div class="turn-details"><span class="map-name pixel-heading">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
 				</div>
 			</div>
 			<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
@@ -28,8 +29,8 @@
 	.match-summary {
 		flex: none;
 		width: 100%;
-		background: rgb(0 0 0 / 15%);
-		backdrop-filter: blur(6px);
+		background: var(--site-yellow);
+		border-bottom: var(--interface-border) solid var(--site-plum);
 	}
 	.summary-content {
 		padding: 16px var(--game-panel-inset);
@@ -62,39 +63,37 @@
 	}
 	.turn {
 		display: flex;
-		align-items: flex-start;
-		flex-wrap: wrap;
+		align-items: center;
+		min-width: 0;
 		gap: 8px;
 		font-weight: bold;
-		img {
-			width: 44px;
-			height: 44px;
-			object-fit: contain;
-			image-rendering: pixelated;
-		}
-		span {
-			color: var(--color-accent);
-		}
 	}
 
 	.turn-details {
+		min-width: 0;
 		display: grid;
 		gap: 2px;
 	}
 	.map-name {
-		font-weight: 400;
+		--site-heading-outline: var(--interface-heading-outline);
+		font-size: 28px;
+		font-weight: 700;
+		overflow-wrap: anywhere;
 	}
 	.turn-details strong {
 		font-size: 20px;
-		color: var(--color-accent);
+		color: var(--site-plum);
 	}
 	.player-one {
-		color: #8dcbff;
+		color: var(--player-blue);
 	}
 	.player-two {
-		color: #ffb3b1;
+		color: var(--player-red);
 	}
 	@media (max-width: 900px) {
+		.map-name {
+			font-size: 24px;
+		}
 		.summary-content {
 			padding-block: 8px;
 			gap: 8px;

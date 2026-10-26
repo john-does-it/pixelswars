@@ -1,5 +1,5 @@
 import { unitTypes } from './catalog.ts'
-import type { Unit } from './types.ts'
+import type { Unit, UnitTypeId, Player } from './types.ts'
 
 // Five equal health bands, relative to each unit type's maximum health.
 export function damageStage(unit: Pick<Unit, 'type' | 'health'>): number {
@@ -11,7 +11,14 @@ export function damageStage(unit: Pick<Unit, 'type' | 'health'>): number {
 	return 4
 }
 
-export function unitSprite(unit: Pick<Unit, 'type' | 'player' | 'health'>, fit = false): string {
-	const stage = damageStage(unit)
-	return `/assets/units/${unit.type}-${unit.player}${stage ? `-damage-${stage}` : ''}${fit ? '-fit' : ''}.png`
+/** One source per unit, team and damage state, shared by every display size. */
+export function unitSpritePath(type: UnitTypeId, player: Player, stage = 0): string {
+	const color = player === 1 ? 'blue' : 'red'
+	const damage = stage ? `damage-${stage}` : 'no-damage'
+	const extension = type === 'artillery-ship' ? 'svg' : 'png'
+	return `/assets/units/${type}/${color}/${type}-${color}-${damage}.${extension}`
+}
+
+export function unitSprite(unit: Pick<Unit, 'type' | 'player' | 'health'>): string {
+	return unitSpritePath(unit.type, unit.player, damageStage(unit))
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { unitSpritePath } from '$lib/game/unit-sprites'
 	import { onMount, type Snippet } from 'svelte'
-	import { asset } from '$lib/game/asset-path'
+	import Sprite from './Sprite.svelte'
 	import { turnTransitionDuration } from '$lib/game/timing.js'
 	import type { Player } from '$lib/game/types.js'
 
@@ -41,7 +42,7 @@
 			{/each}
 		</div>
 		<div class="transition-content">
-			<img class="transition-unit" src={asset(`/assets/units/infantry-${player}-fit.png`)} alt="" />
+			<div class="transition-unit"><Sprite src={unitSpritePath('infantry', player)} size="xl" /></div>
 			{@render children()}
 		</div>
 	</div>
@@ -75,7 +76,7 @@
 	}
 
 	.turn-sweep {
-		--transition-color: #174a70;
+		--transition-color: var(--site-sky);
 		position: relative;
 		width: 100%;
 		height: 100%;
@@ -83,10 +84,10 @@
 		place-items: center;
 		overflow-x: hidden;
 		overflow-y: auto;
-		color: #ffffff;
+		color: var(--site-plum);
 
 		&.red {
-			--transition-color: #792d3a;
+			--transition-color: var(--site-yellow);
 		}
 	}
 	.transition-bands {
@@ -108,7 +109,8 @@
 	}
 
 	.transition-content {
-		font-family: var(--font-body);
+		--site-heading-outline: var(--interface-heading-outline);
+		font-family: var(--font-display);
 		position: relative;
 		width: min(960px, calc(100% - 32px));
 		margin: auto;
@@ -117,15 +119,11 @@
 		font-weight: bold;
 		line-height: 1.5;
 		text-align: center;
-		text-shadow: 2px 2px #0006;
+		text-shadow: none;
 		animation: message-sweep var(--turn-duration) ease-in-out both;
 	}
 	.transition-unit {
 		display: block;
-		width: clamp(64px, 12vw, 112px);
-		height: clamp(64px, 12vw, 112px);
-		object-fit: contain;
-		image-rendering: pixelated;
 		margin: 0 auto 20px;
 		filter: drop-shadow(0 6px 0 #0003);
 	}

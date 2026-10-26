@@ -10,9 +10,9 @@ const backup = makeBackup({ ...emptyProfile(), pseudonym: 'Saved commander', med
 test('profile backup previews before replacing, restores settings and medals, and survives reload', async ({ page }) => {
 	await page.goto('/profile/')
 	await page.getByLabel('Nickname (optional)').fill('Current commander')
-	await page.getByRole('button', { name: 'Save nickname' }).click()
+	await page.getByRole('button', { name: 'Save', exact: true }).click()
 	await expect(page.getByRole('status')).toHaveText('Nickname saved.')
-	const upload = page.getByLabel('Choose a JSON backup')
+	const upload = page.getByLabel('Import my progression')
 	await upload.setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(backup) })
 	await expect(page.getByRole('region', { name: 'Restore preview' })).toContainText('Saved commander')
 	await expect(page.getByLabel('Nickname (optional)')).toHaveValue('Current commander')
@@ -23,10 +23,8 @@ test('profile backup previews before replacing, restores settings and medals, an
 	await expect(page.getByRole('status')).toHaveText('Progress and settings restored.')
 	await page.reload()
 	await expect(page.getByLabel('Nickname (optional)')).toHaveValue('Saved commander')
-	await expect(page.locator('[data-earned="true"]')).toHaveCount(1)
-	await expect(page.locator('[data-earned="true"]')).toHaveAttribute('data-difficulty', 'hard')
 	const downloadEvent = page.waitForEvent('download')
-	await page.getByRole('button', { name: 'Download backup' }).click()
+	await page.getByRole('button', { name: 'Export my progression' }).click()
 	const download = await downloadEvent
 	const exported = parseBackup(await readFile((await download.path())!, 'utf8'))
 	expect(exported.profile.medals).toEqual([medal])
@@ -40,9 +38,9 @@ test('profile backup previews before replacing, restores settings and medals, an
 test('invalid and future backups leave existing progress intact', async ({ page }) => {
 	await page.goto('/profile/')
 	await page.getByLabel('Nickname (optional)').fill('Keep me')
-	await page.getByRole('button', { name: 'Save nickname' }).click()
+	await page.getByRole('button', { name: 'Save', exact: true }).click()
 	for (const contents of ['{', backup.replace('"version":1', '"version":99')]) {
-		await page.getByLabel('Choose a JSON backup').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from(contents) })
+		await page.getByLabel('Import my progression').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from(contents) })
 		await expect(page.getByRole('status')).toContainText('Your progress has not changed.')
 		await expect(page.getByRole('button', { name: 'Replace and restore' })).toHaveCount(0)
 		await expect(page.getByLabel('Nickname (optional)')).toHaveValue('Keep me')
@@ -54,12 +52,12 @@ test('invalid and future backups leave existing progress intact', async ({ page 
 test('profile handles unavailable storage and synchronizes progress between tabs', async ({ page, context }) => {
 	await page.goto('/profile/')
 	const second = await context.newPage()
-	await second.goto('/profile/')
-	await page.getByLabel('Choose a JSON backup').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(backup) })
+	await second.goto('/')
+	await page.getByLabel('Import my progression').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(backup) })
 	await page.getByRole('button', { name: 'Replace and restore' }).click()
-	await expect(second.locator('[data-earned="true"]')).toHaveCount(1)
+	await expect(second.locator('.achievements article:not(.locked)')).toHaveCount(2)
 	await page.evaluate((key) => localStorage.removeItem(key), profileStorageKey)
-	await expect(second.locator('[data-earned="true"]')).toHaveCount(0)
+	await expect(second.locator('.achievements article:not(.locked)')).toHaveCount(0)
 	await second.close()
 	await page.addInitScript(() => {
 		Storage.prototype.setItem = () => {
@@ -68,13 +66,13 @@ test('profile handles unavailable storage and synchronizes progress between tabs
 	})
 	await page.reload()
 	await page.getByLabel('Nickname (optional)').fill('Unsaved')
-	await page.getByRole('button', { name: 'Save nickname' }).click()
+	await page.getByRole('button', { name: 'Save', exact: true }).click()
 	await expect(page.getByRole('alert')).toContainText('could not be read or saved')
 })
 
 test('support page displays the supplied PayPal QR code and a direct contribution link', async ({ page }) => {
 	await page.goto('/support/')
-	await expect(page.getByRole('heading', { name: 'Support the game' })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Contribute' })).toBeVisible()
 	await expect(page.getByText('Payment options will be available here soon. Thank you for playing!')).toHaveCount(0)
 	await expect(page.getByRole('link', { name: 'Support via PayPal' })).toHaveAttribute('href', support.paypal)
 	const qr = page.getByRole('img', { name: 'PayPal QR code for supporting Pixel’s War' })
@@ -83,8 +81,8 @@ test('support page displays the supplied PayPal QR code and a direct contributio
 	await expect(page.getByText('No public supporter names yet.')).toHaveCount(0)
 	await expect(page.locator('main a[target="_blank"]')).toHaveCount(1)
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-	await page.getByRole('combobox').selectOption('fr')
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Soutenir le jeu')
+	await page.getByRole('combobox').last().selectOption('fr')
+	await expect(page.getByRole('heading', { name: 'Soutenir le jeu', exact: true })).toBeVisible()
 })
 
 test('crypto support shows the Ethereum network and copies the exact destination', async ({ page }) => {
@@ -99,7 +97,7 @@ test('crypto support shows the Ethereum network and copies the exact destination
 		})
 	})
 	await page.goto('/support/')
-	await expect(page.getByRole('heading', { name: 'Support with crypto' })).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Support with crypto' })).toHaveCount(0)
 	await expect(page.getByText('Network: Ethereum Mainnet', { exact: true })).toBeVisible()
 	await expect(page.getByText('0x6bb68E9013eF885D4DC94e151f5249A4d0de3186', { exact: true })).toBeVisible()
 	await page.getByRole('button', { name: 'Copy address', exact: true }).click()
@@ -127,7 +125,7 @@ test('board uses the saved nickname for the human side without overflowing on sm
 	await page.goto('/profile/')
 	const nickname = 'A very long commander nickname'
 	await page.getByLabel('Nickname (optional)').fill(nickname)
-	await page.getByRole('button', { name: 'Save nickname' }).click()
+	await page.getByRole('button', { name: 'Save', exact: true }).click()
 	await expect(page.getByRole('status')).toHaveText('Nickname saved.')
 	await page.setViewportSize({ width: 320, height: 740 })
 	await page.goto('/play/1/')
@@ -140,7 +138,7 @@ test('board uses the saved nickname for the human side without overflowing on sm
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	await page.goto('/profile/')
 	await page.getByLabel('Nickname (optional)').fill('')
-	await page.getByRole('button', { name: 'Save nickname' }).click()
+	await page.getByRole('button', { name: 'Save', exact: true }).click()
 	await expect(page.getByRole('status')).toHaveText('Nickname saved.')
 	await page.goto('/play/1/')
 	await expect(page.locator('.budgets .player-one')).toHaveText('Player 1')

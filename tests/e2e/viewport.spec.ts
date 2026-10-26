@@ -156,7 +156,7 @@ test('budgets sit below the summary in its panel and controls stay aligned indep
 		const rightCard = (await playerCards.last().boundingBox())!
 		expect(rightCard.x + rightCard.width).toBeCloseTo(panel.x + panel.width - panelInset, 0)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-		await expect(page.locator('.map-space')).toHaveCSS('padding', '7px')
+		await expect(page.locator('.map-space')).toHaveCSS('padding', '13px')
 		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
 			await page.getByRole('button', { name, exact: true }).click()
 			const after = await geometry()

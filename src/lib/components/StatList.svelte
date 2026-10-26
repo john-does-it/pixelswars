@@ -27,6 +27,10 @@
 		align-items: center;
 		gap: var(--stat-gap, 8px 12px);
 		margin: var(--stat-margin, 1em 0);
+		width: var(--stat-width, auto);
+		max-width: 100%;
+		font-weight: var(--stat-weight, inherit);
+		letter-spacing: var(--stat-tracking, normal);
 	}
 
 	dt {
@@ -34,7 +38,7 @@
 		overflow-wrap: anywhere;
 		display: flex;
 		align-items: center;
-		gap: 7px;
+		gap: var(--stat-label-gap, 7px);
 	}
 
 	dd {
