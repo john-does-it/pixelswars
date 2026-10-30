@@ -25,8 +25,8 @@ test('painting and erasing diagonal land updates the junction without repainting
 	assert.ok(!map.cells[12].classes.includes(marker))
 })
 
-test('voids, bridges, bridge supports and map edges never create a false shore junction', () => {
-	for (const classes of [['-void'], ['-road', '-bridge', '-v'], ['-water', '-under-bridge', '-h']]) {
+test('bridges, bridge supports and map edges never create a false shore junction', () => {
+	for (const classes of [['-road', '-bridge', '-v'], ['-water', '-under-bridge', '-h']]) {
 		const map = junctionMap()
 		map.cells[6].classes = classes
 		assert.ok(!waterJunctionClasses(map, 12).includes(marker))

@@ -31,8 +31,7 @@ export const terrainTypes: Record<TerrainId, TerrainDefinition> = {
 	building: { name: 'Building', cost: 2, defense: 40 },
 	road: { name: 'Road', cost: 1, defense: 0 },
 	forest: { name: 'Forest', cost: 3, defense: 30 },
-	blocker: { name: 'Obstacle', cost: 1, defense: 0 },
-	void: { name: 'Void', cost: 0, defense: 0 }
+	blocker: { name: 'Obstacle', cost: 1, defense: 0 }
 }
 
 export function isUnitTypeId(value: string): value is UnitTypeId {

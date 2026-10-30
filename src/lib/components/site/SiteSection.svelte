@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	let { id, tone = 'cream', wide = false, width, children }: { id: string; tone?: 'cream' | 'yellow' | 'sky' | 'silver'; wide?: boolean; width?: string; children: Snippet } = $props()
+	let { id, tone = 'cream', wide = false, width, children }: { id: string; tone?: 'cream' | 'yellow' | 'yellow-light' | 'sky' | 'silver'; wide?: boolean; width?: string; children: Snippet } = $props()
 </script>
 
 <section {id} class="site-section" class:wide style:--section-background={`var(--site-${tone})`}>

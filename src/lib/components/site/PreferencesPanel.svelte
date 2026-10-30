@@ -89,23 +89,25 @@
 	}
 	.audio-toggles {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: 1fr;
 		gap: 16px;
 	}
 	.audio-toggle {
 		display: flex;
 		justify-content: space-between;
-		padding: 12px;
+		padding: 0;
+		align-items: center;
+		min-height: 44px;
 		gap: 8px;
-		border: 2px solid var(--site-plum);
-		background: var(--site-paper);
+		border: 0;
+		background: transparent;
 		color: var(--site-plum);
 		min-width: 0;
 		text-align: left;
 		line-height: 1.4;
 	}
 	.audio-toggle:hover:not(:disabled) {
-		background: var(--site-paper);
+		background: transparent;
 		filter: none;
 	}
 	.audio-toggle span {
@@ -121,7 +123,7 @@
 
 	.preferences-panel {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: 1fr;
 		gap: 24px;
 	}
 	.preferences-panel :global(label) {

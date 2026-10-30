@@ -86,11 +86,11 @@
 	}
 
 	.heading h2 {
-		--site-heading-outline: var(--interface-heading-outline);
+		--site-heading-outline: var(--site-card-outline);
 		min-width: 0;
 		margin: 4px 0 0;
 		font-size: 32px;
-		line-height: 1.2;
+		line-height: 1;
 		overflow-wrap: anywhere;
 	}
 	@media (max-width: 640px) {

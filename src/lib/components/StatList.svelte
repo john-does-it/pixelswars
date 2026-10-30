@@ -52,6 +52,7 @@
 		width: var(--stat-icon-size, 18px);
 		height: var(--stat-icon-size, 18px);
 		flex: none;
+		align-self: center;
 	}
 
 	img {

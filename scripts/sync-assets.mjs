@@ -28,7 +28,15 @@ for (const source of filesIn(sourceDirectory)) {
 // Keep the public tree in sync, including removal of retired artwork and docs.
 for (const filename of filesIn(destinationDirectory)) if (!generated.has(filename)) unlinkSync(filename)
 const visualAssets = [...generated].filter((filename) => /\.(png|svg|webp|gif)$/i.test(filename)).map((filename) => `/assets/${relative(destinationDirectory, filename).replaceAll('\\', '/')}`)
-writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify(visualAssets.sort()))
+// CSS cache-version suffixes are part of the browser cache key. Preload the
+// exact URL used by every terrain/capture state, including currently hidden ones.
+const gameStyles = readFileSync(new URL('../src/lib/app.css', import.meta.url), 'utf8')
+for (const match of gameStyles.matchAll(/url\(['"]?(\/assets\/[^'"\s)]+)['"]?\)/g)) {
+	const path = match[1]
+	if (!visualAssets.includes(path.split('?')[0])) throw new Error(`Missing CSS sprite: ${path}`)
+	visualAssets.push(path)
+}
+writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify([...new Set(visualAssets)].sort()))
 
 // Reuse the canonical infantry sprite for the favicon.
 const favicon = readFileSync(new URL('../assets/units/infantry/red/infantry-red-damage-2.png.base64', import.meta.url), 'utf8').trim()

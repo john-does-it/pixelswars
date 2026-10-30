@@ -379,10 +379,6 @@ button.pixel-icon-control:hover:not(:disabled) {
 
 /* Original terrain and unit sprites; layout lives in Svelte components. */
 
-.cell-container.-void {
-	background: var(--color-background);
-}
-
 .cell-container.-grass {
 	background-image: url('/assets/cells/grass/cell-grass-variant-2@2x.png');
 

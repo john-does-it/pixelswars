@@ -11,12 +11,8 @@ export class MapEditorError extends Error {
 }
 
 export const terrainBrushes = [
-	{ name: 'terrain_void', classes: ['-void'] },
 	{ name: 'terrain_grass', classes: ['-grass'] },
-	{ name: 'map_editor_grass_flowers', classes: ['-grass', '-variant'] },
-	{ name: 'map_editor_grass_varied', classes: ['-grass', '-variant3'] },
 	{ name: 'terrain_forest', classes: ['-forest', '-ongrass'] },
-	{ name: 'map_editor_forest_dense', classes: ['-forest', '-ongrass', '-variant'] },
 	{ name: 'terrain_moutain', classes: ['-moutain', '-ongrass'] },
 	{ name: 'terrain_blocker', classes: ['-blocker', '-ongrass'] },
 	{ name: 'terrain_road', classes: ['-road', '-h'] },
@@ -68,7 +64,22 @@ export function mirrorMap(map: GameMap, mode: MirrorMode): GameMap {
 	return result
 }
 
+export function variedTerrainBrush(brush: Brush, random = Math.random): Brush {
+	if (brush.kind !== 'terrain') return brush
+	const variants =
+		brush.classes.join(' ') === '-grass'
+			? [['-grass'], ['-grass', '-variant'], ['-grass', '-variant3']]
+			: brush.classes.join(' ') === '-forest -ongrass'
+				? [
+						['-forest', '-ongrass'],
+						['-forest', '-ongrass', '-variant']
+					]
+				: null
+	return variants ? { ...brush, classes: [...variants[Math.floor(random() * variants.length)]] } : brush
+}
+
 export function paintMirroredCell(map: GameMap, index: number, brush: Brush, mode: MirrorMode): void {
+	brush = variedTerrainBrush(brush)
 	if (mode === 'off') return paintCell(map, index, brush)
 	validateMirrorDimensions(map.cols, map.rows, mode)
 	if (!Number.isInteger(index) || !map.cells[index]) return
@@ -146,7 +157,7 @@ function reconnectCell(map: GameMap, index: number): void {
 	}
 	if (cell.classes.includes('-water') && !cell.classes.includes('-under-bridge')) {
 		// Horizontal shore names are reversed in the original game sprites.
-		const shores = adjacent.flatMap((neighbor, direction) => (neighbor !== -1 && !map.cells[neighbor].classes.includes('-water') && !map.cells[neighbor].classes.includes('-bridge') && !map.cells[neighbor].classes.includes('-void') ? [['-top', '-left', '-bottom', '-right'][direction]] : []))
+		const shores = adjacent.flatMap((neighbor, direction) => (neighbor !== -1 && !map.cells[neighbor].classes.includes('-water') && !map.cells[neighbor].classes.includes('-bridge') ? [['-top', '-left', '-bottom', '-right'][direction]] : []))
 		// The existing art has no horizontal one-cell channel or enclosed puddle.
 		// Keep open water for those shapes instead of displaying a broken corner.
 		if (shores.length > 2 || (shores.includes('-top') && shores.includes('-bottom'))) {
@@ -160,7 +171,6 @@ function reconnectCell(map: GameMap, index: number): void {
 }
 
 function validateUnitCell(cell: MapCell, type: UnitTypeId): void {
-	if (cell.classes.includes('-void')) throw new MapEditorError('map_editor_error_void')
 	if (cell.classes.includes('-blocker') && unitTypes[type].domain !== 'air') throw new MapEditorError('map_editor_error_blocker')
 	if (unitTypes[type].domain === 'naval') {
 		if (!cell.classes.includes('-water') && !cell.classes.includes('-naval-base')) throw new MapEditorError('map_editor_error_naval')
@@ -182,7 +192,6 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 	map.cells[index] = { classes: [...brush.classes], owner: brush.classes.includes('-building') ? brush.owner : 0, capturePoints: 20 }
 	map.units = map.units.filter((unit) => {
 		if (unit.cell !== index) return true
-		if (brush.classes.includes('-void')) return false
 		if (unitTypes[unit.type].domain === 'air') return true
 		if (unitTypes[unit.type].domain === 'naval') return brush.classes.includes('-water') || brush.classes.includes('-naval-base')
 		return !brush.classes.includes('-water') && !brush.classes.includes('-blocker')
@@ -202,7 +211,7 @@ export function readMap(text: string): GameMap {
 	newMap(input.cols, input.rows)
 	if (typeof input.id !== 'string' || !/^\d+$/.test(input.id) || Number(input.id) < 1 || typeof input.name !== 'string' || !input.name.trim()) throw new MapEditorError('map_editor_error_identity')
 	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
-	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker', '-void']
+	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker']
 	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-big-city', '-factory', '-hospital', '-airport', '-naval-base', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']
 	const allowedClasses = new Set([...baseClasses, ...modifiers, '-bridge', '-under-bridge', ...waterJunctionModifiers])
 	const cells = input.cells.map((cell) => {
@@ -213,7 +222,6 @@ export function readMap(text: string): GameMap {
 		if (cell.classes.includes('-bridge') && (!cell.classes.includes('-road') || cell.classes.includes('-h') === cell.classes.includes('-v') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
 		if (cell.classes.includes('-under-bridge') && (!cell.classes.includes('-water') || !cell.classes.includes('-h') || cell.classes.length !== 3)) throw new MapEditorError('map_editor_error_cell')
 		if (cell.classes.includes('-blocker') && (cell.classes.length !== 2 || !cell.classes.includes('-ongrass'))) throw new MapEditorError('map_editor_error_cell')
-		if (cell.classes.includes('-void') && (cell.classes.length !== 1 || cell.owner !== 0)) throw new MapEditorError('map_editor_error_cell')
 		return { classes: [...cell.classes], owner: cell.owner, capturePoints: cell.capturePoints }
 	})
 	if (!Array.isArray(input.units)) throw new MapEditorError('map_editor_error_units')

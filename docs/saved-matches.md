@@ -3,7 +3,7 @@
 One unfinished AI match is kept in browser storage under `pixelswars-saved-match`.
 The home page offers Resume, New game and Discard. Starting a different AI match
 or restarting an unfinished one requires confirmation. Local multiplayer, online
-matches, the tutorial and the development map do not replace this save.
+matches and the development map do not replace this save.
 
 The versioned save embeds the original map and keeps the units (including cargo),
 health, ammunition, movement, capture state, ownership, economy, turn, selection,

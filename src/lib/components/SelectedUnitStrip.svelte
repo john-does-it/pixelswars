@@ -31,12 +31,11 @@
 		{:else}
 			<span class="details">
 				<span class="preview-name">{name}</span>
-				{#if cell.terrain !== 'void'}
-					<span class="stats">
-						<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
-						<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.png')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
-					</span>
-				{/if}
+
+				<span class="stats">
+					<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
+					<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.png')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
+				</span>
 			</span>
 		{/if}
 	</button>

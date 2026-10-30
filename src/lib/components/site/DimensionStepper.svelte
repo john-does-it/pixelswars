@@ -17,10 +17,8 @@
 		justify-items: start;
 	}
 	.label {
-		font: 700 24px/1.2 var(--font-display);
-		color: var(--site-paper);
-		paint-order: stroke fill;
-		-webkit-text-stroke: calc(var(--site-card-outline) * 2) var(--site-plum);
+		font: 700 16px var(--font-body);
+		color: var(--site-plum);
 	}
 	.stepper {
 		display: flex;

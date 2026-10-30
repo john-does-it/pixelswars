@@ -42,10 +42,7 @@ try {
 				const index = Number(cell.getAttribute('data-cell'))
 				const left = (index % cols) * tileSize
 				const top = Math.floor(index / cols) * tileSize
-				if (cell.classList.contains('-void')) {
-					context.fillStyle = getComputedStyle(cell).backgroundColor
-					context.fillRect(left, top, tileSize, tileSize)
-				} else context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
+				context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
 				const unit = cell.querySelector('[data-unit]')
 				if (unit) context.drawImage(await sprite(unit.querySelector('.unit-sprite')), left + 1, top + 1, tileSize - 2, tileSize - 2)
 			}

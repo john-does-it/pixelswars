@@ -3,9 +3,7 @@
 	import type { Medal } from '$lib/profile.ts'
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
-	import TutorialPanel from './TutorialPanel.svelte'
-	import { tutorialTarget, type TutorialScenario, type TutorialController } from '$lib/game/tutorial.ts'
-	import { createGame, createTutorialGame } from '$lib/game/game.svelte.js'
+	import { createGame } from '$lib/game/game.svelte.js'
 	import { selectedUnit, unitAt, locked } from '$lib/game/model.js'
 	import { createAudio } from '$lib/game/audio.js'
 	import { preloadGameAssets } from '$lib/game/preload.js'
@@ -25,18 +23,17 @@
 	import type { GameState } from '$lib/game/types.js'
 	import { createSavedMatch, createMatchWriter, type SavedMatch } from '$lib/game/saved-match'
 
-	let { map, difficulty = null, connection, tutorial, resume, autosave = false, saveRaw = null, draft = false }: { map: GameMap; difficulty?: AiDifficulty | null; connection?: MatchConnection; tutorial?: TutorialScenario; resume?: SavedMatch; autosave?: boolean; saveRaw?: string | null; draft?: boolean } = $props()
+	let { map, difficulty = null, connection, resume, autosave = false, saveRaw = null, draft = false }: { map: GameMap; difficulty?: AiDifficulty | null; connection?: MatchConnection; resume?: SavedMatch; autosave?: boolean; saveRaw?: string | null; draft?: boolean } = $props()
 	let saveError = $state<string | null>(null)
 	let confirmRestart = $state(false)
 	let sessionId = untrack(() => resume?.id ?? '')
 	let writeSave: ReturnType<typeof createMatchWriter> | undefined
 	let audio = $state<AudioController>()
 	let game = $state<GameController>(untrack(() => createSession(resume)))
-	const tutorialProgress = $derived(tutorial ? (game as TutorialController).progress : undefined)
-	const title = $derived(draft ? `${translate(messages.map_draft)} · ${map.name}` : tutorial ? translate(messages[tutorial.title]) : mapName(map.id))
+	const title = $derived(draft ? `${translate(messages.map_draft)} · ${map.name}` : mapName(map.id))
 	const network = $derived(game.state.network)
 	const localTurn = $derived(!network || network.player === game.state.player)
-	const waiting = $derived(game.state.aiThinking || !localTurn || !!(network && network.phase !== 'playing') || !!tutorialProgress?.failed)
+	const waiting = $derived(game.state.aiThinking || !localTurn || !!(network && network.phase !== 'playing'))
 	let preferencesLoaded = $state(false)
 	let earnedMedal = $state<Medal | null>(null)
 	let recordedSession: GameController | undefined
@@ -45,7 +42,7 @@
 		const session = game
 		untrack(() => {
 			recordedSession = session
-			earnedMedal = recordVictory({ map: map.id, difficulty, winner: session.state.winner, tutorial: !!tutorial, online: !!connection })
+			earnedMedal = recordVictory({ map: map.id, difficulty, winner: session.state.winner, online: !!connection })
 		})
 	})
 	let showHelp = $state(false)
@@ -133,7 +130,7 @@
 
 	function createSession(saved?: SavedMatch) {
 		const options = { aiDifficulty: difficulty, sound: (name: string) => audio?.sound(name), onCheckpoint: checkpoint }
-		return tutorial ? createTutorialGame(map, tutorial, options) : createGame(map, options, connection, saved)
+		return createGame(map, options, connection, saved)
 	}
 
 	function requestRestart() {
@@ -181,7 +178,7 @@
 	>
 		{#key game}
 			{#key game.state.round}
-				{#if !tutorial && game.state.winner === null && localTurn && (!network || network.phase === 'playing')}
+				{#if game.state.winner === null && localTurn && (!network || network.phase === 'playing')}
 					<TurnAnnouncement player={game.state.player} message={difficulty && game.state.player === 1 ? translate(messages.ai_turn) : difficulty || network ? translate(messages.your_turn) : translate(messages.player_turn, { player: game.state.player })} />
 				{/if}
 			{/key}
@@ -197,24 +194,21 @@
 		<div class="field">
 			<div class="board-column">
 				<GameHeader name={title} aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
-				{#if tutorial && tutorialProgress}
-					{#key game}<TutorialPanel state={game.state} scenario={tutorial} progress={tutorialProgress} onrestart={restart} />{/key}
-				{/if}
 				{#snippet boardDetails()}
 					<div class="board-details">
 						<div class="board-actions game-context-container">
 							{@render mapStatus()}
-							<Controls {game} aiMode={!!difficulty} inactive={!!tutorialProgress?.failed} bind:showHelp bind:showPreview onrestart={connection ? undefined : requestRestart} saveStatus={autosave ? (saveError ?? 'saved') : undefined} />
+							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : requestRestart} saveStatus={autosave ? (saveError ?? 'saved') : undefined} />
 						</div>
 					</div>
 				{/snippet}
-				<Board {game} aiMode={!!difficulty} name={title} {boardDetails} tutorialTarget={tutorial && tutorialProgress ? tutorialTarget(game.state, tutorial, tutorialProgress) : undefined} />
+				<Board {game} aiMode={!!difficulty} name={title} {boardDetails} />
 			</div>
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
 			<ProductionModal {game} />
 		{/if}
-		{#if !tutorial && game.state.winner !== null && (!network || network.phase === 'playing')}
+		{#if game.state.winner !== null && (!network || network.phase === 'playing')}
 			<VictoryModal {earnedMedal} storageError={playerProfile.storageError} aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} rematchRequested={network?.rematchRequested} opponentRematchRequested={network?.opponentRematchRequested} />
 		{/if}
 		{#if network && network.phase !== 'playing'}

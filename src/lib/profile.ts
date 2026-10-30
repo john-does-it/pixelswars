@@ -101,8 +101,8 @@ export function makeBackup(profile: PlayerProfile, preferences: Preferences, now
 export function hasMedal(profile: PlayerProfile, map: string, difficulty: AiDifficulty): boolean {
 	return profile.medals.some((medal) => medal.map === map && medal.revision === mapRevisions[map] && medal.difficulty === difficulty)
 }
-export function awardVictory(profile: PlayerProfile, match: { map: string; difficulty: AiDifficulty | null; winner: Player | null; tutorial: boolean; online: boolean }, now = new Date().toISOString()): Medal | null {
-	if (match.online || match.tutorial || match.winner !== 2 || !match.difficulty || !difficulties.includes(match.difficulty) || !Object.hasOwn(mapRevisions, match.map) || hasMedal(profile, match.map, match.difficulty)) return null
+export function awardVictory(profile: PlayerProfile, match: { map: string; difficulty: AiDifficulty | null; winner: Player | null; online: boolean }, now = new Date().toISOString()): Medal | null {
+	if (match.online || match.winner !== 2 || !match.difficulty || !difficulties.includes(match.difficulty) || !Object.hasOwn(mapRevisions, match.map) || hasMedal(profile, match.map, match.difficulty)) return null
 	const medal = { map: match.map, revision: mapRevisions[match.map], difficulty: match.difficulty, earnedAt: now }
 	profile.medals.push(medal)
 	return medal

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte'
 	import { page } from '$app/state'
 	import { afterNavigate } from '$app/navigation'
+	import PlayerTransition from './PlayerTransition.svelte'
 	import LanguageSelect from './LanguageSelect.svelte'
 	import { asset } from '$lib/game/asset-path'
 	import { m as messages } from '$lib/paraglide/messages.js'
@@ -12,6 +13,7 @@
 	afterNavigate(() => {
 		expanded = false
 	})
+	let { height = $bindable(0) }: { height?: number } = $props()
 	let navbar: HTMLElement
 	let inner: HTMLDivElement
 	let brand: HTMLAnchorElement
@@ -19,9 +21,12 @@
 	let menuButton: HTMLButtonElement
 	let compact = $state(true)
 	let expanded = $state(false)
+	let toggleBounds = $state({ top: 0, left: 0, width: 44, height: 44 })
+	function syncToggleBounds() {
+		if (menuButton) { const { top, left, width, height } = menuButton.getBoundingClientRect(); toggleBounds = { top, left, width, height } }
+	}
 	const links = $derived([
 		{ id: 'editor-title', label: translate(messages.home_editor) },
-		{ id: 'how-to-play', label: translate(messages.how_to_play) },
 		{ id: 'stats', label: translate(messages.site_stats) },
 		{ id: 'success', label: translate(messages.site_achievements) },
 		{ id: 'profile', label: translate(messages.profile_title) },
@@ -30,6 +35,7 @@
 
 	onMount(() => {
 		const observer = new ResizeObserver(() => {
+			syncToggleBounds()
 			const style = getComputedStyle(inner)
 			const available = inner.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
 			compact = brand.offsetWidth + measurement.offsetWidth + 24 > available
@@ -50,12 +56,10 @@
 			menuButton.focus()
 		}
 	}}
-	onpointerdown={(event) => {
-		if (expanded && event.target instanceof Node && !navbar.contains(event.target)) expanded = false
-	}}
+	onresize={syncToggleBounds}
 />
 
-<nav class="site-navbar" aria-label={translate(messages.home_navigation)} bind:this={navbar}>
+<nav class="site-navbar" aria-label={translate(messages.home_navigation)} bind:this={navbar} bind:offsetHeight={height}>
 	<div class="navbar-inner" class:compact bind:this={inner}>
 		<a class="brand" href={homeLink('home')} bind:this={brand} onclick={() => (expanded = false)}>
 			<img class="brand-logo" src={asset('/assets/brand/pixels-war-logo.png')} alt="Pixel’s War" width="355" height="143" />
@@ -68,22 +72,42 @@
 			</div>
 		</div>
 
-		<div id="home-navigation-links" class="nav-links" class:compact hidden={compact && !expanded}>
+		<div id="home-navigation-links" class="nav-links" class:compact hidden={compact}>
 			{#each links as link}<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>{/each}
 		</div>
 		<div class="language-control"><LanguageSelect site compact hideLabel /></div>
-		<button class="menu-toggle pixel-icon-button" hidden={!compact} bind:this={menuButton} aria-label={translate(messages.home_menu)} aria-expanded={expanded} aria-controls="home-navigation-links" onclick={() => (expanded = !expanded)}>
+		<button class="menu-toggle pixel-icon-button" class:covered={expanded} hidden={!compact} bind:this={menuButton} aria-label={translate(messages.home_menu)} aria-expanded={expanded} aria-controls="home-navigation-links" onclick={() => { syncToggleBounds(); expanded = !expanded }}>
 			<span class="burger" class:expanded aria-hidden="true"><span></span><span></span><span></span></span>
 		</button>
 	</div>
 </nav>
+{#if expanded && compact}
+ <PlayerTransition player={2} persistent showUnit={false} translucent label={translate(messages.home_navigation)} onclose={() => { expanded = false; menuButton.focus() }}>
+  {#snippet controls()}
+   <button class="menu-toggle menu-close pixel-icon-button" style:top={toggleBounds.top + 'px'} style:left={toggleBounds.left + 'px'} style:width={toggleBounds.width + 'px'} style:height={toggleBounds.height + 'px'} aria-label={translate(messages.close)} aria-expanded="true" onclick={() => { expanded = false; menuButton.focus() }}>
+    <span class="burger expanded" aria-hidden="true"><span></span><span></span><span></span></span>
+   </button>
+  {/snippet}
+  <div class="fullscreen-links">
+   {#each links as link}<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>{/each}
+  </div>
+ </PlayerTransition>
+{/if}
 
 <style>
+ .menu-toggle.covered { visibility: hidden; }
+ .menu-close { position: absolute; z-index: 2; }
+ .fullscreen-links { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 64px 8px; }
+ .fullscreen-links a { text-decoration: none; font-size: clamp(20px, 4vw, 32px); }
+
 	.site-navbar {
-		position: relative;
+		position: fixed;
+		inset: 0 0 auto;
 		z-index: 20;
-		background: var(--site-yellow);
-		padding: 104px 24px 0;
+		background: color-mix(in srgb, var(--site-yellow) 94%, transparent);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		padding: 24px;
 	}
 	.navbar-inner {
 		display: flex;
@@ -100,7 +124,8 @@
 	}
 	.brand-logo {
 		display: block;
-		width: 354px;
+		width: 180px;
+		max-width: 180px;
 		height: auto;
 		image-rendering: pixelated;
 	}
@@ -116,8 +141,8 @@
 	.nav-links {
 		display: flex;
 		align-items: center;
-		gap: 32px;
-		font-size: 24px;
+		gap: 24px;
+		font-size: 16px;
 		font-weight: 700;
 		white-space: nowrap;
 		width: max-content;
@@ -183,9 +208,7 @@
 		white-space: normal;
 	}
 	@media (max-width: 640px) {
-		.site-navbar {
-			padding: 24px 16px 0;
-		}
+
 		.brand-logo {
 			width: 148px;
 		}

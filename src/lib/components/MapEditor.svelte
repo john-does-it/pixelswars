@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { unitSpritePath } from '$lib/game/unit-sprites'
 	import { onMount, tick, untrack } from 'svelte'
-	import SelectionCorners from '$lib/components/site/SelectionCorners.svelte'
 	import DimensionStepper from '$lib/components/site/DimensionStepper.svelte'
 	import { resizeMap } from '$lib/map-editor/model.ts'
+	import SettingSelect from './SettingSelect.svelte'
 	import UiIcon from '$lib/components/UiIcon.svelte'
 	import ZoomControls from '$lib/components/ZoomControls.svelte'
 	import { asset } from '$lib/game/asset-path'
@@ -15,7 +15,6 @@
 	import { mapJson, newMap, paintMirroredCell, mirrorMap, mirroredIndex, reconnectBridgeSupports, validateMirrorDimensions, readMap, terrainBrushes, MapEditorError, type Brush, type MirrorMode } from '$lib/map-editor/model.ts'
 
 	let { sourceMap = null, embedded = false }: { sourceMap?: GameMap | null; embedded?: boolean } = $props()
-	let paletteTab = $state<'terrain' | 'unit' | 'building'>('terrain')
 	const savedDraftKey = untrack(() => (sourceMap ? `pixelswar-map-editor-source-${sourceMap.id}-v1` : 'pixelswar-map-editor-draft-v1'))
 	const unitTypeIds = Object.keys(unitTypes) as UnitTypeId[]
 	const existingMaps = Object.values(import.meta.glob<{ default: GameMap }>('/src/lib/data/*.json', { eager: true }))
@@ -25,7 +24,7 @@
 	let map = $state(untrack(() => (embedded ? newMap(25, 17) : newMap(12, 10))))
 	let columns = $state<number | undefined>(12)
 	let rows = $state<number | undefined>(10)
-	let owner = $state<Owner>(0)
+	let owner = $state<Owner>(untrack(() => (embedded ? 2 : 0)))
 	let team = $state<Player>(untrack(() => (embedded ? 2 : 1)))
 	let existingId = $state('')
 	let tileSize = $state(48)
@@ -339,38 +338,50 @@
 	{#if embedded}
 		<div class="compact-editor">
 			<aside class="compact-controls">
-				<div class="sprite-tabs" role="group" aria-label={t('map_editor_brush', { name: brushName })}>
-					{#each [{ id: 'terrain', label: 'map_editor_terrains' }, { id: 'unit', label: 'map_editor_units' }, { id: 'building', label: 'buildings' }] as tab}
-						<button class="sprite-tab" aria-label={t(tab.label)} aria-pressed={paletteTab === tab.id} onclick={() => (paletteTab = tab.id as typeof paletteTab)}>
-							{#if tab.id === 'unit'}<img src={asset(unitSpritePath('infantry', 2))} alt="" />{:else}<span class="palette-icon cell-container {tab.id === 'terrain' ? '-grass -variant' : '-building -city -ongrass'}"></span>{/if}
-							{#if paletteTab === tab.id}<SelectionCorners />{/if}
-						</button>{/each}
-				</div>
-				<div class="compact-palette" role="group" aria-label={t(paletteTab === 'unit' ? 'map_editor_units' : paletteTab === 'building' ? 'buildings' : 'map_editor_terrains')}>
-					{#if paletteTab === 'unit'}
-						{#each unitTypeIds as unitType}
-							<button class="brush-button" aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}>
-								<img src={asset(unitSpritePath(unitType, team))} alt="" />
-								{#if brush.kind === 'unit' && brush.type === unitType}<SelectionCorners />{/if}
-							</button>{/each}
-					{:else}
-						{#each terrainBrushes.filter((terrain) => terrain.classes.includes('-building') === (paletteTab === 'building')) as terrain}
-							<button class="brush-button" aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}>
-								<span class="palette-icon cell-container {terrain.classes.join(' ')}"></span>
-								{#if brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')}<SelectionCorners />{/if}
-							</button>{/each}
-					{/if}
-				</div>
+				{#each [{ id: 'terrain', label: 'terrain' }, { id: 'building', label: 'buildings' }, { id: 'unit', label: 'map_editor_units' }] as group}
+					<section class="palette-group">
+						<h4>{t(group.label)}</h4>
+						<div class="compact-palette" role="group" aria-label={t(group.id === 'unit' ? 'map_editor_units' : group.id === 'building' ? 'buildings' : 'map_editor_terrains')}>
+							{#if group.id === 'unit'}
+								{#each unitTypeIds as unitType}
+									<button class="brush-button pixel-corners" data-brush="sprite" aria-label={unitName(unitType)} title={unitName(unitType)} aria-pressed={brush.kind === 'unit' && brush.type === unitType} onclick={() => (brush = { kind: 'unit', type: unitType, player: team })}>
+										<img src={asset(unitSpritePath(unitType, team))} alt="" />
+									</button>{/each}
+							{:else}
+								{#each terrainBrushes.filter((terrain) => terrain.classes.includes('-building') === (group.id === 'building')) as terrain}
+									<button class="brush-button pixel-corners" data-brush="sprite" aria-label={t(terrain.name)} title={t(terrain.name)} aria-pressed={brush.kind === 'terrain' && brush.classes.join(' ') === terrain.classes.join(' ')} onclick={() => (brush = { kind: 'terrain', classes: [...terrain.classes], owner })}>
+										<span class="palette-icon cell-container {terrain.classes.join(' ')}{terrain.classes.includes('-building') && owner ? ` -capturedby${owner}` : ''}"></span>
+									</button>{/each}
+							{/if}
+						</div>
+					</section>{/each}
+				<SettingSelect
+					hideLabel
+					label={t('map_editor_team')}
+					value={String(owner)}
+					options={[
+						{ value: '0', label: t('map_editor_neutral') },
+						{ value: '1', label: t('map_editor_blue') },
+						{ value: '2', label: t('map_editor_red') }
+					]}
+					onchange={(value) => {
+						owner = Number(value) as Owner
+						if (owner) team = owner
+						if (brush.kind === 'unit') brush.player = team
+						else if (brush.kind === 'terrain') brush.owner = owner
+					}}
+				/>
+				<div class="mirror-toggle"><span class="mirror-label">{t('map_editor_mirror')}</span><button aria-pressed={mirrorMode !== 'off'} onclick={() => setMirrorMode(mirrorMode === 'off' ? 'rotation' : 'off')}>{t(mirrorMode === 'off' ? 'site_mirror_inactive' : 'site_mirror_active')}</button></div>
+			</aside>
+			<div class="compact-board">
 				<div class="dimension-controls">
 					<DimensionStepper label={t('map_editor_columns')} value={map.cols} min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} onchange={(value) => resizeDimension('cols', value)} />
 					<DimensionStepper label={t('map_editor_rows')} value={map.rows} min={mirrorMode === 'off' ? 2 : 3} max={mirrorMode === 'off' ? 32 : 31} step={mirrorMode === 'off' ? 1 : 2} onchange={(value) => resizeDimension('rows', value)} />
 				</div>
-				<div class="mirror-toggle"><span class="pixel-heading">{t('map_editor_mirror')}</span><button aria-pressed={mirrorMode !== 'off'} onclick={() => setMirrorMode(mirrorMode === 'off' ? 'rotation' : 'off')}>{t(mirrorMode === 'off' ? 'site_mirror_inactive' : 'site_mirror_active')}</button></div>
-				<a class="button submit-map site-action" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D" target="_blank" rel="noopener noreferrer">{t('site_submit_map')}</a>
-			</aside>
-			<div class="compact-board">
 				{@render boardCanvas()}
-				<div class="compact-actions"><button class="site-action" onclick={createMap}>{t('site_reset')}</button><button class="primary site-action" onclick={exportMap}>{t('site_export')}</button></div>
+				<div class="compact-actions">
+					<a class="button submit-map site-action" href="https://github.com/john-does-it/pixelswars/issues/new?title=%5BMap%5D" target="_blank" rel="noopener noreferrer">{t('site_submit_map')}</a><button class="site-action" onclick={createMap}>{t('site_reset')}</button><button class="primary site-action" onclick={exportMap}>{t('site_export')}</button>
+				</div>
 				{#if statusError}<p role="alert" class="editor-error">{t(statusKey)}</p>{/if}
 			</div>
 		</div>
@@ -568,13 +579,20 @@
 	.mirror-setting {
 		margin-top: 12px;
 	}
+	[data-brush] {
+		--pixel-corner-color: var(--site-yellow);
+		--pixel-corner-inset: calc(-1 * var(--pixel-corner-outset));
+	}
 	#board .mirror-centre {
 		outline: 1px dashed var(--color-accent);
 		outline-offset: -3px;
 	}
-	#board .mirror-target {
-		outline: 2px solid var(--color-accent);
-		outline-offset: -2px;
+	#board .mirror-target::before {
+		background: var(--pixel-corner-frame);
+	}
+	#board {
+		--color-accent: var(--site-yellow);
+		--pixel-corner-color: var(--site-yellow);
 	}
 	input:not([type='range']),
 	select {
@@ -758,54 +776,58 @@
 	}
 	.compact-editor {
 		display: grid;
-		grid-template-columns: 197px minmax(0, 1fr);
-		gap: 48px;
+		grid-template-columns: 352px minmax(0, 1fr);
+		gap: 32px;
 		align-items: start;
 	}
 	.compact-controls {
-		--selection-corner-size: 16px;
-		--selection-corner-inset: -6px;
-		gap: 24px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px 16px;
+		align-items: start;
 	}
-	.sprite-tabs {
-		display: flex;
-		width: max-content;
-		background: var(--site-yellow);
-		gap: 2px;
+	.palette-group {
+		min-width: 0;
+		border: 0;
+		padding: 0;
+		background: none;
 	}
-	.sprite-tab,
+	.palette-group:last-of-type {
+		grid-column: 1/-1;
+	}
+	.palette-group h4 {
+		font: 700 16px var(--font-body);
+		margin: 0 0 16px;
+	}
+	.compact-palette {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, 48px);
+		gap: 12px;
+		align-content: start;
+	}
 	.brush-button {
 		position: relative;
+		width: 48px;
+		height: 48px;
 		min-width: 0;
-		width: 40px;
-		height: 40px;
+		min-height: 0;
 		padding: 0;
 		border: 0;
 		border-radius: 0;
 		box-shadow: none;
 		background: transparent;
-		min-height: 0;
 	}
-	.sprite-tab::before,
-	.sprite-tab::after,
-	.brush-button::before,
 	.brush-button::after,
 	.mirror-toggle button::before,
 	.mirror-toggle button::after {
 		display: none;
 	}
-	.sprite-tab[aria-pressed='true'],
 	.brush-button[aria-pressed='true'] {
 		z-index: 3;
 	}
-	.sprite-tab:focus-visible,
-	.brush-button:focus-visible {
+	.brush-button:is(:hover, :focus-visible) {
 		z-index: 4;
 	}
-	.sprite-tab[aria-pressed='true'] {
-		background: var(--site-cream);
-	}
-	.sprite-tab img,
 	.brush-button img {
 		width: 100%;
 		height: 100%;
@@ -813,139 +835,93 @@
 		image-rendering: pixelated;
 		display: block;
 	}
-	.compact-palette {
-		display: grid;
-		grid-template-columns: repeat(4, 40px);
-		gap: 2px;
-		align-content: start;
+	.brush-button:hover:not(:disabled),
+	.mirror-toggle button:hover:not(:disabled) {
+		background: transparent;
+		filter: none;
 	}
 	.dimension-controls {
 		display: flex;
-		gap: 24px 16px;
-		flex-wrap: wrap;
+		justify-content: space-between;
 		align-items: start;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin: 0 10px 16px;
 	}
 	.mirror-toggle {
+		grid-column: 1 / -1;
 		display: grid;
 		gap: 6px;
 	}
-	.mirror-toggle .pixel-heading {
-		--site-heading-outline: var(--site-card-outline);
-		font-size: 32px;
+	.mirror-label {
+		font: 700 16px var(--font-body);
+		color: var(--site-plum);
 	}
 	.mirror-toggle button {
 		min-width: 0;
-		min-height: 0;
+		min-height: 32px;
 		justify-self: start;
 		padding: 0;
-		font: 700 24px var(--font-body);
+		font: 700 16px var(--font-body);
 		color: var(--site-red);
 		background: transparent;
 		border: 0;
 		box-shadow: none;
-		paint-order: stroke fill;
-		-webkit-text-stroke: calc(var(--site-selector-outline) * 2) var(--site-plum);
-		text-shadow: none;
-	}
-	.submit-map {
-		justify-self: start;
 	}
 	.compact-board {
 		min-width: 0;
 	}
 	.embedded #canvas-scroll {
-		border: var(--site-board-border) solid var(--site-plum);
+		border: 0;
 		border-radius: 0;
 		min-height: 0;
 		max-height: none;
-		padding: 0;
-		overflow: hidden;
+		padding: 10px;
+		overflow: auto;
 		background: transparent;
 	}
 	.embedded #board {
 		margin: 0;
+		box-shadow: 0 0 0 var(--site-board-border) var(--site-plum);
+		isolation: isolate;
+	}
+	#board .cell-container:is(:hover, :focus-visible, .mirror-target) {
+		z-index: 10;
 	}
 	.compact-actions {
 		display: flex;
 		justify-content: flex-end;
-		gap: 40px;
-		margin-top: 48px;
+		align-items: start;
+		flex-wrap: wrap;
+		gap: 16px;
+		margin: 24px 10px 0;
+	}
+	.submit-map {
+		margin-right: auto;
 	}
 	.editor-error {
 		font-size: 12px;
 		color: #92251e;
 		margin-top: 12px;
 	}
-	@media (max-width: 640px) {
+	@media (max-width: 900px) {
 		.compact-editor {
 			grid-template-columns: 1fr;
 			gap: 24px;
 		}
 		.compact-controls {
-			grid-template-columns: 1fr 1fr;
-			gap: 16px;
-			align-items: start;
+			grid-template-columns: minmax(0, 1fr);
 		}
-		.sprite-tabs {
-			grid-column: 1/-1;
+		.palette-group:last-of-type {
+			grid-column: auto;
 		}
-		.compact-palette {
-			grid-row: 2/5;
-		}
-		.dimension-controls {
-			flex-wrap: wrap;
+	}
+	@media (max-width: 540px) {
+		.compact-actions {
 			gap: 12px;
 		}
-		.compact-actions {
-			gap: 16px;
-			margin-top: 16px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.compact-controls {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 24px;
-		}
-		.sprite-tabs {
-			margin-right: 100%;
-		}
-		.compact-palette {
+		.submit-map {
 			flex-basis: 100%;
 		}
-		.dimension-controls {
-			flex-wrap: nowrap;
-			gap: 24px;
-		}
-		.mirror-toggle .pixel-heading {
-			font-size: 24px;
-		}
-		.mirror-toggle button {
-			font-size: 20px;
-		}
-	}
-
-	@media (pointer: coarse) {
-		.sprite-tab,
-		.brush-button {
-			width: 44px;
-			height: 44px;
-		}
-		.compact-palette {
-			grid-template-columns: repeat(4, 44px);
-		}
-		.mirror-toggle button {
-			min-height: 44px;
-		}
-	}
-	.sprite-tab:hover:not(:disabled),
-	.brush-button:hover:not(:disabled),
-	.mirror-toggle button:hover:not(:disabled) {
-		background: transparent;
-		filter: none;
-	}
-	.sprite-tab[aria-pressed='true']:hover:not(:disabled) {
-		background: var(--site-cream);
 	}
 </style>

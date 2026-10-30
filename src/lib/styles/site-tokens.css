@@ -1,6 +1,7 @@
 /* Shared interface palette from Figma / Redesign website. */
 :root {
 	--site-yellow: #f4d879;
+	--site-yellow-light: #fff0b4;
 	--site-cream: #fff3ca;
 	--site-sky: #d7f0f6;
 	--site-silver: #dce0e6;
@@ -166,4 +167,11 @@
 	color: var(--site-plum);
 	border-color: var(--site-muted);
 	border-radius: 0;
+}
+
+/* H2 titles keep the compact line height used by the visual identity. */
+h2,
+h2.pixel-heading,
+:where(.site-shell) h2 {
+	line-height: 1;
 }

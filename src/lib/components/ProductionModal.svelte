@@ -19,15 +19,14 @@
 		<p role="status">{translate(messages.available_money, { player: game.state.player, money: game.state.money[game.state.player] })}</p>
 		{#each offers as [id, type] (id)}
 			{@const status = purchaseStatus(game.state, id)}
-			{@const guidedBlocked = game.allowsAction?.('buy', id) === false}
-			<div class="offer" class:affordable={status.available && !guidedBlocked} class:unavailable={!status.available || guidedBlocked}>
+			<div class="offer" class:affordable={status.available} class:unavailable={!status.available}>
 				<Sprite src={unitSpritePath(id, game.state.player)} size="m" />
 				<div>
 					<strong>{unitName(id)}</strong>
 					<p>{type.cost}$</p>
-					<small id="availability-{id}">{guidedBlocked ? translate(messages.tutorial_follow_step) : status.occupied ? translate(messages.free_building) : status.missing ? translate(messages.need_more, { money: status.missing }) : translate(messages.available)}</small>
+					<small id="availability-{id}">{status.occupied ? translate(messages.free_building) : status.missing ? translate(messages.need_more, { money: status.missing }) : translate(messages.available)}</small>
 				</div>
-				<button disabled={guidedBlocked || !status.available || !!game.state.network?.pending} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>{translate(messages.buy_unit, { unit: unitName(id) })}</button>
+				<button disabled={!status.available || !!game.state.network?.pending} aria-describedby="availability-{id}" onclick={() => game.buy(id)}>{translate(messages.buy_unit, { unit: unitName(id) })}</button>
 			</div>
 		{/each}
 	</Modal>

@@ -41,7 +41,7 @@
 	}}
 />
 {#if saved || error}
-	<section class="panel saved-match" aria-label={translate(messages.save_title)}>
+	<section class="saved-match" aria-label={translate(messages.save_title)}>
 		<h2>{translate(messages.save_title)}</h2>
 		{#if saved}
 			<p>{mapName(saved.map.id)} · {translate(messages[`ai_${saved.difficulty}`])} · {translate(messages.round, { round: saved.snapshot.round })}</p>
@@ -63,7 +63,9 @@
 
 <style>
 	.saved-match {
-		margin-top: 24px;
+		margin-bottom: var(--site-gap-large);
+		padding: 24px;
+		background: var(--site-cream);
 	}
 	h2 {
 		margin-top: 0;

@@ -1,7 +1,7 @@
 import { mapIds, readMapFixture } from './map-fixtures.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resizeMap, newMap, paintCell, readMap, mapJson, mirrorMap, mirroredIndex, paintMirroredCell, validateMirrorDimensions } from '../src/lib/map-editor/model.ts'
+import { variedTerrainBrush, terrainBrushes, resizeMap, newMap, paintCell, readMap, mapJson, mirrorMap, mirroredIndex, paintMirroredCell, validateMirrorDimensions } from '../src/lib/map-editor/model.ts'
 import { initialState, movementCostForDomain } from '../src/lib/game/model.ts'
 import { assertConnectedRoads } from './map-assertions.ts'
 
@@ -260,4 +260,29 @@ test('mirror resize reconnects roads and keeps opposing armies symmetrical', () 
 		]
 	)
 	assert.throws(() => resizeMap(map, 6, 5, 'rotation'))
+})
+
+test('compact terrain brushes choose all cosmetic variants without changing the brush', () => {
+	const grass = { kind: 'terrain', classes: ['-grass'], owner: 0 } as const
+	const brush = { ...grass, classes: [...grass.classes] }
+	assert.equal(terrainBrushes.filter((b) => b.classes.includes('-grass')).length, 1)
+	assert.equal(terrainBrushes.filter((b) => b.classes.includes('-forest')).length, 1)
+	assert.deepEqual(
+		[0, 0.4, 0.9].map((random) => variedTerrainBrush(brush, () => random)),
+		[
+			{ ...brush, classes: ['-grass'] },
+			{ ...brush, classes: ['-grass', '-variant'] },
+			{ ...brush, classes: ['-grass', '-variant3'] }
+		]
+	)
+	assert.deepEqual(brush.classes, ['-grass'])
+	const forest = { ...brush, classes: ['-forest', '-ongrass'] }
+	assert.deepEqual(
+		variedTerrainBrush(forest, () => 0.9),
+		{ ...forest, classes: ['-forest', '-ongrass', '-variant'] }
+	)
+	const map = newMap(3, 3)
+	paintMirroredCell(map, 0, forest, 'rotation')
+	assert.deepEqual(map.cells[0].classes, map.cells[8].classes)
+	assert.deepEqual(readMap(mapJson(map)).cells, map.cells)
 })

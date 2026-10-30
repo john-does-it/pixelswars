@@ -12,7 +12,7 @@
 	import type { MapCamera } from '$lib/game/map-camera.js'
 	import type { Snippet } from 'svelte'
 
-	let { game, name, aiMode = false, camera = $bindable(), boardDetails, tutorialTarget, cellSize, onkeydown }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; tutorialTarget?: number; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void } = $props()
+	let { game, name, aiMode = false, camera = $bindable(), boardDetails, cellSize, onkeydown }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void } = $props()
 	let boardElement = $state<HTMLElement>()
 	let hadSelection = false
 	const rangeClipId = $props.id()
@@ -52,7 +52,7 @@
 	const transitUnit = $derived(gameState.bridgeTransit ? gameState.units.find((unit) => unit.id === gameState.bridgeTransit?.unitId) : undefined)
 	const units = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))
 	const opponentTurn = $derived(gameState.aiThinking || !!(gameState.network && gameState.network.player !== gameState.player))
-	const movementRange = $derived(new Set(rangeUnit && !passenger && !opponentTurn && !locked(gameState) && rangeUnit.movement > 0 ? [...pathsFrom(gameState, rangeUnit, rangeUnit.movement).keys()].filter((index) => index !== rangeUnit.cell && game.allowsAction?.('move', index) !== false) : []))
+	const movementRange = $derived(new Set(rangeUnit && !passenger && !opponentTurn && !locked(gameState) && rangeUnit.movement > 0 ? [...pathsFrom(gameState, rangeUnit, rangeUnit.movement).keys()].filter((index) => index !== rangeUnit.cell) : []))
 
 	const boardingTargets = $derived(new Set(selected && !passenger && !inspected && !opponentTurn ? boardingPaths(gameState, selected).keys() : []))
 	const deploymentTargets = $derived(new Set(selected && passenger && !opponentTurn ? deploymentCells(gameState, selected, passenger) : []))
@@ -81,20 +81,18 @@
 					hideUnit={!!transitUnit && unit?.id === transitUnit.id}
 					{aiMode}
 					networkPlayer={gameState.network?.player}
-					tutorialTarget={tutorialTarget === cell.index}
-					guidedBlocked={game.allowsAction?.('clickCell', cell.index) === false}
 					buildingLights={preferences.buildingLights}
 					animate={preferences.animations && !locked(gameState) && !gameState.winner && (!gameState.network || gameState.network.phase === 'playing')}
 					showResources={!!unit && unit.player === gameState.player && !opponentTurn && (!gameState.network || gameState.network.phase === 'playing')}
 					selected={!!unit && selected?.id === unit.id}
 					inspected={!!unit && inspected?.id === unit.id}
-					boardingTarget={boardingTargets.has(cell.index) && game.allowsAction?.('move', cell.index) !== false}
-					deploymentTarget={deploymentTargets.has(cell.index) && game.allowsAction?.('deploy', cell.index) !== false}
+					boardingTarget={boardingTargets.has(cell.index)}
+					deploymentTarget={deploymentTargets.has(cell.index)}
 					reachable={movementRange.has(cell.index)}
 					enemyReachable={!!inspected}
 					attackable={attackRange.has(cell.index)}
 					underFire={gameState.combatTargetIndex === cell.index}
-					target={gameState.fighting ? gameState.combatTargetIndex === cell.index : !inspected && (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit) && game.allowsAction?.('fight', unit?.id) !== false}
+					target={gameState.fighting ? gameState.combatTargetIndex === cell.index : !inspected && (selected?.attacks ?? 0) > 0 && canAttack(gameState, selected, unit)}
 					income={gameState.incomeCells.includes(cell.index)}
 					recoveredHealth={gameState.healedCells[cell.index]}
 					captured={gameState.capturedCells.includes(cell.index)}

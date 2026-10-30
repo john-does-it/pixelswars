@@ -61,7 +61,6 @@ export function neighbors(state: GameState, index: number): number[] {
 }
 
 export function movementCostForDomain(domain: UnitDomain, cell: Pick<Cell, 'terrain' | 'cost'> & Partial<Pick<Cell, 'building' | 'classes'>>): number {
-	if (cell.terrain === 'void') return Infinity
 	if (domain === 'air') return 1
 	if (cell.terrain === 'blocker') return Infinity
 	if (domain === 'naval') {
@@ -116,7 +115,7 @@ export function effectiveRange(state: GameState, unit: Unit): { minimum: number;
 export function attackCells(state: GameState, unit = selectedUnit(state)): number[] {
 	if (!unit || unitTypes[unit.type].attack === 0) return []
 	const range = effectiveRange(state, unit)
-	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1).filter((index) => state.cells[index].terrain !== 'void')
+	return rules.attackCells(unit.cell, state.cols, state.rows, range.maximum, range.minimum - 1)
 }
 
 export function canAttack(state: GameState, attacker?: Unit, defender?: Unit): boolean {

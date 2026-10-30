@@ -32,3 +32,5 @@ Choose a battlefield · Create your own map · Learn the game · Stats · Achiev
 
 Les textes de démonstration Figma (« Lorem ipsum », chiffres, cartes répétées) ne sont pas des contenus à publier.
 
+
+- Ne jamais employer de point-virgule dans les textes affichés. Préférer une phrase courte ou une virgule.

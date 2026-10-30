@@ -13,7 +13,8 @@
 	import { translate } from '$lib/i18n.svelte.js'
 	import type { Snippet } from 'svelte'
 
-	const boardPage = $derived(page.route.id?.startsWith('/play/') || page.route.id === '/tutorial' || page.route.id?.startsWith('/tutorial/'))
+	let navbarHeight = $state(0)
+	const boardPage = $derived(page.route.id?.startsWith('/play/'))
 	let { children }: { children: Snippet } = $props()
 
 	onMount(() => {
@@ -47,8 +48,8 @@
 {#if boardPage}
 	<div class="play-shell">{@render children()}</div>
 {:else}
-	<div class="site-shell">
-		<SiteNavbar />
+	<div class="site-shell" style:--site-nav-height={`${navbarHeight}px`}>
+		<SiteNavbar bind:height={navbarHeight} />
 		<div class="site-content">{@render children()}</div>
 		<SiteFooter />
 	</div>
@@ -56,12 +57,13 @@
 
 <style>
 	.site-shell {
-		--site-nav-height: 0px;
+		
 		display: flex;
 		flex-direction: column;
 		min-height: 100dvh;
 	}
 	.site-content {
+		padding-top: var(--site-nav-height);
 		flex: 1;
 		min-width: 0;
 	}

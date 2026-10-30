@@ -29,6 +29,8 @@
 	}
 
 	select {
+		color: #fff;
+		background-color: #686d79;
 		display: block;
 		align-self: center;
 	}

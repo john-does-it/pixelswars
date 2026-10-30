@@ -92,7 +92,7 @@ test('shared navigation and footer remain available across site pages but stay o
 	await page.screenshot({ path: testInfo.outputPath('shared-navigation-mobile.png') })
 	await footer.scrollIntoViewIfNeeded()
 	await page.screenshot({ path: testInfo.outputPath('shared-footer-mobile.png') })
-	for (const path of ['/play/1/', '/tutorial/']) {
+	for (const path of ['/play/1/']) {
 		await page.goto(path)
 		await expect(page.locator('.board')).toBeVisible()
 		await expect(nav).toHaveCount(0)

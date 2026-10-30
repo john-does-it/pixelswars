@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import PreferencesPanel from '$lib/components/site/PreferencesPanel.svelte'
 	import Modal from '$lib/components/Modal.svelte'
+	import UiIcon from '$lib/components/UiIcon.svelte'
 	let showSettings = $state(false)
 	import { playerProfile, initializeProfile, saveProfile, restoreProfile } from '$lib/profile.svelte.ts'
 	import { makeBackup, parseBackup, maxBackupBytes, type ProfileBackup } from '$lib/profile.ts'
@@ -72,7 +73,7 @@
 		}}
 	>
 		<label class="sr-only" for="pseudonym">{translate(messages.profile_pseudonym)}</label>
-		<div class="actions"><input placeholder={translate(messages.profile_pseudonym)} id="pseudonym" bind:value={pseudonym} maxlength="40" /><button type="submit" class="primary site-action">{translate(messages.profile_save)}</button><button type="button" class="site-action" onclick={() => (showSettings = true)}>{translate(messages.site_settings)}</button></div>
+		<div class="actions"><input placeholder={translate(messages.profile_pseudonym)} id="pseudonym" bind:value={pseudonym} maxlength="40" /><button type="submit" class="primary site-action">{translate(messages.profile_save)}</button><button type="button" class="pixel-icon-button" aria-label={translate(messages.site_settings)} title={translate(messages.site_settings)} aria-haspopup="dialog" onclick={() => (showSettings = true)}><UiIcon name="game-settings" /></button></div>
 	</form>
 	{#if playerProfile.storageError}<p role="alert">{translate(messages.profile_storage_error)}</p>{/if}
 	<p role="status">{status ? translate(messages[status as keyof typeof messages]) : ''}</p>
@@ -103,7 +104,7 @@
 	</section>
 </div>
 
-{#if showSettings}<Modal title={translate(messages.site_settings)} onclose={() => (showSettings = false)}><PreferencesPanel /></Modal>{/if}
+{#if showSettings}<Modal --modal-max-width="480px" title={translate(messages.site_settings)} onclose={() => (showSettings = false)}><PreferencesPanel /></Modal>{/if}
 
 <style>
 	.profile-content {

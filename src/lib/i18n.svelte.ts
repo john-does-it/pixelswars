@@ -22,7 +22,7 @@ export function unitName(id: UnitTypeId): string {
 }
 
 export function terrainName(id: TerrainId): string {
-	return translate({ road: messages.terrain_road, grass: messages.terrain_grass, forest: messages.terrain_forest, moutain: messages.terrain_moutain, water: messages.terrain_water, building: messages.terrain_building, blocker: messages.terrain_blocker, void: messages.terrain_void }[id])
+	return translate({ road: messages.terrain_road, grass: messages.terrain_grass, forest: messages.terrain_forest, moutain: messages.terrain_moutain, water: messages.terrain_water, building: messages.terrain_building, blocker: messages.terrain_blocker }[id])
 }
 
 export function buildingName(id: BuildingId): string {

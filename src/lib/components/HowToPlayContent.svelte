@@ -26,7 +26,6 @@
 		<li>{translate(messages.rules_building_2)}</li>
 		<li>{translate(messages.rules_building_3)}</li>
 		<li>{translate(messages.rules_mountain)}</li>
-		<li>{translate(messages.terrain_void_description)}</li>
 	</ul>
 </section>
 

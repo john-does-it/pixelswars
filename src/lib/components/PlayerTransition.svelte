@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { unitSpritePath } from '$lib/game/unit-sprites'
 	import { onMount, type Snippet } from 'svelte'
+	import UiIcon from './UiIcon.svelte'
+	import { m as messages } from '$lib/paraglide/messages.js'
+	import { translate } from '$lib/i18n.svelte.js'
 	import Sprite from './Sprite.svelte'
 	import { turnTransitionDuration } from '$lib/game/timing.js'
 	import type { Player } from '$lib/game/types.js'
 
-	let { player, persistent = false, label, children }: { player: Player; persistent?: boolean; label?: string; children: Snippet } = $props()
+	let { player, persistent = false, showUnit = true, translucent = false, onclose, controls, label, children }: { player: Player; persistent?: boolean; showUnit?: boolean; translucent?: boolean; onclose?: () => void; controls?: Snippet; label?: string; children: Snippet } = $props()
 	let visible = $state(true)
+	let blurReady = $state(false)
+	let contentReady = $state(false)
+	let arrivedBands = 0
 	let dialog = $state<HTMLDialogElement>()
 	const bands = [
 		{ delay: 0, duration: 0.89 },
@@ -20,6 +26,10 @@
 
 	onMount(() => {
 		dialog?.showModal()
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			blurReady = true
+			contentReady = true
+		}
 		if (persistent) {
 			return () => dialog?.close()
 		}
@@ -38,23 +48,28 @@
 	<div class="turn-sweep" class:red={player === 2} class:persistent style:--turn-duration={`${turnTransitionDuration}ms`} style:--reveal-delay={`${revealDelay}ms`}>
 		<div class="transition-bands" aria-hidden="true">
 			{#each bands as band}
-				<div class="transition-band" style:--band-delay={`${band.delay}ms`} style:--band-duration={`${band.duration}ms`} style:--entrance-duration={`${band.duration * 0.2}ms`}></div>
+				<div class="transition-band" onanimationend={(event) => { if (event.animationName.includes('band-arrival') && ++arrivedBands === bands.length) blurReady = true }} style:--band-delay={`${band.delay}ms`} style:--band-duration={`${band.duration}ms`} style:--entrance-duration={`${band.duration * 0.2}ms`}></div>
 			{/each}
 		</div>
-		<div class="transition-content">
-			<div class="transition-unit"><Sprite src={unitSpritePath('infantry', player)} size="xl" /></div>
+		<div class="transition-content" onanimationend={(event) => { if (event.target === event.currentTarget && event.animationName.includes('message-arrival')) contentReady = true }}>
+			{#if showUnit}<div class="transition-unit"><Sprite src={unitSpritePath('infantry', player)} size="xl" /></div>{/if}
 			{@render children()}
 		</div>
 	</div>
 {/snippet}
 
 {#if visible}
-	<dialog bind:this={dialog} class="turn-transition" aria-label={label} oncancel={(event) => event.preventDefault()}>
+	<dialog bind:this={dialog} class="turn-transition" class:translucent class:blur-ready={blurReady} aria-label={label} oncancel={(event) => { event.preventDefault(); onclose?.() }}>
 		{@render content()}
+		{#if controls}{@render controls()}{:else if onclose && (!persistent || contentReady)}<button class="transition-close pixel-icon-button" aria-label={translate(messages.close)} onclick={onclose}><UiIcon name="close" /></button>{/if}
 	</dialog>
 {/if}
 
 <style>
+	.translucent { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); transition: backdrop-filter 400ms ease, -webkit-backdrop-filter 400ms ease; }
+	.translucent.blur-ready { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+	.translucent .persistent .transition-band { background: color-mix(in srgb, var(--transition-color) 94%, transparent); }
+	.transition-close { position: absolute; top: 24px; right: 24px; z-index: 1; }
 	.turn-transition {
 		position: fixed;
 		inset: 0;
@@ -88,6 +103,14 @@
 
 		&.red {
 			--transition-color: var(--site-yellow);
+		}
+	}
+	.turn-sweep:not(.persistent) {
+		--transition-color: var(--player-blue);
+		color: var(--site-paper);
+
+		&.red {
+			--transition-color: var(--player-red);
 		}
 	}
 	.transition-bands {
@@ -183,6 +206,7 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
+		.translucent { transition: none; }
 		.transition-band,
 		.transition-content {
 			animation: none !important;

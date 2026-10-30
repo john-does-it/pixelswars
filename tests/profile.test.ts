@@ -5,14 +5,13 @@ import { defaultPreferences } from '../src/lib/preferences-cookie.ts'
 import { mapIds } from './map-fixtures.ts'
 
 const now = '2026-10-16T12:00:00.000Z'
-const victory = { map: '13', difficulty: 'easy' as const, winner: 2 as const, tutorial: false, online: false }
+const victory = { map: '13', difficulty: 'easy' as const, winner: 2 as const, online: false }
 
 test('only a human victory against AI on a standard map earns a medal', () => {
 	for (const match of [
 		{ ...victory, winner: null },
 		{ ...victory, winner: 1 as const },
 		{ ...victory, difficulty: null },
-		{ ...victory, tutorial: true },
 		{ ...victory, online: true },
 		{ ...victory, map: 'dev' },
 		{ ...victory, map: 'custom' },

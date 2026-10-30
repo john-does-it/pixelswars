@@ -20,12 +20,12 @@ export function waterJunctionClasses(map: TerrainMap, index: number): string[] {
 	if (!classes.includes('-water') || classes.includes('-under-bridge') || row === 0) return classes
 	const at = (x: number, y: number) => (x >= 0 && x < map.cols && y >= 0 && y < map.rows ? map.cells[y * map.cols + x]?.classes : undefined)
 	const isWater = (cell: string[] | undefined) => !!cell?.includes('-water') && !cell.includes('-under-bridge')
-	const isLand = (cell: string[] | undefined) => !!cell && !cell.some((name) => ['-water', '-bridge', '-void'].includes(name))
+	const isLand = (cell: string[] | undefined) => !!cell && !cell.some((name) => ['-water', '-bridge'].includes(name))
 	const north = at(column, row - 1)
 	const east = at(column + 1, row)
 	const south = at(column, row + 1)
 	const west = at(column - 1, row)
-	if (!isWater(north) || [east, south, west].some((cell) => cell?.some((name) => ['-bridge', '-under-bridge', '-void'].includes(name)))) return classes
+	if (!isWater(north) || [east, south, west].some((cell) => cell?.some((name) => ['-bridge', '-under-bridge'].includes(name)))) return classes
 	const northWestLand = isLand(at(column - 1, row - 1))
 	const northEastLand = isLand(at(column + 1, row - 1))
 	const corners = [isWater(west) && northWestLand ? 'nw' : '', isWater(east) && northEastLand ? 'ne' : ''].filter(Boolean).join('-')

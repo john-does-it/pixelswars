@@ -265,7 +265,6 @@ for (const difficulty of ['easy', 'medium', 'hard', 'expert'] as const) {
 				const cell = state.cells[unit.cell]
 				const domain = unitTypes[unit.type].domain ?? 'ground'
 				const context = `Map ${mapId}: ${unit.type} at cell ${unit.cell}`
-				assert.notEqual(cell.terrain, 'void', context)
 				if (domain === 'naval') assert.ok(cell.terrain === 'water' || cell.building === 'naval-base', context)
 				if (domain === 'ground') {
 					assert.notEqual(cell.terrain, 'water', context)

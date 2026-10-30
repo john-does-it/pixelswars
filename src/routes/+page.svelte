@@ -2,24 +2,27 @@
 	import { asset } from '$lib/game/asset-path'
 	import SiteSection from '$lib/components/site/SiteSection.svelte'
 	import MapGallery from '$lib/components/site/MapGallery.svelte'
+	import SavedMatchCard from '$lib/components/SavedMatchCard.svelte'
 	import StatsCatalog from '$lib/components/site/StatsCatalog.svelte'
 	import Achievements from '$lib/components/site/Achievements.svelte'
 	import ProfileContent from '$lib/components/site/ProfileContent.svelte'
 	import SupportContent from '$lib/components/site/SupportContent.svelte'
-	import TutorialPreview from '$lib/components/site/TutorialPreview.svelte'
 	import MapEditor from '$lib/components/MapEditor.svelte'
-	import Sprite from '$lib/components/Sprite.svelte'
+	import RoadDivider from '$lib/components/site/RoadDivider.svelte'
 	import { unitTypes, terrainTypes } from '$lib/game/catalog'
 	import { isMapInCatalog } from '$lib/game/map-catalog'
 	import mapPreviews from '$lib/data/map-previews.json'
 	import { m } from '$lib/paraglide/messages'
 	import { translate } from '$lib/i18n.svelte'
-	const counts = { units: Object.keys(unitTypes).length, maps: Object.keys(mapPreviews).filter(isMapInCatalog).length, terrains: Object.keys(terrainTypes).filter((id) => !['void', 'building'].includes(id)).length }
+	const counts = { units: Object.keys(unitTypes).length, maps: Object.keys(mapPreviews).filter(isMapInCatalog).length, terrains: Object.keys(terrainTypes).filter((id) => id !== 'building').length }
 </script>
 
 <svelte:head><title>{translate(m.page_title)}</title></svelte:head>
 <main id="home">
-	<SiteSection id="battlefields" tone="yellow" wide><MapGallery /></SiteSection>
+	<SiteSection id="battlefields" tone="yellow-light" wide>
+		<SavedMatchCard />
+		<MapGallery />
+	</SiteSection>
 	<SiteSection id="key-numbers"
 		><div class="key-numbers">
 			<h2>{translate(m.site_turn_based)}</h2>
@@ -33,26 +36,32 @@
 					</div>
 				{/each}
 			</div>
-		</div></SiteSection
-	>
-	<div class="road-divider" style:background-image={`url("${asset('/assets/cells/cell-road-h.svg')}")`} aria-hidden="true"><Sprite src="/assets/units/jeep/red/jeep-red-no-damage.png" size="s" /></div>
+		</div>
+	</SiteSection>
+	<RoadDivider />
 	<SiteSection id="editor-title" tone="sky" width="1220px"
 		><h2>{translate(m.editor_title)}</h2>
 		<p class="subtitle">{translate(m.editor_description)}</p>
 		<MapEditor embedded /></SiteSection
 	>
-	<SiteSection id="how-to-play" width="1357px"><TutorialPreview /></SiteSection>
-	<SiteSection id="stats" tone="silver" width="1400px"><StatsCatalog /></SiteSection>
-	<SiteSection id="success" tone="yellow"
-		><h2>{translate(m.site_achievements)}</h2>
+	<SiteSection id="stats" tone="silver" width="1480px"><StatsCatalog /></SiteSection>
+	<SiteSection id="success" tone="yellow">
+		<h2>{translate(m.site_achievements)}</h2>
 		<p class="subtitle">{translate(m.site_achievement_intro)}</p>
-		<Achievements /></SiteSection
-	>
-	<SiteSection id="profile" width="1280px"><ProfileContent /></SiteSection>
-	<SiteSection id="support" tone="silver" width="1280px"><SupportContent /></SiteSection>
+		<Achievements />
+	</SiteSection>
+	<SiteSection id="profile" width="1280px">
+		<ProfileContent />
+	</SiteSection>
+	<SiteSection id="support" tone="silver" width="1280px">
+		<SupportContent />
+	</SiteSection>
 </main>
 
 <style>
+	main {
+		scroll-margin-top: var(--site-nav-height);
+	}
 	h2 {
 		margin: 0 0 12px;
 	}
@@ -77,7 +86,6 @@
 	}
 	.counters strong {
 		display: inline-flex;
-		background: var(--site-plum);
 		color: var(--site-paper);
 		padding: 0;
 	}
@@ -90,30 +98,18 @@
 		font-size: 36px;
 		margin: 12px 0 0;
 	}
-	.road-divider {
-		height: 40px;
-		background-size: 40px 40px;
-		position: relative;
-		overflow: hidden;
-	}
-	.road-divider :global(img) {
-		position: absolute;
-		width: 40px;
-		height: 40px;
-		left: 8%;
-		top: 0;
-	}
 	:global(#success) .subtitle {
 		margin-bottom: var(--site-gap-medium);
+	}
+	@media (width < 1076px) {
+		.counters {
+			flex-direction: column;
+			align-items: center;
+		}
 	}
 	@media (max-width: 640px) {
 		:global(#battlefields) {
 			padding-block: 48px 64px;
-		}
-		.counters {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 12px;
 		}
 		.counters strong img {
 			height: 40px;

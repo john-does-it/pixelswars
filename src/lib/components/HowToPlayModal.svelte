@@ -8,7 +8,7 @@
 	let { keyboardLayout, onclose, settings, actions }: { keyboardLayout: KeyboardLayout; onclose: () => void; settings?: Snippet; actions?: Snippet } = $props()
 </script>
 
-<Modal title={translate(settings ? messages.options_and_help : messages.how_to_play)} {onclose}>
+<Modal --modal-max-width={settings ? '480px' : '640px'} title={translate(settings ? messages.options_and_help : messages.how_to_play)} {onclose}>
 	{@render actions?.()}
 	{#if settings}
 		<details open>

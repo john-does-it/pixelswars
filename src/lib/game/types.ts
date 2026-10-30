@@ -4,7 +4,7 @@ export type Owner = 0 | Player
 export type UnitDomain = 'ground' | 'air' | 'naval'
 export type KeyboardLayout = 'azerty' | 'qwerty'
 export type UnitTypeId = 'infantry' | 'infantry-rocket' | 'infantry-sniper' | 'jeep' | 'transport' | 'artillery' | 'tank' | 'anti-air' | 'helicopter' | 'transport-helicopter' | 'plane' | 'attack-ship' | 'transport-ship' | 'artillery-ship'
-export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest' | 'blocker' | 'void'
+export type TerrainId = 'grass' | 'moutain' | 'water' | 'building' | 'road' | 'forest' | 'blocker'
 export type BuildingId = 'city' | 'big-city' | 'factory' | 'hospital' | 'airport' | 'naval-base'
 export type ProductionBuildingId = 'factory' | 'airport' | 'naval-base'
 
@@ -128,10 +128,8 @@ export interface ControllerOptions {
 	delay?: (milliseconds: number) => Promise<void>
 }
 
-export type GuidedAction = 'select' | 'clickCell' | 'move' | 'cancel' | 'confirm' | 'capture' | 'fight' | 'openProduction' | 'closeProduction' | 'buy' | 'selectPassenger' | 'deploy' | 'embark' | 'endTurn'
 
 export interface GameController {
-	allowsAction?: (action: GuidedAction, value?: number | string) => boolean
 	selectPassenger(passengerId: number): void
 	embark(passengerId: number): void
 	deploy(passengerId: number, destination: number): void

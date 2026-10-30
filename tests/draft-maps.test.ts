@@ -61,7 +61,7 @@ for (const map of maps) {
 				assert.ok(unit.movement >= 0 && unit.attacks >= 0)
 				const cell = state.cells[unit.cell]
 				const domain = unitTypes[unit.type].domain ?? 'ground'
-				if (domain === 'ground') assert.ok(!['water', 'void', 'blocker'].includes(cell.terrain))
+				if (domain === 'ground') assert.ok(!['water', 'blocker'].includes(cell.terrain))
 				if (domain === 'naval') assert.ok(cell.terrain === 'water' || cell.building === 'naval-base')
 			}
 		}

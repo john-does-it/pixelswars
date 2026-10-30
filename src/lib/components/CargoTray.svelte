@@ -12,12 +12,11 @@
 	let { game, disabled = false }: { game: GameController; disabled?: boolean } = $props()
 	const transport = $derived(selectedUnit(game.state))
 	const passenger = $derived(selectedPassenger(game.state))
-	const guidedBlocked = $derived(!!transport?.cargo?.length && !transport.cargo.some((u) => game.allowsAction?.('selectPassenger', u.id) !== false))
 	const hasLandingTile = $derived(!!transport?.cargo?.some((unit) => deploymentCells(game.state, transport, unit).length))
 	let showPassengers = $state(false)
 	function openPassengersWithKeyboard(event: KeyboardEvent) {
 		if (event.key.toLowerCase() !== 't' || event.repeat || event.isComposing || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
-		if (disabled || guidedBlocked || showPassengers || !transport?.cargo?.length || !unitTypes[transport.type].capacity || document.querySelector('dialog[open]')) return
+		if (disabled || showPassengers || !transport?.cargo?.length || !unitTypes[transport.type].capacity || document.querySelector('dialog[open]')) return
 		const target = event.target instanceof Element ? event.target : null
 		if (target?.closest('input, textarea, select') || (target instanceof HTMLElement && target.isContentEditable)) return
 		event.preventDefault()
@@ -33,7 +32,7 @@
 {#if transport && unitTypes[transport.type].capacity}
 	{@const label = translate(messages.transport_cargo, { count: transport.cargo?.length ?? 0, capacity: unitTypes[transport.type].capacity ?? 0 })}
 	<section class="cargo-tray" aria-label={translate(messages.transport_title)}>
-		<button class="cargo-toggle pixel-icon-button" disabled={disabled || guidedBlocked || !transport.cargo?.length} aria-label={label} aria-keyshortcuts="T" title={`${label} (T)`} aria-haspopup="dialog" onclick={() => (showPassengers = true)}>
+		<button class="cargo-toggle pixel-icon-button" disabled={disabled || !transport.cargo?.length} aria-label={label} aria-keyshortcuts="T" title={`${label} (T)`} aria-haspopup="dialog" onclick={() => (showPassengers = true)}>
 			<span class="cargo-face" style:background-image={`url('${asset('/assets/icons/action-frame.svg')}')`}>{transport.cargo?.length ?? 0}/{unitTypes[transport.type].capacity}</span>
 		</button>
 		{#if showPassengers}
@@ -46,7 +45,7 @@
 						{@const passengerLabel = `${unitName(unit.type)}, ${unit.health} / ${unitTypes[unit.type].maxHealth} ${translate(messages.stat_health)}, ${unit.movement}/${definition.movement} ${translate(messages.stat_movement)}, ${unit.attacks}/${definition.attacks} ${translate(messages.stat_attacks)}, ${translate(messages.capture)}: ${unit.capture}`}
 						<button
 							class="passenger"
-							disabled={disabled || blocked || game.allowsAction?.('selectPassenger', unit.id) === false}
+							disabled={disabled || blocked}
 							title={blocked ? translate(messages.transport_blocked) : undefined}
 							data-passenger={unit.id}
 							aria-label={passengerLabel}

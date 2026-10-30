@@ -323,8 +323,6 @@ for (const axis of ['-h', '-v']) {
 			state.units.pop()
 			state.cells[12].classes = ['-road', '-bridge', axis === '-h' ? '-v' : '-h']
 			assert.equal(pathsFrom(state, ship).has(finish), false)
-			state.cells[12].terrain = 'void'
-			assert.equal(pathsFrom(state, ship).has(finish), false)
 		})
 	}
 }
