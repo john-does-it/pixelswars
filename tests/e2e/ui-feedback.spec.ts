@@ -13,12 +13,12 @@ test('map chooser shows lightweight terrain previews, dimensions and cell-count 
 		await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
 	}
 	for (const locale of ['en', 'fr', 'de', 'ja']) {
-		await page.getByRole('combobox').selectOption(locale)
+		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		// Check dimensions by map identity; catalogue additions can change the first/last card.
-		await expect(page.locator('.map[href="/play/35/"] .map-metadata')).toHaveText('XXS · 7 × 9')
-		await expect(page.locator('.map[href="/play/1/"] .map-metadata')).toHaveText('XXS · 8 × 8')
-		await expect(page.locator('.map[href="/play/27/"] .map-metadata')).toHaveText('XXL · 17 × 17')
-		await expect(page.locator('.map[href="/play/26/"] .map-metadata')).toHaveText('XXL · 31 × 23')
+		await expect(page.locator('.map[data-map-id="35"] .map-thumbnail img')).toHaveAttribute('width', String(mapPreviews['35'].cols * 16))
+		await expect(page.locator('.map[data-map-id="1"] .map-thumbnail img')).toHaveAttribute('width', String(mapPreviews['1'].cols * 16))
+		await expect(page.locator('.map[data-map-id="27"] .map-thumbnail img')).toHaveAttribute('width', String(mapPreviews['27'].cols * 16))
+		await expect(page.locator('.map[data-map-id="26"] .map-thumbnail img')).toHaveAttribute('width', String(mapPreviews['26'].cols * 16))
 	}
 	await cards.last().click()
 	await expect(page.getByRole('dialog')).toBeVisible()

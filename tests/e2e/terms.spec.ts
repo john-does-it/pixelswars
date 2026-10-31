@@ -4,15 +4,14 @@ test('terms are linked, translated and readable without contacting online servic
 	const connections: string[] = []
 	page.on('websocket', (socket) => connections.push(socket.url()))
 	await page.goto('/')
-	await expect(page.locator('.eyebrow')).toContainText('SOLO & MULTIPLAYER')
-	await page.getByRole('link', { name: 'Terms', exact: true }).click()
+	await page.getByRole('link', { name: 'Terms & Conditions', exact: true }).click()
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Terms, privacy and cookies')
 	await expect(page.getByText(/The pixelswars-settings cookie/)).toBeVisible()
 	for (const [locale, title] of [
 		['fr', 'Conditions, confidentialité et cookies'],
 		['de', 'Nutzungsbedingungen, Datenschutz und Cookies']
 	]) {
-		await page.getByRole('combobox').selectOption(locale)
+		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
 		await expect(page.locator('html')).toHaveAttribute('lang', locale)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)

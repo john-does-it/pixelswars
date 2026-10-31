@@ -35,7 +35,7 @@ test('size selection survives reload and preserves unrelated URL state', async (
 	await expect(filters.getByRole('button', { name: 'M', exact: true })).toHaveAttribute('aria-pressed', 'true')
 	expect(new URL(page.url()).searchParams.get('campaign')).toBe('friend')
 	await filters.getByRole('button', { name: 'ALL', exact: true }).click()
-	expect(new URL(page.url()).search).toBe('?campaign=friend')
+	await expect.poll(() => new URL(page.url()).search).toBe('?campaign=friend')
 	expect(new URL(page.url()).hash).toBe('#maps')
 })
 

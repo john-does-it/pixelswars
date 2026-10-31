@@ -5,6 +5,7 @@ test('editor places both naval units for both teams on water and preserves them 
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/map-editor/')
+	await page.locator('#mirror-mode').selectOption('off')
 	await expect.poll(() => page.evaluate(() => localStorage.getItem('pixelswar-map-editor-draft-v1'))).not.toBeNull()
 	const cell = (index: number) => page.locator(`#board [data-cell="${index}"]`)
 	await page.getByRole('button', { name: 'Attack ship', exact: true }).click()
@@ -20,7 +21,7 @@ test('editor places both naval units for both teams on water and preserves them 
 			const tile = cell((player - 1) * 2 + offset)
 			await tile.press('Enter')
 			const image = tile.locator('img')
-			await expect(image).toHaveAttribute('src', new RegExp(`${type}-player-${player}@2x\\.png$`))
+			await expect(image).toHaveAttribute('src', new RegExp(`${type}-${player === 1 ? 'blue' : 'red'}-no-damage\\.png$`))
 			await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0)
 		}
 	}

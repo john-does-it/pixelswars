@@ -79,9 +79,9 @@ test('support page displays the supplied PayPal QR code and a direct contributio
 	await expect(qr).toBeVisible()
 	await expect.poll(() => qr.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(500)
 	await expect(page.getByText('No public supporter names yet.')).toHaveCount(0)
-	await expect(page.locator('main a[target="_blank"]')).toHaveCount(1)
+	await expect(page.locator('.support-content a[target="_blank"]')).toHaveCount(2)
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-	await page.getByRole('combobox').last().selectOption('fr')
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
 	await expect(page.getByRole('heading', { name: 'Soutenir le jeu', exact: true })).toBeVisible()
 })
 

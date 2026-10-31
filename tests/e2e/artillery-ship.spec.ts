@@ -10,6 +10,7 @@ test('naval artillery is illustrated on home and can be placed for both teams in
 	await expect(portrait).toBeVisible()
 	await expect.poll(() => portrait.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(200)
 	await page.goto('/map-editor/')
+	await page.locator('#mirror-mode').selectOption('off')
 	await expect.poll(() => page.evaluate(() => localStorage.getItem('pixelswar-map-editor-draft-v1'))).not.toBeNull()
 	await page.locator('[data-brush="terrain_water"]').click()
 	for (const index of [0, 1]) await page.locator(`#board [data-cell="${index}"]`).press('Enter')

@@ -24,7 +24,7 @@ test('big cities appear in the localized catalog and every capture sprite loads'
 	await page.goto('/')
 	const card = page.locator('article').filter({ has: page.locator('.terrain-icon.-big-city') })
 	await expect(card.getByRole('heading', { name: 'Big city', exact: true })).toBeVisible()
-	await expect(card).toContainText('300$')
+	await expect(card.locator('dd')).toHaveText(['2', '40'])
 	for (const [locale, name] of [
 		['fr', 'Grande ville'],
 		['de', 'Großstadt'],
@@ -32,7 +32,7 @@ test('big cities appear in the localized catalog and every capture sprite loads'
 	]) {
 		await page.getByRole('combobox').first().selectOption(locale)
 		await expect(card.getByRole('heading', { name, exact: true })).toBeVisible()
-		await expect(card).toContainText('300$')
+		await expect(card.locator('dd')).toHaveText(['2', '40'])
 	}
 	const icon = card.locator('.terrain-icon')
 	for (const [classes, suffix] of [

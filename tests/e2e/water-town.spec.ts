@@ -2,11 +2,11 @@ import { test, expect } from '@playwright/test'
 
 test('Water Town opens from the map chooser with both armies and its preview', async ({ page }) => {
 	await page.goto('/')
-	const card = page.locator('.maps a[href$="/play/15/"]')
+	const card = page.locator('.maps a[data-map-id="15"]')
 	await expect(card).toContainText('Water Town')
-	await expect(card.locator('.map-metadata')).toHaveText('S · 14 × 7')
-	await expect(card.locator('img')).toBeVisible()
-	await expect.poll(() => card.locator('img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(224)
+	await expect(card.locator('.map-thumbnail img')).toHaveAttribute('height', '112')
+	await expect(card.locator('.map-thumbnail img')).toBeVisible()
+	await expect.poll(() => card.locator('.map-thumbnail img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(224)
 	await card.click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 	await expect(page).toHaveURL(/\/play\/15\/$/)

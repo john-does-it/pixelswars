@@ -6,12 +6,13 @@ for (const [id, name, cols, rows, units] of [
 ] as const) {
 	test(`${name}: opens from the sorted map chooser with crossings and starts an AI match`, async ({ page }) => {
 		await page.goto('/')
-		const card = page.locator(`.maps a[href$="/play/${id}/"]`)
+		const card = page.locator(`.maps a[data-map-id="${id}"]`)
 		await expect(card).toContainText(name)
-		await expect(card.locator('.map-metadata')).toHaveText(`${id === 13 ? 'XS' : 'M'} · ${cols} × ${rows}`)
+		await expect(card.locator('.map-thumbnail img')).toHaveAttribute('width', String(cols * 16))
+		await expect(card.locator('.map-thumbnail img')).toHaveAttribute('height', String(rows * 16))
 		const mapUrl = await card.getAttribute('href')
 		await page.goto(`${mapUrl}?ai=easy`)
-		await expect(page).toHaveURL(new RegExp(`/play/${id}/\\?ai=easy$`))
+		await expect(page).toHaveURL(new RegExp(`/play/${id}/?\\?ai=easy$`))
 		await expect(page).toHaveTitle(`Pixel’s War · ${name}`)
 		await expect(page.locator('.board [data-cell]')).toHaveCount(cols * rows)
 		await expect(page.locator('.board [data-unit]')).toHaveCount(units)

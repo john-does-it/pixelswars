@@ -4,7 +4,7 @@ test('Troubled Bridges is available through filters and opens with its full armi
 	await page.goto('/')
 	const filters = page.getByRole('group', { name: 'Size', exact: true })
 	await filters.getByRole('button', { name: 'XL', exact: true }).click()
-	const card = page.locator('.maps a[href$="/play/27/"]')
+	const card = page.locator('.maps a[data-map-id="27"]')
 	await expect(card.getByRole('heading')).toHaveText('Troubled Bridges')
 	await card.scrollIntoViewIfNeeded()
 	await expect.poll(() => card.locator('.map-thumbnail img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(272)

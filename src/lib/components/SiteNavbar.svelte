@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { page } from '$app/state'
 	import { afterNavigate } from '$app/navigation'
 	import PlayerTransition from './PlayerTransition.svelte'
@@ -33,6 +33,11 @@
 			toggleBounds = { top, left, width, height }
 		}
 	}
+	async function closeMenu() {
+		expanded = false
+		await tick()
+		menuButton.focus({ preventScroll: true })
+	}
 	const links = $derived([
 		{ id: 'editor-title', label: translate(messages.home_editor) },
 		{ id: 'stats', label: translate(messages.site_stats) },
@@ -60,8 +65,7 @@
 <svelte:window
 	onkeydown={(event) => {
 		if (event.key === 'Escape' && expanded) {
-			expanded = false
-			menuButton.focus()
+			void closeMenu()
 		}
 	}}
 	onresize={syncToggleBounds}
@@ -105,31 +109,9 @@
 	</div>
 </nav>
 {#if expanded && compact}
-	<PlayerTransition
-		player={2}
-		persistent
-		showUnit={false}
-		translucent
-		label={translate(messages.home_navigation)}
-		onclose={() => {
-			expanded = false
-			menuButton.focus()
-		}}
-	>
+	<PlayerTransition player={2} persistent showUnit={false} translucent label={translate(messages.home_navigation)} onclose={closeMenu}>
 		{#snippet controls()}
-			<button
-				class="menu-toggle menu-close pixel-icon-button"
-				style:top={toggleBounds.top + 'px'}
-				style:left={toggleBounds.left + 'px'}
-				style:width={toggleBounds.width + 'px'}
-				style:height={toggleBounds.height + 'px'}
-				aria-label={translate(messages.close)}
-				aria-expanded="true"
-				onclick={() => {
-					expanded = false
-					menuButton.focus()
-				}}
-			>
+			<button class="menu-toggle menu-close pixel-icon-button" style:top={toggleBounds.top + 'px'} style:left={toggleBounds.left + 'px'} style:width={toggleBounds.width + 'px'} style:height={toggleBounds.height + 'px'} aria-label={translate(messages.close)} aria-expanded="true" onclick={closeMenu}>
 				<span class="burger expanded" aria-hidden="true"><span></span><span></span><span></span></span>
 			</button>
 		{/snippet}

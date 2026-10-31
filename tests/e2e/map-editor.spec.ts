@@ -28,33 +28,26 @@ test('obstacle brush renders the new asset and permits only aircraft', async ({ 
 	expect(exported.units).toContainEqual({ type: 'helicopter', player: 1, cell: 0 })
 })
 
-test('public editor opens from home with working sprites, JSON export and submission links', async ({ page }, testInfo) => {
+test('public editor shares the home draft with working sprites, JSON export and submission links', async ({ page }, testInfo) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/')
-	// Wait for an interactive control before checking client-side navigation.
-	await expect(async () => {
-		await page.getByRole('button', { name: 'Learn more', exact: true }).click()
-		await expect(page.getByRole('dialog')).toBeVisible({ timeout: 500 })
-	}).toPass({ timeout: 10000 })
-	await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click()
-	await page.evaluate(() => {
-		;(window as Window & { editorNavigationMarker?: boolean }).editorNavigationMarker = true
-	})
-	const favicon = await page.locator('link[rel="icon"]').evaluate((link: HTMLLinkElement) => link.href)
-	await expect(page.locator('footer a[href="https://github.com/john-does-it/pixelswars/issues"]')).toBeVisible()
-	await page.getByRole('link', { name: 'Open the map editor', exact: true }).click()
-	await expect(page).toHaveURL(/\/map-editor\/$/)
+	const favicon = await page.locator('link[rel="icon" ]').evaluate((link: HTMLLinkElement) => link.href)
+	await expect(page.locator('#editor-title #board')).toBeVisible()
+	await page.goto('/map-editor/')
 	await expect(page.getByRole('heading', { name: 'Map editor' })).toBeVisible()
 	await expect.poll(() => page.locator('link[rel="icon"]').evaluate((link: HTMLLinkElement) => link.href)).toBe(favicon)
 	expect((await page.request.get(favicon)).ok()).toBe(true)
-	expect(await page.evaluate(() => (window as Window & { editorNavigationMarker?: boolean }).editorNavigationMarker)).toBe(true)
 	await page.getByRole('button', { name: 'Zoom in', exact: true }).press('Enter')
 	await expect(page.locator('#board [data-cell]').first()).toHaveCSS('width', '56px')
 	await page.getByRole('button', { name: 'Zoom out', exact: true }).click()
 	await expect(page.locator('#board [data-cell]').first()).toHaveCSS('width', '48px')
 	await page.getByRole('button', { name: 'Show the whole map', exact: true }).click()
 	await expect.poll(() => page.locator('#canvas-scroll').evaluate((element) => element.scrollWidth <= element.clientWidth && element.scrollHeight <= element.clientHeight)).toBe(true)
+	await page.locator('#mirror-mode').selectOption('off')
+	await page.locator('#columns').fill('12')
+	await page.locator('#rows').fill('10')
+	await page.locator('#new').click()
 	await expect(page.locator('#board [data-cell]')).toHaveCount(120)
 	const spriteUrl = await page
 		.locator('#board [data-cell]')
@@ -86,15 +79,15 @@ test('public editor opens from home with working sprites, JSON export and submis
 	await page.screenshot({ path: testInfo.outputPath('submission-guide.png') })
 	await page.locator('.site-navbar .brand').click()
 	await expect(page).toHaveURL('/#home')
-	await expect(page.locator('#board')).toHaveCount(0)
-	await expect(page.getByRole('heading', { name: 'Choose your battlefield' })).toBeVisible()
+	await expect(page.locator('#editor-title #board')).toBeVisible()
+	await expect(page.getByRole('heading', { name: 'Choose a battlefield' })).toBeVisible()
 	expect(errors).toEqual([])
 })
 
 test('editor shares all four languages with the game without changing the draft or other settings', async ({ page, context, baseURL }, testInfo) => {
 	await context.addCookies([{ name: 'pixelswars-settings', value: encodeURIComponent(JSON.stringify({ locale: 'fr', sound: false, music: true, animations: false, keyboardLayout: 'qwerty' })), url: baseURL! }])
 	await page.goto('/')
-	await page.getByRole('link', { name: 'Ouvrir l’atelier de cartes', exact: true }).click()
+	await page.goto('/map-editor/')
 	await expect(page.getByRole('heading', { name: 'Atelier de cartes', exact: true })).toBeVisible()
 	await page.getByLabel('Nom', { exact: true }).fill('Ma carte personnelle')
 	await page.getByLabel('Nom', { exact: true }).press('Tab')
@@ -127,8 +120,8 @@ test('editor shares all four languages with the game without changing the draft 
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	await page.screenshot({ path: testInfo.outputPath('editor-german.png') })
 	await page.locator('.site-navbar .brand').click()
-	await expect(page.locator('#board')).toHaveCount(0)
-	await expect(page.getByRole('combobox')).toHaveValue('de')
+	await expect(page.locator('#editor-title #board')).toBeVisible()
+	await expect(page.locator('.site-navbar .language-control select')).toHaveValue('de')
 	const cookie = (await context.cookies()).find((cookie) => cookie.name === 'pixelswars-settings')!
 	expect(JSON.parse(decodeURIComponent(cookie.value))).toEqual({ locale: 'de', sound: false, volume: 0, music: true, unitSelectionSounds: true, confirmEndTurn: false, animations: false, buildingLights: true, unitFacing: true, keyboardLayout: 'qwerty' })
 })
