@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { unitSpritePath } from '$lib/game/unit-sprites'
+	import { unitSpritePath } from '#lib/game/unit-sprites.js'
 	import Sprite from './Sprite.svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { matchPlayerName, translate } from '$lib/i18n.svelte.js'
-	import type { GameState } from '$lib/game/types.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { matchPlayerName, translate } from '#lib/i18n.svelte.js'
+	import type { GameState } from '#lib/game/types.js'
 	import UiIcon from './UiIcon.svelte'
 	import PlayerBudgets from './PlayerBudgets.svelte'
 

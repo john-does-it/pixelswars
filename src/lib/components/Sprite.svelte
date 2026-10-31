@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { asset } from '#lib/game/asset-path.js'
 	let { src, alt = '', size = 'm', lazy = false }: { src: string; alt?: string; size?: 's' | 'm' | 'l' | 'xl'; lazy?: boolean } = $props()
 </script>
 

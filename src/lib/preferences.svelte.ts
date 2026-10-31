@@ -1,9 +1,12 @@
-import { browser } from '$app/environment'
-import { defaultPreferences, readPreferencesCookie, serializePreferencesCookie, type Preferences } from './preferences-cookie.ts'
-export type { Preferences } from './preferences-cookie.ts'
+import { browser } from '$app/env'
 
+import { defaultPreferences, readPreferencesCookie, serializePreferencesCookie, type Preferences } from './preferences-cookie.ts'
+
+export type { Preferences } from './preferences-cookie.ts'
 export const preferences = $state<Preferences>({ ...defaultPreferences })
+
 let initialized = false
+
 export function initializePreferences(): Preferences {
 	if (!browser || initialized) return preferences
 	initialized = true

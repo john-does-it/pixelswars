@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import PreferencesPanel from '$lib/components/site/PreferencesPanel.svelte'
-	import Modal from '$lib/components/Modal.svelte'
-	import UiIcon from '$lib/components/UiIcon.svelte'
+	import PreferencesPanel from '#lib/components/site/PreferencesPanel.svelte'
+	import Modal from '#lib/components/Modal.svelte'
+	import UiIcon from '#lib/components/UiIcon.svelte'
 	let showSettings = $state(false)
-	import { playerProfile, initializeProfile, saveProfile, restoreProfile } from '$lib/profile.svelte.ts'
-	import { makeBackup, parseBackup, maxBackupBytes, type ProfileBackup } from '$lib/profile.ts'
-	import { preferences } from '$lib/preferences.svelte.ts'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
+	import { playerProfile, initializeProfile, saveProfile, restoreProfile } from '#lib/profile.svelte.ts'
+	import { makeBackup, parseBackup, maxBackupBytes, type ProfileBackup } from '#lib/profile.ts'
+	import { preferences } from '#lib/preferences.svelte.ts'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	let pseudonym = $state('')
 	let pending = $state<ProfileBackup | null>(null)
 	let pendingRaw = $state('')

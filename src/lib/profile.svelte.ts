@@ -1,9 +1,12 @@
 import type { Preferences } from './preferences-cookie.ts'
-import { browser } from '$app/environment'
+import { browser } from '$app/env'
+
 import { emptyProfile, parseBackup, makeBackup, profileStorageKey, awardVictory, type PlayerProfile } from './profile.ts'
+
 import { initializePreferences, preferences, updatePreferences } from './preferences.svelte.ts'
 
 export const playerProfile = $state<{ data: PlayerProfile; ready: boolean; storageError: boolean }>({ data: emptyProfile(), ready: false, storageError: false })
+
 export function initializeProfile() {
 	if (!browser || playerProfile.ready) return
 	initializePreferences()

@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { dev } from '$app/environment'
+	import { dev } from '$app/env'
 	import { page } from '$app/state'
-	import SiteNavbar from '$lib/components/SiteNavbar.svelte'
-	import SiteFooter from '$lib/components/SiteFooter.svelte'
-	import { asset } from '$lib/game/asset-path'
-	import '$lib/app.css'
-	import '$lib/styles/site-tokens.css'
-	import { initializeProfile, syncProfile } from '$lib/profile.svelte.ts'
-	import { initializePreferences } from '$lib/preferences.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import SiteNavbar from '#lib/components/SiteNavbar.svelte'
+	import SiteFooter from '#lib/components/SiteFooter.svelte'
+	import { asset } from '#lib/game/asset-path.js'
+	import '#lib/app.css'
+	import '#lib/styles/site-tokens.css'
+	import { initializeProfile, syncProfile } from '#lib/profile.svelte.ts'
+	import { initializePreferences } from '#lib/preferences.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 	import type { Snippet } from 'svelte'
 
 	let navbarHeight = $state(0)
@@ -57,7 +57,6 @@
 
 <style>
 	.site-shell {
-		
 		display: flex;
 		flex-direction: column;
 		min-height: 100dvh;

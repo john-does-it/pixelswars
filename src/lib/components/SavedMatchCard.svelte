@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { resolve } from '$app/paths'
-	import { readSavedMatch, createMatchWriter, savedMatchKey, type SavedMatch } from '$lib/game/saved-match'
-	import { mapName, translate } from '$lib/i18n.svelte'
-	import { m as messages } from '$lib/paraglide/messages'
+	import { readSavedMatch, createMatchWriter, savedMatchKey, type SavedMatch } from '#lib/game/saved-match.js'
+	import { mapName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	import Modal from './Modal.svelte'
 	let saved = $state<SavedMatch | null>(null)
 	let error = $state<string | null>(null)

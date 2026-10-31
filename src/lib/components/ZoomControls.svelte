@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { MapCamera } from '$lib/game/map-camera.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import type { MapCamera } from '#lib/game/map-camera.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 	import UiIcon from './UiIcon.svelte'
 	let { camera }: { camera?: Pick<MapCamera, 'canZoomIn' | 'canZoomOut' | 'zoomIn' | 'zoomOut' | 'fit'> } = $props()
 </script>

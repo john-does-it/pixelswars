@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { unitSpritePath } from '$lib/game/unit-sprites'
-	import { unitTypes, terrainTypes } from '$lib/game/catalog'
-	import Sprite from '$lib/components/Sprite.svelte'
-	import TerrainIcon from '$lib/components/TerrainIcon.svelte'
+	import { unitSpritePath } from '#lib/game/unit-sprites.js'
+	import { unitTypes, terrainTypes } from '#lib/game/catalog.js'
+	import Sprite from '#lib/components/Sprite.svelte'
+	import TerrainIcon from '#lib/components/TerrainIcon.svelte'
 	import StatCard from './StatCard.svelte'
-	import { m as messages } from '$lib/paraglide/messages'
-	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte'
-	import type { BuildingId, StatItem, TerrainDefinition, TerrainId, UnitDefinition, UnitTypeId } from '$lib/game/types'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { buildingName, translate, terrainName, unitName } from '#lib/i18n.svelte.js'
+	import type { BuildingId, StatItem, TerrainDefinition, TerrainId, UnitDefinition, UnitTypeId } from '#lib/game/types.js'
 	const unitGroups: { name: (...parameters: any[]) => string; ids: UnitTypeId[] }[] = [
 		{ name: messages.infantry_group, ids: ['infantry', 'infantry-rocket', 'infantry-sniper'] },
 		{ name: messages.vehicles_group, ids: ['jeep', 'transport', 'artillery', 'tank', 'anti-air'] },
@@ -26,16 +26,12 @@
 		{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: unit.attacks },
 		{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: unit.attack ? `${unit.exclusion + 1}–${unit.range}` : '—' }
 	]
-	const terrainStats = (terrain: TerrainDefinition): StatItem[] => [{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain === terrainTypes.blocker ? '∞' : terrain.cost }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }]
-
-	const buildings: { id: BuildingId }[] = [
-		{ id: 'city' },
-		{ id: 'big-city' },
-		{ id: 'hospital' },
-		{ id: 'factory' },
-		{ id: 'airport' },
-		{ id: 'naval-base' }
+	const terrainStats = (terrain: TerrainDefinition): StatItem[] => [
+		{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain === terrainTypes.blocker ? '∞' : terrain.cost },
+		{ icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }
 	]
+
+	const buildings: { id: BuildingId }[] = [{ id: 'city' }, { id: 'big-city' }, { id: 'hospital' }, { id: 'factory' }, { id: 'airport' }, { id: 'naval-base' }]
 </script>
 
 <h2 id="stats-title">{translate(messages.site_stats)}</h2>
@@ -84,4 +80,3 @@
 		}
 	}
 </style>
-

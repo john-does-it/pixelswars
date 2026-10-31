@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Sprite from './Sprite.svelte'
-	import { asset } from '$lib/game/asset-path'
+	import { asset } from '#lib/game/asset-path.js'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatDetails from './StatDetails.svelte'
-	import { unitAt, effectiveRange } from '$lib/game/model.js'
-	import { buildingIncome, unitTypes } from '$lib/game/catalog.js'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
-	import type { Cell, GameState, StatItem, Unit } from '$lib/game/types.js'
+	import { unitAt, effectiveRange } from '#lib/game/model.js'
+	import { buildingIncome, unitTypes } from '#lib/game/catalog.js'
+	import { unitSprite } from '#lib/game/unit-sprites.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { buildingName, translate, terrainName, unitName } from '#lib/i18n.svelte.js'
+	import type { Cell, GameState, StatItem, Unit } from '#lib/game/types.js'
 
 	let { state }: { state: GameState } = $props()
 	const cell = $derived(state.previewIndex === null ? undefined : state.cells[state.previewIndex])
@@ -33,9 +33,9 @@
 
 {#snippet terrainContent(previewCell: Cell | undefined)}
 	{#if previewCell}
- <StatDetails title={previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)} stats={terrainStats(previewCell)}>
- {#snippet sprite()}<TerrainIcon cell={previewCell} size={64} />{/snippet}
- </StatDetails>
+		<StatDetails title={previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)} stats={terrainStats(previewCell)}>
+			{#snippet sprite()}<TerrainIcon cell={previewCell} size={64} />{/snippet}
+		</StatDetails>
 		{#if previewCell.building}
 			<p class="building-status">
 				<span>{translate(messages.capture_points, { points: previewCell.capturePoints })}</span>
@@ -45,9 +45,9 @@
 {/snippet}
 
 {#snippet unitContent(previewUnit: Unit)}
- <StatDetails title={unitName(previewUnit.type)} stats={statsFor(previewUnit)}>
- {#snippet sprite()}<Sprite src={unitSprite(previewUnit)} size="m" />{/snippet}
- </StatDetails>
+	<StatDetails title={unitName(previewUnit.type)} stats={statsFor(previewUnit)}>
+		{#snippet sprite()}<Sprite src={unitSprite(previewUnit)} size="m" />{/snippet}
+	</StatDetails>
 	{#if unitTypes[previewUnit.type].capacity}
 		<div class="passenger-details">
 			<h3>{translate(messages.transport_cargo, { count: previewUnit.cargo?.length ?? 0, capacity: unitTypes[previewUnit.type].capacity ?? 0 })}</h3>

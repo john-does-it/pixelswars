@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
-	import type { StatItem } from '$lib/game/types.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import type { StatItem } from '#lib/game/types.js'
 
 	let { items }: { items: StatItem[] } = $props()
 </script>

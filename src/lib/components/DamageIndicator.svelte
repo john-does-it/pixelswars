@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
 	import CellFeedback from './CellFeedback.svelte'
-	import { cellFeedbackDuration } from '$lib/game/timing.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { Unit } from '$lib/game/types.js'
+	import { cellFeedbackDuration } from '#lib/game/timing.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { Unit } from '#lib/game/types.js'
 
 	let { unit }: { unit?: Unit } = $props()
 	let previous: { id: number; health: number } | undefined

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { playerProfile } from '$lib/profile.svelte'
-	import { achievementProgress } from '$lib/achievements'
-	import { asset } from '$lib/game/asset-path'
-	import { m } from '$lib/paraglide/messages'
-	import { translate } from '$lib/i18n.svelte'
+	import { playerProfile } from '#lib/profile.svelte.js'
+	import { achievementProgress } from '#lib/achievements.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 	const achievements = $derived(achievementProgress(playerProfile.data))
 </script>
 

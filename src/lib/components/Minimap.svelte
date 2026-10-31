@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { asset } from '#lib/game/asset-path.js'
 	import TerrainIcon from './TerrainIcon.svelte'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { GameState } from '$lib/game/types.js'
+	import { unitSprite } from '#lib/game/unit-sprites.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { GameState } from '#lib/game/types.js'
 
 	let { state: gameState, visibleLeft, visibleTop, visibleWidth, visibleHeight, onseek }: { state: GameState; visibleLeft: number; visibleTop: number; visibleWidth: number; visibleHeight: number; onseek: (left: number, top: number) => void } = $props()
 	const unitsByCell = $derived(new Map(gameState.units.map((unit) => [unit.cell, unit])))

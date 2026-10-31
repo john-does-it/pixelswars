@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cellFeedbackDuration } from '$lib/game/timing.js'
+	import { cellFeedbackDuration } from '#lib/game/timing.js'
 
 	let { text, tone = 'neutral', class: className = '', label, announce = false }: { text: string; tone?: 'neutral' | 'healing' | 'damage'; class?: string; label?: string; announce?: boolean } = $props()
 </script>

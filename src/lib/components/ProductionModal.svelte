@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { unitSpritePath } from '$lib/game/unit-sprites'
+	import { unitSpritePath } from '#lib/game/unit-sprites.js'
 	import Sprite from './Sprite.svelte'
 	import Modal from './Modal.svelte'
-	import { unitTypes, productionBuildings } from '$lib/game/catalog.js'
-	import { purchaseStatus, productionBuilding } from '$lib/game/model.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, translate, unitName } from '$lib/i18n.svelte.js'
-	import type { GameController, ProductionBuildingId, UnitTypeId } from '$lib/game/types.js'
+	import { unitTypes, productionBuildings } from '#lib/game/catalog.js'
+	import { purchaseStatus, productionBuilding } from '#lib/game/model.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { buildingName, translate, unitName } from '#lib/i18n.svelte.js'
+	import type { GameController, ProductionBuildingId, UnitTypeId } from '#lib/game/types.js'
 
 	let { game }: { game: GameController } = $props()
 	const building = $derived(game.state.productionIndex === null ? null : (game.state.cells[game.state.productionIndex]?.building ?? null))

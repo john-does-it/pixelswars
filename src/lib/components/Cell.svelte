@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { asset } from '#lib/game/asset-path.js'
 	import Unit from './Unit.svelte'
-	import { buildingIncome, unitTypes } from '$lib/game/catalog.js'
+	import { buildingIncome, unitTypes } from '#lib/game/catalog.js'
 	import DamageIndicator from './DamageIndicator.svelte'
 	import CellFeedback from './CellFeedback.svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { buildingName, matchPlayerName, translate, terrainName, unitName } from '$lib/i18n.svelte.js'
-	import type { Cell, Unit as GameUnit } from '$lib/game/types.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { buildingName, matchPlayerName, translate, terrainName, unitName } from '#lib/i18n.svelte.js'
+	import type { Cell, Unit as GameUnit } from '#lib/game/types.js'
 
 	type Props = {
 		networkPlayer?: 1 | 2

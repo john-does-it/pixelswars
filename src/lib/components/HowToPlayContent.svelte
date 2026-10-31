@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { KeyboardLayout } from '$lib/game/types.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { KeyboardLayout } from '#lib/game/types.js'
 	let { keyboardLayout, headingLevel = 3 }: { keyboardLayout: KeyboardLayout; headingLevel?: 3 | 4 } = $props()
 </script>
 

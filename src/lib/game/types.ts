@@ -128,7 +128,6 @@ export interface ControllerOptions {
 	delay?: (milliseconds: number) => Promise<void>
 }
 
-
 export interface GameController {
 	selectPassenger(passengerId: number): void
 	embark(passengerId: number): void

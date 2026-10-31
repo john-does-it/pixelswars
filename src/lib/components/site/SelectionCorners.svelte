@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
+	import { asset } from '#lib/game/asset-path.js'
 </script>
 
 <span class="selection-corners" aria-hidden="true">

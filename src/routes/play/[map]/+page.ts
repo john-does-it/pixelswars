@@ -1,56 +1,56 @@
 import { error } from '@sveltejs/kit'
-import { dev } from '$app/environment'
-import neighborTrouble from '$lib/data/neighbor-trouble.json'
-import aLittleStroll from '$lib/data/a-little-stroll.json'
-import afterYou from '$lib/data/after-you.json'
-import meetInTheMiddle from '$lib/data/meet-in-the-middle.json'
-import theScenicRoute from '$lib/data/the-scenic-route.json'
-import roomPlease from '$lib/data/room-please.json'
-import areWeThereYet from '$lib/data/are-we-there-yet.json'
-import rightOfWay from '$lib/data/right-of-way.json'
-import keepYourFeetDry from '$lib/data/keep-your-feet-dry.json'
-import watchThePuddles from '$lib/data/watch-the-puddles.json'
-import niceViewUpHere from '$lib/data/nice-view-up-here.json'
-import theOtherBank from '$lib/data/the-other-bank.json'
-import notTheShoes from '$lib/data/not-the-shoes.json'
-import whichWayAcross from '$lib/data/which-way-across.json'
-import waterTown from '$lib/data/water-town.json'
-import volcanicLands from '$lib/data/volcanic-lands.json'
-import delusionsOfGrandeur from '$lib/data/delusions-of-grandeur.json'
-import longIslandIcedTea from '$lib/data/long-island-iced-tea.json'
-import mountainHike from '$lib/data/mountain-hike.json'
-import geneva from '$lib/data/geneva.json'
-import aLongDay from '$lib/data/a-long-day.json'
-import ourPathsWillCross from '$lib/data/our-paths-will-cross.json'
-import centralPark from '$lib/data/central-park.json'
-import lakeView from '$lib/data/lake-view.json'
-import brokenBridge from '$lib/data/broken-bridge.json'
-import theIslands from '$lib/data/the-islands.json'
-import troubledBridges from '$lib/data/troubled-bridges.json'
-import neighborsSquare from '$lib/data/neighbors-square.json'
-import twoBridges from '$lib/data/two-bridges.json'
-import littleDetour from '$lib/data/little-detour.json'
-import sandbox from '$lib/data/sandbox.json'
-import gentleSlope from '$lib/data/gentle-slope.json'
-import meanders from '$lib/data/meanders.json'
-import betweenTheWaters from '$lib/data/between-the-waters.json'
-import bridgeCrossroads from '$lib/data/bridge-crossroads.json'
-import mapFiles from '$lib/data/map-files.json'
+import { dev } from '$app/env'
+import neighborTrouble from '#lib/data/neighbor-trouble.json'
+import aLittleStroll from '#lib/data/a-little-stroll.json'
+import afterYou from '#lib/data/after-you.json'
+import meetInTheMiddle from '#lib/data/meet-in-the-middle.json'
+import theScenicRoute from '#lib/data/the-scenic-route.json'
+import roomPlease from '#lib/data/room-please.json'
+import areWeThereYet from '#lib/data/are-we-there-yet.json'
+import rightOfWay from '#lib/data/right-of-way.json'
+import keepYourFeetDry from '#lib/data/keep-your-feet-dry.json'
+import watchThePuddles from '#lib/data/watch-the-puddles.json'
+import niceViewUpHere from '#lib/data/nice-view-up-here.json'
+import theOtherBank from '#lib/data/the-other-bank.json'
+import notTheShoes from '#lib/data/not-the-shoes.json'
+import whichWayAcross from '#lib/data/which-way-across.json'
+import waterTown from '#lib/data/water-town.json'
+import volcanicLands from '#lib/data/volcanic-lands.json'
+import delusionsOfGrandeur from '#lib/data/delusions-of-grandeur.json'
+import longIslandIcedTea from '#lib/data/long-island-iced-tea.json'
+import mountainHike from '#lib/data/mountain-hike.json'
+import geneva from '#lib/data/geneva.json'
+import aLongDay from '#lib/data/a-long-day.json'
+import ourPathsWillCross from '#lib/data/our-paths-will-cross.json'
+import centralPark from '#lib/data/central-park.json'
+import lakeView from '#lib/data/lake-view.json'
+import brokenBridge from '#lib/data/broken-bridge.json'
+import theIslands from '#lib/data/the-islands.json'
+import troubledBridges from '#lib/data/troubled-bridges.json'
+import neighborsSquare from '#lib/data/neighbors-square.json'
+import twoBridges from '#lib/data/two-bridges.json'
+import littleDetour from '#lib/data/little-detour.json'
+import sandbox from '#lib/data/sandbox.json'
+import gentleSlope from '#lib/data/gentle-slope.json'
+import meanders from '#lib/data/meanders.json'
+import betweenTheWaters from '#lib/data/between-the-waters.json'
+import bridgeCrossroads from '#lib/data/bridge-crossroads.json'
+import mapFiles from '#lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
-import type { GameMap } from '$lib/game/types.js'
+import type { GameMap } from '#lib/game/types.js'
 
 export const entries: EntryGenerator = () => {
 	return Object.keys(mapFiles).map((map) => ({ map }))
 }
 export const load: PageLoad = async ({ params }) => {
 	if (dev && params.map.startsWith('draft-')) {
-		const maps = (await import('$lib/game/draft-maps')).loadDraftMaps()
+		const maps = (await import('#lib/game/draft-maps.js')).loadDraftMaps()
 		const map = maps.find((candidate) => `draft-${candidate.id}` === params.map)
 		if (!map) error(404, 'Unknown draft map')
 		return { map, draft: true }
 	}
 	if (dev && params.map === 'dev') {
-		const { createDevMap } = await import('$lib/game/dev-map.js')
+		const { createDevMap } = await import('#lib/game/dev-map.js')
 		return { map: createDevMap(), draft: false }
 	}
 	const maps: Record<string, GameMap> = {

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
 	import Modal from './Modal.svelte'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import type { AiDifficulty } from '$lib/game/types.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import type { AiDifficulty } from '#lib/game/types.js'
 
 	let { map, onclose }: { map: number; onclose: () => void } = $props()
 	let chooseDifficulty = $state(false)

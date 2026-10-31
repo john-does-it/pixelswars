@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { page } from '$app/state'
-	import { replaceState } from '$app/navigation'
+	import { goto } from '$app/navigation'
 	import { resolve } from '$app/paths'
 	import Game from './Game.svelte'
 	import Modal from './Modal.svelte'
-	import { readSavedMatch, createMatchWriter, type SavedMatch } from '$lib/game/saved-match'
-	import type { GameMap, AiDifficulty } from '$lib/game/types'
-	import { mapName, translate } from '$lib/i18n.svelte'
-	import { m as messages } from '$lib/paraglide/messages'
+	import { readSavedMatch, createMatchWriter, type SavedMatch } from '#lib/game/saved-match.js'
+	import type { GameMap, AiDifficulty } from '#lib/game/types.js'
+	import { mapName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 
 	let { map, difficulty }: { map: GameMap; difficulty: AiDifficulty } = $props()
 	let ready = $state(false)
@@ -36,9 +36,9 @@
 			createMatchWriter(localStorage, raw)(null)
 			raw = null
 			error = null
-			const url = new URL(page.url)
+			const url = new URL(page.url.href)
 			url.searchParams.delete('new')
-			replaceState(url, page.state)
+			goto(url, { shallow: true, replace: true, state: page.state })
 			ready = true
 		} catch {
 			error = 'conflict'
@@ -48,9 +48,9 @@
 		if (!saved || saved.map.id !== map.id || saved.difficulty !== difficulty || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
 		event.preventDefault()
 		initial = saved
-		const url = new URL(page.url)
+		const url = new URL(page.url.href)
 		url.searchParams.delete('new')
-		replaceState(url, page.state)
+		goto(url, { shallow: true, replace: true, state: page.state })
 		ready = true
 	}
 </script>
@@ -68,7 +68,7 @@
 				<a class="button" onclick={resumeCurrent} href={`${resolve('/play/[map]', { map: saved.map.id })}/?ai=${saved.difficulty}`}>{translate(messages.save_resume)}</a>
 			{/if}
 			<button class="primary" onclick={startNew}>{translate(messages.save_replace_confirm)}</button>
-			<a href={resolve('/', {})}>{translate(messages.cancel_close)}</a>
+			<a href={resolve('/')}>{translate(messages.cancel_close)}</a>
 		</div>
 	</Modal>
 {/if}

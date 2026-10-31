@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
 	import PlayerTransition from './PlayerTransition.svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { Medal } from '$lib/profile.ts'
-	import type { Player } from '$lib/game/types.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { Medal } from '#lib/profile.ts'
+	import type { Player } from '#lib/game/types.js'
 
 	let { winner, onrestart, earnedMedal = null, storageError = false, aiMode = false, rematchRequested = false, opponentRematchRequested = false }: { earnedMedal?: Medal | null; storageError?: boolean; winner: Player; onrestart: () => void; aiMode?: boolean; rematchRequested?: boolean; opponentRematchRequested?: boolean } = $props()
 	const title = $derived(aiMode ? translate(winner === 1 ? messages.ai_victory_message : messages.human_victory_message) : translate(messages.victory_message, { player: winner }))
@@ -18,7 +18,7 @@
 	{/if}
 	<div class="victory-actions">
 		<button class="primary" disabled={rematchRequested} onclick={onrestart}>{translate(rematchRequested ? messages.online_rematch_waiting : opponentRematchRequested ? messages.online_rematch_accept : messages.play_again)}</button>
-		<a class="button primary" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
+		<a class="button primary" href={resolve('/')}>{translate(messages.choose_another_map)}</a>
 	</div>
 </PlayerTransition>
 

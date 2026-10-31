@@ -1,7 +1,7 @@
 <script lang="ts">
-	import SupportContent from '$lib/components/site/SupportContent.svelte'
-	import { m } from '$lib/paraglide/messages'
-	import { translate } from '$lib/i18n.svelte'
+	import SupportContent from '#lib/components/site/SupportContent.svelte'
+	import { m } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 </script>
 
 <svelte:head>

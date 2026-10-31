@@ -2,10 +2,10 @@
 	import { onMount, onDestroy } from 'svelte'
 	import { resolve } from '$app/paths'
 	import Game from './Game.svelte'
-	import { PeerConnection, PeerError } from '$lib/game/peer.js'
-	import { mapName, translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import type { GameMap } from '$lib/game/types.js'
+	import { PeerConnection, PeerError } from '#lib/game/peer.js'
+	import { mapName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import type { GameMap } from '#lib/game/types.js'
 
 	let { map }: { map: GameMap } = $props()
 	let peer = $state<PeerConnection>()
@@ -112,7 +112,7 @@
 	<Game {map} connection={peer} />
 {:else}
 	<main class="online-setup">
-		<a href={resolve('/', {})}>← Pixel’s War</a>
+		<a href={resolve('/')}>← Pixel’s War</a>
 		<section class="panel">
 			<h1 class="pixel-heading">{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
 			<p>{mapName(map.id)}</p>
@@ -157,7 +157,7 @@
 				{/if}
 			{/if}
 			{#if error}<p role="alert">{error}</p>{/if}
-			<p class="connection-note"><a href={resolve('/terms/', {})}>{translate(messages.legal_title)}</a></p>
+			<p class="connection-note"><a href={resolve('/terms')}>{translate(messages.legal_title)}</a></p>
 		</section>
 	</main>
 {/if}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Modal from './Modal.svelte'
 	import HowToPlayContent from './HowToPlayContent.svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { KeyboardLayout } from '$lib/game/types.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { KeyboardLayout } from '#lib/game/types.js'
 	import type { Snippet } from 'svelte'
 	let { keyboardLayout, onclose, settings, actions }: { keyboardLayout: KeyboardLayout; onclose: () => void; settings?: Snippet; actions?: Snippet } = $props()
 </script>

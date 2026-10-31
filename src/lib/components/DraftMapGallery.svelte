@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { unitSpritePath } from '$lib/game/unit-sprites'
+	import { unitSpritePath } from '#lib/game/unit-sprites.js'
 	import { resolve } from '$app/paths'
-	import { asset } from '$lib/game/asset-path'
-	import { describeMap } from '$lib/game/map-details'
-	import type { GameMap } from '$lib/game/types'
+	import { asset } from '#lib/game/asset-path.js'
+	import { describeMap } from '#lib/game/map-details.js'
+	import type { GameMap } from '#lib/game/types.js'
 	import MapCharacteristics from './MapCharacteristics.svelte'
-	import { translate } from '$lib/i18n.svelte'
-	import { m as messages } from '$lib/paraglide/messages'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	let { maps }: { maps: GameMap[] } = $props()
 </script>
 
@@ -31,7 +31,7 @@
 					<h3 title={map.name}>{map.name}</h3>
 					<p>{map.cols} × {map.rows}</p>
 					<div class="actions">
-						<a href={`${resolve('/map-editor/', {})}?draft=${map.id}`}>{translate(messages.map_draft_edit)}</a>
+						<a href={`${resolve('/map-editor')}?draft=${map.id}`}>{translate(messages.map_draft_edit)}</a>
 					</div>
 				</article>
 			{/each}

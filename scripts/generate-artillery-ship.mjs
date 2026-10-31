@@ -13,7 +13,6 @@ for (const player of [1, 2]) {
 		const name = `artillery-ship/${color}/artillery-ship-${color}-${suffix}.svg`
 		const svg = stage ? base.replace('</svg>', `<g aria-label="Damage stage ${stage}">${impacts.slice(0, stage).join('')}</g>\n</svg>`) : base
 		if (player !== 1 || stage !== 0) writeFileSync(new URL(name, directory), svg)
-
 	}
 }
 console.log('Generated red artillery ship and four cumulative damage stages for each team.')

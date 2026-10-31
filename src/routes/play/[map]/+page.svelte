@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Game from '$lib/components/Game.svelte'
-	import SoloGame from '$lib/components/SoloGame.svelte'
-	import OnlineGame from '$lib/components/OnlineGame.svelte'
+	import Game from '#lib/components/Game.svelte'
+	import SoloGame from '#lib/components/SoloGame.svelte'
+	import OnlineGame from '#lib/components/OnlineGame.svelte'
 	import { page } from '$app/state'
-	import { browser } from '$app/environment'
-	import { isAiDifficulty } from '$lib/game/ai.js'
+	import { browser } from '$app/env'
+	import { isAiDifficulty } from '#lib/game/ai.js'
 	import type { PageData } from './$types'
 
 	let { data }: { data: PageData } = $props()

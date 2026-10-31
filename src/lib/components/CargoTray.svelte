@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Sprite from './Sprite.svelte'
-	import { asset } from '$lib/game/asset-path'
-	import { selectedUnit } from '$lib/game/model.js'
-	import { unitTypes } from '$lib/game/catalog.js'
-	import { deploymentCells, selectedPassenger } from '$lib/game/transport.js'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
-	import { translate, unitName } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import type { GameController } from '$lib/game/types.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { selectedUnit } from '#lib/game/model.js'
+	import { unitTypes } from '#lib/game/catalog.js'
+	import { deploymentCells, selectedPassenger } from '#lib/game/transport.js'
+	import { unitSprite } from '#lib/game/unit-sprites.js'
+	import { translate, unitName } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import type { GameController } from '#lib/game/types.js'
 	import Modal from './Modal.svelte'
 	let { game, disabled = false }: { game: GameController; disabled?: boolean } = $props()
 	const transport = $derived(selectedUnit(game.state))

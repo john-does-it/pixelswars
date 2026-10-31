@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { matchPlayerName, translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { preferences } from '$lib/preferences.svelte.js'
-	import { playerIncome } from '$lib/game/model.js'
-	import type { GameState } from '$lib/game/types.js'
+	import { matchPlayerName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { preferences } from '#lib/preferences.svelte.js'
+	import { playerIncome } from '#lib/game/model.js'
+	import type { GameState } from '#lib/game/types.js'
 	let { state, aiMode = false }: { state: GameState; aiMode?: boolean } = $props()
 	const amounts = $derived(new Intl.NumberFormat(preferences.locale))
 	const players = [1, 2] as const

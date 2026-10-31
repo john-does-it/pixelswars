@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 </script>
 
 <svelte:head><title>{translate(messages.legal_title)} · Pixel’s War</title></svelte:head>

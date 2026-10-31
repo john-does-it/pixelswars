@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { MapDetails } from '$lib/game/map-details'
-	import { translate } from '$lib/i18n.svelte'
-	import { m as messages } from '$lib/paraglide/messages'
+	import type { MapDetails } from '#lib/game/map-details.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	let { details }: { details: MapDetails } = $props()
 	const badges = $derived([
 		{ active: details.symmetrical, label: messages.map_symmetrical, help: messages.map_symmetrical_help },

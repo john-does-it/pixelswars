@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PlayerTransition from './PlayerTransition.svelte'
-	import type { Player } from '$lib/game/types.js'
+	import type { Player } from '#lib/game/types.js'
 
 	let { player, message }: { player: Player; message: string } = $props()
 </script>

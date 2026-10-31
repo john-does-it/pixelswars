@@ -1,5 +1,5 @@
-import { browser } from '$app/environment'
-import { asset } from '$lib/game/asset-path'
+import { browser } from '$app/env'
+import { asset } from '#lib/game/asset-path.js'
 
 let preloadPromise: Promise<void> | undefined
 const retainedImages = new Map<string, HTMLImageElement>()
@@ -35,7 +35,11 @@ async function loadAllVisualAssets(): Promise<void> {
 	// Gallery artwork is loaded on demand, independently of gameplay sprites.
 	const results = await Promise.allSettled([...new Set(paths.filter((path) => !path.startsWith('/assets/illustrations/')).map(asset))].map(loadImage))
 	const failures = results.filter((result) => result.status === 'rejected')
-	if (failures.length) throw new AggregateError(failures.map((result) => result.reason), 'Some game sprites could not be prepared')
+	if (failures.length)
+		throw new AggregateError(
+			failures.map((result) => result.reason),
+			'Some game sprites could not be prepared'
+		)
 }
 
 export function preloadGameAssets(): Promise<void> {

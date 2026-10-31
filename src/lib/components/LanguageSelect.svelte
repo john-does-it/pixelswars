@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { isLocale } from '$lib/preferences-cookie.ts'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { preferences, updatePreferences } from '#lib/preferences.svelte.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { isLocale } from '#lib/preferences-cookie.ts'
 	import SettingSelect from './SettingSelect.svelte'
 
 	let { site = false, compact = false, symbolOnly = false, hideLabel = false }: { site?: boolean; compact?: boolean; symbolOnly?: boolean; hideLabel?: boolean } = $props()

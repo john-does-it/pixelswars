@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { preferences, updatePreferences, type Preferences } from '$lib/preferences.svelte'
-	import UiIcon from '$lib/components/UiIcon.svelte'
-	import SettingSelect from '$lib/components/SettingSelect.svelte'
-	import LanguageSelect from '$lib/components/LanguageSelect.svelte'
-	import { m } from '$lib/paraglide/messages'
-	import { translate } from '$lib/i18n.svelte'
-	import type { KeyboardLayout } from '$lib/game/types'
+	import { preferences, updatePreferences, type Preferences } from '#lib/preferences.svelte.js'
+	import UiIcon from '#lib/components/UiIcon.svelte'
+	import SettingSelect from '#lib/components/SettingSelect.svelte'
+	import LanguageSelect from '#lib/components/LanguageSelect.svelte'
+	import { m } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { KeyboardLayout } from '#lib/game/types.js'
 	let { onmusic, onkeyboard }: { onmusic?: (value: boolean) => void; onkeyboard?: (value: KeyboardLayout) => void } = $props()
 	const volumeId = $props.id()
 	const toggles = [

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { recordVictory, playerProfile } from '$lib/profile.svelte.ts'
-	import type { Medal } from '$lib/profile.ts'
+	import { recordVictory, playerProfile } from '#lib/profile.svelte.ts'
+	import type { Medal } from '#lib/profile.ts'
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
-	import { createGame } from '$lib/game/game.svelte.js'
-	import { selectedUnit, unitAt, locked } from '$lib/game/model.js'
-	import { createAudio } from '$lib/game/audio.js'
-	import { preloadGameAssets } from '$lib/game/preload.js'
-	import { initializePreferences, updatePreferences, preferences } from '$lib/preferences.svelte.js'
-	import { mapName, translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
+	import { createGame } from '#lib/game/game.svelte.js'
+	import { selectedUnit, unitAt, locked } from '#lib/game/model.js'
+	import { createAudio } from '#lib/game/audio.js'
+	import { preloadGameAssets } from '#lib/game/preload.js'
+	import { initializePreferences, updatePreferences, preferences } from '#lib/preferences.svelte.js'
+	import { mapName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	import Board from './Board.svelte'
 	import GameHeader from './GameHeader.svelte'
 	import SelectedUnitStrip from './SelectedUnitStrip.svelte'
@@ -18,10 +18,10 @@
 	import VictoryModal from './VictoryModal.svelte'
 	import TurnAnnouncement from './TurnAnnouncement.svelte'
 	import Modal from './Modal.svelte'
-	import type { MatchConnection } from '$lib/game/peer.js'
-	import type { AiDifficulty, AudioController, GameController, GameMap } from '$lib/game/types.js'
-	import type { GameState } from '$lib/game/types.js'
-	import { createSavedMatch, createMatchWriter, type SavedMatch } from '$lib/game/saved-match'
+	import type { MatchConnection } from '#lib/game/peer.js'
+	import type { AiDifficulty, AudioController, GameController, GameMap } from '#lib/game/types.js'
+	import type { GameState } from '#lib/game/types.js'
+	import { createSavedMatch, createMatchWriter, type SavedMatch } from '#lib/game/saved-match.js'
 
 	let { map, difficulty = null, connection, resume, autosave = false, saveRaw = null, draft = false }: { map: GameMap; difficulty?: AiDifficulty | null; connection?: MatchConnection; resume?: SavedMatch; autosave?: boolean; saveRaw?: string | null; draft?: boolean } = $props()
 	let saveError = $state<string | null>(null)
@@ -214,7 +214,7 @@
 		{#if network && network.phase !== 'playing'}
 			<Modal title={translate(network.phase === 'waiting' ? messages.online_waiting : messages.online_paused)}>
 				<p>{translate(network.phase === 'waiting' ? messages.online_waiting_detail : messages.online_paused_detail)}</p>
-				<a class="button primary" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
+				<a class="button primary" href={resolve('/')}>{translate(messages.choose_another_map)}</a>
 			</Modal>
 		{/if}
 		{#if confirmRestart}

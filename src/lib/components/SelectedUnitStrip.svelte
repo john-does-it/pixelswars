@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
-	import { preferences } from '$lib/preferences.svelte.js'
-	import { unitTypes } from '$lib/game/catalog.js'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
-	import { unitName, buildingName, terrainName, translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import type { Cell, Unit } from '$lib/game/types.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { preferences } from '#lib/preferences.svelte.js'
+	import { unitTypes } from '#lib/game/catalog.js'
+	import { unitSprite } from '#lib/game/unit-sprites.js'
+	import { unitName, buildingName, terrainName, translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import type { Cell, Unit } from '#lib/game/types.js'
 	import TerrainIcon from './TerrainIcon.svelte'
 
 	let { cell, unit, disabled = false, oninspect }: { cell?: Cell; unit?: Unit; disabled?: boolean; oninspect: () => void } = $props()

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
-	import { selectedUnit, canCapture, locked } from '$lib/game/model.js'
-	import { hasAvailableAction } from '$lib/game/available-actions.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { preferences, updatePreferences } from '$lib/preferences.svelte.js'
-	import type { GameController, KeyboardLayout } from '$lib/game/types.js'
+	import { selectedUnit, canCapture, locked } from '#lib/game/model.js'
+	import { hasAvailableAction } from '#lib/game/available-actions.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { preferences, updatePreferences } from '#lib/preferences.svelte.js'
+	import type { GameController, KeyboardLayout } from '#lib/game/types.js'
 	import HowToPlayModal from './HowToPlayModal.svelte'
 	import PreferencesPanel from './site/PreferencesPanel.svelte'
 	import StatsPanel from './StatsPanel.svelte'
@@ -112,7 +112,7 @@
 		{#snippet actions()}
 			{#if saveStatus && saveStatus !== 'saved'}<p>{translate(saveStatus === 'conflict' ? messages.save_conflict : messages.save_storage)}</p>{/if}
 			<div class="match-actions">
-				<a class="button map-selection" href={resolve('/', {})}>{translate(messages.choose_another_map)}</a>
+				<a class="button map-selection" href={resolve('/')}>{translate(messages.choose_another_map)}</a>
 				{#if onrestart}
 					<button
 						onclick={() => {

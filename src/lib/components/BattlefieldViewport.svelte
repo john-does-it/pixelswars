@@ -3,10 +3,10 @@
 	import Minimap from './Minimap.svelte'
 	import ZoomControls from './ZoomControls.svelte'
 	import UiIcon from './UiIcon.svelte'
-	import type { MapCamera } from '$lib/game/map-camera.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { GameState } from '$lib/game/types.js'
+	import type { MapCamera } from '#lib/game/map-camera.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { GameState } from '#lib/game/types.js'
 
 	let { state: gameState, name, children, camera = $bindable(), boardDetails, cellSize }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number } = $props()
 	let viewport = $state<HTMLDivElement>()

@@ -2,8 +2,8 @@
 	import { resolve } from '$app/paths'
 	import Modal from './Modal.svelte'
 	import { tick } from 'svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 	let showCredits = $state(false)
 	let creditsButton: HTMLButtonElement
 	async function closeCredits() {
@@ -15,7 +15,7 @@
 
 <footer id="credits" class="site-footer">
 	<button bind:this={creditsButton} onclick={() => (showCredits = true)} aria-haspopup="dialog">{translate(messages.credits)}</button>
-	<a href={resolve('/terms/', {})}>{translate(messages.footer_terms)}</a>
+	<a href={resolve('/terms')}>{translate(messages.footer_terms)}</a>
 </footer>
 
 {#if showCredits}

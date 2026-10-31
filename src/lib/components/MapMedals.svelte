@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { difficulties, hasMedal } from '$lib/profile.ts'
-	import { playerProfile } from '$lib/profile.svelte.ts'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
+	import { difficulties, hasMedal } from '#lib/profile.ts'
+	import { playerProfile } from '#lib/profile.svelte.ts'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	let { map }: { map: string } = $props()
 </script>
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
-	import { preferences } from '$lib/preferences.svelte.js'
-	import { unitTypes } from '$lib/game/catalog.js'
-	import { damageStage, unitSprite } from '$lib/game/unit-sprites.js'
-	import { aircraftIdleTiming, infantryIdleWait } from '$lib/game/idle-animation.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
-	import type { Unit as GameUnit } from '$lib/game/types.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { preferences } from '#lib/preferences.svelte.js'
+	import { unitTypes } from '#lib/game/catalog.js'
+	import { damageStage, unitSprite } from '#lib/game/unit-sprites.js'
+	import { aircraftIdleTiming, infantryIdleWait } from '#lib/game/idle-animation.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
+	import type { Unit as GameUnit } from '#lib/game/types.js'
 
 	let { unit, target = false, showResources = false, animate = false }: { unit: GameUnit; target?: boolean; showResources?: boolean; animate?: boolean } = $props()
 	const unitDefinition = $derived(unitTypes[unit.type])

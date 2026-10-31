@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 	import UiIcon from './UiIcon.svelte'
 
 	let { title, onclose, children, alwaysShowScrollbar = true }: { title: string; onclose?: () => void; children: Snippet; alwaysShowScrollbar?: boolean } = $props()

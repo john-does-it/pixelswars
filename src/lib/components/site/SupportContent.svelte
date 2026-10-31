@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
-	import { support } from '$lib/support.ts'
-	import { translate } from '$lib/i18n.svelte.js'
-	import { m as messages } from '$lib/paraglide/messages.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { support } from '#lib/support.ts'
+	import { translate } from '#lib/i18n.svelte.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
 	let copyState = $state<'idle' | 'copied' | 'failed'>('idle')
 	async function copyAddress() {
 		try {

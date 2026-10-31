@@ -31,15 +31,15 @@ test('compact editor has sprite selectors, preserves painted cells on resize, an
 })
 
 test('map grid shows each map once and opens the mode chooser', async ({ page }) => {
- await page.goto('/')
- const cards = page.locator('.maps .map')
- await expect(cards.first()).toBeVisible()
- const ids = await cards.evaluateAll(elements => elements.map(e => e.getAttribute('data-map-id')))
- expect(new Set(ids).size).toBe(ids.length)
- await expect(page.locator('.gallery-arrow')).toHaveCount(0)
- expect(await page.locator('.maps').evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true)
- await cards.last().click()
- await expect(page.getByRole('dialog')).toBeVisible()
+	await page.goto('/')
+	const cards = page.locator('.maps .map')
+	await expect(cards.first()).toBeVisible()
+	const ids = await cards.evaluateAll((elements) => elements.map((e) => e.getAttribute('data-map-id')))
+	expect(new Set(ids).size).toBe(ids.length)
+	await expect(page.locator('.gallery-arrow')).toHaveCount(0)
+	expect(await page.locator('.maps').evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true)
+	await cards.last().click()
+	await expect(page.getByRole('dialog')).toBeVisible()
 })
 
 test('Enter opens the highlighted map mode chooser without intercepting text input', async ({ page }) => {

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import BattlefieldViewport from './BattlefieldViewport.svelte'
 	import Cell from './Cell.svelte'
-	import { asset } from '$lib/game/asset-path'
-	import { unitSprite } from '$lib/game/unit-sprites.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { unitSprite } from '#lib/game/unit-sprites.js'
 	import CombatEffects from './CombatEffects.svelte'
-	import { boardingPaths, deploymentCells, selectedPassenger } from '$lib/game/transport.js'
-	import { pathsFrom } from '$lib/game/movement.js'
-	import { preferences } from '$lib/preferences.svelte.js'
-	import { selectedUnit, inspectedEnemy, attackCells, canAttack, locked } from '$lib/game/model.js'
-	import type { GameController } from '$lib/game/types.js'
-	import type { MapCamera } from '$lib/game/map-camera.js'
+	import { boardingPaths, deploymentCells, selectedPassenger } from '#lib/game/transport.js'
+	import { pathsFrom } from '#lib/game/movement.js'
+	import { preferences } from '#lib/preferences.svelte.js'
+	import { selectedUnit, inspectedEnemy, attackCells, canAttack, locked } from '#lib/game/model.js'
+	import type { GameController } from '#lib/game/types.js'
+	import type { MapCamera } from '#lib/game/map-camera.js'
 	import type { Snippet } from 'svelte'
 
 	let { game, name, aiMode = false, camera = $bindable(), boardDetails, cellSize, onkeydown }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void } = $props()

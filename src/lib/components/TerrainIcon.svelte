@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Cell, BuildingId, TerrainId } from '$lib/game/types.js'
+	import type { Cell, BuildingId, TerrainId } from '#lib/game/types.js'
 
 	type IconId = TerrainId | BuildingId
 	let { cell, terrain = 'grass', owner, size = 40 }: { cell?: Cell; terrain?: IconId; owner?: 1 | 2; size?: number | 'fill' } = $props()

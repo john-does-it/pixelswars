@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { asset } from '$lib/game/asset-path'
-	import { preferences } from '$lib/preferences.svelte.js'
-	import { unitTypes } from '$lib/game/catalog.js'
-	import muzzlePositions from '$lib/game/combat-effects.json'
-	import type { GameState } from '$lib/game/types.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { preferences } from '#lib/preferences.svelte.js'
+	import { unitTypes } from '#lib/game/catalog.js'
+	import muzzlePositions from '#lib/game/combat-effects.json'
+	import type { GameState } from '#lib/game/types.js'
 
 	let { state: gameState }: { state: GameState } = $props()
 	const source = $derived(gameState.units.find((unit) => unit.cell === gameState.combatSourceIndex))

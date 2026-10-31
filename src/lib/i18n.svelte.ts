@@ -1,7 +1,7 @@
-import { m as messages } from '$lib/paraglide/messages.js'
-import { preferences } from '$lib/preferences.svelte.js'
-import { playerProfile } from '$lib/profile.svelte.js'
-import type { BuildingId, Player, TerrainId, UnitTypeId } from '$lib/game/types.js'
+import { m as messages } from '#lib/paraglide/messages.js'
+import { preferences } from '#lib/preferences.svelte.js'
+import { playerProfile } from '#lib/profile.svelte.js'
+import type { BuildingId, Player, TerrainId, UnitTypeId } from '#lib/game/types.js'
 
 export function translate(message: (...parameters: any[]) => string, inputs: Record<string, unknown> = {}): string {
 	return message(inputs, { locale: preferences.locale })

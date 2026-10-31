@@ -5,14 +5,18 @@
 	import { afterNavigate } from '$app/navigation'
 	import PlayerTransition from './PlayerTransition.svelte'
 	import LanguageSelect from './LanguageSelect.svelte'
-	import { asset } from '$lib/game/asset-path'
-	import { m as messages } from '$lib/paraglide/messages.js'
-	import { translate } from '$lib/i18n.svelte.js'
+	import { asset } from '#lib/game/asset-path.js'
+	import { m as messages } from '#lib/paraglide/messages.js'
+	import { translate } from '#lib/i18n.svelte.js'
 
-	const homeLink = (id: string) => (page.route.id === '/' ? '' : resolve('/', {})) + '#' + id
-	afterNavigate(() => {
+	const homeLink = (id: string) => (page.route.id === '/' ? '' : resolve('/')) + '#' + id
+
+	afterNavigate(({ shallow, type }) => {
+		if (shallow && type === 'goto') return
+
 		expanded = false
 	})
+
 	let { height = $bindable(0) }: { height?: number } = $props()
 	let navbar: HTMLElement
 	let inner: HTMLDivElement
@@ -22,8 +26,12 @@
 	let compact = $state(true)
 	let expanded = $state(false)
 	let toggleBounds = $state({ top: 0, left: 0, width: 44, height: 44 })
+
 	function syncToggleBounds() {
-		if (menuButton) { const { top, left, width, height } = menuButton.getBoundingClientRect(); toggleBounds = { top, left, width, height } }
+		if (menuButton) {
+			const { top, left, width, height } = menuButton.getBoundingClientRect()
+			toggleBounds = { top, left, width, height }
+		}
 	}
 	const links = $derived([
 		{ id: 'editor-title', label: translate(messages.home_editor) },
@@ -63,6 +71,7 @@
 	<div class="navbar-inner" class:compact bind:this={inner}>
 		<a class="brand" href={homeLink('home')} bind:this={brand} onclick={() => (expanded = false)}>
 			<img class="brand-logo" src={asset('/assets/brand/pixels-war-logo.png')} alt="Pixel’s War" width="355" height="143" />
+
 			<svelte:element this={page.route.id === '/' ? 'h1' : 'span'} class="sr-only">Pixel’s War</svelte:element>
 		</a>
 		<div class="measurement-frame" aria-hidden="true" inert>
@@ -73,32 +82,87 @@
 		</div>
 
 		<div id="home-navigation-links" class="nav-links" class:compact hidden={compact}>
-			{#each links as link}<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>{/each}
+			{#each links as link}
+				<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>
+			{/each}
 		</div>
 		<div class="language-control"><LanguageSelect site compact hideLabel /></div>
-		<button class="menu-toggle pixel-icon-button" class:covered={expanded} hidden={!compact} bind:this={menuButton} aria-label={translate(messages.home_menu)} aria-expanded={expanded} aria-controls="home-navigation-links" onclick={() => { syncToggleBounds(); expanded = !expanded }}>
+		<button
+			class="menu-toggle pixel-icon-button"
+			class:covered={expanded}
+			hidden={!compact}
+			bind:this={menuButton}
+			aria-label={translate(messages.home_menu)}
+			aria-expanded={expanded}
+			aria-controls="home-navigation-links"
+			onclick={() => {
+				syncToggleBounds()
+				expanded = !expanded
+			}}
+		>
 			<span class="burger" class:expanded aria-hidden="true"><span></span><span></span><span></span></span>
 		</button>
 	</div>
 </nav>
 {#if expanded && compact}
- <PlayerTransition player={2} persistent showUnit={false} translucent label={translate(messages.home_navigation)} onclose={() => { expanded = false; menuButton.focus() }}>
-  {#snippet controls()}
-   <button class="menu-toggle menu-close pixel-icon-button" style:top={toggleBounds.top + 'px'} style:left={toggleBounds.left + 'px'} style:width={toggleBounds.width + 'px'} style:height={toggleBounds.height + 'px'} aria-label={translate(messages.close)} aria-expanded="true" onclick={() => { expanded = false; menuButton.focus() }}>
-    <span class="burger expanded" aria-hidden="true"><span></span><span></span><span></span></span>
-   </button>
-  {/snippet}
-  <div class="fullscreen-links">
-   {#each links as link}<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>{/each}
-  </div>
- </PlayerTransition>
+	<PlayerTransition
+		player={2}
+		persistent
+		showUnit={false}
+		translucent
+		label={translate(messages.home_navigation)}
+		onclose={() => {
+			expanded = false
+			menuButton.focus()
+		}}
+	>
+		{#snippet controls()}
+			<button
+				class="menu-toggle menu-close pixel-icon-button"
+				style:top={toggleBounds.top + 'px'}
+				style:left={toggleBounds.left + 'px'}
+				style:width={toggleBounds.width + 'px'}
+				style:height={toggleBounds.height + 'px'}
+				aria-label={translate(messages.close)}
+				aria-expanded="true"
+				onclick={() => {
+					expanded = false
+					menuButton.focus()
+				}}
+			>
+				<span class="burger expanded" aria-hidden="true"><span></span><span></span><span></span></span>
+			</button>
+		{/snippet}
+		<div class="fullscreen-links">
+			{#each links as link}
+				<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>
+			{/each}
+		</div>
+	</PlayerTransition>
 {/if}
 
 <style>
- .menu-toggle.covered { visibility: hidden; }
- .menu-close { position: absolute; z-index: 2; }
- .fullscreen-links { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 64px 8px; }
- .fullscreen-links a { text-decoration: none; font-size: clamp(20px, 4vw, 32px); }
+	.menu-toggle.covered {
+		visibility: hidden;
+	}
+
+	.menu-close {
+		position: absolute;
+		z-index: 2;
+	}
+
+	.fullscreen-links {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 24px;
+		padding: 64px 8px;
+	}
+
+	.fullscreen-links a {
+		text-decoration: none;
+		font-size: clamp(20px, 4vw, 32px);
+	}
 
 	.site-navbar {
 		position: fixed;
@@ -208,7 +272,6 @@
 		white-space: normal;
 	}
 	@media (max-width: 640px) {
-
 		.brand-logo {
 			width: 148px;
 		}

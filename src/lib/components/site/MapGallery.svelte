@@ -3,14 +3,14 @@
 	import { page } from '$app/state'
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
-	import { asset } from '$lib/game/asset-path'
-	import { isMapInCatalog } from '$lib/game/map-catalog'
-	import mapPreviews from '$lib/data/map-previews.json'
-	import mapDetails from '$lib/data/map-details.json'
-	import mapArtworks from '$lib/data/map-artworks.json'
-	import { mapName, translate } from '$lib/i18n.svelte'
-	import { m } from '$lib/paraglide/messages'
-	import MatchSetupModal from '$lib/components/MatchSetupModal.svelte'
+	import { asset } from '#lib/game/asset-path.js'
+	import { isMapInCatalog } from '#lib/game/map-catalog.js'
+	import mapPreviews from '#lib/data/map-previews.json'
+	import mapDetails from '#lib/data/map-details.json'
+	import mapArtworks from '#lib/data/map-artworks.json'
+	import { mapName, translate } from '#lib/i18n.svelte.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import MatchSetupModal from '#lib/components/MatchSetupModal.svelte'
 	import TextSelector from './TextSelector.svelte'
 	import SelectionCorners from './SelectionCorners.svelte'
 	const sizes = ['XS', 'S', 'M', 'L', 'XL']
@@ -36,13 +36,17 @@
 		selectedMap = Number(highlighted)
 	}
 	function selectSize(value: string) {
-		const url = new URL(page.url)
+		const url = new URL(page.url.href)
 		for (const key of ['size', 'symmetrical', 'mobile']) url.searchParams.delete(key)
 		if (value !== 'ALL') url.searchParams.set('size', value)
-		void goto(url, { replaceState: true, noScroll: true, keepFocus: true })
+		void goto(url, { replace: true, reset: false })
 	}
-	onMount(() => { mounted = true })
-	$effect(() => { highlighted = filtered[0]?.id })
+	onMount(() => {
+		mounted = true
+	})
+	$effect(() => {
+		highlighted = filtered[0]?.id
+	})
 </script>
 
 <svelte:window onkeydown={openHighlightedMap} />
@@ -55,32 +59,32 @@
 		</div>
 	</div>
 	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery}>
-			{#each filtered as map (map.id)}
-				<a
-					class="map"
-					data-map-id={map.id}
-					class:selected={highlighted === map.id}
-					href={resolve('/play/[map]/', { map: map.id })}
-					aria-haspopup="dialog"
-					onfocus={() => (highlighted = map.id)}
-					onmouseenter={() => (highlighted = map.id)}
-					draggable="false"
-					onclick={(event) => {
-						if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
-						event.preventDefault()
-						highlighted = map.id
-						selectedMap = Number(map.id)
-					}}
-				>
-					<div class="map-art">
-						<img draggable="false" loading="lazy" decoding="async" class="illustration" src={asset('/assets/illustrations/' + (mapArtworks[map.id as keyof typeof mapArtworks] ?? mapDetails[map.id as keyof typeof mapDetails].illustration) + '.png')} alt="" width="280" height="320" />
-						<h3>{mapName(map.id)}</h3>
-						{#if highlighted === map.id}<SelectionCorners />{/if}
-					</div>
-					<div class="map-thumbnail"><img src={asset('/assets/map-previews/map-' + map.id + '.png')} alt="" width={map.cols * 16} height={map.rows * 16} /></div>
-				</a>
-			{:else}<p>{translate(m.map_filter_empty)}</p>{/each}
-		</div>
+		{#each filtered as map (map.id)}
+			<a
+				class="map"
+				data-map-id={map.id}
+				class:selected={highlighted === map.id}
+				href={resolve('/play/[map]', { map: map.id })}
+				aria-haspopup="dialog"
+				onfocus={() => (highlighted = map.id)}
+				onmouseenter={() => (highlighted = map.id)}
+				draggable="false"
+				onclick={(event) => {
+					if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
+					event.preventDefault()
+					highlighted = map.id
+					selectedMap = Number(map.id)
+				}}
+			>
+				<div class="map-art">
+					<img draggable="false" loading="lazy" decoding="async" class="illustration" src={asset('/assets/illustrations/' + (mapArtworks[map.id as keyof typeof mapArtworks] ?? mapDetails[map.id as keyof typeof mapDetails].illustration) + '.png')} alt="" width="280" height="320" />
+					<h3>{mapName(map.id)}</h3>
+					{#if highlighted === map.id}<SelectionCorners />{/if}
+				</div>
+				<div class="map-thumbnail"><img src={asset('/assets/map-previews/map-' + map.id + '.png')} alt="" width={map.cols * 16} height={map.rows * 16} /></div>
+			</a>
+		{:else}<p>{translate(m.map_filter_empty)}</p>{/each}
+	</div>
 </section>
 {#if selectedMap !== null}<MatchSetupModal map={selectedMap} onclose={() => (selectedMap = null)} />{/if}
 
@@ -182,10 +186,22 @@
 		}
 	}
 	@media (max-width: 640px) {
-		.gallery-heading { margin-bottom: 32px; }
-		.maps { gap: 24px; }
-		.map-art h3 { font-size: 28px; }
-		.size-options { gap: 16px; }
-		.map-thumbnail { height: 76px; width: 151px; margin-top: 16px; }
+		.gallery-heading {
+			margin-bottom: 32px;
+		}
+		.maps {
+			gap: 24px;
+		}
+		.map-art h3 {
+			font-size: 28px;
+		}
+		.size-options {
+			gap: 16px;
+		}
+		.map-thumbnail {
+			height: 76px;
+			width: 151px;
+			margin-top: 16px;
+		}
 	}
 </style>
