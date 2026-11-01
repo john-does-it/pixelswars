@@ -116,8 +116,8 @@
 		gap: 8px;
 	}
 	.passenger {
-		background: var(--site-paper);
-		border: 2px solid var(--site-plum);
+		background: transparent;
+		border: 0;
 		border-radius: 0;
 		color: var(--site-plum);
 		font-family: var(--font-body);

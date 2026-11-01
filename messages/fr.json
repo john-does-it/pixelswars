@@ -606,5 +606,7 @@
 	"site_mirror_active": "activé",
 	"site_mirror_inactive": "désactivé",
 	"site_submit_map": "Proposer votre carte",
-	"site_export": "Exporter"
+	"site_export": "Exporter",
+	"map_40": "D’une rive à l’autre",
+	"map_41": "Les îles en chaîne"
 }

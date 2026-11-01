@@ -35,6 +35,8 @@ import gentleSlope from '#lib/data/gentle-slope.json'
 import meanders from '#lib/data/meanders.json'
 import betweenTheWaters from '#lib/data/between-the-waters.json'
 import bridgeCrossroads from '#lib/data/bridge-crossroads.json'
+import fromBankToBank from '#lib/data/from-bank-to-bank.json'
+import islandChain from '#lib/data/island-chain.json'
 import mapFiles from '#lib/data/map-files.json'
 import type { EntryGenerator, PageLoad } from './$types'
 import type { GameMap } from '#lib/game/types.js'
@@ -88,7 +90,9 @@ export const load: PageLoad = async ({ params }) => {
 		35: gentleSlope as GameMap,
 		36: meanders as GameMap,
 		37: betweenTheWaters as GameMap,
-		38: bridgeCrossroads as GameMap
+		38: bridgeCrossroads as GameMap,
+		40: fromBankToBank as GameMap,
+		41: islandChain as GameMap
 	}
 	const map = maps[params.map]
 	if (!map) error(404, 'Unknown map')

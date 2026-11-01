@@ -606,5 +606,7 @@
 	"site_mirror_active": "activated",
 	"site_mirror_inactive": "deactivated",
 	"site_submit_map": "Submit your map",
-	"site_export": "Export"
+	"site_export": "Export",
+	"map_40": "From Bank to Bank",
+	"map_41": "Island Chain"
 }

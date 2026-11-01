@@ -39,6 +39,15 @@ Create one custom full-bleed 7:8 portrait artwork for Pixel's War. Use `assets/i
 | 37     | between-two-waters   | A narrow green land corridor between two separate blue waterways, little town and road squeezed down the middle, bridges leading outward.                                                                 |
 | 38     | bridge-crossroads    | A central road bridge crosses a long vertical blue waterway with a second crossing forming a distinctive crossroads, small buildings on banks and a red jeep approaching.                                 |
 
+## Maps added on 2026-10-31
+
+Generated with the built-in imagegen tool, using small-town.png as the style reference. Saved to assets/illustrations/maps/from-bank-to-bank.png and assets/illustrations/maps/island-chain.png.
+
+Shared prompt: Full-bleed 7:8 portrait, warm detailed crisp pixel art, cream houses, red roofs, lush greens, cyan water, plum outlines, elevated three-quarter view, tiny friendly red and blue units. No text, logos, UI, frame or watermark.
+
+- Map 40, From Bank to Bank: compact flat town around several water basins and channels, dense roads and short stone bridges, central built-up land strip, workshops, docks, outer forests and a few low hills.
+- Map 41, Island Chain: small inhabited green islands surrounded by broad channels, long roads crossing foreground and distant waters on bridges, zigzag roads through central islands, forests, low rocky hills, workshops and harbors.
+
 ## Integration
 
 Illustrations load lazily in the map gallery and are excluded from the gameplay sprite preload. New maps without custom artwork use the existing terrain-based fallback until a dedicated illustration is added.

@@ -6,7 +6,9 @@ test('published drafts leave the development gallery and old draft links return 
 	await expect(page.getByRole('link', { name: 'Test locally', exact: true })).toHaveCount(0)
 	for (const id of [28, 30, 31, 35, 36]) {
 		await expect(page.locator(`[data-draft-map="${id}"]`)).toHaveCount(0)
-		await expect(page.locator('a.map[href$="/play/' + id + '/"]')).toHaveCount(1)
+		const card = page.locator(`a.map[data-map-id="${id}"]`)
+		await expect(card).toHaveCount(1)
+		await expect(card).toHaveAttribute('href', new RegExp(`/play/${id}/?$`))
 		expect((await request.get('/play/draft-' + id + '/')).status()).toBe(404)
 	}
 	for (const id of [32, 33, 34]) {

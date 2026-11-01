@@ -606,5 +606,7 @@
 	"site_mirror_active": "aktiviert",
 	"site_mirror_inactive": "deaktiviert",
 	"site_submit_map": "Karte einreichen",
-	"site_export": "Exportieren"
+	"site_export": "Exportieren",
+	"map_40": "Von Ufer zu Ufer",
+	"map_41": "Inselkette"
 }

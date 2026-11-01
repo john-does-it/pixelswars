@@ -12,9 +12,8 @@
 
 <PlayerTransition player={winner} persistent label={title}>
 	<h2 class="pixel-heading">{title}</h2>
-	{#if earnedMedal}
-		<p class="medal-award">{translate(messages.medal_new, { difficulty: translate(messages[`ai_${earnedMedal.difficulty}`]) })}</p>
-		{#if storageError}<p role="alert">{translate(messages.profile_storage_error)}</p>{/if}
+	{#if earnedMedal && storageError}
+		<p role="alert">{translate(messages.profile_storage_error)}</p>
 	{/if}
 	<div class="victory-actions">
 		<button class="primary" disabled={rematchRequested} onclick={onrestart}>{translate(rematchRequested ? messages.online_rematch_waiting : opponentRematchRequested ? messages.online_rematch_accept : messages.play_again)}</button>

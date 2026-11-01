@@ -606,5 +606,7 @@
 	"site_mirror_active": "オン",
 	"site_mirror_inactive": "オフ",
 	"site_submit_map": "マップを投稿",
-	"site_export": "書き出す"
+	"site_export": "書き出す",
+	"map_40": "岸から岸へ",
+	"map_41": "連なる島々"
 }

@@ -1030,5 +1030,63 @@
 				"buildings": {}
 			}
 		}
+	},
+	"40": {
+		"illustration": "by-the-river",
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 6,
+					"transport": 2,
+					"infantry-rocket": 1,
+					"tank": 2,
+					"jeep": 2
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 6,
+					"transport": 2,
+					"infantry-rocket": 1,
+					"tank": 2,
+					"jeep": 2
+				},
+				"buildings": {}
+			}
+		}
+	},
+	"41": {
+		"illustration": "by-the-river",
+		"symmetrical": true,
+		"mobileFriendly": false,
+		"players": {
+			"1": {
+				"units": {
+					"infantry": 6,
+					"transport": 1,
+					"transport-helicopter": 1,
+					"anti-air": 1,
+					"jeep": 1,
+					"tank": 1,
+					"helicopter": 1
+				},
+				"buildings": {}
+			},
+			"2": {
+				"units": {
+					"infantry": 6,
+					"transport": 1,
+					"transport-helicopter": 1,
+					"anti-air": 1,
+					"jeep": 1,
+					"tank": 1,
+					"helicopter": 1
+				},
+				"buildings": {}
+			}
+		}
 	}
 }

@@ -7,7 +7,9 @@ const maps = [
 	[35, 'Gentle Slope', 63, 6],
 	[36, 'Meanders', 289, 26],
 	[37, 'Between the Waters', 289, 22],
-	[38, 'Bridge Crossroads', 187, 10]
+	[38, 'Bridge Crossroads', 187, 10],
+	[40, 'From Bank to Bank', 275, 26],
+	[41, 'Island Chain', 425, 24]
 ] as const
 
 test('approved maps have previews, public games and editor entries', async ({ page }) => {
