@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths'
 	import Modal from './Modal.svelte'
+	import SimpleAnalyticsCredit from './SimpleAnalyticsCredit.svelte'
 	import { tick } from 'svelte'
 	import { m as messages } from '#lib/paraglide/messages.js'
 	import { translate } from '#lib/i18n.svelte.js'
@@ -16,6 +17,7 @@
 <footer id="credits" class="site-footer">
 	<button bind:this={creditsButton} onclick={() => (showCredits = true)} aria-haspopup="dialog">{translate(messages.credits)}</button>
 	<a href={resolve('/terms')}>{translate(messages.footer_terms)}</a>
+	<SimpleAnalyticsCredit />
 </footer>
 
 {#if showCredits}
@@ -25,7 +27,7 @@
 			<p>{translate(messages.graphics)}: <a href="https://kenney.nl/assets/tiny-battle" target="_blank" rel="noopener noreferrer">Kenney</a>, <a href="https://bdragon1727.itch.io/" target="_blank" rel="noopener noreferrer">bdragon1727</a></p>
 			<p>{translate(messages.sounds)}: <a href="https://pixabay.com/fr/sound-effects" target="_blank" rel="noopener noreferrer">Pixabay</a></p>
 			<p>{translate(messages.music)}: <a href="https://arcofdream.bandcamp.com/album/monolith-official-soundtrack" target="_blank" rel="noopener noreferrer">Monolith</a></p>
-			<p>Gauthier Miessen</p>
+			<p>{translate(messages.quality_assurance)}: Gauthier Miessen</p>
 		</div>
 	</Modal>
 {/if}

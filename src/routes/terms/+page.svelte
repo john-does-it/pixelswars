@@ -49,16 +49,6 @@
 		margin: 24px auto 48px;
 		line-height: 1.8;
 	}
-	h1 {
-		font-size: clamp(22px, 4vw, 30px);
-		line-height: 1.4;
-		color: var(--color-accent);
-	}
-	h2 {
-		font-size: 20px;
-		line-height: 1.5;
-		color: var(--color-accent);
-	}
 	section {
 		margin-top: 32px;
 		border-top: 1px solid var(--color-border);
