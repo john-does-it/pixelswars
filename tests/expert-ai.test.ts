@@ -8,7 +8,7 @@ import { chooseAttack, chooseMovement, chooseCaptureRelay, isAiDifficulty, runAi
 import * as actions from '../src/lib/game/actions.ts'
 import { createController } from '../src/lib/game/controller.ts'
 import { chooseExpertDecision, projectExpertDecision, expertCombatPressure, expertCandidates } from '../src/lib/game/expert-ai.ts'
-import { planExpertProduction } from '../src/lib/game/ai-economy.ts'
+import { initializeAiPlanning, planExpertProduction } from '../src/lib/game/ai-economy.ts'
 import { pathsFrom } from '../src/lib/game/movement.ts'
 
 function fixture(cols = 8, rows = 5) {
@@ -310,9 +310,12 @@ test('Expert waits for income without spending its reserved funds or getting stu
 	controller.dispose()
 })
 
-test('Expert develops its economy and beats Hard from either side of Neighbor Trouble', async () => {
+test('Expert develops its economy and beats Hard from either side of Neighbor Trouble', async (t) => {
+	// Compare strategy with the same search conditions regardless of runner load.
+	t.mock.method(performance, 'now', () => 0)
 	for (const expertPlayer of [1, 2] as const) {
 		const state = initialState(JSON.parse(readFileSync(new URL('../src/lib/data/neighbor-trouble.json', import.meta.url), 'utf8')))
+		initializeAiPlanning(state, () => 0.5)
 		const controller = createController(state, { delay: async () => {} })
 		let peakIncome = 0
 		// Balance changes can lengthen a match; check development throughout play,
