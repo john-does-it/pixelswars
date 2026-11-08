@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test('published drafts leave the development gallery and old draft links return 404', async ({ page, request }) => {
 	await page.goto('/')
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	await expect(page.locator('[data-draft-map]')).toHaveCount(0)
 	await expect(page.getByRole('link', { name: 'Test locally', exact: true })).toHaveCount(0)
 	for (const id of [28, 30, 31, 35, 36]) {

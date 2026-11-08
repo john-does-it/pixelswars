@@ -178,7 +178,9 @@ for (const [id, cols, count] of [
 		await expect(page.getByText('Round 2', { exact: true })).toBeVisible()
 		await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 		await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
+		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 		await page.getByRole('link', { name: new RegExp(id === 1 ? 'Not the Shoes!' : 'Neighbor Trouble') }).click()
+		await page.locator('.featured .selected').click()
 		await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 		await expect(page.getByText('Round 1', { exact: true })).toBeVisible()
 		await expect(page.locator('[data-cell]')).toHaveCount(id === 1 ? 80 : 64)
@@ -354,7 +356,9 @@ test('visual assets preload once and are reused when opening another map', async
 	await expect(page.locator('[data-cell]')).toHaveCount(64)
 	await page.getByRole('button', { name: 'Options and help', exact: true }).click()
 	await page.getByRole('link', { name: 'Choose another map', exact: true }).click()
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	await page.getByRole('link', { name: /Not the Shoes!/ }).click()
+	await page.locator('.featured .selected').click()
 	await page.getByRole('link', { name: 'Play with someone on this device', exact: true }).click()
 	await expect(page.locator('[data-cell]')).toHaveCount(80)
 	expect(manifestRequests).toBe(1)
@@ -855,6 +859,7 @@ test('minimap uses the board terrain variants and each team’s actual unit spri
 test('home map cards share the tallest height across rows in every language', async ({ page }) => {
 	await page.setViewportSize({ width: 1100, height: 900 })
 	await page.goto('/')
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	for (const locale of ['en', 'fr', 'de']) {
 		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		const heights = await page.locator('.maps .map').evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().height))

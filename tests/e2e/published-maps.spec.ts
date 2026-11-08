@@ -15,10 +15,11 @@ const maps = [
 test('approved maps have previews, public games and editor entries', async ({ page }) => {
 	await page.goto('/')
 	for (const [id, name, cells, units] of maps) {
+		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 		const card = page.locator('a.map[data-map-id="' + id + '"]')
 		await expect(card.getByRole('heading')).toHaveText(name)
 		await card.scrollIntoViewIfNeeded()
-		await expect.poll(() => card.locator('.map-thumbnail img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0)
+		await expect.poll(() => card.locator('.map-thumbnail > img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0)
 		await page.goto('/play/' + id + '/')
 		await expect(page).toHaveTitle('Pixel’s War · ' + name)
 		await expect(page.locator('.board [data-cell]')).toHaveCount(cells)

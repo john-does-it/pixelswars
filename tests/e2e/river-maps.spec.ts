@@ -6,10 +6,11 @@ for (const [id, name, cols, rows, units] of [
 ] as const) {
 	test(`${name}: opens from the sorted map chooser with crossings and starts an AI match`, async ({ page }) => {
 		await page.goto('/')
+		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 		const card = page.locator(`.maps a[data-map-id="${id}"]`)
 		await expect(card).toContainText(name)
-		await expect(card.locator('.map-thumbnail img')).toHaveAttribute('width', String(cols * 16))
-		await expect(card.locator('.map-thumbnail img')).toHaveAttribute('height', String(rows * 16))
+		await expect(card.locator('.map-thumbnail > img')).toHaveAttribute('width', String(Math.round((480 * cols) / rows)))
+		await expect(card.locator('.map-thumbnail > img')).toHaveAttribute('height', '480')
 		const mapUrl = await card.getAttribute('href')
 		await page.goto(`${mapUrl}?ai=easy`)
 		await expect(page).toHaveURL(new RegExp(`/play/${id}/?\\?ai=easy$`))

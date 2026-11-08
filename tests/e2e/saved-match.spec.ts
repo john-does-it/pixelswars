@@ -124,17 +124,18 @@ test('corrupt saves are preserved until explicitly discarded', async ({ page }) 
 	await expect.poll(async () => (await stored(page)).version).toBe(1)
 })
 
-test('map chooser shows artwork and terrain previews with readable titles and achievements', async ({ page }) => {
+test('map chooser shows terrain previews with readable titles and achievements', async ({ page }) => {
 	const failed: string[] = []
 	page.on('response', (response) => {
 		if (response.status() === 404) failed.push(response.url())
 	})
 	await page.goto('/')
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	const card = page.locator('a.map').filter({ has: page.getByRole('heading', { name: 'Neighbor Trouble', exact: true }) })
-	await expect(card.locator('.illustration')).toBeVisible()
+	await expect(page.locator('a.map img[src*="/illustrations/"]')).toHaveCount(0)
 	await expect(page.locator('a.map img[src*="/units/"]')).toHaveCount(0)
 	await expect(page.locator('a.map .terrain-icon')).toHaveCount(0)
-	await expect(card.locator('.map-thumbnail img')).toBeVisible()
+	await expect(card.locator('.map-thumbnail > img')).toBeVisible()
 	await expect(page.locator('.achievements article')).toHaveCount(9)
 	await page.setViewportSize({ width: 320, height: 740 })
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)

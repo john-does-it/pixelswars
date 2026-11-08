@@ -17,10 +17,10 @@ try {
 		await page.goto(`${baseUrl}/play/${id}/`)
 		await page.locator('.board [data-cell]').first().waitFor()
 		const png = await page.locator('.board').evaluate(async (board, { cols, rows }) => {
-			const tileSize = 16
+			const tileSize = 480 / rows
 			const canvas = document.createElement('canvas')
-			canvas.width = cols * tileSize
-			canvas.height = rows * tileSize
+			canvas.width = Math.round(cols * tileSize)
+			canvas.height = 480
 			const context = canvas.getContext('2d')
 			context.imageSmoothingEnabled = false
 			const images = new Map()
@@ -40,11 +40,18 @@ try {
 			}
 			for (const cell of board.querySelectorAll('[data-cell]')) {
 				const index = Number(cell.getAttribute('data-cell'))
-				const left = (index % cols) * tileSize
-				const top = Math.floor(index / cols) * tileSize
-				context.drawImage(await sprite(cell), left, top, tileSize, tileSize)
+				const col = index % cols
+				const row = Math.floor(index / cols)
+				const left = Math.round(col * tileSize)
+				const top = Math.round(row * tileSize)
+				const width = Math.round((col + 1) * tileSize) - left
+				const height = Math.round((row + 1) * tileSize) - top
+				context.drawImage(await sprite(cell), left, top, width, height)
 				const unit = cell.querySelector('[data-unit]')
-				if (unit) context.drawImage(await sprite(unit.querySelector('.unit-sprite')), left + 1, top + 1, tileSize - 2, tileSize - 2)
+				if (unit) {
+					const inset = Math.round(tileSize / 16)
+					context.drawImage(await sprite(unit.querySelector('.unit-sprite')), left + inset, top + inset, width - 2 * inset, height - 2 * inset)
+				}
 			}
 			return canvas.toDataURL('image/png').split(',')[1]
 		}, map)

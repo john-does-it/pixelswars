@@ -9,9 +9,10 @@
 
 <style>
 	.site-section {
+		--section-gutter: 24px;
 		background: var(--section-background);
 		line-height: var(--site-body-leading);
-		padding: var(--site-section-space) 24px;
+		padding: var(--site-section-space) var(--section-gutter);
 		scroll-margin-top: var(--site-nav-height);
 	}
 	.section-content {
@@ -24,7 +25,7 @@
 	}
 	@media (max-width: 480px) {
 		.site-section {
-			padding-inline: 16px;
+			--section-gutter: 16px;
 		}
 	}
 </style>

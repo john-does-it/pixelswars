@@ -1,12 +1,34 @@
 import { test, expect } from '@playwright/test'
 
+test('the map heading clears the navbar before and after hydration', async ({ browser, page, baseURL, isMobile }) => {
+	const viewport = { width: isMobile ? 390 : 2560, height: 900 }
+	const initial = await browser.newPage({ viewport, javaScriptEnabled: false })
+	try {
+		await initial.goto(new URL('/', baseURL).href)
+		await page.setViewportSize(viewport)
+		await page.goto('/')
+		await expect(page.locator('.navbar-inner.unmeasured')).toHaveCount(0)
+		const positions = []
+		for (const view of [initial, page]) {
+			const nav = (await view.locator('.site-navbar').boundingBox())!
+			const title = (await view.locator('#maps').boundingBox())!
+			expect(title.y).toBeGreaterThan(nav.y + nav.height)
+			positions.push(title.y)
+			if (isMobile) await expect(view.locator('.menu-toggle')).toBeVisible()
+			else await expect(view.locator('.nav-links')).toBeVisible()
+		}
+		expect(Math.abs(positions[0] - positions[1])).toBeLessThan(1)
+	} finally {
+		await initial.close()
+	}
+})
+
 test('homepage navbar fits translated links, offsets anchors and switches to an accessible mobile menu', async ({ page }) => {
 	await page.setViewportSize({ width: 1920, height: 1080 })
 	await page.goto('/')
 	const nav = page.locator('.site-navbar')
 	const toggle = nav.locator('.menu-toggle')
 	const language = nav.locator('.language-control select')
-	await expect(nav).toHaveCSS('position', 'fixed')
 	await expect(toggle).toBeHidden()
 	await expect(nav.locator('.brand img')).toHaveCount(1)
 	await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)

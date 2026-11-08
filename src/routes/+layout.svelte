@@ -62,7 +62,6 @@
 		min-height: 100dvh;
 	}
 	.site-content {
-		padding-top: var(--site-nav-height);
 		flex: 1;
 		min-width: 0;
 	}

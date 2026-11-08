@@ -6,6 +6,7 @@ const catalogIds = mapIds.filter(isMapInCatalog)
 
 test('retired maps stay out of the gallery and legacy matches remain available', async ({ page }) => {
 	await page.goto('/')
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	await expect(page.locator('a.map')).toHaveCount(catalogIds.length)
 	for (const id of catalogIds) await expect(page.locator(`a.map[data-map-id="${id}"]`)).toHaveCount(1)
 	for (const id of retiredMapIds) await expect(page.locator(`a.map[data-map-id="${id}"]`)).toHaveCount(0)

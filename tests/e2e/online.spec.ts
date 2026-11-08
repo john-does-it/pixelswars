@@ -184,7 +184,9 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 			await expect(device.getByRole('status')).toHaveText('Nickname saved.')
 		}
 		await page.goto('/')
+		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 		await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
+		await page.locator('.featured .selected').click()
 		await page.getByRole('link', { name: 'Play 1v1 online' }).click()
 		await page.getByRole('button', { name: 'Create a game' }).click()
 		await expect(page.getByLabel('Invitation link', { exact: true })).toHaveValue(/#invite=PW2\./)

@@ -11,6 +11,7 @@ function sizeOf(area: number) {
 test('single size selectors filter the gallery and open a match', async ({ page }) => {
 	await page.goto('/')
 	const filters = page.getByRole('group', { name: 'Size', exact: true })
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	const cards = page.locator('a.map')
 	await expect(cards).toHaveCount(maps.length)
 	for (const size of sizes) {
@@ -21,6 +22,7 @@ test('single size selectors filter the gallery and open a match', async ({ page 
 	await filters.getByRole('button', { name: 'ALL', exact: true }).click()
 	await expect(cards).toHaveCount(maps.length)
 	await cards.first().click()
+	await page.locator('.featured .selected').click()
 	await expect(page.getByRole('dialog')).toBeVisible()
 })
 
@@ -48,7 +50,9 @@ test('mobile uses the same visible selectors without obsolete filter controls', 
 	await expect(page.locator('#map-filter-options,.filter-results,.map-progress')).toHaveCount(0)
 	await expect(page.getByRole('checkbox', { name: 'Mobile friendly' })).toHaveCount(0)
 	await filters.getByRole('button', { name: 'S', exact: true }).click()
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	await page.locator('a.map').first().click()
+	await page.locator('.featured .selected').click()
 	await expect(page.getByRole('dialog')).toBeVisible()
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })

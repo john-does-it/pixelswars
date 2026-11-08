@@ -83,7 +83,9 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 	test(`${difficulty} AI starts from the map chooser, plays a turn and survives reload`, async ({ page }) => {
 		test.setTimeout(60000)
 		await page.goto('/')
+		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 		await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
+		await page.locator('.featured .selected').click()
 		const setup = page.getByRole('dialog', { name: 'Choose your opponent' })
 		await expect(setup).toBeVisible()
 		await setup.getByRole('button', { name: 'Play against AI', exact: true }).click()
@@ -121,7 +123,9 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Expert']) {
 
 test('AI setup can be dismissed and local multiplayer remains available', async ({ page }) => {
 	await page.goto('/')
+	await page.getByRole('button', { name: 'View all maps', exact: true }).click()
 	await page.getByRole('link', { name: /Neighbor Trouble/ }).click()
+	await page.locator('.featured .selected').click()
 	await page.keyboard.press('Escape')
 	await expect(page.getByRole('dialog')).toHaveCount(0)
 	await page.getByRole('link', { name: /Neighbor Trouble/ }).click()

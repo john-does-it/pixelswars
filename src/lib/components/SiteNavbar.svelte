@@ -18,12 +18,11 @@
 	})
 
 	let { height = $bindable(0) }: { height?: number } = $props()
-	let navbar: HTMLElement
 	let inner: HTMLDivElement
 	let brand: HTMLAnchorElement
 	let measurement: HTMLDivElement
 	let menuButton: HTMLButtonElement
-	let compact = $state(true)
+	let compact = $state<boolean>()
 	let expanded = $state(false)
 	let toggleBounds = $state({ top: 0, left: 0, width: 44, height: 44 })
 
@@ -71,8 +70,8 @@
 	onresize={syncToggleBounds}
 />
 
-<nav class="site-navbar" aria-label={translate(messages.home_navigation)} bind:this={navbar} bind:offsetHeight={height}>
-	<div class="navbar-inner" class:compact bind:this={inner}>
+<nav class="site-navbar" aria-label={translate(messages.home_navigation)} bind:offsetHeight={height}>
+	<div class="navbar-inner" class:compact class:unmeasured={compact === undefined} bind:this={inner}>
 		<a class="brand" href={homeLink('home')} bind:this={brand} onclick={() => (expanded = false)}>
 			<img class="brand-logo" src={asset('/assets/brand/pixels-war-logo.png')} alt="Pixel’s War" width="355" height="143" />
 
@@ -85,7 +84,7 @@
 			</div>
 		</div>
 
-		<div id="home-navigation-links" class="nav-links" class:compact hidden={compact}>
+		<div id="home-navigation-links" class="nav-links" hidden={compact === true}>
 			{#each links as link}
 				<a href={homeLink(link.id)} onclick={() => (expanded = false)}>{link.label}</a>
 			{/each}
@@ -94,7 +93,7 @@
 		<button
 			class="menu-toggle pixel-icon-button"
 			class:covered={expanded}
-			hidden={!compact}
+			hidden={compact === false}
 			bind:this={menuButton}
 			aria-label={translate(messages.home_menu)}
 			aria-expanded={expanded}
@@ -147,8 +146,8 @@
 	}
 
 	.site-navbar {
-		position: fixed;
-		inset: 0 0 auto;
+		position: sticky;
+		top: 0;
 		z-index: 20;
 		background: color-mix(in srgb, var(--site-yellow) 94%, transparent);
 		backdrop-filter: blur(6px);
@@ -238,20 +237,18 @@
 	.burger.expanded span:last-child {
 		transform: translateY(-8px) rotate(-45deg);
 	}
-	.nav-links.compact {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		width: 100%;
-		max-height: 70dvh;
-		overflow-y: auto;
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0;
-		padding: 12px 20px;
-		background: var(--site-yellow);
-		border: 2px solid var(--site-plum);
-		white-space: normal;
+	@media (width >= 1280px) {
+		.unmeasured .menu-toggle {
+			display: none;
+		}
+	}
+	@media (width < 1280px) {
+		.unmeasured .nav-links {
+			display: none;
+		}
+		.unmeasured .language-control {
+			margin-left: auto;
+		}
 	}
 	@media (max-width: 640px) {
 		.brand-logo {
@@ -262,8 +259,13 @@
 		}
 	}
 	@media (max-width: 360px) {
+		.brand {
+			flex-shrink: 1;
+			min-width: 0;
+		}
 		.brand-logo {
 			width: 112px;
+			max-width: 100%;
 		}
 		.navbar-inner {
 			gap: 8px;
