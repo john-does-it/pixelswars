@@ -26,9 +26,15 @@
 	let selectedMap = $state<number | null>(null)
 	let expanded = $state(false)
 	let position = $state(0)
+	let direction = $state(0)
 	let gallery: HTMLDivElement
 	const current = $derived(filtered[((position % filtered.length) + filtered.length) % filtered.length])
+	function stepMap(step: number) {
+		direction = step
+		position += step
+	}
 	async function pickMap(index: number) {
+		direction = 0
 		position = index
 		expanded = false
 		await tick()
@@ -48,7 +54,7 @@
 		touchStart = undefined
 		if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy) || filtered.length < 2) return
 		swiped = true
-		position += dx < 0 ? 1 : -1
+		stepMap(dx < 0 ? 1 : -1)
 	}
 	function handleKey(event: KeyboardEvent) {
 		if (event.defaultPrevented || selectedMap !== null || !current) return
@@ -56,7 +62,7 @@
 		if (!(target instanceof Element) || target.closest('input, select, textarea, [contenteditable="true"], dialog')) return
 		if (!expanded && gallery?.contains(target) && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
 			event.preventDefault()
-			position += event.key === 'ArrowRight' ? 1 : -1
+			stepMap(event.key === 'ArrowRight' ? 1 : -1)
 			return
 		}
 		if (expanded || event.key !== 'Enter' || event.repeat || target.closest('a, button')) return
@@ -76,6 +82,7 @@
 	})
 	$effect(() => {
 		size
+		direction = 0
 		position = 0
 	})
 </script>
@@ -93,7 +100,7 @@
 		</div>
 	</div>
 	{#snippet arrow(direction: number)}
-		<button class="gallery-arrow" class:next={direction === 1} type="button" aria-label={translate(direction === 1 ? m.gallery_next : m.gallery_previous)} onclick={() => (position += direction)}>
+		<button class="gallery-arrow" class:next={direction === 1} type="button" aria-label={translate(direction === 1 ? m.gallery_next : m.gallery_previous)} onclick={() => stepMap(direction)}>
 			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.png')} alt="" />
 		</button>
 	{/snippet}
@@ -137,7 +144,9 @@
 						}}
 					>
 						<div class="map-thumbnail">
-							<img src={asset('/assets/map-previews/map-' + current.id + '.png')} alt="" width={Math.round((480 * current.cols) / current.rows)} height="480" draggable="false" />
+							{#key current.id}
+								<img src={asset('/assets/map-previews/map-' + current.id + '.png')} alt="" width={Math.round((480 * current.cols) / current.rows)} height="480" draggable="false" style:--entry-offset={direction * 8 + 'px'} onload={(event) => event.currentTarget.classList.toggle('entering', direction !== 0)} />
+							{/key}
 							<SelectionCorners />
 						</div>
 					</a>
@@ -275,8 +284,24 @@
 		aspect-ratio: var(--map-ratio);
 	}
 	.stage .map-thumbnail > img {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
+		object-fit: contain;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.stage img:global(.entering) {
+			animation: preview-enter 360ms ease-out;
+		}
+	}
+	@keyframes preview-enter {
+		from {
+			opacity: 0.65;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 	.caption {
 		grid-area: caption;

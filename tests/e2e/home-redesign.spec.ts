@@ -69,6 +69,32 @@ test('map selection is available while the preview image is loading', async ({ p
 	}
 })
 
+test('switching maps never stretches the previous bitmap while the next preview is pending', async ({ page }) => {
+	await page.goto('/')
+	const preview = page.locator('.featured .map-thumbnail > img')
+	await preview.evaluate((image: HTMLImageElement) => image.decode())
+	const first = await preview.getAttribute('src')
+	let release!: () => void
+	const paused = new Promise<void>((resolve) => (release = resolve))
+	await page.route('**/map-previews/*.png', async (route) => {
+		await paused
+		await route.continue()
+	})
+	try {
+		await page.getByRole('button', { name: 'Next maps' }).click()
+		await expect(preview).not.toHaveAttribute('src', first!)
+		expect(await preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(0)
+	} finally {
+		release()
+	}
+	await preview.evaluate((image: HTMLImageElement) => image.decode())
+	const error = await preview.evaluate((image: HTMLImageElement) => {
+		const { width, height } = image.getBoundingClientRect()
+		return Math.abs(width - (height * image.naturalWidth) / image.naturalHeight)
+	})
+	expect(error).toBeLessThan(1)
+})
+
 test('navigation wraps and choosing a thumbnail returns to its preview before setup', async ({ page }) => {
 	await page.goto('/')
 	const current = page.locator('.featured .selected')
