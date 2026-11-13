@@ -1,5 +1,26 @@
 import { test, expect } from '@playwright/test'
 
+test('action buttons keep the same gap side by side and when stacked', async ({ page, isMobile }) => {
+	await page.setViewportSize({ width: isMobile ? 320 : 1280, height: 900 })
+	await page.goto('/')
+	await page.evaluate(() => document.fonts.ready.then(() => true))
+
+	const actions = page.locator('#profile .backup > .actions')
+	const [first, second] = await actions.locator(':scope > *').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON()))
+	const gap = isMobile ? second.top - first.bottom : second.left - first.right
+	expect(gap).toBeCloseTo(12, 0)
+
+	if (!isMobile) {
+		const [reset, importMap] = await page.locator('.compact-actions button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON()))
+		expect(importMap.left - reset.right).toBeCloseTo(gap, 0)
+	}
+
+	await page.locator('.featured .map').click()
+	const choices = page.getByRole('dialog').locator('.choices')
+	const [ai, local] = await choices.locator(':scope > :is(button, a)').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON()))
+	expect(local.top - ai.bottom).toBeCloseTo(gap, 0)
+})
+
 test('selection corners appear only over map images on hover-capable devices', async ({ page, isMobile }) => {
 	await page.goto('/')
 	const checkThumbnail = async (selector: string) => {
@@ -54,7 +75,7 @@ test('the featured map fits the frame and its arrows stay anchored while browsin
 test('map selection is available while the preview image is loading', async ({ page }) => {
 	let release!: () => void
 	const paused = new Promise<void>((resolve) => (release = resolve))
-	await page.route('**/map-previews/map-35.png', async (route) => {
+	await page.route('**/map-previews/*.png', async (route) => {
 		await paused
 		await route.continue()
 	})
@@ -106,7 +127,7 @@ test('navigation wraps and choosing a thumbnail returns to its preview before se
 	await expect(current).toHaveAttribute('data-map-id', first!)
 	await page.getByRole('button', { name: 'View all maps' }).click()
 	await expect(page.locator('.grid .selected')).toHaveAttribute('data-map-id', first!)
-	await page.locator('.grid .map').last().click()
+	await page.locator(`.grid .map[data-map-id="${last}"]`).click()
 	await expect(current).toHaveAttribute('data-map-id', last!)
 	await expect(current).toBeFocused()
 	await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -146,14 +167,56 @@ test('compact editor has sprite selectors, preserves painted cells on resize, an
 	await expect(page.locator('a[href*="tutorial"],a[href*="how-to-play"]')).toHaveCount(0)
 	const cells = editor.locator('[data-cell]')
 	await expect(cells).toHaveCount(425)
-	await editor.locator('.palette-group').nth(1).locator('button').first().click()
+	const board = editor.locator('#board')
+	await expect(board).toHaveCSS('filter', 'none')
+	const toolbar = editor.locator('.brush-toolbar')
+	await toolbar.evaluate((element) => element.scrollIntoView({ block: 'start' }))
+	// Keep every trigger visible below the site navigation while comparing families.
+	await page.evaluate(() => window.scrollBy(0, -(document.querySelector('.site-navbar')!.getBoundingClientRect().height + 8)))
+	for (const id of ['terrain-picker-0', 'unit-picker-1', 'building-picker-0', 'unit-picker-2', 'building-picker-1', 'building-picker-2']) {
+		const picker = editor.locator('#' + id)
+		await picker.click()
+		await expect(board).toHaveCSS('filter', /brightness\(0\.\d+\)/)
+		const expectWheelOnBoard = async () => {
+			await expect(async () => {
+				const geometry = await picker.evaluate((select: HTMLSelectElement) => {
+					const board = document.querySelector('#board')!.getBoundingClientRect()
+					const wheel = getComputedStyle(select, '::picker(select)')
+					const rects = Array.from(select.options)
+						.filter((option) => !option.disabled)
+						.map((option) => option.getBoundingClientRect())
+					const mean = (axis: 'x' | 'y') => rects.reduce((sum, rect) => sum + rect[axis] + rect.width / 2, 0) / rects.length
+					return {
+						round: wheel.width === wheel.height && wheel.borderRadius === '50%',
+						centered: Math.abs(mean('x') - board.x - board.width / 2) < 2 && Math.abs(mean('y') - board.y - board.height / 2) < 2,
+						sized: rects.every((rect) => rect.width === 40 && rect.height === 40),
+						separated: rects.every((rect, i) => rects.slice(i + 1).every((other) => Math.hypot(other.x - rect.x, other.y - rect.y) >= 40)),
+						hiddenPlaceholder: select.options[0].getBoundingClientRect().width === 0
+					}
+				})
+				expect(geometry).toEqual({ round: true, centered: true, sized: true, separated: true, hiddenPlaceholder: true })
+			}).toPass({ timeout: 4000 })
+		}
+		await expectWheelOnBoard()
+		if (id === 'terrain-picker-0') {
+			await page.evaluate(() => window.scrollBy(0, 100))
+			await expectWheelOnBoard()
+			await page.evaluate(() => window.scrollBy(0, -100))
+		}
+		if (id !== 'building-picker-2') {
+			await page.keyboard.press('Escape')
+			await expect(board).toHaveCSS('filter', 'none')
+		}
+	}
+	await editor.locator('#building-picker-2').getByRole('option', { name: 'City', exact: true }).click()
+	await expect(board).toHaveCSS('filter', 'none')
 	await cells.nth(26).click()
 	await expect(cells.nth(26)).toHaveClass(/-capturedby2/)
-	await editor.getByRole('combobox').selectOption('0')
+	await editor.locator('#building-picker-0').selectOption('building_city')
 	await cells.nth(26).click()
 	await expect(cells.nth(26)).not.toHaveClass(/-capturedby/)
 	await expect(cells.nth(26)).toHaveClass(/-building/)
-	await editor.locator('.compact-palette button[aria-label="Forest"]').click()
+	await editor.locator('.terrain-picker').selectOption('terrain_forest')
 	await cells.nth(26).click()
 	await expect(cells.nth(26)).toHaveClass(/-forest/)
 	await editor.getByRole('button', { name: 'Columns +', exact: true }).click()

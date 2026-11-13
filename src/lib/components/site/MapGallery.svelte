@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { resolve } from '$app/paths'
+	import { hasStartingArmies } from '#lib/map-editor/model.ts'
+	import { carouselOrder } from '#lib/game/map-discovery.ts'
+	import { playUrl } from '#lib/game/play-url.js'
+	import { library, refreshLibrary } from '#lib/map-editor/local-maps.svelte.js'
+	import type { GameMap } from '#lib/game/types.js'
+	import BoardPreview from '#lib/components/BoardPreview.svelte'
 	import { page } from '$app/state'
 	import { goto } from '$app/navigation'
 	import { onMount, tick } from 'svelte'
@@ -11,11 +16,13 @@
 	import MatchSetupModal from '#lib/components/MatchSetupModal.svelte'
 	import TextSelector from './TextSelector.svelte'
 	import SelectionCorners from './SelectionCorners.svelte'
+	let { onedit }: { onedit: (map: GameMap) => void } = $props()
 	const sizes = ['XS', 'S', 'M', 'L', 'XL']
-	const maps = Object.entries(mapPreviews)
+	const published = Object.entries(mapPreviews)
 		.filter(([id]) => isMapInCatalog(id))
-		.map(([id, preview]) => ({ id, ...preview }))
+		.map(([id, preview]) => ({ id, ...preview, local: undefined as GameMap | undefined, playable: true }))
 		.sort((a, b) => a.cols * a.rows - b.cols * b.rows || Number(a.id) - Number(b.id))
+	const maps = $derived([...library.maps.map((local) => ({ id: local.id, cols: local.cols, rows: local.rows, local, playable: hasStartingArmies(local) })), ...published])
 	function mapSize(cells: number) {
 		return cells <= 80 ? 'XS' : cells <= 120 ? 'S' : cells <= 160 ? 'M' : cells <= 200 ? 'L' : 'XL'
 	}
@@ -23,19 +30,28 @@
 	const size = $derived(mounted && sizes.includes(page.url.searchParams.get('size') ?? '') ? page.url.searchParams.get('size')! : 'ALL')
 	const filtered = $derived(maps.filter((map) => size === 'ALL' || mapSize(map.cols * map.rows) === size))
 	const widestRatio = $derived(Math.max(0, ...filtered.map((map) => map.cols / map.rows)))
-	let selectedMap = $state<number | null>(null)
+	let selectedMap = $state<string | null>(null)
+	const selectedLocal = $derived(library.maps.find((entry) => entry.id === selectedMap))
 	let expanded = $state(false)
-	let position = $state(0)
+	let discovery = $state.raw<{ ranks: Map<string, number>; width: number; height: number }>()
+	const carousel = $derived(discovery ? carouselOrder(filtered, discovery.ranks, discovery.width, discovery.height) : filtered)
+	let browsedId = $state<string | null>(null)
 	let direction = $state(0)
 	let gallery: HTMLDivElement
-	const current = $derived(filtered[((position % filtered.length) + filtered.length) % filtered.length])
+	const position = $derived(
+		Math.max(
+			0,
+			carousel.findIndex((map) => map.id === browsedId)
+		)
+	)
+	const current = $derived(carousel[position])
 	function stepMap(step: number) {
 		direction = step
-		position += step
+		if (carousel.length) browsedId = carousel[(position + step + carousel.length) % carousel.length].id
 	}
-	async function pickMap(index: number) {
+	async function pickMap(id: string) {
 		direction = 0
-		position = index
+		browsedId = id
 		expanded = false
 		await tick()
 		gallery.querySelector<HTMLAnchorElement>('.selected')?.focus({ preventScroll: true })
@@ -69,7 +85,7 @@
 		const bounds = gallery?.getBoundingClientRect()
 		if (!bounds || bounds.bottom <= 0 || bounds.top >= window.innerHeight) return
 		event.preventDefault()
-		selectedMap = Number(current.id)
+		selectedMap = current.id
 	}
 	function selectSize(value: string) {
 		const url = new URL(page.url.href)
@@ -78,16 +94,19 @@
 		void goto(url, { replace: true, reset: false })
 	}
 	onMount(() => {
+		refreshLibrary()
+		const stage = gallery.querySelector('.stage')!.getBoundingClientRect()
+		discovery = { ranks: new Map(maps.map((map) => [map.id, Math.random()])), width: stage.width, height: stage.height }
 		mounted = true
 	})
 	$effect(() => {
 		size
 		direction = 0
-		position = 0
+		browsedId = null
 	})
 </script>
 
-<svelte:window onkeydown={handleKey} />
+<svelte:window onkeydown={handleKey} onstorage={refreshLibrary} />
 
 <section aria-labelledby="maps">
 	<div class="gallery-heading">
@@ -104,26 +123,26 @@
 			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.png')} alt="" />
 		</button>
 	{/snippet}
-	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery} class:grid={expanded} class:featured={!expanded}>
+	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery} class:grid={expanded} class:featured={!expanded} class:initializing={!mounted}>
 		{#if !current}<p>{translate(m.map_filter_empty)}</p>
 		{:else if expanded}
-			{#each filtered as map, index (map.id)}
+			{#each filtered as map (map.id)}
 				<a
 					class="map"
 					class:selected={current.id === map.id}
 					data-map-id={map.id}
-					href={resolve('/play/[map]', { map: map.id })}
+					href={playUrl(map.id)}
 					onclick={(event) => {
 						if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
 						event.preventDefault()
-						void pickMap(index)
+						void pickMap(map.id)
 					}}
 				>
-					<div class="map-thumbnail">
-						<img src={asset('/assets/map-previews/map-' + map.id + '.png')} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading="lazy" draggable="false" />
+					<div class="map-thumbnail" class:local-thumbnail={!!map.local} style:--map-ratio={map.cols / map.rows}>
+						{#if map.local}<BoardPreview map={map.local} />{:else}<img src={asset('/assets/map-previews/map-' + map.id + '.png')} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading="lazy" draggable="false" />{/if}
 						<SelectionCorners />
 					</div>
-					<h3>{mapName(map.id)}</h3>
+					<h3>{map.local?.name ?? mapName(map.id)}</h3>
 				</a>
 			{/each}
 		{:else}
@@ -135,30 +154,40 @@
 						data-map-id={current.id}
 						aria-labelledby="map-name"
 						aria-haspopup="dialog"
-						href={resolve('/play/[map]', { map: current.id })}
+						href={playUrl(current.id)}
 						onclick={(event) => {
 							if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return
 							event.preventDefault()
-							if (!swiped) selectedMap = Number(current.id)
+							if (!swiped) selectedMap = current.id
 							swiped = false
 						}}
 					>
 						<div class="map-thumbnail">
 							{#key current.id}
-								<img src={asset('/assets/map-previews/map-' + current.id + '.png')} alt="" width={Math.round((480 * current.cols) / current.rows)} height="480" draggable="false" style:--entry-offset={direction * 8 + 'px'} onload={(event) => event.currentTarget.classList.toggle('entering', direction !== 0)} />
+								{#if current.local}<BoardPreview map={current.local} />{:else}<img src={asset('/assets/map-previews/map-' + current.id + '.png')} alt="" width={Math.round((480 * current.cols) / current.rows)} height="480" draggable="false" style:--entry-offset={direction * 8 + 'px'} onload={(event) => event.currentTarget.classList.toggle('entering', direction !== 0)} />{/if}
 							{/key}
 							<SelectionCorners />
 						</div>
 					</a>
 				</div>
 				{#if filtered.length > 1}{@render arrow(-1)}{/if}
-				<h3 class="caption" id="map-name" aria-live="polite">{mapName(current.id)}</h3>
+				<h3 class="caption" id="map-name" aria-live="polite">{current.local?.name ?? mapName(current.id)}</h3>
 				{#if filtered.length > 1}{@render arrow(1)}{/if}
 			</div>
 		{/if}
 	</div>
 </section>
-{#if selectedMap !== null}<MatchSetupModal map={selectedMap} onclose={() => (selectedMap = null)} />{/if}
+{#if selectedMap !== null}<MatchSetupModal
+		map={selectedMap}
+		localMap={selectedLocal}
+		onedit={selectedLocal
+			? () => {
+					onedit(selectedLocal!)
+					selectedMap = null
+				}
+			: undefined}
+		onclose={() => (selectedMap = null)}
+	/>{/if}
 
 <style>
 	section {
@@ -179,7 +208,8 @@
 	}
 	.size-options {
 		display: flex;
-		gap: 24px;
+		flex-wrap: wrap;
+		gap: var(--action-gap);
 		align-items: center;
 	}
 	.grid {
@@ -230,10 +260,13 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 16px 32px;
+		gap: var(--action-gap);
 	}
 	.grid .map-thumbnail {
 		margin-block: auto;
+	}
+	.grid .local-thumbnail {
+		width: min(100%, calc(150px * var(--map-ratio)));
 	}
 	.grid .map-thumbnail > img {
 		max-height: 150px;
@@ -243,6 +276,13 @@
 	.grid h3 {
 		font-size: clamp(1.125rem, 2vw, 1.5rem);
 		overflow-wrap: anywhere;
+	}
+	/* Keep the prerendered layout and no-script link while choosing the first preview. */
+	@media (scripting: enabled) {
+		.initializing .stage,
+		.initializing .caption {
+			visibility: hidden;
+		}
 	}
 	.featured {
 		display: grid;
@@ -304,6 +344,7 @@
 		}
 	}
 	.caption {
+		overflow-wrap: anywhere;
 		grid-area: caption;
 		margin: 0;
 		font-size: clamp(1.25rem, 2.25vw, 2.25rem);
@@ -357,9 +398,6 @@
 			flex-direction: column;
 			gap: 24px;
 		}
-		.size-options {
-			gap: 20px;
-		}
 	}
 	@media (max-width: 640px) {
 		.grid {
@@ -371,9 +409,6 @@
 		}
 		.grid {
 			gap: 24px;
-		}
-		.size-options {
-			gap: 16px;
 		}
 	}
 </style>

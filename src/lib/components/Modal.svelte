@@ -4,7 +4,7 @@
 	import { translate } from '#lib/i18n.svelte.js'
 	import UiIcon from './UiIcon.svelte'
 
-	let { title, onclose, children, alwaysShowScrollbar = true }: { title: string; onclose?: () => void; children: Snippet; alwaysShowScrollbar?: boolean } = $props()
+	let { title, onclose, children }: { title: string; onclose?: () => void; children: Snippet } = $props()
 	let dialog = $state<HTMLDialogElement>()
 	onMount(() => {
 		dialog?.showModal()
@@ -30,16 +30,12 @@
 			<button class="pixel-icon-button" aria-label={translate(messages.close)} onclick={onclose}><UiIcon name="close" /></button>
 		{/if}
 	</div>
-	<div class="dialog-content" class:auto-scrollbar={!alwaysShowScrollbar}>
+	<div class="dialog-content">
 		{@render children()}
 	</div>
 </dialog>
 
 <style>
-	dialog[open] {
-		display: flex;
-		flex-direction: column;
-	}
 	dialog {
 		--dialog-padding: 32px;
 		inset-block: max(16px, 5dvh) auto;
@@ -47,7 +43,9 @@
 		width: calc(100% - 2em);
 		max-width: var(--modal-max-width, 640px);
 		max-height: calc(100dvh - max(32px, 10dvh));
-		overflow: hidden;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
 		padding: 0;
 		border: var(--interface-border) solid var(--site-plum);
 		border-radius: 0;
@@ -60,16 +58,8 @@
 	}
 
 	.dialog-content {
-		min-height: 0;
-		overflow-x: hidden;
-		overflow-y: scroll;
-		scrollbar-gutter: stable;
+		display: flow-root;
 		padding: 0 var(--dialog-padding) var(--dialog-padding);
-
-		&.auto-scrollbar {
-			overflow-y: auto;
-			scrollbar-gutter: auto;
-		}
 	}
 
 	.heading {
@@ -77,7 +67,6 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 24px;
-		flex: none;
 		padding: var(--dialog-padding) var(--dialog-padding) 24px;
 
 		button {

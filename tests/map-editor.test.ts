@@ -36,6 +36,20 @@ test('editor draws connected road junctions and repairs neighboring sprites when
 	assert.deepEqual(map.cells[10].classes, ['-road', '-endbottom'])
 })
 
+test('boundary roads follow the painted path and extend a perpendicular approach off the map', () => {
+	const map = newMap(5, 5)
+	const road = { kind: 'terrain', classes: ['-road', '-h'], owner: 0 } as const
+	for (const i of [5, 6, 1, 2, 3, 8]) paintMirroredCell(map, i, { ...road, classes: [...road.classes] }, 'rotation')
+	for (const i of [2, 22, 5, 19]) assert.deepEqual(map.cells[i].classes, ['-road', '-h'])
+	assert.deepEqual(map.cells[1].classes, ['-road', '-corner', '-se'])
+	assert.deepEqual(map.cells[3].classes, ['-road', '-corner', '-bottom'])
+	paintCell(map, 7, { ...road, classes: [...road.classes] })
+	assert.deepEqual(map.cells[2].classes, ['-road', '-junction', '-south'])
+	paintCell(map, 1, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+	paintCell(map, 3, { kind: 'terrain', classes: ['-grass'], owner: 0 })
+	assert.deepEqual(map.cells[2].classes, ['-road', '-v'])
+})
+
 test('water below a bridge preserves its sprite and remains impassable to ground units', () => {
 	const map = newMap(5, 5)
 	const classes = ['-water', '-under-bridge', '-h']

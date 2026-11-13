@@ -3,6 +3,7 @@
 	import { page } from '$app/state'
 	import { goto } from '$app/navigation'
 	import { resolve } from '$app/paths'
+	import { playUrl } from '#lib/game/play-url.js'
 	import Game from './Game.svelte'
 	import Modal from './Modal.svelte'
 	import { readSavedMatch, createMatchWriter, type SavedMatch } from '#lib/game/saved-match.js'
@@ -59,13 +60,13 @@
 	<Game map={initial?.map ?? map} {difficulty} resume={initial} saveRaw={raw} autosave />
 {:else if saved || error}
 	<Modal title={translate(messages.save_replace_title)}>
-		<p>{saved ? translate(messages.save_replace, { map: mapName(saved.map.id) }) : translate(messages.save_invalid)}</p>
+		<p>{saved ? translate(messages.save_replace, { map: mapName(saved.map.id, saved.map.name) }) : translate(messages.save_invalid)}</p>
 		{#if error === 'conflict'}
 			<p role="alert">{translate(messages.save_conflict)}</p>
 		{/if}
 		<div class="actions">
 			{#if saved}
-				<a class="button" onclick={resumeCurrent} href={`${resolve('/play/[map]', { map: saved.map.id })}/?ai=${saved.difficulty}`}>{translate(messages.save_resume)}</a>
+				<a class="button" onclick={resumeCurrent} href={playUrl(saved.map.id, { ai: saved.difficulty })}>{translate(messages.save_resume)}</a>
 			{/if}
 			<button class="primary" onclick={startNew}>{translate(messages.save_replace_confirm)}</button>
 			<a href={resolve('/')}>{translate(messages.cancel_close)}</a>
@@ -78,6 +79,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 12px;
+		gap: var(--action-gap);
 	}
 </style>

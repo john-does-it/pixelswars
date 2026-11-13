@@ -256,7 +256,7 @@ test('touch swipes keep following the finger in all four directions without sele
 	await page.goto('/play/12/')
 	await zoomToReadableTiles(page)
 	const viewport = page.locator('.board-viewport')
-	await viewport.evaluate((element) => element.scrollTo({ left: 250, top: 250, behavior: 'instant' }))
+	await viewport.evaluate((element) => element.scrollTo({ left: (element.scrollWidth - element.clientWidth) / 2, top: (element.scrollHeight - element.clientHeight) / 2, behavior: 'instant' }))
 	const frame = (await viewport.boundingBox())!
 	const start = { x: frame.x + frame.width / 2, y: frame.y + frame.height / 2 }
 	const beforeUnits = await page.locator('[data-unit]').evaluateAll((units) => units.map((unit) => unit.parentElement?.dataset.cell))

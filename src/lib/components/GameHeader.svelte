@@ -15,7 +15,7 @@
 		<div class="summary-row">
 			<div class="summary-details">
 				<div class="turn" class:player-one={state.player === 1} class:player-two={state.player === 2} aria-live="polite">
-					<Sprite src={unitSpritePath('infantry', state.player)} alt={matchPlayerName(state.player, aiMode, state.network?.player)} size="m" />
+					<span class="turn-portrait"><Sprite src={unitSpritePath('infantry', state.player)} alt={matchPlayerName(state.player, aiMode, state.network?.player)} size="m" /></span>
 					<div class="turn-details"><span class="map-name pixel-heading">{name}</span><strong>{translate(messages.round, { round: state.round })}</strong></div>
 				</div>
 			</div>
@@ -69,6 +69,10 @@
 		font-weight: bold;
 	}
 
+	.turn-portrait {
+		display: grid;
+		flex: none;
+	}
 	.turn-details {
 		min-width: 0;
 		display: grid;
@@ -103,6 +107,36 @@
 		}
 		.turn {
 			font-size: var(--font-size-ui);
+		}
+	}
+	@media (max-width: 768px) {
+		.summary-content {
+			gap: 6px;
+		}
+		.turn-portrait {
+			width: 40px;
+			height: 40px;
+			grid-template: 100% / 100%;
+			place-items: center;
+			overflow: hidden;
+		}
+		/* Both 400px infantry sprites have 222px of artwork inside transparent margins. */
+		.turn-portrait :global(.sprite) {
+			--sprite-size: 71px;
+		}
+		.turn-details {
+			gap: 1px;
+		}
+		.map-name,
+		.turn-details strong {
+			line-height: 1.15;
+			text-box-trim: trim-both;
+		}
+		.map-name {
+			font-size: 20px;
+		}
+		.turn-details strong {
+			font-size: 16px;
 		}
 	}
 </style>

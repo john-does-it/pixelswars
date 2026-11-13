@@ -38,10 +38,10 @@ test('Japanese persists across the catalog, help, game, editor and legal page', 
 	await expect(page.getByRole('dialog', { name: 'マスの詳細', exact: true })).toBeVisible()
 	await fitsViewport()
 
-	await page.goto('/map-editor/')
+	await page.goto('/#editor-title')
 	await expect(page.locator('.site-navbar .language-control select')).toHaveValue('ja')
-	await expect(page.getByRole('heading', { name: 'マップエディター', exact: true })).toBeVisible()
-	await expect(page.getByRole('button', { name: '歩兵', exact: true })).toBeVisible()
+	await expect(page.getByRole('heading', { name: '自分のマップを作ろう', exact: true })).toBeVisible()
+	await expect(page.locator('#unit-picker-2')).toBeVisible()
 	await fitsViewport()
 	await page.screenshot({ path: testInfo.outputPath('japanese-editor.png') })
 

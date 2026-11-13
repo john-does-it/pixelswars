@@ -5,12 +5,12 @@
 	import { isLocale } from '#lib/preferences-cookie.ts'
 	import SettingSelect from './SettingSelect.svelte'
 
-	let { site = false, compact = false, symbolOnly = false, hideLabel = false }: { site?: boolean; compact?: boolean; symbolOnly?: boolean; hideLabel?: boolean } = $props()
+	let { site = false, compact = false, hideLabel = false }: { site?: boolean; compact?: boolean; hideLabel?: boolean } = $props()
 	const languages = $derived([
-		{ value: 'en', symbol: '🇬🇧', label: translate(messages.language_english) },
-		{ value: 'de', symbol: '🇩🇪', label: translate(messages.language_german) },
-		{ value: 'fr', symbol: '🇫🇷', label: translate(messages.language_french) },
-		{ value: 'ja', symbol: '🇯🇵', label: translate(messages.language_japanese) }
+		{ value: 'en', label: translate(messages.language_english) },
+		{ value: 'de', label: translate(messages.language_german) },
+		{ value: 'fr', label: translate(messages.language_french) },
+		{ value: 'ja', label: translate(messages.language_japanese) }
 	])
 
 	function changeLanguage(value: string) {
@@ -19,39 +19,39 @@
 </script>
 
 {#if site}
-	<SettingSelect hideLabel class="language-select" label={translate(messages.language)} value={preferences.locale} options={languages} onchange={changeLanguage} />
-{:else if symbolOnly}
-	<div class="language-symbol">
-		<span aria-hidden="true">{languages.find((language) => language.value === preferences.locale)?.symbol}</span>
-		<select class="language-select" aria-label={translate(messages.language)} title={translate(messages.language)} value={preferences.locale} onchange={(event) => changeLanguage(event.currentTarget.value)}>
-			{#each languages as language}<option value={language.value}>{language.symbol} {language.label}</option>{/each}
-		</select>
+	<div class="navbar-language">
+		<SettingSelect hideLabel class="language-select" label={translate(messages.language)} value={preferences.locale} options={languages} onchange={changeLanguage} />
+		<span class="language-code" aria-hidden="true">{preferences.locale.toUpperCase()}</span>
 	</div>
 {:else}
 	<SettingSelect {hideLabel} class="language-select" label={translate(messages.language)} value={preferences.locale} options={languages} standalone={!compact} onchange={changeLanguage} />
 {/if}
 
 <style>
-	.language-symbol {
-		position: relative;
-		width: 64px;
-		flex: none;
+	.language-code {
+		display: none;
 	}
-	.language-symbol span {
-		position: absolute;
-		inset: 0 22px 0 6px;
-		display: grid;
-		place-items: center;
-		font:
-			20px / 1 system-ui,
-			sans-serif;
-		pointer-events: none;
-	}
-	select {
-		width: 100%;
-		color: transparent;
-	}
-	option {
-		color: var(--color-text);
+
+	@media (width < 1024px) {
+		.navbar-language {
+			position: relative;
+		}
+		.navbar-language :global(select) {
+			width: 68px;
+			color: transparent;
+		}
+		.navbar-language :global(option) {
+			color: var(--color-text);
+			background-color: var(--color-surface);
+		}
+		.language-code {
+			position: absolute;
+			inset: 0 26px 0 6px;
+			display: grid;
+			place-items: center;
+			color: var(--site-paper);
+			font: 700 16px / 1.5 var(--font-body);
+			pointer-events: none;
+		}
 	}
 </style>

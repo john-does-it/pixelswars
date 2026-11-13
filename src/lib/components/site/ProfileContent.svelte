@@ -2,16 +2,17 @@
 	import { onMount } from 'svelte'
 	import PreferencesPanel from '#lib/components/site/PreferencesPanel.svelte'
 	import Modal from '#lib/components/Modal.svelte'
+	import TextInput from '#lib/components/TextInput.svelte'
 	import UiIcon from '#lib/components/UiIcon.svelte'
 	let showSettings = $state(false)
 	import { playerProfile, initializeProfile, saveProfile, restoreProfile } from '#lib/profile.svelte.ts'
+	import { mapsForBackup } from '#lib/map-editor/local-maps.svelte.js'
 	import { makeBackup, parseBackup, maxBackupBytes, type ProfileBackup } from '#lib/profile.ts'
 	import { preferences } from '#lib/preferences.svelte.ts'
 	import { translate } from '#lib/i18n.svelte.js'
 	import { m as messages } from '#lib/paraglide/messages.js'
 	let pseudonym = $state('')
 	let pending = $state<ProfileBackup | null>(null)
-	let pendingRaw = $state('')
 	let status = $state('')
 	let reading = $state(false)
 	let readId = 0
@@ -20,7 +21,14 @@
 		pseudonym = playerProfile.data.pseudonym
 	})
 	function download() {
-		const url = URL.createObjectURL(new Blob([makeBackup(playerProfile.data, preferences)], { type: 'application/json' }))
+		let raw: string
+		try {
+			raw = makeBackup(playerProfile.data, preferences, undefined, mapsForBackup())
+		} catch {
+			status = 'profile_export_error'
+			return
+		}
+		const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }))
 		const link = document.createElement('a')
 		link.href = url
 		link.download = `pixels-war-profile-${new Date().toISOString().slice(0, 10)}.json`
@@ -32,7 +40,6 @@
 		const file = input.files?.[0]
 		const id = ++readId
 		pending = null
-		pendingRaw = ''
 		status = ''
 		if (!file) return
 		reading = true
@@ -41,7 +48,6 @@
 			const raw = await file.text()
 			const parsed = parseBackup(raw)
 			if (id !== readId) return
-			pendingRaw = raw
 			pending = parsed
 		} catch (error) {
 			if (id === readId) status = error instanceof Error && error.message === 'version' ? 'profile_version_error' : 'profile_invalid'
@@ -52,10 +58,9 @@
 	}
 	function restore() {
 		if (!pending) return
-		if (restoreProfile(pendingRaw)) {
+		if (restoreProfile(pending)) {
 			pseudonym = playerProfile.data.pseudonym
 			pending = null
-			pendingRaw = ''
 			status = 'profile_restored'
 		}
 	}
@@ -73,7 +78,7 @@
 		}}
 	>
 		<label class="sr-only" for="pseudonym">{translate(messages.profile_pseudonym)}</label>
-		<div class="actions"><input placeholder={translate(messages.profile_pseudonym)} id="pseudonym" bind:value={pseudonym} maxlength="40" /><button type="submit" class="primary site-action">{translate(messages.profile_save)}</button><button type="button" class="pixel-icon-button" aria-label={translate(messages.site_settings)} title={translate(messages.site_settings)} aria-haspopup="dialog" onclick={() => (showSettings = true)}><UiIcon name="game-settings" /></button></div>
+		<div class="actions"><TextInput placeholder={translate(messages.profile_pseudonym)} id="pseudonym" bind:value={pseudonym} maxlength={40} /><button type="submit" class="primary site-action">{translate(messages.profile_save)}</button><button type="button" class="pixel-icon-button" aria-label={translate(messages.site_settings)} title={translate(messages.site_settings)} aria-haspopup="dialog" onclick={() => (showSettings = true)}><UiIcon name="game-settings" /></button></div>
 	</form>
 	{#if playerProfile.storageError}<p role="alert">{translate(messages.profile_storage_error)}</p>{/if}
 	<p role="status">{status ? translate(messages[status as keyof typeof messages]) : ''}</p>
@@ -86,18 +91,13 @@
 			<section class="restore-preview" aria-label={translate(messages.profile_preview)}>
 				<h3>{translate(messages.profile_preview)}</h3>
 				<p>{pending.profile.pseudonym || '—'}</p>
-				<p>{translate(messages.profile_summary, { medals: pending.profile.medals.length, challenges: pending.profile.challenges.length })}</p>
+				<p>{translate(messages.profile_summary, { medals: pending.profile.medals.length, challenges: pending.profile.challenges.length, maps: pending.maps.length })}</p>
 				<p>{translate(messages.profile_exported, { date: new Date(pending.exportedAt).toLocaleString(preferences.locale) })}</p>
 				<p>{translate(messages.profile_replace_warning)}</p>
 				<div class="actions">
 					<button onclick={download}>{translate(messages.profile_backup_current)}</button>
 					<button class="primary site-action" onclick={restore}>{translate(messages.profile_replace)}</button>
-					<button
-						onclick={() => {
-							pending = null
-							pendingRaw = ''
-						}}>{translate(messages.cancel_close)}</button
-					>
+					<button onclick={() => (pending = null)}>{translate(messages.cancel_close)}</button>
 				</div>
 			</section>
 		{/if}
@@ -122,7 +122,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: 24px 40px;
+		gap: var(--action-gap);
 	}
 	.backup {
 		margin-top: var(--site-gap-medium);
@@ -142,15 +142,6 @@
 		height: 100%;
 		opacity: 0;
 		cursor: pointer;
-	}
-	input:not([type='file']) {
-		width: 295px;
-		max-width: 100%;
-		min-width: 0;
-		min-height: 51px;
-		padding: 8px 24px;
-		font: inherit;
-		border: 2px solid var(--site-muted);
 	}
 	.restore-preview {
 		margin-top: 24px;

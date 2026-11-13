@@ -1,18 +1,23 @@
 import { test, expect } from '@playwright/test'
 
-test('terms are linked, translated and readable without contacting online services', async ({ page }) => {
+test('terms are linked, translated and readable without opening multiplayer connections', async ({ page }) => {
 	const connections: string[] = []
 	page.on('websocket', (socket) => connections.push(socket.url()))
 	await page.goto('/')
 	await page.getByRole('link', { name: 'Terms & Conditions', exact: true }).click()
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Terms, privacy and cookies')
 	await expect(page.getByText(/The pixelswars-settings cookie/)).toBeVisible()
-	for (const [locale, title] of [
-		['fr', 'Conditions, confidentialité et cookies'],
-		['de', 'Nutzungsbedingungen, Datenschutz und Cookies']
+	await expect(page.getByRole('heading', { name: 'Progress and saved maps' })).toBeVisible()
+	await expect(page.getByText(/your browser sends its name, terrain and starting armies/)).toBeVisible()
+	await expect(page.getByRole('link', { name: 'Data measured by Simple Analytics' })).toHaveAttribute('href', 'https://docs.simpleanalytics.com/what-we-collect')
+	for (const [locale, title, saves] of [
+		['fr', 'Conditions, confidentialité et cookies', 'Progression et cartes enregistrées'],
+		['ja', '利用条件・プライバシー・Cookie', '進行状況と保存したマップ'],
+		['de', 'Nutzungsbedingungen, Datenschutz und Cookies', 'Spielfortschritt und gespeicherte Karten']
 	]) {
 		await page.locator('.site-navbar .language-control select').selectOption(locale)
 		await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
+		await expect(page.getByRole('heading', { name: saves })).toBeVisible()
 		await expect(page.locator('html')).toHaveAttribute('lang', locale)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	}

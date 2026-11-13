@@ -94,7 +94,7 @@
 	</div>
 </nav>
 {#if pendingEndTurn}
-	<Modal title={translate(messages.end_round)} alwaysShowScrollbar={false} onclose={() => (pendingEndTurn = null)}>
+	<Modal title={translate(messages.end_round)} onclose={() => (pendingEndTurn = null)}>
 		<p>{translate(messages.end_turn_warning)}</p>
 		<div class="confirmation-actions">
 			<button onclick={() => (pendingEndTurn = null)}>{translate(messages.answer_no)}</button>
@@ -103,7 +103,7 @@
 	</Modal>
 {/if}
 {#if showPreview && previewCell}
-	<Modal title={translate(messages.cell_statistics)} alwaysShowScrollbar={false} onclose={() => (showPreview = false)}>
+	<Modal title={translate(messages.cell_statistics)} onclose={() => (showPreview = false)}>
 		<StatsPanel state={gameState} />
 	</Modal>
 {/if}
@@ -132,14 +132,15 @@
 	.confirmation-actions {
 		display: flex;
 		justify-content: flex-end;
-		gap: 12px;
+		flex-wrap: wrap;
+		gap: var(--action-gap);
 		margin-top: 16px;
 	}
 	.match-actions {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: 8px;
+		gap: var(--action-gap);
 		margin-bottom: 24px;
 		a,
 		button {

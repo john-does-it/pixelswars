@@ -1,6 +1,6 @@
 import { difficulties, mapRevisions, type PlayerProfile } from './profile.ts'
 import { isMapInCatalog } from './game/map-catalog.ts'
-export const achievementIds = ['first-victory', 'easy-victory', 'medium-victory', 'hard-victory', 'expert-victory', 'five-battlefields', 'ten-battlefields', 'all-battlefields', 'map-master'] as const
+export const achievementIds = ['first-victory', 'easy-victory', 'medium-victory', 'hard-victory', 'expert-victory', 'five-battlefields', 'ten-battlefields', 'all-battlefields', 'map-master', 'onliner', 'same-boat'] as const
 export type AchievementId = (typeof achievementIds)[number]
 /** Derived from existing records, so imports unlock the same medals without a second store. */
 export function achievementProgress(profile: PlayerProfile) {
@@ -17,7 +17,9 @@ export function achievementProgress(profile: PlayerProfile) {
 		'five-battlefields': [wonMaps.size, 5],
 		'ten-battlefields': [wonMaps.size, 10],
 		'all-battlefields': [wonMaps.size, maps.length],
-		'map-master': [mastery, difficulties.length]
+		'map-master': [mastery, difficulties.length],
+		onliner: [Number(!!profile.completedModes?.online), 1],
+		'same-boat': [Number(!!profile.completedModes?.local), 1]
 	}
 	return achievementIds.map((id) => {
 		const [value, target] = counts[id]

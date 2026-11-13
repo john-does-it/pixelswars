@@ -1,9 +1,10 @@
 import { defaultPreferences, isLocale, type Preferences } from './preferences-cookie.ts'
 import mapFiles from './data/map-files.json' with { type: 'json' }
-import type { AiDifficulty, Player } from './game/types.ts'
+import { isLocalMapId, readMap } from './map-editor/model.ts'
+import type { AiDifficulty, GameMap, Player } from './game/types.ts'
 
 export const profileStorageKey = 'pixelswars-profile'
-export const maxBackupBytes = 256 * 1024
+export const maxBackupBytes = 16 * 1024 * 1024
 export const difficulties: AiDifficulty[] = ['easy', 'medium', 'hard', 'expert']
 // Bump a map's revision after substantial layout or army changes. Old medals
 // remain in backups but do not complete the revised map's medal row.
@@ -21,6 +22,7 @@ export interface ChallengeResult {
 }
 export interface PlayerProfile {
 	pseudonym: string
+	completedModes?: { online: boolean; local: boolean }
 	medals: Medal[]
 	challenges: ChallengeResult[]
 }
@@ -30,6 +32,7 @@ export interface ProfileBackup {
 	exportedAt: string
 	profile: PlayerProfile
 	preferences: Preferences
+	maps: GameMap[]
 }
 export const emptyProfile = (): PlayerProfile => ({ pseudonym: '', medals: [], challenges: [] })
 function object(value: unknown): Record<string, unknown> {
@@ -72,7 +75,13 @@ export function validateProfile(value: unknown): PlayerProfile {
 		challengeIds.add(id)
 		return { id, completedAt: date(result.completedAt), turns: integer(result.turns, 1, 100000) }
 	})
-	return { pseudonym, medals, challenges }
+	const profile: PlayerProfile = { pseudonym, medals, challenges }
+	if (input.completedModes !== undefined) {
+		const modes = object(input.completedModes)
+		if (typeof modes.online !== 'boolean' || typeof modes.local !== 'boolean') throw new Error('invalid')
+		profile.completedModes = { online: modes.online, local: modes.local }
+	}
+	return profile
 }
 export function validatePreferences(value: unknown): Preferences {
 	const input = object(value)
@@ -86,15 +95,26 @@ export function validatePreferences(value: unknown): Preferences {
 	result.sound = result.volume > 0
 	return result
 }
+function validateBackupMaps(value: unknown): GameMap[] {
+	if (value === undefined) return []
+	if (!Array.isArray(value)) throw new Error('invalid')
+	const seen = new Set<string>()
+	return value.map((entry) => {
+		const map = readMap(JSON.stringify(entry))
+		if (!isLocalMapId(map.id) || seen.has(map.id)) throw new Error('invalid')
+		seen.add(map.id)
+		return map
+	})
+}
 export function parseBackup(raw: string): ProfileBackup {
 	if (new TextEncoder().encode(raw).length > maxBackupBytes) throw new Error('size')
 	const data = object(JSON.parse(raw))
 	if (data.format !== 'pixelswars-profile') throw new Error('invalid')
 	if (data.version !== 1) throw new Error('version')
-	return { format: 'pixelswars-profile', version: 1, exportedAt: date(data.exportedAt), profile: validateProfile(data.profile), preferences: validatePreferences(data.preferences) }
+	return { format: 'pixelswars-profile', version: 1, exportedAt: date(data.exportedAt), profile: validateProfile(data.profile), preferences: validatePreferences(data.preferences), maps: validateBackupMaps(data.maps) }
 }
-export function makeBackup(profile: PlayerProfile, preferences: Preferences, now = new Date().toISOString()): string {
-	const raw = JSON.stringify({ format: 'pixelswars-profile', version: 1, exportedAt: date(now), profile: validateProfile(profile), preferences: validatePreferences(preferences) })
+export function makeBackup(profile: PlayerProfile, preferences: Preferences, now = new Date().toISOString(), maps?: GameMap[]): string {
+	const raw = JSON.stringify({ format: 'pixelswars-profile', version: 1, exportedAt: date(now), profile: validateProfile(profile), preferences: validatePreferences(preferences), maps })
 	if (new TextEncoder().encode(raw).length > maxBackupBytes) throw new Error('size')
 	return raw
 }
@@ -106,4 +126,12 @@ export function awardVictory(profile: PlayerProfile, match: { map: string; diffi
 	const medal = { map: match.map, revision: mapRevisions[match.map], difficulty: match.difficulty, earnedAt: now }
 	profile.medals.push(medal)
 	return medal
+}
+
+export function recordCompletedMode(profile: PlayerProfile, match: Parameters<typeof awardVictory>[1]): boolean {
+	const mode = match.online ? 'online' : match.difficulty === null ? 'local' : null
+	if (!match.winner || !mode || profile.completedModes?.[mode]) return false
+	profile.completedModes ??= { online: false, local: false }
+	profile.completedModes[mode] = true
+	return true
 }

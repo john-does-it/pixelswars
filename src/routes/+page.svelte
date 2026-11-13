@@ -14,6 +14,8 @@
 	import mapPreviews from '#lib/data/map-previews.json'
 	import { m } from '#lib/paraglide/messages.js'
 	import { translate } from '#lib/i18n.svelte.js'
+	let { data }: { data: import('./$types').PageData } = $props()
+	let editor = $state<MapEditor>()
 	const counts = { units: Object.keys(unitTypes).length, maps: Object.keys(mapPreviews).filter(isMapInCatalog).length, terrains: Object.keys(terrainTypes).filter((id) => id !== 'building').length }
 </script>
 
@@ -21,7 +23,12 @@
 <main id="home">
 	<SiteSection id="battlefields" tone="yellow-light" wide>
 		<SavedMatchCard />
-		<MapGallery />
+		<MapGallery
+			onedit={(map) => {
+				editor?.editSavedMap(map)
+				document.getElementById('editor-title')?.scrollIntoView()
+			}}
+		/>
 	</SiteSection>
 	<SiteSection id="key-numbers"
 		><div class="key-numbers">
@@ -42,7 +49,7 @@
 	<SiteSection id="editor-title" tone="sky" width="1220px"
 		><h2>{translate(m.editor_title)}</h2>
 		<p class="subtitle">{translate(m.editor_description)}</p>
-		<MapEditor embedded /></SiteSection
+		{#key data.draftMap?.id}<MapEditor bind:this={editor} sourceMap={data.draftMap} />{/key}</SiteSection
 	>
 	<SiteSection id="stats" tone="silver" width="1480px"><StatsCatalog /></SiteSection>
 	<SiteSection id="success" tone="yellow">

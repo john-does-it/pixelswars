@@ -17,18 +17,25 @@
 		<h2>{translate(messages.legal_cookie_title)}</h2>
 		<p>{translate(messages.legal_cookie)}</p>
 		<p>{translate(messages.legal_cookie_manage)}</p>
+	</section>
+	<section>
+		<h2>{translate(messages.legal_saves_title)}</h2>
+		<p>{translate(messages.legal_progress)}</p>
 		<p>{translate(messages.legal_editor_storage)}</p>
-		<p>{translate(messages.profile_intro)}</p>
+		<p>{translate(messages.legal_backup)}</p>
+		<p>{translate(messages.profile_replace_warning)}</p>
 	</section>
 	<section>
 		<h2>{translate(messages.legal_online_title)}</h2>
 		<p>{translate(messages.legal_online)}</p>
 		<p>{translate(messages.legal_shared)}</p>
+		<p>{translate(messages.legal_online_map)}</p>
 		<p>{translate(messages.legal_limits)}</p>
 	</section>
 	<section>
 		<h2>{translate(messages.legal_hosting_title)}</h2>
 		<p>{translate(messages.legal_hosting)}</p>
+		<p>{translate(messages.legal_analytics)} <a href="https://docs.simpleanalytics.com/what-we-collect">{translate(messages.legal_analytics_link)}</a></p>
 		<ul>
 			<li><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">{translate(messages.legal_github)}</a></li>
 			<li><a href="https://peerjs.com/server/cloud">{translate(messages.legal_peerjs)}</a></li>

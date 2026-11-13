@@ -1,6 +1,7 @@
 node_modules/
 .svelte-kit/
 src/lib/paraglide/
+src/lib/paraglide-dev/
 project.inlang/*
 !project.inlang/settings.json
 build/

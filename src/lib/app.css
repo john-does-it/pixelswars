@@ -73,10 +73,9 @@
 	line-break: strict;
 }
 
-/* Keep the language picker consistent in the home, game settings and editor.
-   Japanese names still need the Japanese face, whichever locale is selected. */
-.language-select {
-	--font-body: 'IBM Plex Mono', 'DotGothic16', ui-monospace, monospace;
+/* Use system glyphs for the Japanese option until the Japanese UI is active. */
+:root:not(:lang(ja)) .language-select {
+	--font-body: 'IBM Plex Mono', 'Yu Gothic', 'Hiragino Kaku Gothic ProN', 'Meiryo', monospace;
 }
 
 h1 {

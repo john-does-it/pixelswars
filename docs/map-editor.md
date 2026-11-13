@@ -6,20 +6,12 @@ The corrective PNGs and shimmer masks are generated from existing sprites with `
 
 Open the map editor from the game homepage. The editor shares the game’s language preference (English, French, German or Japanese).
 It uses the game's existing sprites and saves drafts only in the current browser.
-For local development, run `npm run dev` and open http://127.0.0.1:5173/map-editor/.
-The SvelteKit route in `src/routes/map-editor/+page.svelte` shares the root layout,
-favicon, styles and language preferences. It is prerendered with the rest of the
-site by `npm run build`; drawing and drafts run entirely in the browser.
-`npm run map:editor` is a shortcut to start the same dev server and open the editor.
+Run `npm run map:editor` to open the homepage at `/#editor-title`.
+Development-only maps use `/?draft=ID#editor-title` and have separate local saves.
 
-The route hosts `src/lib/components/MapEditor.svelte`. Development-only maps
-can be opened directly with `?draft=ID`; each gets its own local editing save.
-See [Draft maps](draft-maps.md) for generation, testing and publication.
-
-1. Choose dimensions (2–32 columns and rows) and create a new grid, or load a copy
-   of an existing map / import a JSON file.
+1. Adjust the grid with the Columns and Rows controls.
 2. Select a terrain or building and click or drag across the grid. Roads and
-   water shores adapt to their neighbors. Choose an owner before painting buildings.
+   water shores adapt to their neighbors. Choose the building palette for the desired owner.
    Horizontal and vertical bridge brushes keep their chosen orientation. Paint them
    over water to create crossings, then connect roads at their ends. Bridges use
    road movement and defense rules; neighboring water stays open beneath them.
@@ -42,9 +34,8 @@ See [Draft maps](draft-maps.md) for generation, testing and publication.
    Ships pass under bridges for 2 movement points per tile and cannot capture buildings.
    Ships cross straight under bridges without stopping, even beneath ground units.
    They need enough movement for the whole crossing and a free exit.
-4. Set a name and numeric map ID, then **Exporter le JSON** to download `board-ID.json`.
-   Submit it for review and integration into the game, translations and thumbnails.
-   **JSON à copier** also provides the export as text if you prefer to copy and paste it.
+4. **Import** opens an exported JSON map. **Save** asks for a name and adds the map to the battlefield chooser in this browser. You can play it against the AI or a second player on the same device, or continue editing. Unfinished maps can be saved and reopened to add the armies.
+5. **Export** downloads a JSON copy you can keep or import on another device.
 
 The last draft is saved in this browser's local storage. Export important work:
 clearing browser data removes that local copy. **Annuler** (Ctrl/Cmd + Z) restores

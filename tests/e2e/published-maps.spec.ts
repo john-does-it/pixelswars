@@ -12,7 +12,7 @@ const maps = [
 	[41, 'Island Chain', 425, 24]
 ] as const
 
-test('approved maps have previews, public games and editor entries', async ({ page }) => {
+test('approved maps have previews, public games on the homepage', async ({ page }) => {
 	await page.goto('/')
 	for (const [id, name, cells, units] of maps) {
 		await page.getByRole('button', { name: 'View all maps', exact: true }).click()
@@ -26,7 +26,4 @@ test('approved maps have previews, public games and editor entries', async ({ pa
 		await expect(page.locator('.board [data-unit]')).toHaveCount(units)
 		await page.goto('/')
 	}
-	await page.goto('/map-editor/')
-	for (const [id] of maps) await expect(page.locator('#existing option[value="' + id + '"]')).toHaveCount(1)
-	for (const id of [32, 33, 34]) await expect(page.locator('#existing option[value="' + id + '"]')).toHaveCount(0)
 })

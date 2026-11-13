@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { unitSpritePath } from '#lib/game/unit-sprites.js'
+	import BoardPreview from './BoardPreview.svelte'
 	import { resolve } from '$app/paths'
-	import { asset } from '#lib/game/asset-path.js'
 	import { describeMap } from '#lib/game/map-details.js'
 	import type { GameMap } from '#lib/game/types.js'
 	import MapCharacteristics from './MapCharacteristics.svelte'
@@ -16,22 +15,14 @@
 		<p>{translate(messages.map_drafts_hint)}</p>
 		<div class="draft-grid">
 			{#each maps as map (map.id)}
-				{@const units = new Map(map.units.map((unit) => [unit.cell, unit]))}
 				<article class="panel draft-card" data-draft-map={map.id}>
-					<div class="preview" aria-hidden="true" style:grid-template-columns={`repeat(${map.cols}, 1fr)`}>
-						{#each map.cells as cell, index}
-							{@const unit = units.get(index)}
-							<span class="cell-container {cell.classes.join(' ')}{cell.owner ? ` -capturedby${cell.owner}` : ''}">
-								{#if unit}<img src={asset(unitSpritePath(unit.type, unit.player))} alt="" loading="lazy" />{/if}
-							</span>
-						{/each}
-					</div>
+					<div class="preview"><BoardPreview {map} /></div>
 					<span class="draft-badge">{translate(messages.map_draft)}</span>
 					<MapCharacteristics details={describeMap(map)} />
 					<h3 title={map.name}>{map.name}</h3>
 					<p>{map.cols} × {map.rows}</p>
 					<div class="actions">
-						<a href={`${resolve('/map-editor')}?draft=${map.id}`}>{translate(messages.map_draft_edit)}</a>
+						<a href={`${resolve('/')}?draft=${map.id}#editor-title`}>{translate(messages.map_draft_edit)}</a>
 					</div>
 				</article>
 			{/each}
@@ -53,25 +44,8 @@
 		padding: 20px;
 	}
 	.preview {
-		display: grid;
 		max-width: 240px;
 		margin: 0 auto 16px;
-	}
-	.preview .cell-container {
-		display: block;
-		position: relative;
-		width: 100%;
-		aspect-ratio: 1;
-		background-size: 100% 100%;
-		image-rendering: pixelated;
-	}
-	.preview img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-		image-rendering: pixelated;
 	}
 	.draft-badge {
 		display: inline-block;

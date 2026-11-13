@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { recordVictory, playerProfile } from '#lib/profile.svelte.ts'
-	import type { Medal } from '#lib/profile.ts'
 	import { onMount, onDestroy, untrack } from 'svelte'
 	import { resolve } from '$app/paths'
 	import { createGame } from '#lib/game/game.svelte.js'
@@ -30,19 +29,24 @@
 	let writeSave: ReturnType<typeof createMatchWriter> | undefined
 	let audio = $state<AudioController>()
 	let game = $state<GameController>(untrack(() => createSession(resume)))
-	const title = $derived(draft ? `${translate(messages.map_draft)} · ${map.name}` : mapName(map.id))
+	const title = $derived(draft ? `${translate(messages.map_draft)} · ${map.name}` : mapName(map.id, map.name))
 	const network = $derived(game.state.network)
 	const localTurn = $derived(!network || network.player === game.state.player)
 	const waiting = $derived(game.state.aiThinking || !localTurn || !!(network && network.phase !== 'playing'))
 	let preferencesLoaded = $state(false)
-	let earnedMedal = $state<Medal | null>(null)
+	let rewards = $state<ReturnType<typeof recordVictory>>()
 	let recordedSession: GameController | undefined
 	$effect(() => {
-		if (draft || !preferencesLoaded || game.state.winner === null || recordedSession === game) return
+		if (game.state.winner === null) {
+			rewards = undefined
+			recordedSession = undefined
+			return
+		}
+		if (draft || !preferencesLoaded || recordedSession === game) return
 		const session = game
 		untrack(() => {
 			recordedSession = session
-			earnedMedal = recordVictory({ map: map.id, difficulty, winner: session.state.winner, online: !!connection })
+			rewards = recordVictory({ map: map.id, difficulty, winner: session.state.winner, online: !!connection })
 		})
 	})
 	let showHelp = $state(false)
@@ -151,7 +155,6 @@
 			sessionId = crypto.randomUUID()
 			checkpoint(game.state)
 		}
-		earnedMedal = null
 		game.state.keyboardLayout = keyboardLayout
 		game.state.sound = sound
 		game.state.music = music
@@ -209,7 +212,7 @@
 			<ProductionModal {game} />
 		{/if}
 		{#if game.state.winner !== null && (!network || network.phase === 'playing')}
-			<VictoryModal {earnedMedal} storageError={playerProfile.storageError} aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} rematchRequested={network?.rematchRequested} opponentRematchRequested={network?.opponentRematchRequested} />
+			<VictoryModal {rewards} storageError={playerProfile.storageError} aiMode={!!difficulty} winner={game.state.winner} onrestart={restart} rematchRequested={network?.rematchRequested} opponentRematchRequested={network?.opponentRematchRequested} />
 		{/if}
 		{#if network && network.phase !== 'playing'}
 			<Modal title={translate(network.phase === 'waiting' ? messages.online_waiting : messages.online_paused)}>

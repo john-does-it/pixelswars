@@ -4,20 +4,19 @@ import { turnTransitionDuration } from '../../src/lib/game/timing.ts'
 test('editor places both naval units for both teams on water and preserves them in exported maps', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (error) => errors.push(error.message))
-	await page.goto('/map-editor/')
-	await page.locator('#mirror-mode').selectOption('off')
+	await page.goto('/#editor-title')
+	if (await page.locator('#mirror-mode').isChecked()) await page.locator('#mirror-mode').click()
 	await expect.poll(() => page.evaluate(() => localStorage.getItem('pixelswar-map-editor-draft-v1'))).not.toBeNull()
 	const cell = (index: number) => page.locator(`#board [data-cell="${index}"]`)
-	await page.getByRole('button', { name: 'Attack ship', exact: true }).click()
+	await page.locator('#unit-picker-1').selectOption('attack-ship')
 	await cell(0).press('Enter')
-	await expect(page.locator('#status')).toHaveText('Naval units must be placed on water or a naval base.')
+	await expect(page.locator('.editor-error')).toHaveText('Naval units must be placed on water or a naval base.')
 	await expect(cell(0).locator('img')).toHaveCount(0)
-	await page.locator('[data-brush="terrain_water"]').click()
+	await page.locator('.terrain-picker').selectOption('terrain_water')
 	for (let index = 0; index < 4; index++) await cell(index).press('Enter')
 	for (const player of [1, 2]) {
-		await page.locator('#team').selectOption(String(player))
 		for (const [offset, type] of ['attack-ship', 'transport-ship'].entries()) {
-			await page.locator(`[data-brush="${type}"]`).click()
+			await page.locator('#unit-picker-' + player).selectOption(type)
 			const tile = cell((player - 1) * 2 + offset)
 			await tile.press('Enter')
 			const image = tile.locator('img')
@@ -27,21 +26,24 @@ test('editor places both naval units for both teams on water and preserves them 
 	}
 	await page.reload()
 	await expect(page.locator('#board img')).toHaveCount(4)
-	await page.locator('#json-panel summary').click()
-	await expect(page.locator('#json-output')).toHaveValue(/"units"/)
-	const exported = JSON.parse(await page.locator('#json-output').inputValue())
+	const download = page.waitForEvent('download')
+	await page.getByRole('button', { name: 'Export', exact: true }).click()
+	const stream = await (await download).createReadStream()
+	let json = ''
+	for await (const chunk of stream!) json += chunk
+	const exported = JSON.parse(json)
 	expect(exported.units).toEqual([
 		{ type: 'attack-ship', player: 1, cell: 0 },
 		{ type: 'transport-ship', player: 1, cell: 1 },
 		{ type: 'attack-ship', player: 2, cell: 2 },
 		{ type: 'transport-ship', player: 2, cell: 3 }
 	])
-	await page.locator('[data-brush="terrain_grass"]').click()
+	await page.locator('.terrain-picker').selectOption('terrain_grass')
 	await cell(0).press('Enter')
 	await expect(cell(0).locator('img')).toHaveCount(0)
-	await page.locator('#undo').click()
+	await page.locator('#board [data-cell]').first().press('Control+z')
 	await expect(cell(0).locator('img')).toHaveCount(1)
-	await page.locator('[data-brush="building_naval_base"]').click()
+	await page.locator('#building-picker-0').selectOption('building_naval_base')
 	await cell(0).press('Enter')
 	await expect(cell(0)).toHaveClass(/-naval-base/)
 	await expect(cell(0).locator('img')).toHaveCount(1)
@@ -49,7 +51,7 @@ test('editor places both naval units for both teams on water and preserves them 
 	await page.reload()
 	await expect(cell(0)).toHaveClass(/-naval-base/)
 	await expect(cell(0).locator('img')).toHaveCount(1)
-	await page.getByRole('button', { name: 'Bridge ↔', exact: true }).click()
+	await page.locator('.terrain-picker').selectOption('map_editor_bridge_horizontal')
 	await cell(0).press('Enter')
 	await expect(cell(0)).toHaveClass(/-bridge/)
 	await expect(cell(0).locator('img')).toHaveCount(0)

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { newMap } from '../../src/lib/map-editor/model.ts'
 import { PeerServer } from 'peer'
 import type { Server } from 'node:http'
 import { loadEnv } from 'vite'
@@ -283,6 +284,75 @@ test('two devices connect, synchronize a match and pause when a player leaves', 
 		expect(errors).toEqual([])
 	} finally {
 		await guestContext.close()
+	}
+})
+
+test('a guest plays a large saved map directly from the host invitation', async ({ page, browser }) => {
+	test.setTimeout(90000)
+	const guest = await browser.newPage({ bypassCSP: true })
+	try {
+		await localIce(page)
+		await localIce(guest)
+		const map = newMap(32, 32)
+		map.units = [
+			{ type: 'helicopter', player: 1, cell: 0 },
+			{ type: 'plane', player: 2, cell: 32 }
+		]
+		map.cells[1].classes = ['-forest', '-ongrass']
+		await page.goto('/#editor-title')
+		for (const id of ['first-victory', 'onliner-locked', 'same-boat-locked']) {
+			await expect(page.locator(`.achievements img[src$="medal-${id}.png"]`)).toHaveCSS('opacity', '0.65')
+		}
+		const editor = page.locator('.map-editor')
+		await editor.locator('input[type=file]').setInputFiles({ name: 'map.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(map)) })
+		await expect(editor.locator('[data-cell]')).toHaveCount(1024)
+		await editor.getByRole('button', { name: 'Save map' }).click()
+		const dialog = page.getByRole('dialog')
+		await dialog.getByLabel('Name', { exact: true }).fill('Frontière')
+		await dialog.getByRole('button', { name: 'Confirm' }).click()
+		await dialog.getByRole('button', { name: 'Play this map' }).click()
+		await dialog.getByRole('link', { name: 'Play 1v1 online' }).click()
+		await page.getByRole('button', { name: 'Create a game' }).click()
+		const link = page.getByLabel('Invitation link', { exact: true })
+		await expect(link).toHaveValue(/#invite=PW2\./)
+		await guest.goto(await link.inputValue())
+		await guest.getByRole('button', { name: 'Join', exact: true }).click()
+		await expectOnlineBattlefields(page, guest)
+		await expect(guest.locator('.board [data-cell]')).toHaveCount(1024)
+		await expect(guest.locator('.board [data-cell="1"]')).toHaveClass(/-forest/)
+		await expect(guest.locator('.board [data-unit]')).toHaveCount(2)
+		await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+		await page.getByRole('button', { name: 'End round', exact: true }).click()
+		await expect(guest.getByRole('button', { name: 'End round', exact: true })).toBeVisible()
+		expect(await guest.evaluate(() => Object.keys(localStorage).some((key) => key.startsWith('pixelswar-library-v1:')))).toBe(false)
+		const finishBattle = async (device: Page) => {
+			await expect(device.locator('dialog.turn-transition')).toHaveCount(0)
+			await device.locator('[data-cell="32"]').click()
+			await expect(device.locator('[data-cell="0"] .crosshair')).toBeVisible()
+			await device.locator('[data-cell="0"]').click()
+		}
+		await finishBattle(guest)
+		for (const device of [page, guest]) {
+			await expect(device.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-onliner\.png$/)
+			await expect(device.getByRole('dialog').locator('figcaption')).toHaveText('Onliner')
+		}
+
+		const hotseat = new URL(page.url())
+		hotseat.searchParams.delete('online')
+		await page.goto(hotseat.href)
+		await page.getByRole('button', { name: 'End round', exact: true }).click()
+		await finishBattle(page)
+		await expect(page.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-same-boat\.png$/)
+		await page.goto('/#success')
+		for (const id of ['onliner', 'same-boat']) {
+			const image = page.locator(`.achievements article:not(.locked) img[src$="medal-${id}.png"]`)
+			await image.scrollIntoViewIfNeeded()
+			await expect(image).toHaveCSS('filter', 'none')
+			await expect(image).toHaveCSS('opacity', '1')
+			await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0)
+		}
+	} finally {
+		await guest.close()
 	}
 })
 

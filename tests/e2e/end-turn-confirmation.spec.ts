@@ -36,8 +36,12 @@ test('confirmation is off by default, persists when enabled, and supports No, Es
 test('income remains readable beside both budgets on narrow screens', async ({ page }) => {
 	await page.goto('/play/1/')
 	await expect(page.locator('.budgets .income')).toHaveCount(2)
-	for (const width of [1400, 680, 375, 320]) {
+	for (const width of [1400, 769, 768, 393, 320]) {
 		await page.setViewportSize({ width, height: 850 })
+		const portrait = page.locator('.turn-portrait')
+		await expect(portrait).toHaveCSS('width', width <= 768 ? '40px' : '64px')
+		await expect(portrait).toHaveCSS('height', width <= 768 ? '40px' : '64px')
+		await expect(page.locator('.turn-details strong')).toHaveCSS('font-size', width <= 768 ? '16px' : '20px')
 		for (const income of await page.locator('.budgets .income').all()) {
 			await expect(income).toHaveText(/^\+[\d,\s]+ \$\/turn$/)
 			const bounds = (await income.boundingBox())!

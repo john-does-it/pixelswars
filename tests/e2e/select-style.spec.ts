@@ -18,14 +18,16 @@ test('settings selects use pixel arrows and keep focus feedback for keyboard nav
 	await expect(dialog).toBeVisible()
 	await dialog.getByRole('heading', { name: 'Options and help', exact: true }).click()
 	await dialog.screenshot({ path: testInfo.outputPath('settings.png') })
-	await dialog.locator('.dialog-content').evaluate((element) => {
-		element.scrollTop = element.scrollHeight
-	})
-	await expect(dialog.getByRole('button', { name: 'Close', exact: true })).toBeInViewport()
+	const heading = dialog.getByRole('heading', { name: 'Options and help', exact: true })
+	const close = dialog.getByRole('button', { name: 'Close', exact: true })
+	await dialog.getByText('Learn the game', { exact: true }).click()
+	await dialog.evaluate((element) => element.scrollTo(0, element.scrollHeight))
+	await expect(heading).not.toBeInViewport()
+	await expect(close).not.toBeInViewport()
 	expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true)
-	await dialog.locator('.dialog-content').evaluate((element) => {
-		element.scrollTop = 0
-	})
+	await dialog.evaluate((element) => element.scrollTo(0, 0))
+	await expect(heading).toBeInViewport()
+	await expect(close).toBeInViewport()
 	if (!isMobile) {
 		await language.click()
 		await page.keyboard.press('Escape')

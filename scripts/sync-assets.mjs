@@ -36,7 +36,7 @@ for (const match of gameStyles.matchAll(/url\(['"]?(\/assets\/[^'"\s)]+)['"]?\)/
 	if (!visualAssets.includes(path.split('?')[0])) throw new Error(`Missing CSS sprite: ${path}`)
 	visualAssets.push(path)
 }
-writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify([...new Set(visualAssets)].sort()))
+writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify([...new Set(visualAssets.filter((path) => !path.startsWith('/assets/map-previews/')))].sort()))
 
 // Reuse the canonical infantry sprite for the favicon.
 const favicon = readFileSync(new URL('../assets/units/infantry/red/infantry-red-damage-2.png.base64', import.meta.url), 'utf8').trim()

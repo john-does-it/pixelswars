@@ -14,8 +14,8 @@ test('published drafts leave the development gallery and old draft links return 
 	}
 	for (const id of [32, 33, 34]) {
 		expect((await request.get('/play/' + id + '/')).status()).toBe(404)
-		expect((await request.get('/map-editor/?draft=' + id)).status()).toBe(404)
+		expect((await request.get('/?draft=' + id)).status()).toBe(404)
 	}
-	await page.goto('/map-editor/')
-	await expect(page.locator('#existing option[value="36"]')).toHaveCount(1)
+	await page.goto('/#editor-title')
+	await expect(page.locator('#editor-title #board')).toBeVisible()
 })

@@ -22,13 +22,14 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		if (sound) play(sound)
 	}
 	async function followPath(unit: Unit, path: number[]): Promise<void> {
+		let boarded = false
 		state.moving = true
 		try {
 			for (const [step, index] of path.entries()) {
 				if (disposed || selectedUnit(state)?.id !== unit.id || (state.network && state.network.phase !== 'playing')) break
 				const transport = unitAt(state, index)
 				if (transport && step === path.length - 1) {
-					transportActions.embark(state, unit.id, transport.id, true)
+					boarded = transportActions.embark(state, unit.id, transport.id, true)
 					break
 				}
 				const crossing = movementSteps(state, unit).find((step) => step.index === index && step.cost <= unit.movement)
@@ -49,6 +50,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 		} finally {
 			state.bridgeTransit = null
 			state.moving = false
+			if (boarded) actions.deselect(state)
 			if (!disposed) onChange()
 		}
 	}
@@ -114,10 +116,16 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			if (!disposed) transportActions.selectPassenger(state, passengerId)
 		},
 		embark(passengerId) {
-			if (!disposed && transportActions.embark(state, passengerId)) onChange()
+			if (!disposed && transportActions.embark(state, passengerId)) {
+				actions.deselect(state)
+				onChange()
+			}
 		},
 		deploy(passengerId, destination) {
-			if (!disposed && transportActions.deploy(state, passengerId, destination)) onChange()
+			if (!disposed && transportActions.deploy(state, passengerId, destination)) {
+				actions.deselect(state)
+				onChange()
+			}
 		},
 		closeProduction() {
 			state.productionIndex = null
@@ -185,6 +193,7 @@ export function createController(state: GameState, { sound = () => {}, onSound =
 			const selected = selectedUnit(state)
 			const transport = unitAt(state, index)
 			if (selected && transport && transportActions.embark(state, selected.id, transport.id)) {
+				actions.deselect(state)
 				onChange()
 				return
 			}

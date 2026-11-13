@@ -7,10 +7,11 @@
 	import { m as messages } from '#lib/paraglide/messages.js'
 	import type { GameMap } from '#lib/game/types.js'
 
-	let { map }: { map: GameMap } = $props()
+	let { map }: { map: GameMap | string } = $props()
+	const name = $derived(typeof map === 'string' ? '' : mapName(map.id, map.name))
 	let peer = $state<PeerConnection>()
 	let role = $state<'host' | 'join' | null>(null)
-	let connected = $state(false)
+	let battlefield = $state.raw<GameMap>()
 	let busy = $state(false)
 	let input = $state('')
 	let invited = $state(false)
@@ -27,7 +28,7 @@
 	})
 	function readInvitation() {
 		const invitation = new URLSearchParams(location.hash.slice(1)).get('invite')
-		if (invitation && supported && !connected && !busy) {
+		if (invitation && supported && !battlefield && !busy) {
 			peer?.close()
 			peer = undefined
 			output = error = ''
@@ -50,12 +51,12 @@
 		connection.onStatus((status) => {
 			if (peer !== connection) return
 			if (status === 'connected') {
-				connected = true
+				battlefield = connection.battlefield
 				error = ''
-			} else if (status === 'connecting' && !connected) error = ''
+			} else if (status === 'connecting' && !battlefield) error = ''
 		})
 		connection.onError((failure) => {
-			if (peer !== connection || connected) return
+			if (peer !== connection || battlefield) return
 			error = translate(errors[failure.message as keyof typeof errors] ?? errors.failed)
 			joining = false
 		})
@@ -83,7 +84,7 @@
 			const token = await connection.createInvitation()
 			if (peer !== connection) return
 			const invitation = new URL(location.href)
-			invitation.search = '?online=1'
+			invitation.searchParams.set('online', '1')
 			invitation.hash = 'invite=' + token
 			output = invitation.href
 		})
@@ -106,16 +107,16 @@
 </script>
 
 <svelte:window onhashchange={readInvitation} />
-<svelte:head><title>{translate(invited ? messages.online_challenge : messages.play_online)} · {mapName(map.id)} · Pixel’s War</title></svelte:head>
+<svelte:head><title>{translate(invited ? messages.online_challenge : messages.play_online)}{name ? ' · ' + name : ''} · Pixel’s War</title></svelte:head>
 
-{#if connected && peer}
-	<Game {map} connection={peer} />
+{#if battlefield && peer}
+	<Game map={battlefield} connection={peer} />
 {:else}
 	<main class="online-setup">
 		<a href={resolve('/')}>← Pixel’s War</a>
 		<section class="panel">
 			<h1 class="pixel-heading">{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
-			<p>{mapName(map.id)}</p>
+			{#if name}<p>{name}</p>{/if}
 			{#if role !== 'join'}<p>{translate(messages.online_intro)}</p>{/if}
 			{#if !supported}
 				<p role="alert">{translate(messages.online_error_unsupported)}</p>
@@ -184,7 +185,7 @@
 	.choices,
 	form {
 		display: grid;
-		gap: 12px;
+		gap: var(--action-gap);
 		margin: 20px 0;
 	}
 	label {

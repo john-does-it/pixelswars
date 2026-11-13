@@ -67,4 +67,15 @@
 			padding-top: 6px;
 		}
 	}
+	@media (max-width: 768px) {
+		.budgets > span {
+			line-height: 1.2;
+			row-gap: 2px;
+		}
+		.player-name,
+		b,
+		.income {
+			text-box-trim: trim-both;
+		}
+	}
 </style>

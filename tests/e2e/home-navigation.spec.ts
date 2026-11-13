@@ -42,6 +42,15 @@ test('homepage navbar fits translated links, offsets anchors and switches to an 
 	await nav.locator('.brand').click()
 	await expect.poll(() => page.evaluate(() => scrollY)).toBe(0)
 	await language.selectOption('de')
+	const code = nav.locator('.language-control .language-code')
+	await page.setViewportSize({ width: 1024, height: 900 })
+	await expect(code).toBeHidden()
+	const fullWidth = (await language.boundingBox())!.width
+	await page.setViewportSize({ width: 1023, height: 900 })
+	await expect(code).toBeVisible()
+	await expect(code).toHaveText('DE')
+	expect((await language.boundingBox())!.width).toBeLessThan(fullWidth)
+	await expect(language.getByRole('option', { name: 'Français', exact: true })).toHaveCount(1)
 	await page.setViewportSize({ width: 800, height: 900 })
 	await expect(toggle).toBeVisible()
 	await expect(nav.locator('.nav-links')).toBeHidden()
@@ -54,6 +63,7 @@ test('homepage navbar fits translated links, offsets anchors and switches to an 
 	await page.setViewportSize({ width: 320, height: 800 })
 	await language.selectOption('fr')
 	await expect(language).toHaveValue('fr')
+	await expect(code).toHaveText('FR')
 	await toggle.click()
 	await page.locator('.fullscreen-links a[href="#stats"]').click()
 	await expect(toggle).toHaveAttribute('aria-expanded', 'false')
@@ -73,7 +83,7 @@ test('shared navigation and footer remain available across site pages but stay o
 	await page.setViewportSize({ width: 320, height: 800 })
 	const nav = page.locator('.site-navbar')
 	const footer = page.locator('.site-footer')
-	for (const path of ['/profile/', '/support/', '/terms/', '/map-editor/']) {
+	for (const path of ['/profile/', '/support/', '/terms/', '/#editor-title']) {
 		await page.goto(path)
 		await expect(nav).toBeVisible()
 		await expect(footer).toHaveCount(1)

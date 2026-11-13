@@ -26,7 +26,7 @@
 				<h3>PayPal</h3>
 				<p><a class="button primary site-action" href={support.paypal} target="_blank" rel="noopener noreferrer">{translate(messages.support_paypal)}</a></p>
 				{#if support.paypalQrAsset}
-					<img class="qr" src={asset(support.paypalQrAsset)} width="500" height="500" alt={translate(messages.support_paypal_qr)} />
+					<img class="qr" src={asset(support.paypalQrAsset)} width="500" height="500" loading="lazy" alt={translate(messages.support_paypal_qr)} />
 				{/if}
 			</div>{/if}
 		{#if support.crypto.address && support.crypto.network}

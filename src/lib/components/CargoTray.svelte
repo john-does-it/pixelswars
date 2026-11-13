@@ -36,7 +36,7 @@
 			<span class="cargo-face" style:background-image={`url('${asset('/assets/icons/action-frame.svg')}')`}>{transport.cargo?.length ?? 0}/{unitTypes[transport.type].capacity}</span>
 		</button>
 		{#if showPassengers}
-			<Modal title={label} alwaysShowScrollbar={false} onclose={() => (showPassengers = false)}>
+			<Modal title={label} onclose={() => (showPassengers = false)}>
 				<p class="instruction">{translate(hasLandingTile ? messages.transport_choose_passenger : messages.transport_blocked)}</p>
 				<div class="passengers">
 					{#each transport.cargo ?? [] as unit (unit.id)}

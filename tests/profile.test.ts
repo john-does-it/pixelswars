@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { awardVictory, emptyProfile, hasMedal, makeBackup, parseBackup, mapRevisions, maxBackupBytes, difficulties } from '../src/lib/profile.ts'
+import { recordCompletedMode, awardVictory, emptyProfile, hasMedal, makeBackup, parseBackup, mapRevisions, maxBackupBytes, difficulties } from '../src/lib/profile.ts'
 import { defaultPreferences } from '../src/lib/preferences-cookie.ts'
 import { mapIds } from './map-fixtures.ts'
 
@@ -104,4 +104,16 @@ test('backup validation strips unrecognized fields and prototype properties', ()
 	const restored = parseBackup(JSON.stringify(raw).replace('"pseudonym":""', '"__proto__":{"admin":true},"pseudonym":""'))
 	assert.equal('admin' in restored.profile, false)
 	assert.equal('debug' in restored.preferences, false)
+})
+
+test('multiplayer medals require a finished battle in each mode and survive profile export', () => {
+	const profile = emptyProfile()
+	assert.equal(recordCompletedMode(profile, victory), false)
+	const local = { ...victory, difficulty: null }
+	assert.equal(recordCompletedMode(profile, { ...local, winner: null }), false)
+	assert.equal(recordCompletedMode(profile, { ...local, winner: 1 }), true)
+	assert.deepEqual(profile.completedModes, { online: false, local: true })
+	assert.equal(recordCompletedMode(profile, local), false)
+	assert.equal(recordCompletedMode(profile, { ...local, online: true }), true)
+	assert.deepEqual(parseBackup(makeBackup(profile, defaultPreferences)).profile.completedModes, { online: true, local: true })
 })

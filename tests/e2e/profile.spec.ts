@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import { makeBackup, emptyProfile, parseBackup, profileStorageKey } from '../../src/lib/profile.ts'
+import { newMap } from '../../src/lib/map-editor/model.ts'
 import { support } from '../../src/lib/support.ts'
 import { defaultPreferences } from '../../src/lib/preferences-cookie.ts'
 
@@ -33,6 +34,36 @@ test('profile backup previews before replacing, restores settings and medals, an
 	await page.goto('/')
 	await expect(page.locator('[data-earned]')).toHaveCount(0)
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+test('progress export carries saved maps to another browser and merges them into the gallery', async ({ page, browser }) => {
+	const map = newMap(3, 3)
+	map.id = 'local-11111111-1111-4111-8111-111111111111'
+	map.name = 'Delta'
+	map.cells[0].classes = ['-forest', '-ongrass']
+	const key = 'pixelswar-library-v1:' + map.id
+	await page.goto('/profile/')
+	await page.evaluate(({ key, map }) => localStorage.setItem(key, JSON.stringify(map)), { key, map })
+	const downloading = page.waitForEvent('download')
+	await page.getByRole('button', { name: 'Export my progression' }).click()
+	const raw = await readFile((await (await downloading).path())!, 'utf8')
+	expect(parseBackup(raw).maps).toEqual([map])
+
+	const other = await browser.newPage()
+	try {
+		await other.goto(new URL('/profile/', page.url()).href)
+		const existing = { ...map, id: 'local-22222222-2222-4222-8222-222222222222', name: 'Existing map' }
+		await other.evaluate((map) => localStorage.setItem('pixelswar-library-v1:' + map.id, JSON.stringify(map)), existing)
+		await other.getByLabel('Import my progression').setInputFiles({ name: 'progress.json', mimeType: 'application/json', buffer: Buffer.from(raw) })
+		expect(await other.evaluate((key) => localStorage.getItem(key), key)).toBeNull()
+		await other.getByRole('button', { name: 'Replace and restore' }).click()
+		await other.goto(new URL('/', page.url()).href)
+		await other.getByRole('button', { name: 'View all maps' }).click()
+		await expect(other.getByRole('link', { name: 'Delta', exact: true })).toBeVisible()
+		await expect(other.getByRole('link', { name: 'Existing map', exact: true })).toBeVisible()
+	} finally {
+		await other.close()
+	}
 })
 
 test('invalid and future backups leave existing progress intact', async ({ page }) => {

@@ -21,8 +21,8 @@ Invalid or unsupported saves are preserved until the player explicitly replaces
 or discards them. Storage errors are visible; a stale tab cannot overwrite a save
 updated or deleted by another tab. Stored data is validated before restoration.
 
-The profile JSON backup still contains only nickname, medals and preferences;
-it does **not** include the unfinished match. Clearing site data removes that
+The profile JSON backup contains the player profile, preferences and saved custom maps.
+It does **not** include the unfinished match. Clearing site data removes that
 match. No server account or cloud synchronization is involved.
 
 ## Map chooser metadata

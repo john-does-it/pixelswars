@@ -90,7 +90,7 @@
 	.audio-toggles {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
+		gap: var(--action-gap);
 	}
 	.audio-toggle {
 		display: flex;
@@ -113,12 +113,6 @@
 	.audio-toggle span {
 		min-width: 0;
 		overflow-wrap: anywhere;
-	}
-	@media (max-width: 520px) {
-		.audio-toggles {
-			grid-template-columns: 1fr;
-			gap: 12px;
-		}
 	}
 
 	.preferences-panel {

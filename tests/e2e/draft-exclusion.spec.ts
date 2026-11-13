@@ -20,8 +20,5 @@ test('production never exposes draft maps through the chooser, play routes or ed
 		expect((await request.get(`/play/draft-${id}/`)).status()).toBe(404)
 		expect((await request.get(`/play/${id}/`)).status()).toBe([32, 33, 34].includes(id) ? 404 : 200)
 	}
-	await page.goto('/map-editor/?draft=28')
-	await expect(page.locator('.draft-notice')).toHaveCount(0)
-	await expect(page.locator('#map-id')).not.toHaveValue('28')
-	await expect(page.locator('#existing option[value="28"]')).toHaveCount(1)
+	expect((await request.get('/map-editor/')).status()).toBe(404)
 })

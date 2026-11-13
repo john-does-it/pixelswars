@@ -32,6 +32,7 @@ The bottom preview shows the hovered unit or terrain; click it for full details.
 Options and help contains the rules and audio, animation and keyboard settings.
 
 For online play, choose a map, create an invitation and send its link to a friend.
+For a saved custom map, the host sends the board to the guest over WebRTC.
 Keep both pages open: refreshing or closing ends the session. The host validates
 and shares game state; this mode is intended for friends. Connecting contacts
 PeerJS Cloud and configured STUN/TURN services. Use the published site for invitations
@@ -42,7 +43,7 @@ between devices. See [terms and privacy](https://pixelswar.io/terms/).
 Win a standard map against the AI to earn the medal for that difficulty.
 **My progress** stores medals and an optional nickname in this browser. Export a
 JSON backup before clearing browser data or switching devices. Imports show a
-preview and replace progress and preferences only after confirmation. Backups do
+preview. After confirmation, they restore progress and preferences and merge saved maps by ID. Backups do
 not contain an ongoing match and are not verified competitive scores.
 
 The support page is configured in `src/lib/support.ts`. Add the owner's PayPal
@@ -149,5 +150,7 @@ Japanese text: [DotGothic16](https://github.com/google/fonts/tree/main/ofl/dotgo
 Sounds: [Pixabay](https://pixabay.com/fr/sound-effects).
 Music: [Monolith](https://arcofdream.bandcamp.com/album/monolith-official-soundtrack).
 QA: Gauthier Miessen.
+
+Special thanks to [u/Taxtengo](https://www.reddit.com/user/Taxtengo/), [u/artemi7](https://www.reddit.com/user/artemi7/), [u/Landy0451](https://www.reddit.com/user/Landy0451/), and Cynthia for all the feedback.
 
 Feedback and contributions: [GitHub issues](https://github.com/john-does-it/pixelswars/issues).

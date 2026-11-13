@@ -2,7 +2,7 @@
 
 Les fichiers JSON de `src/lib/data/drafts/` sont des cartes non publiées. Le serveur de développement les découvre automatiquement : aperçu, badge **Brouillon** et lien direct vers l’éditeur. Aucun bouton de partie locale ou contre l’IA n’est affiché sur ces cartes.
 
-- Modifier : `/map-editor/?draft=ID`. Chaque carte conserve ses retouches dans une clé locale séparée. **Recharger la source** permet de repartir du JSON du dépôt, avec annulation possible.
+- Modifier : `/?draft=ID#editor-title`. Chaque carte conserve ses retouches dans une clé locale séparée.
 - Tester : utiliser le test intégré à l’éditeur. Les routes techniques `/play/draft-ID/` restent disponibles en développement seulement.
 - Exporter le JSON puis remplacer le fichier correspondant. L’export seul ne modifie pas le dépôt et ne publie rien.
 - Les brouillons ne donnent pas de médaille et n’écrasent pas la sauvegarde solo publique.

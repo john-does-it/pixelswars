@@ -17,5 +17,9 @@ and `image-rendering: pixelated` to preserve proportions.
 | medal-ten-battlefields.png | 3118:75 |
 | medal-all-battlefields.png | 3121:372 |
 | medal-map-master.png | 3121:374 |
+| medal-onliner.png | 3118:73 |
+| medal-onliner-locked.png | 3121:381 |
+| medal-same-boat.png | 3168:92 |
+| medal-same-boat-locked.png | 3168:96 |
 
-Locked achievements reuse their own medal with the shared grayscale CSS style.
+The multiplayer achievements use the locked artwork from the second row in Figma. Other locked achievements use the shared grayscale CSS style.

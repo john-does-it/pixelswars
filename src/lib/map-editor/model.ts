@@ -147,13 +147,19 @@ function reconnectCell(map: GameMap, index: number): void {
 	if (cell.classes.includes('-road') && !cell.classes.includes('-bridge')) {
 		const openings = adjacent
 			.map((neighbor, direction) => {
-				if (neighbor === -1) return 'NESW'[direction]
+				if (neighbor === -1) return ''
 				const classes = map.cells[neighbor].classes
 				const connects = classes.includes('-road') && (!classes.includes('-bridge') || classes.includes(direction % 2 === 0 ? '-v' : '-h'))
 				return connects ? 'NESW'[direction] : ''
 			})
 			.join('')
-		cell.classes = ['-road', ...roadSprites[openings]]
+		// Extend a dead end straight off the board only when its approach points there.
+		let shape = openings
+		if (openings.length === 1) {
+			const direction = 'NESW'.indexOf(openings)
+			if (adjacent[(direction + 2) % 4] === -1) shape = direction % 2 === 0 ? 'NS' : 'EW'
+		}
+		cell.classes = ['-road', ...roadSprites[shape]]
 	}
 	if (cell.classes.includes('-water') && !cell.classes.includes('-under-bridge')) {
 		// Horizontal shore names are reversed in the original game sprites.
@@ -167,6 +173,13 @@ function reconnectCell(map: GameMap, index: number): void {
 		cell.classes = ['-water', ...(shores.length ? ['-grass'] : []), ...shores]
 		if (shores.length === 2 && !((shores.includes('-top') && shores.includes('-bottom')) || (shores.includes('-left') && shores.includes('-right')))) cell.classes.push('-corner')
 		cell.classes = waterJunctionClasses(map, index)
+	}
+}
+
+export function reconnectEdgeRoads(map: GameMap) {
+	for (let index = 0; index < map.cells.length; index++) {
+		const col = index % map.cols
+		if (map.cells[index].classes.includes('-road') && (index < map.cols || index >= map.cells.length - map.cols || col === 0 || col === map.cols - 1)) reconnectCell(map, index)
 	}
 }
 
@@ -205,11 +218,19 @@ export function paintCell(map: GameMap, index: number, brush: Brush): void {
 	reconnectBridgeSupports(map)
 }
 
+export function isLocalMapId(id: string): boolean {
+	return /^local-[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/.test(id)
+}
+
+export function hasStartingArmies(map: GameMap): boolean {
+	return [1, 2].every((player) => map.units.some((unit) => unit.player === player))
+}
+
 export function readMap(text: string): GameMap {
 	const input = JSON.parse(text) as GameMap
 	if (!input || typeof input !== 'object') throw new MapEditorError('map_editor_error_json')
 	newMap(input.cols, input.rows)
-	if (typeof input.id !== 'string' || !/^\d+$/.test(input.id) || Number(input.id) < 1 || typeof input.name !== 'string' || !input.name.trim()) throw new MapEditorError('map_editor_error_identity')
+	if (typeof input.id !== 'string' || (!isLocalMapId(input.id) && (!/^\d+$/.test(input.id) || Number(input.id) < 1)) || typeof input.name !== 'string' || !input.name.trim()) throw new MapEditorError('map_editor_error_identity')
 	if (!Array.isArray(input.cells) || input.cells.length !== input.cols * input.rows) throw new MapEditorError('map_editor_error_cells')
 	const baseClasses = ['-grass', '-forest', '-moutain', '-water', '-road', '-building', '-blocker']
 	const modifiers = ['-ongrass', '-variant', '-variant2', '-variant3', '-city', '-big-city', '-factory', '-hospital', '-airport', '-naval-base', '-h', '-v', '-corner', '-junction', '-cross', '-top', '-bottom', '-left', '-right', '-nw', '-se', '-north', '-east', '-south', '-west', '-endtop', '-endbottom', '-endleft', '-endright', '-left-corners', '-right-corners', '-top-corners', '-bottom-corners', '-top-and-bottom-corners']

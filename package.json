@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host 127.0.0.1",
-		"map:editor": "npm run dev -- --open /map-editor/",
+		"map:editor": "npm run dev -- --open /#editor-title",
 		"test:map-editor": "node node_modules/@playwright/test/cli.js test tests/e2e/map-editor",
 		"build": "vite build",
 		"preview": "vite preview --host 127.0.0.1",

@@ -1,5 +1,6 @@
 import type { DataConnection, Peer } from 'peerjs'
 import { terrainTypes, unitTypes } from './catalog.ts'
+import { hasStartingArmies, isLocalMapId, readMap } from '../map-editor/model.ts'
 import { iceConfiguration } from './ice.ts'
 import type { GameMap, Player } from './types.ts'
 
@@ -26,8 +27,8 @@ export function decodeSignal(input: string) {
 	let token = input.trim()
 	try {
 		if (token.startsWith('http://') || token.startsWith('https://')) token = new URLSearchParams(new URL(token).hash.slice(1)).get('invite') ?? ''
-		const parts = /^PW2\.(\d+)\.(\d+)\.([a-f0-9]{1,8})\.([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/.exec(token)
-		if (!parts) throw new PeerError('invalid')
+		const parts = /^PW2\.(\d+)\.([\da-z-]+)\.([a-f0-9]{1,8})\.([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/.exec(token)
+		if (!parts || (!/^\d+$/.test(parts[2]) && !isLocalMapId(parts[2]))) throw new PeerError('invalid')
 		if (Number(parts[1]) !== protocolVersion) throw new PeerError('incompatible')
 		return { version: Number(parts[1]), map: parts[2], fingerprint: parts[3], peer: 'pw-' + parts[4] }
 	} catch (error) {
@@ -50,13 +51,22 @@ export class PeerConnection implements MatchConnection {
 	private connectionTimeout?: ReturnType<typeof setTimeout>
 	private lastSeen = Date.now()
 	private hasConnected = false
-	private map: GameMap
+	private map?: GameMap
+	private readonly mapId: string
+	private fingerprint: string
 	private abort = new AbortController()
 
-	constructor(map: GameMap, host: boolean) {
+	constructor(map: GameMap | string, host: boolean) {
 		if (typeof RTCPeerConnection === 'undefined') throw new PeerError('unsupported')
-		this.map = map
+		if (typeof map === 'string' && (host || !isLocalMapId(map))) throw new PeerError('wrong_map')
+		this.mapId = typeof map === 'string' ? map : map.id
+		// Even if the guest has a local copy, play the host's version.
+		this.map = typeof map === 'string' || (!host && isLocalMapId(map.id)) ? undefined : map
+		this.fingerprint = this.map ? matchFingerprint(this.map) : ''
 		this.player = host ? 1 : 2
+	}
+	get battlefield() {
+		return this.map
 	}
 	private setStatus(status: PeerStatus) {
 		if (this.status === 'closed' || this.status === status) return
@@ -91,7 +101,7 @@ export class PeerConnection implements MatchConnection {
 				return
 			}
 			const metadata = connection.metadata
-			const reason = metadata?.version !== protocolVersion || metadata?.fingerprint !== matchFingerprint(this.map) ? 'incompatible' : metadata?.map !== this.map.id ? 'wrong_map' : null
+			const reason = metadata?.version !== protocolVersion || metadata?.fingerprint !== this.fingerprint ? 'incompatible' : metadata?.map !== this.mapId ? 'wrong_map' : null
 			if (reason) {
 				connection.on('open', () => {
 					connection.send({ type: 'rejected', reason })
@@ -157,7 +167,8 @@ export class PeerConnection implements MatchConnection {
 		const sendHello = (ack = false) => {
 			if (this.channel !== connection || !connection.open) return false
 			try {
-				connection.send({ type: 'hello', version: protocolVersion, map: this.map.id, fingerprint: matchFingerprint(this.map), ack })
+				const hello = { type: 'hello', version: protocolVersion, map: this.mapId, fingerprint: this.fingerprint, ack }
+				connection.send(this.player === 1 && isLocalMapId(this.mapId) ? { ...hello, board: this.map } : hello)
 				return true
 			} catch {
 				this.failConnection(connection, 'network')
@@ -165,7 +176,8 @@ export class PeerConnection implements MatchConnection {
 			}
 		}
 		connection.on('open', () => {
-			if (!sendHello()) return
+			// A guest joining a custom map acknowledges only after validating the board.
+			if (!this.map || !sendHello()) return
 			// A locally open channel does not prove the other peer received our hello.
 			// Retry until its hello arrives, within the existing connection deadline.
 			if (!this.hasConnected) this.helloRetry = setInterval(() => sendHello(), 1000)
@@ -201,9 +213,19 @@ export class PeerConnection implements MatchConnection {
 					if (message.type !== 'heartbeat' && this.pending.length < 32) this.pending.push(message)
 					return
 				}
-				if (message.version !== protocolVersion || message.map !== this.map.id || message.fingerprint !== matchFingerprint(this.map)) {
+				if (message.version !== protocolVersion || message.map !== this.mapId || message.fingerprint !== this.fingerprint) {
 					this.failConnection(connection, 'incompatible')
 					return
+				}
+				if (!this.map) {
+					try {
+						const board = readMap(JSON.stringify(message.board))
+						if (board.id !== this.mapId || !hasStartingArmies(board) || matchFingerprint(board) !== this.fingerprint) throw new PeerError('incompatible')
+						this.map = board
+					} catch {
+						this.failConnection(connection, 'incompatible')
+						return
+					}
 				}
 				this.hasConnected = true
 				clearTimeout(this.connectionTimeout)
@@ -261,19 +283,21 @@ export class PeerConnection implements MatchConnection {
 	}
 	async createInvitation() {
 		const peer = await this.initialize()
-		return `PW2.${protocolVersion}.${this.map.id}.${matchFingerprint(this.map)}.${peer.id.slice(3)}`
+		return `PW2.${protocolVersion}.${this.mapId}.${this.fingerprint}.${peer.id.slice(3)}`
 	}
 	async acceptInvitation(input: string) {
 		const invitation = decodeSignal(input)
-		if (invitation.map !== this.map.id) throw new PeerError('wrong_map')
-		if (invitation.fingerprint !== matchFingerprint(this.map)) throw new PeerError('incompatible')
+		if (invitation.map !== this.mapId) throw new PeerError('wrong_map')
+		if (this.map && invitation.fingerprint !== this.fingerprint) throw new PeerError('incompatible')
+		this.fingerprint = invitation.fingerprint
 		const peer = await this.initialize()
 		this.attach(
 			peer.connect(invitation.peer, {
 				label: 'pixelswars',
-				serialization: 'json',
+				// PeerJS chunks binary messages, including large boards and their turn snapshots.
+				serialization: isLocalMapId(this.mapId) ? 'binary' : 'json',
 				reliable: true,
-				metadata: { version: protocolVersion, map: this.map.id, fingerprint: matchFingerprint(this.map) }
+				metadata: { version: protocolVersion, map: this.mapId, fingerprint: this.fingerprint }
 			})
 		)
 	}

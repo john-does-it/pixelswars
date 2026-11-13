@@ -1,4 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 
 // Run against the dev server after changing maps or their sprites.
@@ -59,6 +61,7 @@ try {
 		metadata[id] = { cols: map.cols, rows: map.rows }
 		console.log(`Map ${id}: ${map.cols} × ${map.rows}`)
 	}
+	execFileSync(process.env.PYTHON || 'python', [fileURLToPath(new URL('./encode-map-previews.py', import.meta.url)), ...mapIds.map(String)], { stdio: 'inherit' })
 	await writeFile(new URL('../src/lib/data/map-previews.json', import.meta.url), `${JSON.stringify(metadata, null, '\t')}\n`)
 } finally {
 	await browser.close()
