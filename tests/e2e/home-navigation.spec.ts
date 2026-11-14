@@ -108,3 +108,17 @@ test('shared navigation and footer remain available across site pages but stay o
 	await expect(nav).toHaveCount(0)
 	await expect(footer).toHaveCount(0)
 })
+
+test('missing pages show a centered error and a working home link on static hosting', async ({ page }) => {
+	const path = '/missing/nested/page'
+	await page.route('**' + path, (route) => route.fulfill({ status: 404, contentType: 'text/html', path: 'build/404.html' }))
+	const response = await page.goto(path)
+	expect(response?.status()).toBe(404)
+	const main = page.getByRole('main')
+	await expect(main.getByRole('heading', { level: 1, name: '404' })).toBeVisible()
+	await expect(main.getByText('Page not found')).toHaveCSS('text-align', 'center')
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
+	await main.getByRole('link', { name: 'Retour à l’accueil' }).click()
+	await expect(page).toHaveURL(/\/$/)
+	await expect(page.locator('#battlefields')).toBeVisible()
+})

@@ -16,7 +16,7 @@ export default defineConfig(({ command, isPreview }) => {
 			paraglideVitePlugin(dev ? { ...paraglideConfig, outdir: devOutdir, outputStructure: 'locale-modules', emitTsDeclarations: false } : paraglideConfig),
 			sveltekit({
 				compilerOptions: { runes: true },
-				adapter: adapter(),
+				adapter: adapter({ fallback: '404.html' }),
 				inlineStyleThreshold: 3200,
 				paths: { base: (process.env.BASE_PATH || '') as '' | `/${string}` },
 				csp: {

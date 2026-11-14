@@ -4,7 +4,7 @@
 	import Modal from './Modal.svelte'
 	import TextInput from './TextInput.svelte'
 	import MatchSetupModal from './MatchSetupModal.svelte'
-	import { saveLocalMap } from '#lib/map-editor/local-maps.svelte.js'
+	import { library, saveLocalMap } from '#lib/map-editor/local-maps.svelte.js'
 	import DimensionStepper from '#lib/components/site/DimensionStepper.svelte'
 	import { resizeMap, reconnectEdgeRoads, hasStartingArmies, isLocalMapId } from '#lib/map-editor/model.ts'
 	import { asset } from '#lib/game/asset-path.js'
@@ -197,7 +197,7 @@
 	}
 
 	async function askName() {
-		proposedName = map.name === t('map_editor_new_name') ? '' : map.name
+		proposedName = library.maps.find((saved) => saved.id === map.id)?.name ?? ''
 		saveError = ''
 		saveStep = 'name'
 		await tick()
@@ -387,7 +387,7 @@
 	<Modal title={t('editor_save_map')} onclose={() => (saveStep = null)}>
 		<form class="name-form" onsubmit={confirmSave}>
 			<label for="map-save-name">{t('map_editor_name')}</label>
-			<TextInput id="map-save-name" bind:element={nameInput} bind:value={proposedName} required maxlength={120} />
+			<TextInput id="map-save-name" bind:element={nameInput} bind:value={proposedName} placeholder={t('map_editor_new_name')} required maxlength={120} />
 			{#if saveError}<p role="alert">{t(saveError)}</p>{/if}
 			<button type="submit" class="primary" disabled={!proposedName.trim()}>{t('confirm')}</button>
 		</form>

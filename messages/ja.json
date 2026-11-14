@@ -1,4 +1,7 @@
 {
+	"page_not_found": "ページが見つかりません",
+	"page_load_failed": "ページを読み込めませんでした。",
+	"back_to_home": "ホームに戻る",
 	"footer_feedback": "ご意見",
 	"footer_terms": "利用規約",
 	"credits": "クレジット",
@@ -150,6 +153,7 @@
 	"stat_attack": "攻撃力",
 	"stat_defense": "防御力",
 	"stat_range": "射程",
+	"stat_capture": "占領",
 	"movement_cost": "移動コスト",
 	"terrain_defense": "地形防御",
 	"ships_only": "艦船のみ",

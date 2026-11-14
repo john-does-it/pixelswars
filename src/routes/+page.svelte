@@ -62,9 +62,10 @@
 			<div class="counters">
 				{#each [{ value: counts.units, label: m.site_unit_types }, { value: counts.maps, label: m.site_map_count }, { value: counts.terrains, label: m.site_terrain_types }] as counter}
 					<div>
-						<strong aria-label={String(counter.value)}
-							>{#each String(counter.value) as digit}<img src={asset('/assets/icons/numbers/' + digit + '.webp')} alt="" width="32" height="40" />{/each}</strong
-						>
+						<strong>
+							<span class="sr-only">{counter.value}</span>
+							{#each String(counter.value) as digit}<img src={asset('/assets/icons/numbers/' + digit + '.webp')} alt="" width="32" height="40" />{/each}
+						</strong>
 						<h3>{translate(counter.label)}</h3>
 					</div>
 				{/each}
@@ -139,6 +140,7 @@
 		margin: 12px 0 0;
 	}
 	:global(#success) .subtitle {
+		color: var(--site-plum);
 		margin-bottom: var(--site-gap-medium);
 	}
 	@media (width < 1076px) {

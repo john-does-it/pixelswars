@@ -4,6 +4,7 @@
 	import Sprite from '#lib/components/Sprite.svelte'
 	import TerrainIcon from '#lib/components/TerrainIcon.svelte'
 	import StatCard from './StatCard.svelte'
+	import { captureBuildingStat, formatUnitRange } from '../unit-stats.js'
 	import { m as messages } from '#lib/paraglide/messages.js'
 	import { buildingName, translate, terrainName, unitName } from '#lib/i18n.svelte.js'
 	import type { BuildingId, StatItem, TerrainDefinition, TerrainId, UnitDefinition, UnitTypeId } from '#lib/game/types.js'
@@ -17,15 +18,7 @@
 		{ name: messages.ground_group, ids: ['road', 'grass', 'forest', 'moutain', 'blocker'] },
 		{ name: messages.waterways_group, ids: ['water'] }
 	]
-	const unitStats = (unit: UnitDefinition): StatItem[] => [
-		{ icon: 'icon-money', label: translate(messages.stat_cost), value: unit.cost },
-		{ icon: 'icon-health', label: translate(messages.stat_health), value: unit.maxHealth },
-		{ icon: 'icon-movement', label: translate(messages.stat_movement), value: unit.movement },
-		{ icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: unit.attack },
-		{ icon: 'icon-defense', label: translate(messages.stat_defense), value: unit.defense },
-		{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: unit.attacks },
-		{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: unit.attack ? `${unit.exclusion + 1}–${unit.range}` : '—' }
-	]
+	const unitStats = (unit: UnitDefinition): StatItem[] => [{ icon: 'icon-money', label: translate(messages.stat_cost), value: unit.cost }, { icon: 'icon-health', label: translate(messages.stat_health), value: unit.maxHealth }, { icon: 'icon-movement', label: translate(messages.stat_movement), value: unit.movement }, { icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: unit.attack }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: unit.defense }, { icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: unit.attacks }, { icon: 'icon-attack-range', label: translate(messages.stat_range), value: formatUnitRange(unit) }, captureBuildingStat(unit)]
 	const terrainStats = (terrain: TerrainDefinition): StatItem[] => [
 		{ icon: 'icon-movement', label: translate(messages.stat_movement), value: terrain === terrainTypes.blocker ? '∞' : terrain.cost },
 		{ icon: 'icon-defense', label: translate(messages.stat_defense), value: terrain.defense }

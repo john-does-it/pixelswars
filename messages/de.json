@@ -1,4 +1,7 @@
 {
+	"page_not_found": "Seite nicht gefunden",
+	"page_load_failed": "Diese Seite konnte nicht geladen werden.",
+	"back_to_home": "Zur Startseite",
 	"footer_feedback": "Feedback",
 	"footer_terms": "Nutzungsbedingungen",
 	"credits": "Credits",
@@ -150,6 +153,7 @@
 	"stat_attack": "Angriff",
 	"stat_defense": "Verteidigung",
 	"stat_range": "Reichweite",
+	"stat_capture": "Eroberung",
 	"movement_cost": "Bewegungskosten",
 	"terrain_defense": "Geländeverteidigung",
 	"ships_only": "nur Schiffe",

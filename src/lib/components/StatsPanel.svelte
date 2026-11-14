@@ -3,6 +3,7 @@
 	import { asset } from '#lib/game/asset-path.js'
 	import TerrainIcon from './TerrainIcon.svelte'
 	import StatDetails from './StatDetails.svelte'
+	import { captureBuildingStat, formatUnitRange } from './unit-stats.js'
 	import { unitAt, effectiveRange } from '#lib/game/model.js'
 	import { buildingIncome, unitTypes } from '#lib/game/catalog.js'
 	import { unitSprite } from '#lib/game/unit-sprites.js'
@@ -20,14 +21,7 @@
 	function statsFor(currentUnit: Unit): StatItem[] {
 		const definition = unitTypes[currentUnit.type]
 		const range = effectiveRange(state, currentUnit)
-		return [
-			{ icon: 'icon-health', label: translate(messages.stat_health), value: `${currentUnit.health}/${definition.maxHealth}`, testId: 'preview-health' },
-			{ icon: 'icon-movement', label: translate(messages.stat_movement), value: `${currentUnit.movement}/${definition.movement}` },
-			{ icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: `${currentUnit.attacks}/${definition.attacks}` },
-			{ icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: definition.attack },
-			{ icon: 'icon-defense', label: translate(messages.stat_defense), value: definition.defense },
-			{ icon: 'icon-attack-range', label: translate(messages.stat_range), value: definition.attack ? `${range.minimum}–${range.maximum}` : '—', testId: 'preview-range' }
-		]
+		return [{ icon: 'icon-health', label: translate(messages.stat_health), value: `${currentUnit.health}/${definition.maxHealth}`, testId: 'preview-health' }, { icon: 'icon-movement', label: translate(messages.stat_movement), value: `${currentUnit.movement}/${definition.movement}` }, { icon: 'icon-attack-capacity', label: translate(messages.stat_attacks), value: `${currentUnit.attacks}/${definition.attacks}` }, { icon: 'icon-attack-damage', label: translate(messages.stat_attack), value: definition.attack }, { icon: 'icon-defense', label: translate(messages.stat_defense), value: definition.defense }, { icon: 'icon-attack-range', label: translate(messages.stat_range), value: formatUnitRange(definition, range.minimum, range.maximum), testId: 'preview-range' }, captureBuildingStat(definition)]
 	}
 </script>
 

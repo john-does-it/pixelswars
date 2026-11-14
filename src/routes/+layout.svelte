@@ -14,7 +14,7 @@
 	import type { Snippet } from 'svelte'
 
 	let navbarHeight = $state(0)
-	const boardPage = $derived(page.route.id?.startsWith('/play/'))
+	const boardPage = $derived(!page.error && page.route.id?.startsWith('/play/'))
 	let { children }: { children: Snippet } = $props()
 
 	onMount(() => {

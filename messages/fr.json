@@ -1,4 +1,7 @@
 {
+	"page_not_found": "Page introuvable",
+	"page_load_failed": "Impossible de charger cette page.",
+	"back_to_home": "Retour à l’accueil",
 	"footer_feedback": "Avis",
 	"footer_terms": "Conditions d’utilisation",
 	"credits": "Crédits",
@@ -150,6 +153,7 @@
 	"stat_attack": "Attaque",
 	"stat_defense": "Défense",
 	"stat_range": "Portée",
+	"stat_capture": "Capture",
 	"movement_cost": "Coût de déplacement",
 	"terrain_defense": "Défense du terrain",
 	"ships_only": "navires uniquement",

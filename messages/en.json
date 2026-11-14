@@ -1,4 +1,7 @@
 {
+	"page_not_found": "Page not found",
+	"page_load_failed": "This page could not be loaded.",
+	"back_to_home": "Back to home",
 	"footer_feedback": "Feedback",
 	"footer_terms": "Terms & Conditions",
 	"credits": "Credits",
@@ -150,6 +153,7 @@
 	"stat_attack": "Attack",
 	"stat_defense": "Defense",
 	"stat_range": "Range",
+	"stat_capture": "Capture",
 	"movement_cost": "Movement cost",
 	"terrain_defense": "Terrain defense",
 	"ships_only": "ships only",

@@ -48,6 +48,12 @@
 		)
 	)
 	const current = $derived(carousel[position])
+	function animatePreview(image: HTMLImageElement) {
+		const enter = () => image.classList.add('entering')
+		if (image.complete && image.naturalWidth) enter()
+		else image.addEventListener('load', enter, { once: true })
+		return () => image.removeEventListener('load', enter)
+	}
 	function stepMap(step: number) {
 		direction = step
 		if (carousel.length) browsedId = carousel[(position + step + carousel.length) % carousel.length].id
@@ -143,13 +149,13 @@
 			{@const showSource = !featured || mounted || !!earlyId}
 			<picture data-opening-preview={featured ? '' : undefined}>
 				<source type="image/webp" srcset={showSource ? asset('/assets/map-previews/map-' + map.id + '.webp') : undefined} />
-				<img src={showSource ? asset('/assets/map-previews/map-' + map.id + '.png') : undefined} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading={featured ? 'eager' : 'lazy'} fetchpriority={featured ? 'high' : 'auto'} draggable="false" onload={(event) => event.currentTarget.classList.toggle('entering', featured && direction !== 0)} />
+				<img src={showSource ? asset('/assets/map-previews/map-' + map.id + '.png') : undefined} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading={featured ? 'eager' : 'lazy'} fetchpriority={featured ? 'high' : 'auto'} draggable="false" {@attach featured && direction !== 0 ? animatePreview : undefined} />
 			</picture>
 		{/if}
 	{/snippet}
 	{#snippet arrow(direction: number)}
 		<button class="gallery-arrow" class:next={direction === 1} type="button" aria-label={translate(direction === 1 ? m.gallery_next : m.gallery_previous)} onclick={() => stepMap(direction)}>
-			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.webp')} alt="" />
+			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.webp')} alt="" width="80" height="80" />
 		</button>
 	{/snippet}
 	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery} class:grid={expanded} class:featured={!expanded}>
@@ -395,6 +401,7 @@
 	}
 	.gallery-arrow img {
 		width: var(--arrow-width);
+		height: auto;
 		image-rendering: pixelated;
 	}
 	.gallery-arrow.next {

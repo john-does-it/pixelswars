@@ -73,7 +73,7 @@
 <nav class="site-navbar" aria-label={translate(messages.home_navigation)} bind:offsetHeight={height}>
 	<div class="navbar-inner" class:compact class:unmeasured={compact === undefined} bind:this={inner}>
 		<a class="brand" href={homeLink('home')} bind:this={brand} onclick={() => (expanded = false)}>
-			<img class="brand-logo" src={asset('/assets/brand/pixels-war-logo.png')} alt="Pixel’s War" width="355" height="143" />
+			<img class="brand-logo" src={asset('/assets/brand/pixels-war-logo.webp')} srcset={`${asset('/assets/brand/pixels-war-logo-148.webp')} 148w, ${asset('/assets/brand/pixels-war-logo-180.webp')} 180w, ${asset('/assets/brand/pixels-war-logo.webp')} 355w`} sizes="(max-width: 360px) 112px, (max-width: 640px) 148px, 180px" alt="Pixel’s War" width="355" height="143" />
 
 			<svelte:element this={page.route.id === '/' ? 'h1' : 'span'} class="sr-only">Pixel’s War</svelte:element>
 		</a>
