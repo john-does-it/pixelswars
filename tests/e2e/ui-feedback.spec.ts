@@ -19,7 +19,7 @@ test('map chooser shows lightweight terrain previews, dimensions and cell-count 
 	}
 	for (const locale of ['en', 'fr', 'de', 'ja']) {
 		await page.locator('.site-navbar .language-control select').selectOption(locale)
-		await expect(cards.locator('.map-thumbnail > img')).toHaveCount(expected.length)
+		await expect(cards.locator('.map-thumbnail picture > img')).toHaveCount(expected.length)
 		await expect(cards.first().getByRole('heading')).toHaveText(/\S/)
 	}
 	await cards.last().click()

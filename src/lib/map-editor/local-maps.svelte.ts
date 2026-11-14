@@ -41,6 +41,12 @@ export function refreshLibrary(event?: StorageEvent) {
 	}
 }
 
+export function deleteLocalMap(id: string) {
+	if (!isLocalMapId(id)) throw new Error('Invalid local map ID')
+	localStorage.removeItem(localMapKey(id))
+	library.maps = library.maps.filter((map) => map.id !== id)
+}
+
 export function saveLocalMap(map: GameMap, name: string): GameMap {
 	const id = isLocalMapId(map.id) && name === map.name ? map.id : 'local-' + crypto.randomUUID()
 	const saved = readMap(JSON.stringify({ ...map, id, name }))

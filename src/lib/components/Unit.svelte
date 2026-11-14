@@ -48,24 +48,24 @@
 		}}
 		onanimationend={scheduleNextLook}
 	></span>
-	<span class="health" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s"><img src={asset('/assets/icons/icon-health.png')} alt="" /></span>
+	<span class="health" style:animation-duration="{Math.max(0.2, (unit.health / unitDefinition.maxHealth) * 2)}s"><img src={asset('/assets/icons/icon-health.webp')} alt="" /></span>
 	{#if unitDefinition.attacks > 0}<span class="ammo" aria-hidden="true" data-remaining={unit.attacks}>
 			{#each Array(unitDefinition.attacks) as _, index}
-				<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} src={asset('/assets/icons/icon-attack-capacity.png')} alt="" /></span>
+				<span class="ammo-round"><img class:spent={index < unitDefinition.attacks - unit.attacks} src={asset('/assets/icons/icon-attack-capacity.webp')} alt="" /></span>
 			{/each}
 		</span>{/if}
+	{#if unitDefinition.capacity}<span class="cargo-count"><img src={asset(`/assets/icons/numbers/${unit.cargo?.length ?? 0}.webp`)} alt={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })} /></span>{/if}
 	{#if showResources}
-		{#if unitDefinition.capacity}<span class="cargo-count"><img src={asset(`/assets/icons/numbers/${unit.cargo?.length ?? 0}.png`)} alt={translate(messages.transport_cargo, { count: unit.cargo?.length ?? 0, capacity: unitDefinition.capacity })} /></span>{/if}
 		<span class="fuel" class:spent={unit.movement === 0} data-level={fuelLevel} data-remaining={unit.movement} style:--empty-fuel={`${88 - fuelLevel * 19}%`} aria-hidden="true">
-			<img class="fuel-empty" src={asset('/assets/icons/icon-movement.png')} alt="" />
-			<img class="fuel-fill" src={asset('/assets/icons/icon-movement.png')} alt="" />
+			<img class="fuel-empty" src={asset('/assets/icons/icon-movement.webp')} alt="" />
+			<img class="fuel-fill" src={asset('/assets/icons/icon-movement.webp')} alt="" />
 		</span>
 		{#if unitDefinition.captures}
-			<span class="capture" class:spent={unit.capture === 0} aria-hidden="true"><img src={asset('/assets/icons/icon-capture-capacity.png')} alt="" /></span>
+			<span class="capture" class:spent={unit.capture === 0} aria-hidden="true"><img src={asset('/assets/icons/icon-capture-capacity.webp')} alt="" /></span>
 		{/if}
 	{/if}
 	{#if target}
-		<img class="crosshair" src={asset('/assets/icons/icon-crosshair.png')} alt={translate(messages.attack_target)} />
+		<img class="crosshair" src={asset('/assets/icons/icon-crosshair.webp')} alt={translate(messages.attack_target)} />
 	{/if}
 </span>
 

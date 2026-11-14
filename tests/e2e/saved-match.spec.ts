@@ -67,7 +67,7 @@ test('solo actions, undo, combat and cargo survive reload and resume from home',
 	await page.goto('/')
 	await page.getByRole('link', { name: 'Resume match', exact: true }).click()
 	await expect(page.locator('[data-unit="0"]')).toHaveAttribute('data-health', String(after.snapshot.units[0].health))
-	await expect(page.locator('[data-unit="2"] .cargo-count img')).toHaveAttribute('src', /numbers\/1\.png$/)
+	await expect(page.locator('[data-unit="2"] .cargo-count img')).toHaveAttribute('src', /numbers\/1\.webp$/)
 	expect((await stored(page)).snapshot.money).toEqual(after.snapshot.money)
 })
 
@@ -139,7 +139,7 @@ test('map chooser shows terrain previews with readable titles and achievements',
 	await expect(page.locator('a.map img[src*="/illustrations/"]')).toHaveCount(0)
 	await expect(page.locator('a.map img[src*="/units/"]')).toHaveCount(0)
 	await expect(page.locator('a.map .terrain-icon')).toHaveCount(0)
-	await expect(card.locator('.map-thumbnail > img')).toBeVisible()
+	await expect(card.locator('.map-thumbnail picture > img')).toBeVisible()
 	await expect(page.locator('.achievements article')).toHaveCount(11)
 	await page.setViewportSize({ width: 320, height: 740 })
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)

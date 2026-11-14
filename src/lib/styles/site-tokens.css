@@ -55,7 +55,8 @@
 	line-height: 1.2;
 }
 :where(.site-shell) h1,
-:where(.site-shell) h2 {
+:where(.site-shell) h2,
+.pixel-heading.section-title {
 	font-size: 48px;
 }
 :where(.site-shell) h3 {
@@ -117,7 +118,8 @@
 		--site-body-leading: 1.5;
 	}
 	:where(.site-shell) h1,
-	:where(.site-shell) h2 {
+	:where(.site-shell) h2,
+	.pixel-heading.section-title {
 		font-size: 32px;
 	}
 	:where(.site-shell) h3 {

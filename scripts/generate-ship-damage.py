@@ -32,7 +32,7 @@ MARKS = {
 }
 
 def load(kind, player):
-    path = ROOT / f'assets/units/{kind}/{"blue" if player == 1 else "red"}/{kind}-{"blue" if player == 1 else "red"}-no-damage.png.base64'
+    path = ROOT / f'assets/units/{kind}/{"blue" if player == 1 else "red"}/{kind}-{"blue" if player == 1 else "red"}-no-damage.webp.base64'
     return Image.open(io.BytesIO(base64.b64decode(path.read_text()))).convert('RGBA')
 
 sheet = Image.new('RGB', (1000, 4 * 220 + 35), '#243226')
@@ -57,9 +57,9 @@ for row, (kind, player) in enumerate((kind, player) for kind in MARKS for player
             # Preserve the water wake and the original silhouette.
             assert image.crop((0, 280 + offset, 400, 400)).tobytes() == original.crop((0, 280 + offset, 400, 400)).tobytes()
             data = io.BytesIO()
-            image.save(data, format='PNG', optimize=True)
+            image.save(data, format='WEBP', lossless=True, exact=True, method=6, quality=100)
             color = 'blue' if player == 1 else 'red'
-            name = f'{kind}/{color}/{kind}-{color}-damage-{stage}.png'
+            name = f'{kind}/{color}/{kind}-{color}-damage-{stage}.webp'
             (ROOT / f'assets/units/{name}.base64').write_text(base64.b64encode(data.getvalue()).decode() + '\n')
             previous = image.copy()
         preview = image.resize((200, 200), Image.Resampling.NEAREST)

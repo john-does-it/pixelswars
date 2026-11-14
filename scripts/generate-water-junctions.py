@@ -2,7 +2,7 @@
 
 Never resample the source sprites. Draw a small, palette-matched corner on their
 logical 16-pixel grid; everything outside that corner stays byte-for-byte equal.
-Run with --check to verify the checked-in PNGs without changing them.
+Run with --check to verify the checked-in WebP files without changing them.
 """
 import base64
 import io
@@ -46,11 +46,11 @@ NARROW = [
     'c......',
 ]
 BASES = {
-    'open': ('0037', 'cell-water.png'),
-    'east': ('0038', 'cell-water-grass-on-left.png'),
-    'west': ('0036', 'cell-water-grass-on-right.png'),
-    'south': ('0055', 'cell-water-grass-on-bottom.png'),
-    'southwest': ('0054', 'cell-water-grass-corner-on-right-and-bottom.png'),
+    'open': ('0037', 'cell-water.webp'),
+    'east': ('0038', 'cell-water-grass-on-left.webp'),
+    'west': ('0036', 'cell-water-grass-on-right.webp'),
+    'south': ('0055', 'cell-water-grass-on-bottom.webp'),
+    'southwest': ('0054', 'cell-water-grass-corner-on-right-and-bottom.webp'),
 }
 VARIANTS = {
     'open': ['nw', 'ne', 'nw-ne'],
@@ -62,13 +62,13 @@ VARIANTS = {
 
 
 def read_source(name):
-    data = base64.b64decode((WATER / f'tile-{name}@2x.png.base64').read_text())
+    data = base64.b64decode((WATER / f'tile-{name}@2x.webp.base64').read_text())
     return Image.open(io.BytesIO(data)).convert('RGBA')
 
 
-def png_bytes(image):
+def webp_bytes(image):
     buffer = io.BytesIO()
-    image.save(buffer, format='PNG', optimize=True)
+    image.save(buffer, format='WEBP', lossless=True, exact=True, method=6, quality=100)
     return buffer.getvalue()
 
 
@@ -109,8 +109,8 @@ def repair(bank, variant):
     assert colours(result) <= colours(source) | {tuple(bytes.fromhex(value[1:])) + (255,) for value in PALETTE.values()}
     assert not ImageChops.multiply(mask.getchannel('A'), touched).getbbox()
     name = f'cell-water-junction-{bank}-{variant}'
-    store(WATER / f'{name}@2x.png.base64', base64.b64encode(png_bytes(result)) + b'\n')
-    store(MASKS / f'{name}.png', png_bytes(mask))
+    store(WATER / f'{name}@2x.webp.base64', base64.b64encode(webp_bytes(result)) + b'\n')
+    store(MASKS / f'{name}.webp', webp_bytes(mask))
     return result
 
 
@@ -118,7 +118,7 @@ sprites = {(bank, variant): repair(bank, variant) for bank, variants in VARIANTS
 
 if not CHECK:
     # Review the actual deterministic sprites in the three validated contexts.
-    grass = Image.open(io.BytesIO(base64.b64decode((ROOT / 'assets/cells/grass/grass-variant-1@2x.png.base64').read_text()))).convert('RGBA')
+    grass = Image.open(io.BytesIO(base64.b64decode((ROOT / 'assets/cells/grass/grass-variant-1@2x.webp.base64').read_text()))).convert('RGBA')
     scenes = [
         ('Coude / riviere etroite', ['grass', '0057', 'grass', '0018', '0038', 'grass'], 4, ('east', 'nw-narrow')),
         ('Jonction en T', ['grass', '0057', 'grass', '0018', '0055', '0020', '0054', 'grass', '0038'], 4, ('south', 'nw-ne')),

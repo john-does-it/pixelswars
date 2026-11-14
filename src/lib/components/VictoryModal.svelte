@@ -15,7 +15,7 @@
 	<h2 class="pixel-heading">{title}</h2>
 	{#if rewards?.achievement}
 		<figure>
-			<img src={asset(`/assets/medals/medal-${rewards.achievement}.png`)} alt="" width="60" height="116" />
+			<img src={asset(`/assets/medals/medal-${rewards.achievement}.webp`)} alt="" width="60" height="116" />
 			<figcaption>{translate(rewards.achievement === 'onliner' ? messages.achievement_onliner : messages.achievement_same_boat)}</figcaption>
 		</figure>
 	{/if}

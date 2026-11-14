@@ -1,6 +1,8 @@
 <script lang="ts">
+	import savedMatchSpace from '#lib/game/saved-match-space.js?url&no-inline'
+	import openingMapScript from '#lib/game/opening-map.ts?worker&url'
 	import { hasStartingArmies } from '#lib/map-editor/model.ts'
-	import { carouselOrder } from '#lib/game/map-discovery.ts'
+	import { carouselOrder, mapSize } from '#lib/game/map-discovery.ts'
 	import { playUrl } from '#lib/game/play-url.js'
 	import { library, refreshLibrary } from '#lib/map-editor/local-maps.svelte.js'
 	import type { GameMap } from '#lib/game/types.js'
@@ -23,9 +25,9 @@
 		.map(([id, preview]) => ({ id, ...preview, local: undefined as GameMap | undefined, playable: true }))
 		.sort((a, b) => a.cols * a.rows - b.cols * b.rows || Number(a.id) - Number(b.id))
 	const maps = $derived([...library.maps.map((local) => ({ id: local.id, cols: local.cols, rows: local.rows, local, playable: hasStartingArmies(local) })), ...published])
-	function mapSize(cells: number) {
-		return cells <= 80 ? 'XS' : cells <= 120 ? 'S' : cells <= 160 ? 'M' : cells <= 200 ? 'L' : 'XL'
-	}
+	// On a direct visit the early script has already painted this map. Adopt its
+	// id during hydration so the existing <picture> survives the first render.
+	const earlyId = typeof document === 'undefined' ? undefined : document.documentElement.dataset.openingMap
 	let mounted = $state(false)
 	const size = $derived(mounted && sizes.includes(page.url.searchParams.get('size') ?? '') ? page.url.searchParams.get('size')! : 'ALL')
 	const filtered = $derived(maps.filter((map) => size === 'ALL' || mapSize(map.cols * map.rows) === size))
@@ -33,9 +35,10 @@
 	let selectedMap = $state<string | null>(null)
 	const selectedLocal = $derived(library.maps.find((entry) => entry.id === selectedMap))
 	let expanded = $state(false)
+	let initialFilter: string | undefined
 	let discovery = $state.raw<{ ranks: Map<string, number>; width: number; height: number }>()
 	const carousel = $derived(discovery ? carouselOrder(filtered, discovery.ranks, discovery.width, discovery.height) : filtered)
-	let browsedId = $state<string | null>(null)
+	let browsedId = $state<string | null>(earlyId ?? null)
 	let direction = $state(0)
 	let gallery: HTMLDivElement
 	const position = $derived(
@@ -94,17 +97,32 @@
 		void goto(url, { replace: true, reset: false })
 	}
 	onMount(() => {
+		const hint = document.documentElement.dataset
 		refreshLibrary()
+		initialFilter = sizes.includes(page.url.searchParams.get('size') ?? '') ? page.url.searchParams.get('size')! : 'ALL'
+		const paintedId = hint.openingSize === initialFilter ? hint.openingMap : undefined
+		delete hint.openingMap
+		delete hint.openingSize
 		const stage = gallery.querySelector('.stage')!.getBoundingClientRect()
 		discovery = { ranks: new Map(maps.map((map) => [map.id, Math.random()])), width: stage.width, height: stage.height }
 		mounted = true
+		// A playable local map can win the first spot once storage is available.
+		// Otherwise keep the published preview already painted by the early script.
+		browsedId = carousel[0]?.local ? carousel[0].id : (paintedId ?? null)
 	})
 	$effect(() => {
-		size
-		direction = 0
-		browsedId = null
+		if (mounted && size !== initialFilter) {
+			initialFilter = size
+			direction = 0
+			browsedId = null
+		}
 	})
 </script>
+
+<svelte:head>
+	<script src={savedMatchSpace}></script>
+	<script type="module" src={openingMapScript} data-preview-base={asset('/assets/map-previews/')} data-names={JSON.stringify(Object.fromEntries(published.map(({ id }) => [id, mapName(id)])))}></script>
+</svelte:head>
 
 <svelte:window onkeydown={handleKey} onstorage={refreshLibrary} />
 
@@ -118,12 +136,23 @@
 			<button class="view-toggle" type="button" disabled={!mounted} aria-expanded={expanded} onclick={() => (expanded = !expanded)}>{translate(expanded ? m.gallery_back_to_preview : m.gallery_view_all)}</button>
 		</div>
 	</div>
+	{#snippet preview(map: (typeof maps)[number], featured = false)}
+		{#if map.local}
+			<BoardPreview map={map.local} />
+		{:else}
+			{@const showSource = !featured || mounted || !!earlyId}
+			<picture data-opening-preview={featured ? '' : undefined}>
+				<source type="image/webp" srcset={showSource ? asset('/assets/map-previews/map-' + map.id + '.webp') : undefined} />
+				<img src={showSource ? asset('/assets/map-previews/map-' + map.id + '.png') : undefined} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading={featured ? 'eager' : 'lazy'} fetchpriority={featured ? 'high' : 'auto'} draggable="false" onload={(event) => event.currentTarget.classList.toggle('entering', featured && direction !== 0)} />
+			</picture>
+		{/if}
+	{/snippet}
 	{#snippet arrow(direction: number)}
 		<button class="gallery-arrow" class:next={direction === 1} type="button" aria-label={translate(direction === 1 ? m.gallery_next : m.gallery_previous)} onclick={() => stepMap(direction)}>
-			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.png')} alt="" />
+			<img src={asset('/assets/interface/gallery-arrow-' + (direction === 1 ? 'right' : 'left') + '.webp')} alt="" />
 		</button>
 	{/snippet}
-	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery} class:grid={expanded} class:featured={!expanded} class:initializing={!mounted}>
+	<div class="maps" role="group" aria-labelledby="maps" bind:this={gallery} class:grid={expanded} class:featured={!expanded}>
 		{#if !current}<p>{translate(m.map_filter_empty)}</p>
 		{:else if expanded}
 			{#each filtered as map (map.id)}
@@ -139,7 +168,7 @@
 					}}
 				>
 					<div class="map-thumbnail" class:local-thumbnail={!!map.local} style:--map-ratio={map.cols / map.rows}>
-						{#if map.local}<BoardPreview map={map.local} />{:else}<img src={asset('/assets/map-previews/map-' + map.id + '.png')} alt="" width={Math.round((480 * map.cols) / map.rows)} height="480" loading="lazy" draggable="false" />{/if}
+						{@render preview(map)}
 						<SelectionCorners />
 					</div>
 					<h3>{map.local?.name ?? mapName(map.id)}</h3>
@@ -164,7 +193,10 @@
 					>
 						<div class="map-thumbnail">
 							{#key current.id}
-								{#if current.local}<BoardPreview map={current.local} />{:else}<img src={asset('/assets/map-previews/map-' + current.id + '.png')} alt="" width={Math.round((480 * current.cols) / current.rows)} height="480" draggable="false" style:--entry-offset={direction * 8 + 'px'} onload={(event) => event.currentTarget.classList.toggle('entering', direction !== 0)} />{/if}
+								{@render preview(current, true)}
+								{#if !mounted}
+									<noscript><img src={asset('/assets/map-previews/map-' + current.id + '.png')} width={Math.round((480 * current.cols) / current.rows)} height="480" alt="" /></noscript>
+								{/if}
 							{/key}
 							<SelectionCorners />
 						</div>
@@ -243,7 +275,7 @@
 			visibility: visible;
 		}
 	}
-	.map-thumbnail > img {
+	.map-thumbnail img {
 		display: block;
 		max-width: 100%;
 		height: auto;
@@ -262,27 +294,24 @@
 		align-items: center;
 		gap: var(--action-gap);
 	}
-	.grid .map-thumbnail {
-		margin-block: auto;
+	.grid .map {
+		--thumbnail-height: 150px;
+		display: grid;
+		grid-template: var(--thumbnail-height) auto / minmax(0, 1fr);
+		align-content: start;
+		place-items: start center;
 	}
 	.grid .local-thumbnail {
-		width: min(100%, calc(150px * var(--map-ratio)));
+		width: min(100%, calc(var(--thumbnail-height) * var(--map-ratio)));
 	}
-	.grid .map-thumbnail > img {
-		max-height: 150px;
+	.grid .map-thumbnail img {
+		max-height: var(--thumbnail-height);
 		width: auto;
 		object-fit: contain;
 	}
 	.grid h3 {
 		font-size: clamp(1.125rem, 2vw, 1.5rem);
 		overflow-wrap: anywhere;
-	}
-	/* Keep the prerendered layout and no-script link while choosing the first preview. */
-	@media (scripting: enabled) {
-		.initializing .stage,
-		.initializing .caption {
-			visibility: hidden;
-		}
 	}
 	.featured {
 		display: grid;
@@ -323,7 +352,7 @@
 		width: 100%;
 		aspect-ratio: var(--map-ratio);
 	}
-	.stage .map-thumbnail > img {
+	.stage .map-thumbnail img {
 		position: absolute;
 		inset: 0;
 		width: 100%;
@@ -401,8 +430,8 @@
 	}
 	@media (max-width: 640px) {
 		.grid {
-			grid-auto-rows: auto;
 			grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
+			grid-auto-rows: auto;
 		}
 		.gallery-heading {
 			margin-bottom: 32px;

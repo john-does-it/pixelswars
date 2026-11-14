@@ -42,6 +42,15 @@ test('Japanese persists across the catalog, help, game, editor and legal page', 
 	await expect(page.locator('.site-navbar .language-control select')).toHaveValue('ja')
 	await expect(page.getByRole('heading', { name: '自分のマップを作ろう', exact: true })).toBeVisible()
 	await expect(page.locator('#unit-picker-2')).toBeVisible()
+	for (const name of ['列数 −', '列数 +', '行数 −', '行数 +']) {
+		const button = page.getByRole('button', { name, exact: true })
+		const offset = await button.evaluate((element) => {
+			const control = element.getBoundingClientRect()
+			const sign = element.querySelector('path')!.getBoundingClientRect()
+			return Math.max(Math.abs(sign.left + sign.right - control.left - control.right), Math.abs(sign.top + sign.bottom - control.top - control.bottom)) / 2
+		})
+		expect(offset, name).toBeLessThan(0.5)
+	}
 	await fitsViewport()
 	await page.screenshot({ path: testInfo.outputPath('japanese-editor.png') })
 

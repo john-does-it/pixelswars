@@ -29,7 +29,7 @@
 </script>
 
 <div bind:this={road} class="road-divider" style:background-image={`url('${asset('/assets/cells/cell-road-h.svg')}')`} aria-hidden="true">
-	<img src={asset('/assets/units/jeep/red/jeep-red-no-damage.png')} alt="" style:left={`calc(${progress * 100}% + ${progress * 96 - 96}px)`} style:transform={`scaleX(${direction})`} />
+	<img src={asset('/assets/units/jeep/red/jeep-red-no-damage.webp')} alt="" style:left={`calc(${progress * 100}% + ${progress * 96 - 96}px)`} style:transform={`scaleX(${direction})`} />
 </div>
 
 <style>

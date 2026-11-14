@@ -57,7 +57,7 @@
 						<li>
 							<Sprite src={unitSprite(passenger)} size="s" />
 							<span>{unitName(passenger.type)}</span>
-							<span class="passenger-health"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} />{passenger.health}/{unitTypes[passenger.type].maxHealth}</span>
+							<span class="passenger-health"><img src={asset('/assets/icons/icon-health.webp')} alt={translate(messages.stat_health)} />{passenger.health}/{unitTypes[passenger.type].maxHealth}</span>
 						</li>
 					{/each}
 				</ul>

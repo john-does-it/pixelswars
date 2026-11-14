@@ -115,9 +115,10 @@
 	<main class="online-setup">
 		<a href={resolve('/')}>← Pixel’s War</a>
 		<section class="panel">
-			<h1 class="pixel-heading">{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
+			<h1 class="pixel-heading section-title">{translate(invited ? messages.online_challenge : messages.play_online)}</h1>
 			{#if name}<p>{name}</p>{/if}
 			{#if role !== 'join'}<p>{translate(messages.online_intro)}</p>{/if}
+			<p>{translate(messages.online_privacy_notice)} <strong>{translate(messages.online_trusted_invites)}</strong></p>
 			{#if !supported}
 				<p role="alert">{translate(messages.online_error_unsupported)}</p>
 			{:else if !role}
@@ -126,7 +127,7 @@
 					<button class="primary" onclick={() => (role = 'join')}>{translate(messages.online_join)}</button>
 				</div>
 			{:else}
-				{#if !invited}<h2>{translate(role === 'host' ? messages.online_create : messages.online_join)}</h2>{/if}
+				{#if !invited}<h2 class="pixel-heading">{translate(role === 'host' ? messages.online_create : messages.online_join)}</h2>{/if}
 				{#if output}
 					<label for="connection-output">{translate(messages.online_invitation)}</label>
 					<textarea id="connection-output" readonly value={output} rows="3" onfocus={(event) => event.currentTarget.select()}></textarea>
@@ -170,14 +171,11 @@
 	}
 	.panel {
 		margin-top: 20px;
-	}
-	h1 {
-		--site-heading-outline: var(--interface-heading-outline);
-		font-size: 32px;
+		background: var(--site-yellow-light);
 	}
 	h2 {
-		font-size: 18px;
-		color: var(--color-accent);
+		--site-heading-outline: var(--site-card-outline);
+		font-size: 24px;
 	}
 	p {
 		line-height: 1.6;

@@ -5,8 +5,12 @@
 <div class="dimension-stepper">
 	<span class="label">{label}</span>
 	<div class="stepper" role="group" aria-label={label + ': ' + value}>
-		<button type="button" aria-label={label + ' −'} disabled={value <= min} onclick={() => onchange(value - step)}>−</button>
-		<button type="button" aria-label={label + ' +'} disabled={value >= max} onclick={() => onchange(value + step)}>+</button>
+		<button type="button" aria-label={label + ' −'} disabled={value <= min} onclick={() => onchange(value - step)}>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h18v4H3z" /></svg>
+		</button>
+		<button type="button" aria-label={label + ' +'} disabled={value >= max} onclick={() => onchange(value + step)}>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z" /></svg>
+		</button>
 	</div>
 </div>
 
@@ -37,9 +41,15 @@
 		padding: 0;
 		background: none;
 		color: var(--site-paper);
-		font: 700 36px/1 var(--font-display);
+	}
+	svg {
+		display: block;
+		width: 24px;
+		height: 24px;
+		fill: currentColor;
+		stroke: var(--site-plum);
+		stroke-width: var(--site-card-outline);
 		paint-order: stroke fill;
-		-webkit-text-stroke: calc(var(--site-card-outline) * 2) var(--site-plum);
 	}
 	button:first-child {
 		background: var(--site-cream);

@@ -53,9 +53,10 @@
 	let showPreview = $state(false)
 	const previewCell = $derived(game.state.previewIndex === null ? undefined : game.state.cells[game.state.previewIndex])
 	let gameElement = $state<HTMLElement>()
-	const assetsReady = preloadGameAssets()
+	const assetsReady = untrack(() => preloadGameAssets(game.state))
 
 	function handleKeydown(event: KeyboardEvent) {
+		if (!gameElement) return
 		const previousCell = selectedUnit(game.state)?.cell
 		game.keydown(event)
 		if (event.key === 'Escape' && !event.defaultPrevented && event.target instanceof Element && event.target.closest('.board')) {

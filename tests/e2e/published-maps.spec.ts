@@ -19,7 +19,7 @@ test('approved maps have previews, public games on the homepage', async ({ page 
 		const card = page.locator('a.map[data-map-id="' + id + '"]')
 		await expect(card.getByRole('heading')).toHaveText(name)
 		await card.scrollIntoViewIfNeeded()
-		await expect.poll(() => card.locator('.map-thumbnail > img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0)
+		await expect.poll(() => card.locator('.map-thumbnail picture > img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0)
 		await page.goto('/play/' + id + '/')
 		await expect(page).toHaveTitle('Pixel’s War · ' + name)
 		await expect(page.locator('.board [data-cell]')).toHaveCount(cells)

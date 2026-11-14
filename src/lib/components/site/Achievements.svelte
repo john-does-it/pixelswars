@@ -11,7 +11,7 @@
 	{#each achievements as achievement (achievement.id)}
 		{@const lockedSprite = !achievement.unlocked && (achievement.id === 'onliner' || achievement.id === 'same-boat')}
 		<article class:locked={!achievement.unlocked}>
-			<img class:locked-sprite={lockedSprite} src={asset(`/assets/medals/medal-${achievement.id}${lockedSprite ? '-locked' : ''}.png`)} alt="" width="60" height="116" loading="lazy" />
+			<img class:locked-sprite={lockedSprite} src={asset(`/assets/medals/medal-${achievement.id}${lockedSprite ? '-locked' : ''}.webp`)} alt="" width="60" height="116" loading="lazy" />
 			<h3>{translate(m[`achievement_${achievement.id.replaceAll('-', '_')}` as keyof typeof m])}</h3>
 			<p>{translate(m[`achievement_${achievement.id.replaceAll('-', '_')}_description` as keyof typeof m])}</p>
 		</article>

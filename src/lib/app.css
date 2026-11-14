@@ -1,6 +1,8 @@
 @font-face {
 	font-family: 'Pixelify Sans';
-	src: url('./fonts/PixelifySans.ttf') format('truetype');
+	src:
+		url('./fonts/PixelifySans.woff2') format('woff2'),
+		url('./fonts/PixelifySans.ttf') format('truetype');
 	font-style: normal;
 	font-weight: 400 700;
 	font-display: swap;
@@ -8,7 +10,9 @@
 
 @font-face {
 	font-family: 'IBM Plex Mono';
-	src: url('./fonts/ibm-plex-mono/Regular.ttf') format('truetype');
+	src:
+		url('./fonts/ibm-plex-mono/Regular.woff2') format('woff2'),
+		url('./fonts/ibm-plex-mono/Regular.ttf') format('truetype');
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
@@ -16,7 +20,9 @@
 
 @font-face {
 	font-family: 'IBM Plex Mono';
-	src: url('./fonts/ibm-plex-mono/Bold.ttf') format('truetype');
+	src:
+		url('./fonts/ibm-plex-mono/Bold.woff2') format('woff2'),
+		url('./fonts/ibm-plex-mono/Bold.ttf') format('truetype');
 	font-style: normal;
 	font-weight: 700;
 	font-display: swap;
@@ -24,7 +30,9 @@
 
 @font-face {
 	font-family: 'DotGothic16';
-	src: url('./fonts/dotgothic16/DotGothic16-Regular.ttf') format('truetype');
+	src:
+		url('./fonts/dotgothic16/DotGothic16-Regular.woff2') format('woff2'),
+		url('./fonts/dotgothic16/DotGothic16-Regular.ttf') format('truetype');
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
@@ -379,30 +387,30 @@ button.pixel-icon-control:hover:not(:disabled) {
 /* Original terrain and unit sprites; layout lives in Svelte components. */
 
 .cell-container.-grass {
-	background-image: url('/assets/cells/grass/cell-grass-variant-2@2x.png');
+	background-image: url('/assets/cells/grass/cell-grass-variant-2@2x.webp');
 
 	&.-variant {
-		background-image: url('/assets/cells/grass/grass-variant-1@2x.png');
+		background-image: url('/assets/cells/grass/grass-variant-1@2x.webp');
 	}
 
 	&.-variant2 {
-		background-image: url('/assets/cells/grass/cell-grass-variant-2@2x.png');
+		background-image: url('/assets/cells/grass/cell-grass-variant-2@2x.webp');
 	}
 
 	&.-variant3 {
-		background-image: url('/assets/cells/grass/cell-grass-variant-3@2x.png');
+		background-image: url('/assets/cells/grass/cell-grass-variant-3@2x.webp');
 	}
 }
 
 .cell-container.-moutain.-ongrass {
-	background-image: url('/assets/cells/terrain/cell-mountain-on-grass@2x.png');
+	background-image: url('/assets/cells/terrain/cell-mountain-on-grass@2x.webp');
 }
 
 .cell-container.-forest.-ongrass {
-	background-image: url('/assets/cells/terrain/cell-forest-on-grass@2x.png');
+	background-image: url('/assets/cells/terrain/cell-forest-on-grass@2x.webp');
 
 	&.-variant {
-		background-image: url('/assets/cells/terrain/cell-forest-on-grass-variant@2x.png');
+		background-image: url('/assets/cells/terrain/cell-forest-on-grass-variant@2x.webp');
 	}
 }
 
@@ -467,291 +475,291 @@ button.pixel-icon-control:hover:not(:disabled) {
 }
 
 .cell-container.-water {
-	background-image: url('/assets/cells/water/tile-0037@2x.png');
-	--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water.png');
+	background-image: url('/assets/cells/water/tile-0037@2x.webp');
+	--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water.webp');
 
 	&:where(.-grass.-left) {
-		background-image: url('/assets/cells/water/tile-0038@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left.png');
+		background-image: url('/assets/cells/water/tile-0038@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left.webp');
 	}
 
 	&:where(.-grass.-right) {
-		background-image: url('/assets/cells/water/tile-0036@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right.png');
+		background-image: url('/assets/cells/water/tile-0036@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right.webp');
 	}
 
 	&:where(.-grass.-top) {
-		background-image: url('/assets/cells/water/tile-0019@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top.png');
+		background-image: url('/assets/cells/water/tile-0019@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top.webp');
 	}
 
 	&:where(.-grass.-bottom) {
-		background-image: url('/assets/cells/water/tile-0055@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom.png');
+		background-image: url('/assets/cells/water/tile-0055@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom.webp');
 	}
 
 	&:where(.-grass.-left.-top) {
-		background-image: url('/assets/cells/water/tile-0004@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-top.png');
+		background-image: url('/assets/cells/water/tile-0004@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-top.webp');
 	}
 
 	&:where(.-grass.-right.-top) {
-		background-image: url('/assets/cells/water/tile-0003@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-top.png');
+		background-image: url('/assets/cells/water/tile-0003@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-top.webp');
 	}
 
 	&:where(.-grass.-left.-bottom) {
-		background-image: url('/assets/cells/water/tile-0022@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-bottom.png');
+		background-image: url('/assets/cells/water/tile-0022@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-bottom.webp');
 	}
 
 	&:where(.-grass.-right.-bottom) {
-		background-image: url('/assets/cells/water/tile-0021@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-bottom.png');
+		background-image: url('/assets/cells/water/tile-0021@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-and-bottom.webp');
 	}
 
 	&:where(.-grass.-corner.-left.-top) {
-		background-image: url('/assets/cells/water/tile-0020@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-top.png');
+		background-image: url('/assets/cells/water/tile-0020@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-top.webp');
 	}
 
 	&:where(.-grass.-corner.-right.-top) {
-		background-image: url('/assets/cells/water/tile-0018@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-top.png');
+		background-image: url('/assets/cells/water/tile-0018@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-top.webp');
 	}
 
 	&:where(.-grass.-corner.-left.-bottom) {
-		background-image: url('/assets/cells/water/tile-0056@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-bottom.png');
+		background-image: url('/assets/cells/water/tile-0056@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-left-and-bottom.webp');
 	}
 
 	&:where(.-grass.-corner.-right.-bottom) {
-		background-image: url('/assets/cells/water/tile-0054@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-bottom.png');
+		background-image: url('/assets/cells/water/tile-0054@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-corner-on-right-and-bottom.webp');
 	}
 
 	&:where(.-grass.-left.-right) {
-		background-image: url('/assets/cells/water/tile-0057@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-right.png');
+		background-image: url('/assets/cells/water/tile-0057@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-and-right.webp');
 	}
 
 	&:where(.-grass.-left-corners) {
-		background-image: url('/assets/cells/water/tile-0072@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-corners.png');
+		background-image: url('/assets/cells/water/tile-0072@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-left-corners.webp');
 	}
 
 	&:where(.-grass.-right-corners) {
-		background-image: url('/assets/cells/water/tile-0074@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-corners.png');
+		background-image: url('/assets/cells/water/tile-0074@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-right-corners.webp');
 	}
 
 	&:where(.-grass.-top-corners) {
-		background-image: url('/assets/cells/water/tile-0075@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-corners.png');
+		background-image: url('/assets/cells/water/tile-0075@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-corners.webp');
 	}
 
 	&:where(.-grass.-bottom-corners) {
-		background-image: url('/assets/cells/water/tile-0039@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom-corners.png');
+		background-image: url('/assets/cells/water/tile-0039@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-bottom-corners.webp');
 	}
 
 	&:where(.-grass.-top-and-bottom-corners) {
-		background-image: url('/assets/cells/water/tile-0073@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-and-bottom-corners.png');
+		background-image: url('/assets/cells/water/tile-0073@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-grass-on-top-and-bottom-corners.webp');
 	}
 
 	&.-junction-nw-se {
-		background-image: url('/assets/cells/water/cell-water-junction-nw-se@2x.png');
+		background-image: url('/assets/cells/water/cell-water-junction-nw-se@2x.webp');
 		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-nw-se.svg');
 	}
 
 	&.-junction-open-nw {
-		background-image: url('/assets/cells/water/cell-water-junction-open-nw@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw.png');
+		background-image: url('/assets/cells/water/cell-water-junction-open-nw@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw.webp');
 	}
 
 	&.-junction-open-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-open-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-open-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-ne.webp');
 	}
 
 	&.-junction-open-nw-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-open-nw-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-open-nw-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-open-nw-ne.webp');
 	}
 
 	&.-junction-east-nw {
-		background-image: url('/assets/cells/water/cell-water-junction-east-nw@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw.png');
+		background-image: url('/assets/cells/water/cell-water-junction-east-nw@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw.webp');
 	}
 
 	&.-junction-east-nw-narrow {
-		background-image: url('/assets/cells/water/cell-water-junction-east-nw-narrow@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw-narrow.png');
+		background-image: url('/assets/cells/water/cell-water-junction-east-nw-narrow@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-east-nw-narrow.webp');
 	}
 
 	&.-junction-west-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-west-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-west-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne.webp');
 	}
 
 	&.-junction-west-ne-narrow {
-		background-image: url('/assets/cells/water/cell-water-junction-west-ne-narrow@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne-narrow.png');
+		background-image: url('/assets/cells/water/cell-water-junction-west-ne-narrow@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-west-ne-narrow.webp');
 	}
 
 	&.-junction-south-nw {
-		background-image: url('/assets/cells/water/cell-water-junction-south-nw@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw.png');
+		background-image: url('/assets/cells/water/cell-water-junction-south-nw@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw.webp');
 	}
 
 	&.-junction-south-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-south-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-south-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-ne.webp');
 	}
 
 	&.-junction-south-nw-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-south-nw-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-south-nw-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-south-nw-ne.webp');
 	}
 
 	&.-junction-southwest-ne {
-		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne.png');
+		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne.webp');
 	}
 
 	&.-junction-southwest-ne-narrow {
-		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne-narrow@2x.png');
-		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne-narrow.png');
+		background-image: url('/assets/cells/water/cell-water-junction-southwest-ne-narrow@2x.webp');
+		--water-shimmer-mask: url('/assets/cells/water-shimmer/cell-water-junction-southwest-ne-narrow.webp');
 	}
 }
 
 .cell-container.-building.-factory.-ongrass {
-	background-image: url('/assets/cells/buildings/cell-factory-on-grass@2x.png');
+	background-image: url('/assets/cells/buildings/cell-factory-on-grass@2x.webp');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-factory-on-grass-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-factory-on-grass-captured-by-1@2x.webp');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-factory-on-grass-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-factory-on-grass-captured-by-2@2x.webp');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/buildings/cell-factory-on-grass-half-captured@2x.png');
+		background-image: url('/assets/cells/buildings/cell-factory-on-grass-half-captured@2x.webp');
 	}
 
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-factory-on-grass-half-captured-by-1.png');
+		background-image: url('/assets/cells/cell-factory-on-grass-half-captured-by-1.webp');
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-factory-on-grass-half-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-factory-on-grass-half-captured-by-2@2x.webp');
 	}
 }
 
 .cell-container.-building.-hospital.-ongrass {
-	background-image: url('/assets/cells/buildings/cell-hospital-on-grass@2x.png');
+	background-image: url('/assets/cells/buildings/cell-hospital-on-grass@2x.webp');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-captured-by-1@2x.webp');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-captured-by-2@2x.webp');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured@2x.png');
+		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured@2x.webp');
 	}
 
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured-by-1@2x.webp');
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-hospital-on-grass-half-captured-by-2@2x.webp');
 	}
 }
 
 .cell-container.-building.-big-city.-ongrass {
-	background-image: url('/assets/cells/buildings/cell-big-city-on-grass@2x.png');
+	background-image: url('/assets/cells/buildings/cell-big-city-on-grass@2x.webp');
 	&.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-captured-by-1@2x.webp');
 	}
 	&.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-captured-by-2@2x.webp');
 	}
 	&.-halfcaptured {
-		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured@2x.png');
+		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured@2x.webp');
 	}
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured-by-1@2x.webp');
 	}
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-big-city-on-grass-half-captured-by-2@2x.webp');
 	}
 }
 
 .cell-container.-building.-naval-base.-ongrass {
-	background-image: url('/assets/cells/cell-naval-base-on-grass.png');
+	background-image: url('/assets/cells/cell-naval-base-on-grass.webp');
 	&.-capturedby1 {
-		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-1.png');
+		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-1.webp');
 	}
 	&.-capturedby2 {
-		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-2.png');
+		background-image: url('/assets/cells/cell-naval-base-on-grass-captured-by-2.webp');
 	}
 	&.-halfcaptured {
-		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured.png');
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured.webp');
 	}
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-1.png');
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-1.webp');
 	}
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-2.png');
+		background-image: url('/assets/cells/cell-naval-base-on-grass-halfcaptured-by-2.webp');
 	}
 }
 
 .cell-container.-building.-city.-ongrass {
-	background-image: url('/assets/cells/buildings/cell-city-on-grass@2x.png');
+	background-image: url('/assets/cells/buildings/cell-city-on-grass@2x.webp');
 
 	&.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-city-on-grass-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-city-on-grass-captured-by-1@2x.webp');
 	}
 
 	&.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-city-on-grass-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-city-on-grass-captured-by-2@2x.webp');
 	}
 
 	&.-halfcaptured {
-		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured@2x.png');
+		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured@2x.webp');
 	}
 
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured-by-1@2x.webp');
 	}
 
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-city-on-grass-half-captured-by-2@2x.webp');
 	}
 }
 
 .cell-container.-airport {
-	background-image: url('/assets/cells/buildings/cell-airport-on-grass@2x.png');
+	background-image: url('/assets/cells/buildings/cell-airport-on-grass@2x.webp');
 	&.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-airport-on-grass-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-airport-on-grass-captured-by-1@2x.webp');
 	}
 	&.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-airport-on-grass-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-airport-on-grass-captured-by-2@2x.webp');
 	}
 	&.-halfcaptured {
-		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured@2x.png');
+		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured@2x.webp');
 	}
 	&.-halfcaptured.-capturedby1 {
-		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured-by-1@2x.png');
+		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured-by-1@2x.webp');
 	}
 	&.-halfcaptured.-capturedby2 {
-		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured-by-2@2x.png');
+		background-image: url('/assets/cells/buildings/cell-airport-on-grass-half-captured-by-2@2x.webp');
 	}
 }
 .cell-container.-road.-bridge.-h {

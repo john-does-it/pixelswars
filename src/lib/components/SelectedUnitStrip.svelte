@@ -23,9 +23,9 @@
 			<span class="details">
 				<span class="preview-name">{name}</span>
 				<span class="stats">
-					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /><span>{unit.health}<span class="stat-maximum">/{definition.maxHealth}</span></span></span>
-					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /><span>{unit.movement}<span class="stat-maximum">/{definition.movement}</span></span></span>
-					<span title={translate(messages.stat_attacks)}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} /><span>{unit.attacks}<span class="stat-maximum">/{definition.attacks}</span></span></span>
+					<span title={translate(messages.stat_health)}><img src={asset('/assets/icons/icon-health.webp')} alt={translate(messages.stat_health)} /><span>{unit.health}<span class="stat-maximum">/{definition.maxHealth}</span></span></span>
+					<span title={translate(messages.stat_movement)}><img src={asset('/assets/icons/icon-movement.webp')} alt={translate(messages.stat_movement)} /><span>{unit.movement}<span class="stat-maximum">/{definition.movement}</span></span></span>
+					<span title={translate(messages.stat_attacks)}><img src={asset('/assets/icons/icon-attack-capacity.webp')} alt={translate(messages.stat_attacks)} /><span>{unit.attacks}<span class="stat-maximum">/{definition.attacks}</span></span></span>
 				</span>
 			</span>
 		{:else}
@@ -33,8 +33,8 @@
 				<span class="preview-name">{name}</span>
 
 				<span class="stats">
-					<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
-					<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.png')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
+					<span title={translate(messages.movement_cost)}><img src={asset('/assets/icons/icon-movement.webp')} alt={translate(messages.movement_cost)} /><span>{cell.terrain === 'blocker' ? '∞' : cell.cost}</span></span>
+					<span title={translate(messages.terrain_defense)}><img src={asset('/assets/icons/icon-defense.webp')} alt={translate(messages.terrain_defense)} /><span>{cell.defense}</span></span>
 				</span>
 			</span>
 		{/if}

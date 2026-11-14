@@ -33,7 +33,7 @@ test('all unit states have exactly one canonical source, independent of display 
 		for (const player of [1, 2] as const) {
 			for (const ratio of [1, 0.8, 0.6, 0.4, 0.2]) {
 				const sprite = unitSprite({ type, player, health: ratio * maxHealth })
-				assert.match(sprite, /\/(blue|red)\/.*-(no-damage|damage-[1-4])\.(png|svg)$/)
+				assert.match(sprite, /\/(blue|red)\/.*-(no-damage|damage-[1-4])\.(webp|svg)$/)
 				assert.doesNotMatch(sprite, /preview|@2x|-fit/)
 				assert.ok(existsSync(new URL(`..${sprite}${sprite.endsWith('.svg') ? '' : '.base64'}`, import.meta.url)), sprite)
 				selected.add(sprite)

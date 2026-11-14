@@ -1,3 +1,4 @@
+import { webpDimensions } from './webp-dimensions.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { newMap, paintCell, readMap, mapJson, mirrorMap } from '../src/lib/map-editor/model.ts'
@@ -136,15 +137,11 @@ test('every new junction has a correctly sized sprite, shimmer mask and CSS rule
 	const css = readFileSync(new URL('../src/lib/app.css', import.meta.url), 'utf8')
 	for (const [variant] of configurations) {
 		const name = `cell-water-junction-${variant}`
-		const sprite = Buffer.from(readFileSync(new URL(`../assets/cells/water/${name}@2x.png.base64`, import.meta.url), 'utf8'), 'base64')
-		const mask = readFileSync(new URL(`../assets/cells/water-shimmer/${name}.png`, import.meta.url))
-		for (const png of [sprite, mask]) {
-			assert.equal(png.subarray(1, 4).toString(), 'PNG')
-			assert.equal(png.readUInt32BE(16), 250)
-			assert.equal(png.readUInt32BE(20), 250)
-		}
+		const sprite = Buffer.from(readFileSync(new URL(`../assets/cells/water/${name}@2x.webp.base64`, import.meta.url), 'utf8'), 'base64')
+		const mask = readFileSync(new URL(`../assets/cells/water-shimmer/${name}.webp`, import.meta.url))
+		for (const image of [sprite, mask]) assert.deepEqual(webpDimensions(image), [250, 250])
 		assert.ok(css.includes(`&.-junction-${variant} {`))
-		assert.ok(css.includes(`/assets/cells/water/${name}@2x.png`))
-		assert.ok(css.includes(`/assets/cells/water-shimmer/${name}.png`))
+		assert.ok(css.includes(`/assets/cells/water/${name}@2x.webp`))
+		assert.ok(css.includes(`/assets/cells/water-shimmer/${name}.webp`))
 	}
 })

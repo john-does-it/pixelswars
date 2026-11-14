@@ -301,7 +301,7 @@ test('a guest plays a large saved map directly from the host invitation', async 
 		map.cells[1].classes = ['-forest', '-ongrass']
 		await page.goto('/#editor-title')
 		for (const id of ['first-victory', 'onliner-locked', 'same-boat-locked']) {
-			await expect(page.locator(`.achievements img[src$="medal-${id}.png"]`)).toHaveCSS('opacity', '0.65')
+			await expect(page.locator(`.achievements img[src$="medal-${id}.webp"]`)).toHaveCSS('opacity', '0.65')
 		}
 		const editor = page.locator('.map-editor')
 		await editor.locator('input[type=file]').setInputFiles({ name: 'map.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(map)) })
@@ -333,7 +333,7 @@ test('a guest plays a large saved map directly from the host invitation', async 
 		}
 		await finishBattle(guest)
 		for (const device of [page, guest]) {
-			await expect(device.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-onliner\.png$/)
+			await expect(device.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-onliner\.webp$/)
 			await expect(device.getByRole('dialog').locator('figcaption')).toHaveText('Onliner')
 		}
 
@@ -342,10 +342,10 @@ test('a guest plays a large saved map directly from the host invitation', async 
 		await page.goto(hotseat.href)
 		await page.getByRole('button', { name: 'End round', exact: true }).click()
 		await finishBattle(page)
-		await expect(page.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-same-boat\.png$/)
+		await expect(page.getByRole('dialog').locator('figure img')).toHaveAttribute('src', /medal-same-boat\.webp$/)
 		await page.goto('/#success')
 		for (const id of ['onliner', 'same-boat']) {
-			const image = page.locator(`.achievements article:not(.locked) img[src$="medal-${id}.png"]`)
+			const image = page.locator(`.achievements article:not(.locked) img[src$="medal-${id}.webp"]`)
 			await image.scrollIntoViewIfNeeded()
 			await expect(image).toHaveCSS('filter', 'none')
 			await expect(image).toHaveCSS('opacity', '1')

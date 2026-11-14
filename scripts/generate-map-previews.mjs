@@ -2,16 +2,17 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
+import { isMapInCatalog } from '../src/lib/game/map-catalog.ts'
 
 // Run against the dev server after changing maps or their sprites.
 const baseUrl = process.env.PREVIEW_BASE_URL ?? 'http://127.0.0.1:5173'
 const output = new URL('../assets/map-previews/', import.meta.url)
 await mkdir(output, { recursive: true })
-const browser = await chromium.launch()
 const mapFiles = JSON.parse(await readFile(new URL('../src/lib/data/map-files.json', import.meta.url), 'utf8'))
-const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Object.keys(mapFiles).map(Number)
-if (mapIds.some((id) => !Number.isInteger(id) || !mapFiles[id])) throw new Error('Unknown map ID')
-const metadata = JSON.parse(await readFile(new URL('../src/lib/data/map-previews.json', import.meta.url), 'utf8'))
+const mapIds = process.argv.length > 2 ? process.argv.slice(2).map(Number) : Object.keys(mapFiles).filter(isMapInCatalog).map(Number)
+if (mapIds.some((id) => !Number.isInteger(id) || !mapFiles[id] || !isMapInCatalog(id))) throw new Error('Map preview requires an active catalogue map ID')
+const metadata = process.argv.length > 2 ? JSON.parse(await readFile(new URL('../src/lib/data/map-previews.json', import.meta.url), 'utf8')) : {}
+const browser = await chromium.launch()
 try {
 	const page = await browser.newPage()
 	for (const id of mapIds) {

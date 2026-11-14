@@ -107,7 +107,9 @@ when command semantics or combat rules change.
 - [Map editor](docs/map-editor.md): editing and submitting maps. Keep numeric IDs
   stable; register filenames in `map-files.json`, routes and translated titles.
   Run `npm run generate:map-previews` with the dev server running after map changes
-  (`PREVIEW_BASE_URL` overrides its default address).
+  (`PREVIEW_BASE_URL` overrides its default address). Install Pillow for the Python interpreter
+  used by `scripts/encode-map-previews.py` (override it with `PYTHON`). It generates lossless WebP previews
+  and compares their decoded pixels with the PNG fallbacks.
 - `npm run check` regenerates translations; `npm run generate:i18n` does so separately.
   `paraglide.config.js` is shared with Vite; generated `src/lib/paraglide/` is ignored.
 - [itch.io launcher](distribution/itch/README.md): packaging instructions.

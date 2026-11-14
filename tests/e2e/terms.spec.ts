@@ -21,8 +21,23 @@ test('terms are linked, translated and readable without opening multiplayer conn
 		await expect(page.locator('html')).toHaveAttribute('lang', locale)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 	}
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
+	const headingStyle = (element: Element) => {
+		const css = getComputedStyle(element)
+		return [css.color, css.webkitTextStrokeColor, css.webkitTextStrokeWidth, css.fontSize, css.paintOrder]
+	}
+	const reference = await page.getByRole('heading', { level: 1 }).evaluate(headingStyle)
+	await page.goto('/play/1/?online=1')
+	const onlineTitle = page.getByRole('heading', { name: 'Jouer à deux en ligne', exact: true })
+	await expect(onlineTitle).toBeVisible()
+	await expect(page.locator('.online-setup .panel')).toHaveCSS('background-color', 'rgb(255, 240, 180)')
+	expect(await onlineTitle.evaluate(headingStyle)).toEqual(reference)
+	await expect(page.locator('.online-setup strong')).toHaveText('Partagez vos invitations avec des personnes de confiance.')
+	await page.goto('/terms/')
+	await page.locator('.site-navbar .language-control select').selectOption('de')
 	await page.goto('/play/1/?online=1#invite=PW2.1.1.abcdef.12345678-1234-1234-1234-123456789abc')
 	await expect(page.getByRole('button', { name: 'Beitreten', exact: true })).toBeVisible()
+	await expect(page.getByText(/Der gegnerische Browser kann Ihre IP-Adresse erfahren/)).toBeVisible()
 	await expect(page.getByText(/PeerJS/)).toHaveCount(0)
 	expect(connections).toEqual([])
 })

@@ -2,7 +2,6 @@ node_modules/
 .svelte-kit/
 build/
 static/assets/
-static/favicon.png
 static/favicon.svg
 .npm-cache/
 test-results/

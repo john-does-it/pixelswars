@@ -7,7 +7,9 @@
 	import Achievements from '#lib/components/site/Achievements.svelte'
 	import ProfileContent from '#lib/components/site/ProfileContent.svelte'
 	import SupportContent from '#lib/components/site/SupportContent.svelte'
-	import MapEditor from '#lib/components/MapEditor.svelte'
+	import type MapEditor from '#lib/components/MapEditor.svelte'
+	import { tick } from 'svelte'
+	import type { GameMap } from '#lib/game/types.js'
 	import RoadDivider from '#lib/components/site/RoadDivider.svelte'
 	import { unitTypes, terrainTypes } from '#lib/game/catalog.js'
 	import { isMapInCatalog } from '#lib/game/map-catalog.js'
@@ -16,6 +18,35 @@
 	import { translate } from '#lib/i18n.svelte.js'
 	let { data }: { data: import('./$types').PageData } = $props()
 	let editor = $state<MapEditor>()
+	let Editor = $state.raw<typeof MapEditor>()
+	let editorImport: Promise<typeof MapEditor> | undefined
+	async function loadEditor() {
+		editorImport ??= import('#lib/components/MapEditor.svelte').then((module) => module.default)
+		Editor = await editorImport
+		await tick()
+	}
+	function nearEditor(node: HTMLElement) {
+		if (location.hash === '#editor-title' || !('IntersectionObserver' in window)) {
+			void loadEditor()
+			return
+		}
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					observer.disconnect()
+					void loadEditor()
+				}
+			},
+			{ rootMargin: '300px' }
+		)
+		observer.observe(node)
+		return { destroy: () => observer.disconnect() }
+	}
+	async function editMap(map: GameMap) {
+		await loadEditor()
+		editor?.editSavedMap(map)
+		document.getElementById('editor-title')?.scrollIntoView()
+	}
 	const counts = { units: Object.keys(unitTypes).length, maps: Object.keys(mapPreviews).filter(isMapInCatalog).length, terrains: Object.keys(terrainTypes).filter((id) => id !== 'building').length }
 </script>
 
@@ -23,12 +54,7 @@
 <main id="home">
 	<SiteSection id="battlefields" tone="yellow-light" wide>
 		<SavedMatchCard />
-		<MapGallery
-			onedit={(map) => {
-				editor?.editSavedMap(map)
-				document.getElementById('editor-title')?.scrollIntoView()
-			}}
-		/>
+		<MapGallery onedit={editMap} />
 	</SiteSection>
 	<SiteSection id="key-numbers"
 		><div class="key-numbers">
@@ -37,7 +63,7 @@
 				{#each [{ value: counts.units, label: m.site_unit_types }, { value: counts.maps, label: m.site_map_count }, { value: counts.terrains, label: m.site_terrain_types }] as counter}
 					<div>
 						<strong aria-label={String(counter.value)}
-							>{#each String(counter.value) as digit}<img src={asset('/assets/icons/numbers/' + digit + '.png')} alt="" width="32" height="40" />{/each}</strong
+							>{#each String(counter.value) as digit}<img src={asset('/assets/icons/numbers/' + digit + '.webp')} alt="" width="32" height="40" />{/each}</strong
 						>
 						<h3>{translate(counter.label)}</h3>
 					</div>
@@ -49,7 +75,9 @@
 	<SiteSection id="editor-title" tone="sky" width="1220px"
 		><h2>{translate(m.editor_title)}</h2>
 		<p class="subtitle">{translate(m.editor_description)}</p>
-		{#key data.draftMap?.id}<MapEditor bind:this={editor} sourceMap={data.draftMap} />{/key}</SiteSection
+		<div use:nearEditor class:editor-placeholder={!Editor}>
+			{#if Editor}{#key data.draftMap?.id}<Editor bind:this={editor} sourceMap={data.draftMap} />{/key}{/if}
+		</div></SiteSection
 	>
 	<SiteSection id="stats" tone="silver" width="1480px"><StatsCatalog /></SiteSection>
 	<SiteSection id="success" tone="yellow">
@@ -71,6 +99,11 @@
 	}
 	h2 {
 		margin: 0 0 12px;
+	}
+	.editor-placeholder {
+		aspect-ratio: 25 / 17;
+		padding-block: 100px;
+		box-sizing: content-box;
 	}
 	.subtitle {
 		font-size: 16px;

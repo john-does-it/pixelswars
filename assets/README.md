@@ -1,11 +1,11 @@
 # Game assets
 
 `assets/` contains source sprites and audio. `static/assets/` is generated and ignored.
-Keep one representation per bitmap: `.png.base64` or a native image, never both.
+Keep one representation per bitmap: `.webp.base64` or a native image, never both.
 
-`cells/water/cell-water-junction-nw-se@2x.png.base64` preserves the supplied 532 × 532 PNG byte for byte. It joins the north-west cliff with the south-east bank; its companion SVG shimmer mask covers only the water highlight. The editor and game select it from neighboring terrain, with no extra brush to choose.
+`cells/water/cell-water-junction-nw-se@2x.webp.base64` preserves every pixel of the supplied 532 × 532 artwork. It joins the north-west cliff with the south-east bank; its companion SVG shimmer mask covers only the water highlight. The editor and game select it from neighboring terrain, with no extra brush to choose.
 
-The other `cell-water-junction-*` variants retain the original 250 × 250 canvas and pixels outside their small corner corrections. Run `python scripts/generate-water-junctions.py` with Pillow to regenerate the PNG/base64 sprites, their PNG shimmer masks and a review sheet. `--check` verifies the stored outputs and palette. Northwest/northeast corners, narrow river entrances and T junctions use the original shore palette; no AI-generated pixels are included.
+The other `cell-water-junction-*` variants retain the original 250 × 250 canvas and pixels outside their small corner corrections. Run `python scripts/generate-water-junctions.py` with Pillow to regenerate the lossless WebP sprites, their WebP shimmer masks and a review sheet. `--check` verifies the stored outputs and palette. Northwest/northeast corners, narrow river entrances and T junctions use the original shore palette; no AI-generated pixels are included.
 
 | Directory | Contents |
 | --- | --- |
@@ -24,7 +24,7 @@ renaming sprites. The alias layer preserves existing gameplay naming conventions
 
 Units have five health bands: healthy above 80%, then damage stages at ≤80%, ≤60%,
 ≤40% and ≤20% of maximum HP. Each team and stage has a consistent canvas. There are no separate preview or resolution variants. Infantry animation transforms the same sprite.
-Pixel sprites use PNGs or hand-authored SVGs on a fixed pixel grid. UI controls and approved road tiles use SVG where supplied,
+Pixel sprites use lossless WebP or hand-authored SVGs on a fixed pixel grid. UI controls and approved road tiles use SVG where supplied,
 including some SVG exports that embed raster artwork. Converting a PNG wrapper to SVG
 does not improve its resolution.
 
@@ -40,7 +40,7 @@ Synchronization decodes Base64, copies media, removes retired public files,
 generates the visual preload manifest and updates the favicon. `npm ci`, `npm run dev`
 and `npm run build` run it automatically. Files in `static/assets/temp/` are preserved
 as incoming work and never added to the preload manifest. Do not commit generated public assets.
-The favicon reuses `units/infantry/red/infantry-red-damage-2.png.base64`.
+The favicon uses the red infantry artwork from `static/favicon.png`.
 
 For map thumbnails, run `npm run generate:map-previews` with the dev server running
 and Playwright Chromium installed. For ship damage variants, run

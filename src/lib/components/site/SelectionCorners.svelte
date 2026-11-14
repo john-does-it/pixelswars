@@ -3,7 +3,7 @@
 </script>
 
 <span class="selection-corners" aria-hidden="true">
-	{#each [0, 1, 2, 3] as corner}<img src={asset('/assets/interface/selection-corner.png')} alt="" style:--turn={corner * 90 + 'deg'} class={'corner corner-' + corner} />{/each}
+	{#each [0, 1, 2, 3] as corner}<img src={asset('/assets/interface/selection-corner.webp')} alt="" style:--turn={corner * 90 + 'deg'} class={'corner corner-' + corner} />{/each}
 </span>
 
 <style>

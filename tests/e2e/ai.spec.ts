@@ -26,7 +26,7 @@ test('AI keeps header settings accessible, hides game actions, preserves their s
 	await page.clock.pauseAt(new Date())
 	await page.setViewportSize({ width: 360, height: 800 })
 	await page.goto('/play/7/?ai=easy')
-	await expect(page.locator('.turn-announcement')).toBeVisible()
+	await expect(page.getByRole('dialog', { name: 'AI’s turn to play', exact: true })).toBeVisible()
 	await page.clock.runFor(turnTransitionDuration + 100)
 	await expect(page.locator('.turn-announcement')).toHaveCount(0)
 	await zoomToReadableTiles(page)

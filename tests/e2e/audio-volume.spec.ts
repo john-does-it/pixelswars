@@ -1,28 +1,30 @@
 import { test, expect } from '@playwright/test'
+import { readMapFixture } from '../map-fixtures'
 
-test('infantry selection plays only the six retained voices under fresh asset names', async ({ page }) => {
-	await page.addInitScript(() => {
+test('each infantry type plays its own selection sound on every selection', async ({ page }) => {
+	const map = readMapFixture(1)
+	map.id = 'local-11111111-1111-4111-8111-111111111111'
+	map.units = [
+		{ type: 'infantry', player: 1, cell: 1 },
+		{ type: 'infantry-sniper', player: 1, cell: 2 },
+		{ type: 'infantry-rocket', player: 1, cell: 3 },
+		{ type: 'infantry', player: 2, cell: 63 }
+	]
+	await page.addInitScript((map) => {
+		localStorage.setItem('pixelswar-library-v1:' + map.id, JSON.stringify(map))
 		const audioState = window as unknown as { playedSounds: string[] }
 		audioState.playedSounds = []
 		HTMLMediaElement.prototype.play = function () {
 			audioState.playedSounds.push(this.src)
 			return Promise.resolve()
 		}
-	})
-	await page.goto('/play/1/')
-	for (let index = 0; index < 6; index++) {
-		await page.evaluate(
-			(value) => {
-				Math.random = () => value
-			},
-			(index + 0.5) / 6
-		)
-		await page.locator('[data-cell="1"]').click()
-		await page.getByRole('button', { name: 'Confirm move', exact: true }).click()
-	}
+	}, map)
+	await page.goto('/play/local/?id=' + map.id)
+	const cells = [1, 2, 3, 1, 2, 3]
+	for (const cell of cells) await page.locator(`[data-cell="${cell}"]`).click()
 	const sounds = await page.evaluate(() => (window as unknown as { playedSounds: string[] }).playedSounds)
-	expect(sounds.map((url) => new URL(url).pathname)).toEqual(Array.from({ length: 6 }, (_, index) => `/assets/mp3/infantry-voice-${index + 1}.mp3`))
-	for (const url of sounds) expect((await page.request.get(url)).status()).toBe(200)
+	expect(sounds.map((url) => new URL(url).pathname)).toEqual(cells.map((cell) => `/assets/mp3/infantry-voice-${cell}.mp3`))
+	for (const url of new Set(sounds)) expect((await page.request.get(url)).status()).toBe(200)
 })
 
 test('volume adjusts existing music silently without restarting playback', async ({ page }) => {
@@ -90,5 +92,5 @@ test('unit selection audio can be muted independently and stays muted after relo
 	await toggle.click()
 	await page.keyboard.press('Escape')
 	await page.locator('[data-cell="1"]').click()
-	await expect.poll(async () => (await sounds()).some((path) => /infantry-voice-\d\.mp3$/.test(path))).toBe(true)
+	await expect.poll(sounds).toContain('/assets/mp3/infantry-voice-1.mp3')
 })

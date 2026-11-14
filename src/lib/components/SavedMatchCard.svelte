@@ -5,6 +5,7 @@
 	import { mapName, translate } from '#lib/i18n.svelte.js'
 	import { m as messages } from '#lib/paraglide/messages.js'
 	import Modal from './Modal.svelte'
+	let checked = $state(false)
 	let saved = $state<SavedMatch | null>(null)
 	let error = $state<string | null>(null)
 	let confirmDiscard = $state(false)
@@ -17,6 +18,9 @@
 			raw = result.raw
 		} catch {
 			error = 'storage'
+		} finally {
+			checked = true
+			document.documentElement.classList.toggle('has-saved-match', Boolean(saved || error))
 		}
 	}
 	onMount(refresh)
@@ -40,6 +44,7 @@
 		}
 	}}
 />
+{#if !checked}<div class="save-placeholder" aria-hidden="true"></div>{/if}
 {#if saved || error}
 	<section class="saved-match" aria-label={translate(messages.save_title)}>
 		<h2>{translate(messages.save_title)}</h2>
@@ -62,6 +67,15 @@
 {/if}
 
 <style>
+	:global(html.has-saved-match) .save-placeholder {
+		height: 216px;
+		margin-bottom: var(--site-gap-large);
+	}
+	@media (max-width: 640px) {
+		:global(html.has-saved-match) .save-placeholder {
+			height: 358px;
+		}
+	}
 	.saved-match {
 		margin-bottom: var(--site-gap-large);
 		padding: 24px;

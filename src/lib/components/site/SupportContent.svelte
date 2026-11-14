@@ -18,7 +18,7 @@
 <div class="support-content">
 	<header>
 		<h2>{translate(messages.support_title)}</h2>
-		<p class="support-subtitle"><span>{translate(messages.support_intro)}</span><img class="support-heart" src={asset('/assets/icons/icon-health.png')} width="24" height="24" alt="" /></p>
+		<p class="support-subtitle"><span>{translate(messages.support_intro)}</span><img class="support-heart" src={asset('/assets/icons/icon-health.webp')} width="24" height="24" alt="" /></p>
 	</header>
 	<section class="contributions">
 		{#if !available}<p>{translate(messages.support_pending)}</p>{/if}

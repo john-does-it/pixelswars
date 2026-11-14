@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import { page } from '$app/state'
 	import { resolve } from '$app/paths'
+	import { readSavedMatch } from '#lib/game/saved-match.js'
 	import { readLocalMap } from '#lib/map-editor/local-maps.svelte.js'
 	import OnlineGame from '#lib/components/OnlineGame.svelte'
 	import { hasStartingArmies, isLocalMapId } from '#lib/map-editor/model.ts'
@@ -16,10 +17,17 @@
 		mounted = true
 	})
 	const id = $derived(page.url.searchParams.get('id') ?? '')
-	const map = $derived(mounted ? readLocalMap(id) : null)
 	const online = $derived(page.url.searchParams.has('online'))
 	const invited = $derived(new URLSearchParams(page.url.hash.slice(1)).has('invite'))
 	const ai = $derived(mounted ? page.url.searchParams.get('ai') : null)
+	const map = $derived.by(() => {
+		if (!mounted || !isLocalMapId(id)) return null
+		const local = readLocalMap(id)
+		if (local || online || !isAiDifficulty(ai)) return local
+		// A solo checkpoint owns its battlefield even after the library copy is deleted.
+		const saved = readSavedMatch(localStorage).save
+		return saved?.map.id === id && saved.difficulty === ai ? saved.map : null
+	})
 </script>
 
 {#if mounted}

@@ -20,7 +20,7 @@ test('editor places both naval units for both teams on water and preserves them 
 			const tile = cell((player - 1) * 2 + offset)
 			await tile.press('Enter')
 			const image = tile.locator('img')
-			await expect(image).toHaveAttribute('src', new RegExp(`${type}-${player === 1 ? 'blue' : 'red'}-no-damage\\.png$`))
+			await expect(image).toHaveAttribute('src', new RegExp(`${type}-${player === 1 ? 'blue' : 'red'}-no-damage\\.webp$`))
 			await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0)
 		}
 	}

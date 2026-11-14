@@ -3,7 +3,7 @@ import { readMapFixture } from '../map-fixtures.ts'
 import { newMap, paintCell } from '../../src/lib/map-editor/model.ts'
 import { waterJunctionModifiers } from '../../src/lib/game/water-junctions.ts'
 
-const sprite = 'cell-water-junction-nw-se@2x.png'
+const sprite = 'cell-water-junction-nw-se@2x.webp'
 
 test('water junction renders on an existing board with its own shimmer mask', async ({ page }, testInfo) => {
 	await page.goto('/play/18/')
@@ -50,8 +50,8 @@ for (const { variant, land } of [
 		const marker = new RegExp(`-junction-${variant}(?:\\s|$)`)
 		await expect(cell).toHaveClass(marker)
 		await expect(cell).toHaveCSS('background-image', new RegExp(`cell-water-junction-${variant}@2x`))
-		expect((await page.request.get(`/assets/cells/water/cell-water-junction-${variant}@2x.png`)).ok()).toBe(true)
-		expect((await page.request.get(`/assets/cells/water-shimmer/cell-water-junction-${variant}.png`)).ok()).toBe(true)
+		expect((await page.request.get(`/assets/cells/water/cell-water-junction-${variant}@2x.webp`)).ok()).toBe(true)
+		expect((await page.request.get(`/assets/cells/water-shimmer/cell-water-junction-${variant}.webp`)).ok()).toBe(true)
 		await page.locator('#board').screenshot({ path: testInfo.outputPath(`${variant}.png`) })
 		await page.locator('.terrain-picker').selectOption('terrain_water')
 		await page.locator('#board [data-cell="6"]').press('Enter')

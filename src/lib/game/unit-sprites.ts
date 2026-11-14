@@ -15,7 +15,7 @@ export function damageStage(unit: Pick<Unit, 'type' | 'health'>): number {
 export function unitSpritePath(type: UnitTypeId, player: Player, stage = 0): string {
 	const color = player === 1 ? 'blue' : 'red'
 	const damage = stage ? `damage-${stage}` : 'no-damage'
-	const extension = type === 'artillery-ship' ? 'svg' : 'png'
+	const extension = type === 'artillery-ship' ? 'svg' : 'webp'
 	return `/assets/units/${type}/${color}/${type}-${color}-${damage}.${extension}`
 }
 

@@ -57,12 +57,12 @@
 						>
 							<Sprite src={unitSprite(unit)} size="s" />
 							<span class="passenger-stats">
-								<span class="health"><span class="status-icon health-icon"><img src={asset('/assets/icons/icon-health.png')} alt={translate(messages.stat_health)} /></span>{unit.health}/{definition.maxHealth}</span>
-								<span class="movement" title={`${translate(messages.stat_movement)}: ${unit.movement}/${definition.movement}`}><span class="status-icon movement-icon" class:spent={unit.movement === 0}><img src={asset('/assets/icons/icon-movement.png')} alt={translate(messages.stat_movement)} /></span></span>
+								<span class="health"><span class="status-icon health-icon"><img src={asset('/assets/icons/icon-health.webp')} alt={translate(messages.stat_health)} /></span>{unit.health}/{definition.maxHealth}</span>
+								<span class="movement" title={`${translate(messages.stat_movement)}: ${unit.movement}/${definition.movement}`}><span class="status-icon movement-icon" class:spent={unit.movement === 0}><img src={asset('/assets/icons/icon-movement.webp')} alt={translate(messages.stat_movement)} /></span></span>
 								<span class="ammunition" title={`${translate(messages.stat_attacks)}: ${unit.attacks}/${definition.attacks}`}>
-									{#each Array(definition.attacks) as _, index}<span class="status-icon ammo-icon" class:spent={index < definition.attacks - unit.attacks}><img src={asset('/assets/icons/icon-attack-capacity.png')} alt={translate(messages.stat_attacks)} /></span>{/each}
+									{#each Array(definition.attacks) as _, index}<span class="status-icon ammo-icon" class:spent={index < definition.attacks - unit.attacks}><img src={asset('/assets/icons/icon-attack-capacity.webp')} alt={translate(messages.stat_attacks)} /></span>{/each}
 								</span>
-								{#if definition.captures}<span class="capture" title={`${translate(messages.capture)}: ${unit.capture}`}><span class="status-icon capture-icon" class:spent={unit.capture === 0}><img src={asset('/assets/icons/icon-capture-capacity.png')} alt={translate(messages.capture)} /></span></span>{/if}
+								{#if definition.captures}<span class="capture" title={`${translate(messages.capture)}: ${unit.capture}`}><span class="status-icon capture-icon" class:spent={unit.capture === 0}><img src={asset('/assets/icons/icon-capture-capacity.webp')} alt={translate(messages.capture)} /></span></span>{/if}
 							</span>
 						</button>
 					{/each}

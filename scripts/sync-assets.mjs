@@ -36,9 +36,8 @@ for (const match of gameStyles.matchAll(/url\(['"]?(\/assets\/[^'"\s)]+)['"]?\)/
 	if (!visualAssets.includes(path.split('?')[0])) throw new Error(`Missing CSS sprite: ${path}`)
 	visualAssets.push(path)
 }
-writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify([...new Set(visualAssets.filter((path) => !path.startsWith('/assets/map-previews/')))].sort()))
+writeFileSync(join(destinationDirectory, 'preload-manifest.json'), JSON.stringify([...new Set(visualAssets.filter((path) => /^\/assets\/(units|cells|effects|icons|interface|medals)\//.test(path)))].sort()))
 
-// Reuse the canonical infantry sprite for the favicon.
-const favicon = readFileSync(new URL('../assets/units/infantry/red/infantry-red-damage-2.png.base64', import.meta.url), 'utf8').trim()
-writeFileSync(new URL('../static/favicon.png', import.meta.url), Buffer.from(favicon, 'base64'))
+// Keep the browser favicon compatible with PNG and SVG favicon clients.
+const favicon = readFileSync(new URL('../static/favicon.png', import.meta.url)).toString('base64')
 writeFileSync(new URL('../static/favicon.svg', import.meta.url), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><image width="128" height="128" preserveAspectRatio="xMidYMid meet" style="image-rendering:pixelated" href="data:image/png;base64,${favicon}"/></svg>`)

@@ -11,27 +11,28 @@ export default defineConfig(({ command, isPreview }) => {
 	const dev = command === 'serve' && !isPreview
 	const devOutdir = './src/lib/paraglide-dev'
 	return {
-	resolve: { alias: dev ? { '#lib/paraglide/messages.js': fileURLToPath(new URL(devOutdir + '/messages.js', import.meta.url)) } : {} },
-	plugins: [
-		paraglideVitePlugin(dev ? { ...paraglideConfig, outdir: devOutdir, outputStructure: 'locale-modules', emitTsDeclarations: false } : paraglideConfig),
-		sveltekit({
-			compilerOptions: { runes: true },
-			adapter: adapter(),
-			paths: { base: (process.env.BASE_PATH || '') as '' | `/${string}` },
-			csp: {
-				mode: 'auto',
-				directives: {
-					'default-src': ['self'],
-					'connect-src': ['self', 'wss://0.peerjs.com', 'https://*.metered.live', 'https://queue.simpleanalyticscdn.com'],
-					'script-src': ['self', 'https://scripts.simpleanalyticscdn.com'],
-					'style-src': ['self', 'unsafe-inline'],
-					'img-src': ['self', 'data:', 'https://queue.simpleanalyticscdn.com'],
-					'object-src': ['none'],
-					'base-uri': ['self'],
-					'form-action': ['self']
+		resolve: { alias: dev ? { '#lib/paraglide/messages.js': fileURLToPath(new URL(devOutdir + '/messages.js', import.meta.url)) } : undefined },
+		plugins: [
+			paraglideVitePlugin(dev ? { ...paraglideConfig, outdir: devOutdir, outputStructure: 'locale-modules', emitTsDeclarations: false } : paraglideConfig),
+			sveltekit({
+				compilerOptions: { runes: true },
+				adapter: adapter(),
+				inlineStyleThreshold: 3200,
+				paths: { base: (process.env.BASE_PATH || '') as '' | `/${string}` },
+				csp: {
+					mode: 'auto',
+					directives: {
+						'default-src': ['self'],
+						'connect-src': ['self', 'wss://0.peerjs.com', 'https://*.metered.live', 'https://queue.simpleanalyticscdn.com'],
+						'script-src': ['self', 'https://scripts.simpleanalyticscdn.com'],
+						'style-src': ['self', 'unsafe-inline'],
+						'img-src': ['self', 'data:', 'https://queue.simpleanalyticscdn.com'],
+						'object-src': ['none'],
+						'base-uri': ['self'],
+						'form-action': ['self']
+					}
 				}
-			}
-		})
-	]
-}
+			})
+		]
+	}
 })

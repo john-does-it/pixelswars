@@ -24,7 +24,7 @@
 
 {#snippet sprite(name: string, x: number, y: number, scale: number, duration: number, delay = 0)}
 	<span class="effect-sprite {name}" style:left={`${x * 100}%`} style:top={`${y * 100}%`} style:width={`${scale * 100}%`} style:height={`${scale * 100}%`} style:--duration={`${duration}ms`} style:--delay={`${delay}ms`}>
-		<img src={asset(`/assets/effects/${name}.png`)} alt="" />
+		<img src={asset(`/assets/effects/${name}.webp`)} alt="" />
 	</span>
 {/snippet}
 

@@ -1,5 +1,31 @@
 import { test, expect } from '@playwright/test'
 
+test('the first map paints before hydration and keeps the same image when browsing becomes available', async ({ page }) => {
+	let release!: () => void
+	const paused = new Promise<void>((resolve) => (release = resolve))
+	await page.route('**/_app/immutable/entry/start*.js', async (route) => {
+		await paused
+		await route.continue()
+	})
+	const previews = new Set<string>()
+	page.on('request', (request) => {
+		if (request.url().includes('/assets/map-previews/')) previews.add(request.url())
+	})
+	await page.goto('/?size=XS', { waitUntil: 'commit' })
+	const image = page.locator('.featured picture img')
+	let first: string
+	try {
+		await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0)
+		await expect(page.locator('.view-toggle')).toBeDisabled()
+		first = await image.evaluate((node: HTMLImageElement) => node.currentSrc)
+	} finally {
+		release()
+	}
+	await expect(page.locator('.view-toggle')).toBeEnabled()
+	await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.currentSrc)).toBe(first)
+	expect([...previews]).toEqual([first])
+})
+
 test('action buttons keep the same gap side by side and when stacked', async ({ page, isMobile }) => {
 	await page.setViewportSize({ width: isMobile ? 320 : 1280, height: 900 })
 	await page.goto('/')
@@ -11,6 +37,8 @@ test('action buttons keep the same gap side by side and when stacked', async ({ 
 	expect(gap).toBeCloseTo(12, 0)
 
 	if (!isMobile) {
+		await page.locator('#editor-title').scrollIntoViewIfNeeded()
+		await expect(page.locator('.compact-actions')).toBeVisible()
 		const [reset, importMap] = await page.locator('.compact-actions button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON()))
 		expect(importMap.left - reset.right).toBeCloseTo(gap, 0)
 	}
@@ -50,10 +78,15 @@ test('the featured map fits the frame and its arrows stay anchored while browsin
 			expect(frame.width).toBe(await page.evaluate(() => document.documentElement.clientWidth))
 		} else expect(frame.x).toBeGreaterThan(0)
 		await featured.getByRole('button', { name: 'Next maps' }).scrollIntoViewIfNeeded()
-		const img = featured.locator('.map-thumbnail > img')
+		const img = featured.locator('.map-thumbnail picture > img')
 		await expect(img).toBeVisible()
 		const box = (await img.boundingBox())!
-		expect(box.width).toBeGreaterThan(Math.min(width - 50, 300))
+		const stage = (await featured.locator('.stage').boundingBox())!
+		const ratio = await img.evaluate(async (node: HTMLImageElement) => {
+			await node.decode()
+			return node.naturalWidth / node.naturalHeight
+		})
+		expect(Math.abs(box.width - Math.min(stage.width, stage.height * ratio))).toBeLessThan(1)
 		expect(box.height).toBeLessThanOrEqual(480)
 		expect(box.x).toBeGreaterThanOrEqual(0)
 		expect(box.x + box.width).toBeLessThanOrEqual(width)
@@ -75,7 +108,7 @@ test('the featured map fits the frame and its arrows stay anchored while browsin
 test('map selection is available while the preview image is loading', async ({ page }) => {
 	let release!: () => void
 	const paused = new Promise<void>((resolve) => (release = resolve))
-	await page.route('**/map-previews/*.png', async (route) => {
+	await page.route('**/map-previews/*', async (route) => {
 		await paused
 		await route.continue()
 	})
@@ -92,12 +125,12 @@ test('map selection is available while the preview image is loading', async ({ p
 
 test('switching maps never stretches the previous bitmap while the next preview is pending', async ({ page }) => {
 	await page.goto('/')
-	const preview = page.locator('.featured .map-thumbnail > img')
+	const preview = page.locator('.featured .map-thumbnail picture > img')
 	await preview.evaluate((image: HTMLImageElement) => image.decode())
 	const first = await preview.getAttribute('src')
 	let release!: () => void
 	const paused = new Promise<void>((resolve) => (release = resolve))
-	await page.route('**/map-previews/*.png', async (route) => {
+	await page.route('**/map-previews/*', async (route) => {
 		await paused
 		await route.continue()
 	})
@@ -160,7 +193,7 @@ test('swiping the carousel selects one map without opening the mode chooser', as
 test('compact editor has sprite selectors, preserves painted cells on resize, and exports', async ({ page }) => {
 	await page.goto('/')
 	const editor = page.locator('.map-editor.embedded')
-	await editor.scrollIntoViewIfNeeded()
+	await page.locator('#editor-title').scrollIntoViewIfNeeded()
 	await expect(editor.locator('.sprite-tabs button')).toHaveCount(0)
 	await expect(editor.locator('#name,#json-panel,.canvas-toolbar,.canvas-footer,.submission')).toHaveCount(0)
 	await expect(page.locator('#how-to-play')).toHaveCount(0)
@@ -227,6 +260,29 @@ test('compact editor has sprite selectors, preserves painted cells on resize, an
 	await editor.getByRole('button', { name: 'Export', exact: true }).click()
 	expect((await download).suggestedFilename()).toBe('board-15.json')
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+test('grid previews and their titles start on the same lines when map names wrap', async ({ page, isMobile }) => {
+	await page.setViewportSize({ width: isMobile ? 390 : 1490, height: 900 })
+	await page.goto('/?size=XL')
+	await page.locator('.site-navbar .language-control select').selectOption('fr')
+	await page.locator('.view-toggle').click()
+	await expect(page.locator('.grid h3', { hasText: 'Randonnée en montagne' })).toBeVisible()
+	await page.evaluate(() => document.fonts.ready.then(() => true))
+
+	const cards = await page.locator('.grid .map').evaluateAll((links) =>
+		links.map((link) => ({
+			row: link.getBoundingClientRect().top,
+			image: link.querySelector('picture img')!.getBoundingClientRect().top,
+			title: link.querySelector('h3')!.getBoundingClientRect().top
+		}))
+	)
+	expect(cards[1].row).toBe(cards[0].row)
+	for (const card of cards) {
+		const first = cards.find((item) => item.row === card.row)!
+		expect(card.image).toBeCloseTo(first.image, 0)
+		expect(card.title).toBeCloseTo(first.title, 0)
+	}
 })
 
 test('map grid shows each map once and opens the mode chooser', async ({ page }) => {

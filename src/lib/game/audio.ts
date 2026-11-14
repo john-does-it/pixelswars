@@ -4,9 +4,7 @@ import { unitTypes } from './catalog.ts'
 
 import type { AudioController, Player } from './types.ts'
 
-const infantrySelectionSounds = ['infantry-voice-1', 'infantry-voice-2', 'infantry-voice-3', 'infantry-voice-4', 'infantry-voice-5', 'infantry-voice-6']
-
-const selectionSounds = new Set(['infantry', ...infantrySelectionSounds, ...Object.values(unitTypes).map((unit) => unit.selectSound)])
+const selectionSounds = new Set(Object.values(unitTypes).map((unit) => unit.selectSound))
 
 export function createAudio(): AudioController {
 	const tracks = new Map<string, HTMLAudioElement>()
@@ -37,8 +35,8 @@ export function createAudio(): AudioController {
 			if (!enabled) for (const [name, track] of tracks) if (selectionSounds.has(name)) track.pause()
 		},
 		sound(name: string) {
+			if (name === 'infantry') name = unitTypes.infantry.selectSound
 			if (!unitSelectionEnabled && selectionSounds.has(name)) return
-			if (name === 'infantry' || name === infantrySelectionSounds[0]) name = infantrySelectionSounds[Math.floor(Math.random() * infantrySelectionSounds.length)]!
 			playTrack(getTrack(name), 0.5)
 		},
 		music(enabled: boolean, player: Player) {

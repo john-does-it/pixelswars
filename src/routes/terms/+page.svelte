@@ -28,6 +28,7 @@
 	<section>
 		<h2>{translate(messages.legal_online_title)}</h2>
 		<p>{translate(messages.legal_online)}</p>
+		<p>{translate(messages.online_privacy_notice)} {translate(messages.online_trusted_invites)}</p>
 		<p>{translate(messages.legal_shared)}</p>
 		<p>{translate(messages.legal_online_map)}</p>
 		<p>{translate(messages.legal_limits)}</p>

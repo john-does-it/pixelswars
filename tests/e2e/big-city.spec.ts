@@ -14,8 +14,8 @@ test('the five approved maps render their neutral big-city objectives', async ({
 		for (const field of await fields.all()) {
 			await expect(field).toHaveAttribute('aria-label', /Big city/)
 			await expect(field).not.toHaveClass(/-capturedby|-halfcaptured/)
-			await expect(field).toHaveCSS('background-image', /cell-big-city-on-grass@2x\.png/)
-			await expect(field.locator('.building-lights')).toHaveCSS('background-image', /cell-big-city-on-grass-light-on@2x\.png/)
+			await expect(field).toHaveCSS('background-image', /cell-big-city-on-grass@2x\.webp/)
+			await expect(field.locator('.building-lights')).toHaveCSS('background-image', /cell-big-city-on-grass-light-on@2x\.webp/)
 		}
 	}
 })
@@ -48,7 +48,7 @@ test('big cities appear in the localized catalog and every capture sprite loads'
 			for (const className of captureClasses.split(' ').filter(Boolean)) element.classList.add(className)
 			return getComputedStyle(element).backgroundImage.slice(5, -2)
 		}, classes)
-		expect(spriteUrl).toContain(`/assets/cells/buildings/cell-big-city-on-grass${suffix.replace('halfcaptured', 'half-captured')}@2x.png`)
+		expect(spriteUrl).toContain(`/assets/cells/buildings/cell-big-city-on-grass${suffix.replace('halfcaptured', 'half-captured')}@2x.webp`)
 		for (const url of [spriteUrl, spriteUrl.replace('cell-big-city-on-grass', 'cell-big-city-on-grass-light-on')]) {
 			const loaded = await page.evaluate(async (url) => {
 				const image = new Image()

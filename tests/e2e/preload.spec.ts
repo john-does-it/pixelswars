@@ -2,6 +2,58 @@ import { test, expect } from '@playwright/test'
 import { createServer, request as httpRequest } from 'node:http'
 import type { AddressInfo } from 'node:net'
 
+declare global {
+	interface Window {
+		observeSpriteDecode(path: string, priority: string): Promise<void>
+	}
+}
+
+test('the battlefield waits for damage and capture sprites while the rest of the library decodes in parallel', async ({ page }) => {
+	const damage = '/assets/units/infantry/blue/infantry-blue-damage-4.webp'
+	const capture = '/assets/cells/buildings/cell-factory-on-grass-half-captured@2x.webp'
+	const medal = '/assets/medals/medal-onliner.webp'
+	const started = new Map<string, string>()
+	const decoded = new Set<string>()
+	const release = new Map<string, () => void>()
+	const gates = new Map([damage, capture, medal].map((path) => [path, new Promise<void>((resolve) => release.set(path, resolve))]))
+
+	await page.exposeFunction('observeSpriteDecode', async (path: string, priority: string) => {
+		started.set(path, priority)
+		await gates.get(path)
+		decoded.add(path)
+	})
+	await page.addInitScript(() => {
+		const decode = HTMLImageElement.prototype.decode
+		HTMLImageElement.prototype.decode = async function () {
+			await decode.call(this)
+			const { pathname, search } = new URL(this.src)
+			await window.observeSpriteDecode(pathname + search, this.fetchPriority)
+		}
+	})
+	try {
+		await page.goto('/play/1/', { waitUntil: 'domcontentloaded' })
+		await expect.poll(() => [started.get(damage), started.get(capture), started.get(medal)]).toEqual(['high', 'high', 'low'])
+		const loading = page.locator('.game-shell[aria-busy="true"]')
+		await expect(loading).toBeVisible()
+		release.get(damage)!()
+		await expect.poll(() => decoded.has(damage)).toBe(true)
+		await expect(loading).toBeVisible()
+		release.get(capture)!()
+		await expect(page.locator('[data-cell]')).toHaveCount(64)
+		await page.locator('[data-cell="1"]').click()
+		await page.locator('[data-cell="9"]').click()
+		await page.locator('[data-cell="8"]').click()
+		await page.getByRole('button', { name: 'Capture', exact: true }).click()
+		await expect(page.locator('[data-cell="8"]')).toHaveClass(/-halfcaptured/)
+		expect(decoded.has(medal)).toBe(false)
+		release.get(medal)!()
+		const paths: string[] = await (await page.request.get('/assets/preload-manifest.json')).json()
+		await expect.poll(() => paths.filter((path) => !decoded.has(path))).toEqual([])
+	} finally {
+		for (const unblock of release.values()) unblock()
+	}
+})
+
 test('preloading revalidates a cached manifest after sprites are renamed', async ({ page, baseURL }) => {
 	test.setTimeout(60000)
 	let outdated = true

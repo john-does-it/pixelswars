@@ -1,5 +1,9 @@
 type Preview = { id: string; cols: number; rows: number; playable: boolean }
 
+export function mapSize(cells: number) {
+	return cells <= 80 ? 'XS' : cells <= 120 ? 'S' : cells <= 160 ? 'M' : cells <= 200 ? 'L' : 'XL'
+}
+
 export function carouselOrder<T extends Preview>(maps: T[], ranks: ReadonlyMap<string, number>, width: number, height: number): T[] {
 	// Ranks are drawn once per visit. Maps added to the library later join the end.
 	const order = [...maps].sort((a, b) => (ranks.get(a.id) ?? 1) - (ranks.get(b.id) ?? 1))
