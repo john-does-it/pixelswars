@@ -28,14 +28,14 @@
 {#snippet terrainContent(previewCell: Cell | undefined)}
 	{#if previewCell}
 		<StatDetails title={previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)} stats={terrainStats(previewCell)}>
-			{#snippet sprite()}<TerrainIcon cell={previewCell} size={64} />{/snippet}
+			{#snippet sprite()}<TerrainIcon cell={previewCell} size={44} />{/snippet}
 		</StatDetails>
 	{:else}<p>{translate(messages.inspect_hint)}</p>{/if}
 {/snippet}
 
 {#snippet unitContent(previewUnit: Unit)}
 	<StatDetails title={unitName(previewUnit.type)} stats={statsFor(previewUnit)}>
-		{#snippet sprite()}<Sprite src={unitSprite(previewUnit)} size="m" />{/snippet}
+		{#snippet sprite()}<Sprite src={unitSprite(previewUnit)} size={44} />{/snippet}
 	</StatDetails>
 	{#if unitTypes[previewUnit.type].capacity}
 		<div class="passenger-details">

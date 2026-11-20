@@ -29,7 +29,7 @@
 		font-size: 16px;
 		color: var(--site-plum);
 	}
-	@media (max-width: 900px) {
+	@media (max-width: 900px), (max-height: 800px) {
 		.summary-content {
 			padding-block: 8px;
 		}

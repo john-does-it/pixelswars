@@ -36,7 +36,7 @@
 	<button
 		class="overview"
 		aria-label={translate(messages.minimap_navigation)}
-		style:width={`min(110px, ${(72 * gameState.cols) / gameState.rows}px)`}
+		style:width={`min(96px, ${(48 * gameState.cols) / gameState.rows}px)`}
 		onpointerdown={(event) => {
 			if (event.button !== 0) return
 			dragging = true
@@ -77,16 +77,29 @@
 		display: grid;
 		place-items: center;
 		flex: none;
+		min-width: 44px;
+		min-height: 44px;
 	}
 	.overview {
 		position: relative;
 		display: block;
 		padding: 0;
 		min-height: 0;
+		min-width: 0;
 		border: 2px solid var(--site-plum);
 		border-radius: 0;
 		touch-action: none;
 		cursor: crosshair;
+	}
+	/* Keep a touch target even for very narrow or shallow maps. */
+	.overview::before {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: max(100%, 44px);
+		height: max(100%, 44px);
 	}
 	svg {
 		position: absolute;

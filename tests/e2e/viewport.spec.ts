@@ -56,7 +56,8 @@ test('mouse wheel zooms around its pointer and map controls stay centered below 
 	expect(after.y).toBeCloseTo(before.y, 2)
 	const zoom = await page.getByRole('button', { name: 'Zoom in', exact: true }).boundingBox()
 	const actions = await page.getByRole('button', { name: 'End round', exact: true }).boundingBox()
-	expect(zoom!.y + zoom!.height).toBeLessThan(actions!.y)
+	expect(zoom!.y + zoom!.height / 2).toBeCloseTo(actions!.y + actions!.height / 2, 0)
+	expect(zoom!.x + zoom!.width).toBeLessThan(actions!.x)
 	const minimap = (await page.locator('.minimap').boundingBox())!
 	const settings = (await page.locator('.board-zoom .options-button').boundingBox())!
 	expect((minimap.x + settings.x + settings.width) / 2).toBeCloseTo(700, 0)
@@ -108,12 +109,17 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('round and budgets share a compact header and map controls stay centered independently of zoom', async ({ page }) => {
+test('round and budgets share a compact header and responsive map controls stay stable while zooming', async ({ page }) => {
+	test.setTimeout(60000)
 	for (const size of [
 		{ width: 1440, height: 1088 },
 		{ width: 1440, height: 1087 },
 		{ width: 1920, height: 1080 },
 		{ width: 1400, height: 900 },
+		{ width: 1366, height: 768 },
+		{ width: 1100, height: 800 },
+		{ width: 1099, height: 800 },
+		{ width: 844, height: 390 },
 		{ width: 412, height: 915 },
 		{ width: 375, height: 667 },
 		{ width: 320, height: 480 }
@@ -125,7 +131,7 @@ test('round and budgets share a compact header and map controls stay centered in
 		const geometry = () =>
 			page.evaluate(() =>
 				Object.fromEntries(
-					['header', '.summary-content', '.turn-details', '.board-frame', '.board-zoom', '.zoom-controls', '.options-button', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
+					['header', '.summary-content', '.turn-details', '.board-frame', '.board-zoom', '.zoom-controls', '.options-button', '.board-actions', '.minimap', '.budgets', '.board-details', '.game-actions', '.match-status'].map((selector) => {
 						const r = document.querySelector(selector)!.getBoundingClientRect()
 						return [selector, { x: r.x, y: r.y + scrollY, width: r.width, height: r.height }]
 					})
@@ -150,18 +156,31 @@ test('round and budgets share a compact header and map controls stay centered in
 		expect(budgets.y + budgets.height).toBeLessThanOrEqual(before.header.y + before.header.height)
 		expect(frame.y).toBeGreaterThanOrEqual(budgets.y + budgets.height)
 		expect(before['.board-zoom'].y).toBeGreaterThanOrEqual(frame.y + frame.height)
-		expect(panel.y).toBeGreaterThanOrEqual(before['.board-zoom'].y + before['.board-zoom'].height)
+		expect(panel.y).toBeCloseTo(frame.y + frame.height, 0)
+		const actions = before['.game-actions'],
+			selection = before['.match-status']
+		if (size.width >= 1100) {
+			expect(settings.y + settings.height / 2).toBeCloseTo(actions.y + actions.height / 2, 0)
+			expect(selection.x + selection.width).toBeLessThan(minimap.x)
+			expect(settings.x + settings.width).toBeLessThan(actions.x)
+			expect(panel.height).toBeLessThanOrEqual(size.height >= 1088 ? 108 : 76)
+		} else {
+			expect(before['.board-zoom'].y + before['.board-zoom'].height).toBeLessThan(actions.y)
+			expect(selection.x + selection.width).toBeLessThan(actions.x)
+			expect(panel.height).toBeLessThanOrEqual(128)
+		}
+		expect(minimap.height).toBeLessThanOrEqual(52)
 		const panelInset = await page.locator('.board-actions').evaluate((element) => parseFloat(getComputedStyle(element).paddingLeft))
 		expect((minimap.x + settings.x + settings.width) / 2).toBeCloseTo(size.width / 2, 0)
 		expect(zoom.x).toBeGreaterThan(minimap.x + minimap.width)
 		expect(settings.x).toBeGreaterThan(zoom.x + zoom.width)
-		expect(settings.y + settings.height).toBeLessThanOrEqual(panel.y)
+		expect(settings.y + settings.height).toBeLessThanOrEqual(panel.y + panel.height)
 		expect(panel.width).toBe(size.width)
 		await expect(page.locator('header .options-button, header .map-name, header .turn-portrait')).toHaveCount(0)
 		await expect(page.locator('header')).toHaveCSS('border-bottom-width', '0px')
 		await expect(page.locator('.board-details')).toHaveCSS('border-top-width', '0px')
 		await expect(page.locator('.board-zoom')).toHaveCSS('padding-top', size.height >= 1088 ? '12px' : '4px')
-		await expect(page.locator('.board-actions')).toHaveCSS('padding-top', size.height >= 1088 ? '16px' : '8px')
+		await expect(page.locator('.board-actions')).toHaveCSS('padding-top', size.width < 1100 ? '0px' : size.height >= 1088 ? '16px' : '8px')
 		expect(before['.board-details'].x).toBe(0)
 		expect(before['.board-details'].width).toBe(size.width)
 		expect(before['.board-details'].y + before['.board-details'].height).toBeCloseTo(size.height, 0)
@@ -181,6 +200,32 @@ test('round and budgets share a compact header and map controls stay centered in
 				expect(after[selector].width).toBeCloseTo(before[selector].width, 0)
 				expect(after[selector].height).toBeCloseTo(before[selector].height, 0)
 			}
+		}
+	}
+})
+
+test('translated capture actions fit on one row without reducing the battlefield', async ({ page, context, baseURL }) => {
+	for (const locale of ['fr', 'de']) {
+		await context.addCookies([{ name: 'pixelswars-settings', value: encodeURIComponent(JSON.stringify({ locale })), url: baseURL! }])
+		for (const width of [320, 375, 1100]) {
+			await page.setViewportSize({ width, height: 768 })
+			await page.goto('/play/13/')
+			await expect(page.locator('dialog.turn-transition')).toHaveCount(0)
+			await expect(page.locator('.board')).toBeVisible()
+			const before = (await page.locator('.board-frame').boundingBox())!
+			await page.locator('[data-cell="1"]').click()
+			await page.locator('[data-cell="11"]').click()
+			const buttons = page.locator('.action-controls button')
+			await expect(buttons).toHaveCount(4)
+			const positions = await buttons.evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON()))
+			for (const position of positions) {
+				expect(position.width).toBeGreaterThanOrEqual(44)
+				expect(position.height).toBeGreaterThanOrEqual(44)
+				expect(position.y).toBeCloseTo(positions[0].y, 0)
+				expect(position.right).toBeLessThanOrEqual(width)
+			}
+			expect((await page.locator('.selected-unit-strip').boundingBox())!.x + 44).toBeLessThan(positions[0].x)
+			expect((await page.locator('.board-frame').boundingBox())!.height).toBeCloseTo(before.height, 0)
 		}
 	}
 })

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { asset } from '#lib/game/asset-path.js'
-	let { src, alt = '', size = 'm', lazy = false }: { src: string; alt?: string; size?: 's' | 'm' | 'l' | 'xl'; lazy?: boolean } = $props()
+	let { src, alt = '', size = 'm', lazy = false }: { src: string; alt?: string; size?: 's' | 'm' | 'l' | 'xl' | number; lazy?: boolean } = $props()
 </script>
 
-<img class="sprite" class:s={size === 's'} class:m={size === 'm'} class:l={size === 'l'} class:xl={size === 'xl'} src={asset(src)} {alt} loading={lazy ? 'lazy' : 'eager'} draggable="false" />
+<img class="sprite" class:s={size === 's'} class:m={size === 'm'} class:l={size === 'l'} class:xl={size === 'xl'} style:--sprite-size={typeof size === 'number' ? `${size}px` : undefined} src={asset(src)} {alt} loading={lazy ? 'lazy' : 'eager'} draggable="false" />
 
 <style>
 	.sprite {

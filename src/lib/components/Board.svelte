@@ -12,7 +12,7 @@
 	import type { MapCamera } from '#lib/game/map-camera.js'
 	import type { Snippet } from 'svelte'
 
-	let { game, name, aiMode = false, camera = $bindable(), boardDetails, cellSize, onkeydown, onoptions }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void; onoptions?: () => void } = $props()
+	let { game, name, aiMode = false, camera = $bindable(), boardDetails, cellSize, onkeydown, onoptions }: { game: GameController; name: string; aiMode?: boolean; camera?: MapCamera; boardDetails?: Snippet<[Snippet]>; cellSize?: number; onkeydown?: (event: KeyboardEvent) => void; onoptions?: () => void } = $props()
 	let boardElement = $state<HTMLElement>()
 	let hadSelection = false
 	const rangeClipId = $props.id()

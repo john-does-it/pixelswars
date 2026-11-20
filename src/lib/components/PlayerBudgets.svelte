@@ -11,7 +11,7 @@
 
 <div class="budgets">
 	{#each players as player}
-		<span>
+		<span class:current={state.player === player} aria-current={state.player === player ? 'true' : undefined}>
 			<span class="player-name" title={matchPlayerName(player, aiMode, state.network?.player)} class:player-one={player === 1} class:player-two={player === 2}>{matchPlayerName(player, aiMode, state.network?.player)}</span>
 			<b>{amounts.format(state.money[player])} $</b>
 			<span class="income" title={translate(messages.expected_income_hint)}>{translate(messages.income_per_turn, { income: amounts.format(playerIncome(state, player)) })}</span>
@@ -40,6 +40,9 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+	.current .player-name {
+		font-weight: 700;
 	}
 	.player-one {
 		color: var(--player-blue);

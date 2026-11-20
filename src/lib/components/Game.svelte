@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { recordVictory, playerProfile } from '#lib/profile.svelte.ts'
-	import { onMount, onDestroy, untrack } from 'svelte'
+	import { onMount, onDestroy, untrack, type Snippet } from 'svelte'
 	import { resolve } from '$app/paths'
 	import { createGame } from '#lib/game/game.svelte.js'
 	import { selectedUnit, unitAt, locked } from '#lib/game/model.js'
@@ -198,11 +198,14 @@
 		<div class="field">
 			<div class="board-column">
 				<GameHeader aiMode={!!difficulty} state={game.state} />
-				{#snippet boardDetails()}
+				{#snippet boardDetails(mapControls: Snippet)}
 					<div class="board-details">
 						<div class="board-actions game-context-container">
 							{@render mapStatus()}
-							<Controls {game} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : requestRestart} saveStatus={autosave ? (saveError ?? 'saved') : undefined} />
+							{@render mapControls()}
+							<div class="game-actions">
+								<Controls {game} mapName={title} aiMode={!!difficulty} bind:showHelp bind:showPreview onrestart={connection ? undefined : requestRestart} saveStatus={autosave ? (saveError ?? 'saved') : undefined} />
+							</div>
 						</div>
 					</div>
 				{/snippet}
@@ -248,7 +251,7 @@
 		animation-play-state: paused;
 	}
 	.match-status {
-		flex: 1 1 324px;
+		grid-area: selection;
 		min-width: 0;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
@@ -272,7 +275,7 @@
 		container: unit-footer / inline-size;
 		display: flex;
 		align-items: center;
-		height: 75px;
+		height: 48px;
 		min-width: 0;
 		color: var(--color-text);
 	}
@@ -281,6 +284,7 @@
 	}
 	.game-shell {
 		--game-panel-inset: 16px;
+		--game-action-padding: 8px;
 		-webkit-user-select: none;
 		user-select: none;
 		width: 100%;
@@ -342,20 +346,39 @@
 		background: var(--site-yellow);
 	}
 	.board-actions {
-		padding: 8px var(--game-panel-inset);
-		display: flex;
-		justify-content: space-between;
+		padding: var(--game-action-padding) var(--game-panel-inset);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		grid-template-areas: 'selection map actions';
 		align-items: center;
-		gap: 16px;
-		flex-wrap: wrap;
+		column-gap: 16px;
+	}
+	.game-actions {
+		grid-area: actions;
+		min-width: 0;
+	}
+	.board-actions :global(.board-zoom) {
+		grid-area: map;
+		background: transparent;
+	}
+	@media (max-width: 1099px) {
+		.board-actions {
+			padding-top: 0;
+			grid-template-columns: minmax(44px, 1fr) auto;
+			grid-template-areas: 'map map' 'selection actions';
+			column-gap: 8px;
+			row-gap: var(--game-action-padding);
+		}
+		.board-actions :global(.board-zoom) {
+			width: calc(100% + 2 * var(--game-panel-inset));
+			margin-inline: calc(-1 * var(--game-panel-inset));
+			padding-inline: var(--game-panel-inset);
+			background: var(--site-yellow-light);
+			justify-content: space-between;
+		}
 	}
 	@media (max-width: 900px) {
-		.board-actions {
-			gap: 8px;
-			flex-wrap: nowrap;
-		}
 		.match-status {
-			flex-basis: 44px;
 			min-width: 44px;
 		}
 		.unit-footer {
@@ -363,8 +386,8 @@
 		}
 	}
 	@media (min-height: 1088px) {
-		.board-actions {
-			padding-block: 16px;
+		.game-shell {
+			--game-action-padding: 16px;
 		}
 	}
 </style>

@@ -13,7 +13,7 @@
 	import UiIcon from './UiIcon.svelte'
 	import CargoTray from './CargoTray.svelte'
 
-	let { game, aiMode = false, inactive = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart, saveStatus }: { game: GameController; aiMode?: boolean; inactive?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void; saveStatus?: string } = $props()
+	let { game, mapName, aiMode = false, inactive = false, showHelp = $bindable(false), showPreview = $bindable(false), onrestart, saveStatus }: { game: GameController; mapName?: string; aiMode?: boolean; inactive?: boolean; showHelp?: boolean; showPreview?: boolean; onrestart?: () => void; saveStatus?: string } = $props()
 	const gameState = $derived(game.state)
 	let pendingEndTurn = $state<{ game: GameController; round: number } | null>(null)
 	const selected = $derived(selectedUnit(gameState))
@@ -110,6 +110,7 @@
 {#if showHelp}
 	<HowToPlayModal keyboardLayout={gameState.keyboardLayout} onclose={() => (showHelp = false)}>
 		{#snippet actions()}
+			{#if mapName}<p class="match-map-name"><strong>{mapName}</strong></p>{/if}
 			{#if saveStatus && saveStatus !== 'saved'}<p>{translate(saveStatus === 'conflict' ? messages.save_conflict : messages.save_storage)}</p>{/if}
 			<div class="match-actions">
 				<a class="button map-selection" href={resolve('/')}>{translate(messages.choose_another_map)}</a>
@@ -129,6 +130,10 @@
 {/if}
 
 <style>
+	.match-map-name {
+		margin: 0 0 16px;
+		overflow-wrap: anywhere;
+	}
 	.confirmation-actions {
 		display: flex;
 		justify-content: flex-end;
@@ -217,7 +222,6 @@
 			min-width: 0;
 		}
 		.action-controls {
-			flex-wrap: wrap;
 			button:not(.primary) {
 				flex-basis: 36px;
 				width: 36px;
