@@ -32,6 +32,7 @@
 		align-content: start;
 		align-items: baseline;
 		column-gap: 8px;
+		row-gap: 4px;
 		min-width: 0;
 		max-width: calc(50% - 6px);
 	}
@@ -40,6 +41,11 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+	.player-name,
+	b,
+	.income {
+		text-box-trim: trim-both;
 	}
 	.current .player-name {
 		font-weight: 700;
@@ -71,11 +77,6 @@
 		.budgets > span {
 			line-height: 1.2;
 			row-gap: 2px;
-		}
-		.player-name,
-		b,
-		.income {
-			text-box-trim: trim-both;
 		}
 	}
 </style>

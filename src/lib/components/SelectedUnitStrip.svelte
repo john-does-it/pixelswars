@@ -103,8 +103,8 @@
 		white-space: nowrap;
 	}
 	.stats img {
-		width: 1em;
-		height: 1em;
+		width: 1.5em;
+		height: 1.5em;
 	}
 	@container unit-footer (max-width: 324px) {
 		.stat-maximum {
@@ -124,6 +124,21 @@
 		}
 		.details {
 			display: none;
+		}
+	}
+	@media (min-width: 901px) and (min-height: 1280px) {
+		.selected-unit-strip {
+			height: 96px;
+			align-items: flex-start;
+			gap: 12px;
+		}
+		.tile-thumbnail {
+			width: 96px;
+			height: 96px;
+		}
+		.stats {
+			flex-direction: column;
+			gap: 0;
 		}
 	}
 </style>

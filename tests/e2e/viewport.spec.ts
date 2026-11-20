@@ -112,8 +112,9 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 test('round and budgets share a compact header and responsive map controls stay stable while zooming', async ({ page }) => {
 	test.setTimeout(60000)
 	for (const size of [
+		{ width: 1440, height: 1280 },
+		{ width: 1440, height: 1279 },
 		{ width: 1440, height: 1088 },
-		{ width: 1440, height: 1087 },
 		{ width: 1920, height: 1080 },
 		{ width: 1400, height: 900 },
 		{ width: 1366, height: 768 },
@@ -149,7 +150,7 @@ test('round and budgets share a compact header and responsive map controls stay 
 		expect(before.header.y).toBe(0)
 		expect(before.header.x).toBe(0)
 		expect(before.header.width).toBe(size.width)
-		expect(before['.summary-content'].width).toBe(size.width)
+		expect(before['.summary-content'].width).toBe(Math.min(size.width, 1480))
 		expect(before['.summary-content'].x + before['.summary-content'].width / 2).toBeCloseTo(size.width / 2, 0)
 		expect(frame.y).toBeGreaterThanOrEqual(before.header.y + before.header.height)
 		expect(budgets.y).toBeGreaterThanOrEqual(before['.turn-details'].y + before['.turn-details'].height)
@@ -163,7 +164,7 @@ test('round and budgets share a compact header and responsive map controls stay 
 			expect(settings.y + settings.height / 2).toBeCloseTo(actions.y + actions.height / 2, 0)
 			expect(selection.x + selection.width).toBeLessThan(minimap.x)
 			expect(settings.x + settings.width).toBeLessThan(actions.x)
-			expect(panel.height).toBeLessThanOrEqual(size.height >= 1088 ? 108 : 76)
+			expect(panel.height).toBeLessThanOrEqual(size.height >= 1280 ? 128 : 76)
 		} else {
 			expect(before['.board-zoom'].y + before['.board-zoom'].height).toBeLessThan(actions.y)
 			expect(selection.x + selection.width).toBeLessThan(actions.x)
@@ -175,12 +176,13 @@ test('round and budgets share a compact header and responsive map controls stay 
 		expect(zoom.x).toBeGreaterThan(minimap.x + minimap.width)
 		expect(settings.x).toBeGreaterThan(zoom.x + zoom.width)
 		expect(settings.y + settings.height).toBeLessThanOrEqual(panel.y + panel.height)
-		expect(panel.width).toBe(size.width)
+		expect(panel.width).toBe(Math.min(size.width, 1480))
+		expect(panel.x + panel.width / 2).toBeCloseTo(size.width / 2, 0)
 		await expect(page.locator('header .options-button, header .map-name, header .turn-portrait')).toHaveCount(0)
 		await expect(page.locator('header')).toHaveCSS('border-bottom-width', '0px')
 		await expect(page.locator('.board-details')).toHaveCSS('border-top-width', '0px')
-		await expect(page.locator('.board-zoom')).toHaveCSS('padding-top', size.height >= 1088 ? '12px' : '4px')
-		await expect(page.locator('.board-actions')).toHaveCSS('padding-top', size.width < 1100 ? '0px' : size.height >= 1088 ? '16px' : '8px')
+		await expect(page.locator('.board-zoom')).toHaveCSS('padding-top', size.height >= 1280 ? '12px' : '4px')
+		await expect(page.locator('.board-actions')).toHaveCSS('padding-top', size.width < 1100 ? '0px' : size.height >= 1280 ? '16px' : '8px')
 		expect(before['.board-details'].x).toBe(0)
 		expect(before['.board-details'].width).toBe(size.width)
 		expect(before['.board-details'].y + before['.board-details'].height).toBeCloseTo(size.height, 0)
@@ -191,7 +193,9 @@ test('round and budgets share a compact header and responsive map controls stay 
 		expect(rightCard.x + rightCard.width).toBeCloseTo(panel.x + panel.width - panelInset, 0)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 		await expect(page.locator('.map-space')).toHaveCSS('padding', '13px')
-		for (const name of ['Zoom in', 'Zoom out', 'Show the whole map']) {
+		// A small map can already fit at maximum zoom in a tall viewport.
+		const zoomActions = (await page.getByRole('button', { name: 'Zoom in', exact: true }).isEnabled()) ? ['Zoom in', 'Zoom out'] : ['Zoom out', 'Zoom in']
+		for (const name of [...zoomActions, 'Show the whole map']) {
 			await page.getByRole('button', { name, exact: true }).click()
 			const after = await geometry()
 			for (const selector of Object.keys(before)) {

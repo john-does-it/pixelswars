@@ -24,6 +24,10 @@
 		padding: 16px var(--game-panel-inset);
 		display: flex;
 		flex-direction: column;
+		gap: 4px;
+	}
+	.turn-details {
+		text-box-trim: trim-both;
 	}
 	.turn-details strong {
 		font-size: 16px;
@@ -37,7 +41,6 @@
 	@media (max-width: 768px) {
 		.turn-details strong {
 			line-height: 1.15;
-			text-box-trim: trim-both;
 		}
 	}
 </style>

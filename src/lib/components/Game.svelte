@@ -385,9 +385,14 @@
 			height: 44px;
 		}
 	}
-	@media (min-height: 1088px) {
+	@media (min-height: 1280px) {
 		.game-shell {
 			--game-action-padding: 16px;
+		}
+	}
+	@media (min-width: 901px) and (min-height: 1280px) {
+		.unit-footer {
+			height: 96px;
 		}
 	}
 </style>

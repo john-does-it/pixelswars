@@ -307,7 +307,7 @@
 			gap: 8px;
 		}
 	}
-	@media (min-height: 1088px) {
+	@media (min-height: 1280px) {
 		.board-zoom {
 			padding-block: 12px;
 		}
