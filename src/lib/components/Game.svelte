@@ -197,7 +197,7 @@
 		{/snippet}
 		<div class="field">
 			<div class="board-column">
-				<GameHeader name={title} aiMode={!!difficulty} state={game.state} onoptions={() => (showHelp = true)} />
+				<GameHeader aiMode={!!difficulty} state={game.state} />
 				{#snippet boardDetails()}
 					<div class="board-details">
 						<div class="board-actions game-context-container">
@@ -206,7 +206,7 @@
 						</div>
 					</div>
 				{/snippet}
-				<Board {game} aiMode={!!difficulty} name={title} {boardDetails} />
+				<Board {game} aiMode={!!difficulty} name={title} {boardDetails} onoptions={() => (showHelp = true)} />
 			</div>
 		</div>
 		{#if game.state.productionIndex !== null && !game.state.aiThinking && localTurn && (!network || network.phase === 'playing')}
@@ -339,11 +339,10 @@
 	.board-details {
 		flex: none;
 		width: 100%;
-		background: var(--site-cream);
-		border-top: var(--interface-border) solid var(--site-plum);
+		background: var(--site-yellow);
 	}
 	.board-actions {
-		padding: 16px var(--game-panel-inset);
+		padding: 8px var(--game-panel-inset);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -352,7 +351,6 @@
 	}
 	@media (max-width: 900px) {
 		.board-actions {
-			padding: 6px var(--game-panel-inset);
 			gap: 8px;
 			flex-wrap: nowrap;
 		}
@@ -362,6 +360,11 @@
 		}
 		.unit-footer {
 			height: 44px;
+		}
+	}
+	@media (min-height: 1088px) {
+		.board-actions {
+			padding-block: 16px;
 		}
 	}
 </style>

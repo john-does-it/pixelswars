@@ -38,10 +38,8 @@ test('income remains readable beside both budgets on narrow screens', async ({ p
 	await expect(page.locator('.budgets .income')).toHaveCount(2)
 	for (const width of [1400, 769, 768, 393, 320]) {
 		await page.setViewportSize({ width, height: 850 })
-		const portrait = page.locator('.turn-portrait')
-		await expect(portrait).toHaveCSS('width', width <= 768 ? '40px' : '64px')
-		await expect(portrait).toHaveCSS('height', width <= 768 ? '40px' : '64px')
-		await expect(page.locator('.turn-details strong')).toHaveCSS('font-size', width <= 768 ? '16px' : '20px')
+		await expect(page.locator('header .turn-portrait, header .map-name')).toHaveCount(0)
+		await expect(page.locator('.turn-details strong')).toHaveCSS('font-size', '16px')
 		for (const income of await page.locator('.budgets .income').all()) {
 			await expect(income).toHaveText(/^\+[\d,\s]+ \$\/turn$/)
 			const bounds = (await income.boundingBox())!

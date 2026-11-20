@@ -16,7 +16,7 @@
 	const unit = $derived(cell && unitAt(state, cell.index))
 
 	function terrainStats(previewCell: Cell): StatItem[] {
-		return [{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'blocker' ? '∞' : previewCell.cost }, { icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }, ...(buildingIncome(previewCell.building) ? [{ icon: 'icon-money', label: translate(messages.stat_income), value: `${buildingIncome(previewCell.building)}$` }] : [])]
+		return [{ icon: 'icon-movement', label: translate(messages.movement_cost), value: previewCell.terrain === 'blocker' ? '∞' : previewCell.cost }, { icon: 'icon-defense', label: translate(messages.terrain_defense), value: previewCell.defense }, ...(buildingIncome(previewCell.building) ? [{ icon: 'icon-money', label: translate(messages.stat_income), value: `${buildingIncome(previewCell.building)}$` }] : []), ...(previewCell.building ? [{ icon: previewCell.owner ? `stats/icon-capture-${previewCell.owner === 1 ? 'blue' : 'red'}` : 'icon-capture-capacity', label: translate(messages.stat_capture), value: `${previewCell.capturePoints}/20`, testId: 'preview-capture' }] : [])]
 	}
 	function statsFor(currentUnit: Unit): StatItem[] {
 		const definition = unitTypes[currentUnit.type]
@@ -30,11 +30,6 @@
 		<StatDetails title={previewCell.building ? buildingName(previewCell.building) : terrainName(previewCell.terrain)} stats={terrainStats(previewCell)}>
 			{#snippet sprite()}<TerrainIcon cell={previewCell} size={64} />{/snippet}
 		</StatDetails>
-		{#if previewCell.building}
-			<p class="building-status">
-				<span>{translate(messages.capture_points, { points: previewCell.capturePoints })}</span>
-			</p>
-		{/if}
 	{:else}<p>{translate(messages.inspect_hint)}</p>{/if}
 {/snippet}
 
@@ -117,10 +112,5 @@
 	}
 	p {
 		margin: 8px 0 0;
-	}
-	.building-status {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
 	}
 </style>

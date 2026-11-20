@@ -18,6 +18,10 @@ The other `cell-water-junction-*` variants retain the original 250 × 250 canvas
 | `temp/` | Incoming artwork, excluded from synchronization and preloading |
 
 Assets are organized by their purpose, regardless of the design tool used to create them.
+The blue and red capture flags in `icons/stats/` are lossless WebP conversions of
+[the original Figma sprites](https://www.figma.com/design/qXf7Ow0SFObOF7z0Q8dyLo/Pixel-s-War?node-id=3028-251)
+(`3028:411` blue, `3028:269` red). Building statistics use the owner's flag;
+neutral buildings keep the white capture icon.
 `src/lib/game/asset-aliases.json` maps stable gameplay paths to runtime filenames via
 `asset-path.ts`. Terrain CSS also references runtime paths directly. Update both when
 renaming sprites. The alias layer preserves existing gameplay naming conventions.

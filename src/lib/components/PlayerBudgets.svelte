@@ -24,8 +24,6 @@
 		display: flex;
 		justify-content: space-between;
 		gap: 12px;
-		padding-top: 10px;
-		border-top: 1px solid var(--color-border);
 		flex: none;
 	}
 	.budgets > span {
@@ -64,7 +62,6 @@
 	@media (max-width: 900px) {
 		.budgets {
 			gap: 8px;
-			padding-top: 6px;
 		}
 	}
 	@media (max-width: 768px) {

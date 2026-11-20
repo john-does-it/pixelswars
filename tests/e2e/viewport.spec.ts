@@ -33,7 +33,7 @@ test('small screens keep the selected unit above actions without a floating prev
 	}
 })
 
-test('mouse wheel zooms around its pointer and zoom controls stay right-aligned below the board', async ({ page }) => {
+test('mouse wheel zooms around its pointer and map controls stay centered below the board', async ({ page }) => {
 	await page.setViewportSize({ width: 1400, height: 900 })
 	await page.goto('/play/12/')
 	await expect(page.locator('dialog.turn-transition')).toBeVisible()
@@ -57,8 +57,9 @@ test('mouse wheel zooms around its pointer and zoom controls stay right-aligned 
 	const zoom = await page.getByRole('button', { name: 'Zoom in', exact: true }).boundingBox()
 	const actions = await page.getByRole('button', { name: 'End round', exact: true }).boundingBox()
 	expect(zoom!.y + zoom!.height).toBeLessThan(actions!.y)
-	const controls = (await page.locator('.zoom-controls').boundingBox())!
-	expect(controls.x + controls.width).toBeCloseTo(actions!.x + actions!.width, 0)
+	const minimap = (await page.locator('.minimap').boundingBox())!
+	const settings = (await page.locator('.board-zoom .options-button').boundingBox())!
+	expect((minimap.x + settings.x + settings.width) / 2).toBeCloseTo(700, 0)
 	await expect(page.locator('html')).toHaveCSS('scrollbar-width', 'none')
 	await viewport.evaluate((element) => element.scrollTo({ left: 0, top: 0 }))
 	const zoomedWidth = (await page.locator('.board').boundingBox())!.width
@@ -91,11 +92,14 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(inspect.locator('.terrain-icon')).toHaveCSS('background-image', await page.locator('[data-cell="9"]').evaluate((el) => getComputedStyle(el).backgroundImage))
 	await inspect.click()
 	await expect(dialog.getByRole('heading', { name: 'Hospital', exact: true })).toBeVisible()
+	await expect(dialog.getByTestId('preview-capture')).toHaveText('20/20')
+	await expect(dialog.locator('.terrain-details dt').last()).toHaveText('Capture')
 	await dialog.getByRole('button', { name: 'Close', exact: true }).click()
 	await page.locator('[data-cell="30"]').click()
 	await expect(inspect.locator('img.sprite')).toHaveCount(0)
 	await inspect.click()
 	await expect(dialog.getByTestId('preview-health')).toHaveCount(0)
+	await expect(dialog.getByTestId('preview-capture')).toHaveCount(0)
 	await page.keyboard.press('Escape')
 	await page.locator('[data-cell="63"]').click()
 	await inspect.click()
@@ -104,11 +108,14 @@ test('tile thumbnail opens unit and terrain details on demand without changing s
 	await expect(page.locator('.tile-preview')).toHaveCount(0)
 })
 
-test('budgets sit below the summary in its panel and controls stay aligned independently of map zoom', async ({ page }) => {
+test('round and budgets share a compact header and map controls stay centered independently of zoom', async ({ page }) => {
 	for (const size of [
+		{ width: 1440, height: 1088 },
+		{ width: 1440, height: 1087 },
 		{ width: 1920, height: 1080 },
 		{ width: 1400, height: 900 },
 		{ width: 412, height: 915 },
+		{ width: 375, height: 667 },
 		{ width: 320, height: 480 }
 	]) {
 		await page.setViewportSize(size)
@@ -118,7 +125,7 @@ test('budgets sit below the summary in its panel and controls stay aligned indep
 		const geometry = () =>
 			page.evaluate(() =>
 				Object.fromEntries(
-					['header', '.summary-content', '.summary-row', '.board-frame', '.board-zoom', '.zoom-controls', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
+					['header', '.summary-content', '.turn-details', '.board-frame', '.board-zoom', '.zoom-controls', '.options-button', '.board-actions', '.minimap', '.budgets', '.board-details'].map((selector) => {
 						const r = document.querySelector(selector)!.getBoundingClientRect()
 						return [selector, { x: r.x, y: r.y + scrollY, width: r.width, height: r.height }]
 					})
@@ -128,6 +135,7 @@ test('budgets sit below the summary in its panel and controls stay aligned indep
 		const frame = before['.board-frame'],
 			panel = before['.board-actions'],
 			zoom = before['.zoom-controls'],
+			settings = before['.options-button'],
 			minimap = before['.minimap'],
 			budgets = before['.budgets']
 		expect(frame.x).toBe(0)
@@ -135,18 +143,25 @@ test('budgets sit below the summary in its panel and controls stay aligned indep
 		expect(before.header.y).toBe(0)
 		expect(before.header.x).toBe(0)
 		expect(before.header.width).toBe(size.width)
-		expect(before['.summary-content'].width).toBeLessThanOrEqual(1480)
+		expect(before['.summary-content'].width).toBe(size.width)
 		expect(before['.summary-content'].x + before['.summary-content'].width / 2).toBeCloseTo(size.width / 2, 0)
 		expect(frame.y).toBeGreaterThanOrEqual(before.header.y + before.header.height)
-		expect(budgets.y).toBeGreaterThanOrEqual(before['.summary-row'].y + before['.summary-row'].height)
+		expect(budgets.y).toBeGreaterThanOrEqual(before['.turn-details'].y + before['.turn-details'].height)
 		expect(budgets.y + budgets.height).toBeLessThanOrEqual(before.header.y + before.header.height)
 		expect(frame.y).toBeGreaterThanOrEqual(budgets.y + budgets.height)
 		expect(before['.board-zoom'].y).toBeGreaterThanOrEqual(frame.y + frame.height)
 		expect(panel.y).toBeGreaterThanOrEqual(before['.board-zoom'].y + before['.board-zoom'].height)
 		const panelInset = await page.locator('.board-actions').evaluate((element) => parseFloat(getComputedStyle(element).paddingLeft))
-		expect(minimap.x).toBeCloseTo(panel.x + panelInset, 0)
-		expect(zoom.x + zoom.width).toBeCloseTo(panel.x + panel.width - panelInset, 0)
-		expect(panel.width).toBeLessThanOrEqual(1480)
+		expect((minimap.x + settings.x + settings.width) / 2).toBeCloseTo(size.width / 2, 0)
+		expect(zoom.x).toBeGreaterThan(minimap.x + minimap.width)
+		expect(settings.x).toBeGreaterThan(zoom.x + zoom.width)
+		expect(settings.y + settings.height).toBeLessThanOrEqual(panel.y)
+		expect(panel.width).toBe(size.width)
+		await expect(page.locator('header .options-button, header .map-name, header .turn-portrait')).toHaveCount(0)
+		await expect(page.locator('header')).toHaveCSS('border-bottom-width', '0px')
+		await expect(page.locator('.board-details')).toHaveCSS('border-top-width', '0px')
+		await expect(page.locator('.board-zoom')).toHaveCSS('padding-top', size.height >= 1088 ? '12px' : '4px')
+		await expect(page.locator('.board-actions')).toHaveCSS('padding-top', size.height >= 1088 ? '16px' : '8px')
 		expect(before['.board-details'].x).toBe(0)
 		expect(before['.board-details'].width).toBe(size.width)
 		expect(before['.board-details'].y + before['.board-details'].height).toBeCloseTo(size.height, 0)

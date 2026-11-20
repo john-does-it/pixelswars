@@ -8,7 +8,7 @@
 	import { translate } from '#lib/i18n.svelte.js'
 	import type { GameState } from '#lib/game/types.js'
 
-	let { state: gameState, name, children, camera = $bindable(), boardDetails, cellSize }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number } = $props()
+	let { state: gameState, name, children, camera = $bindable(), boardDetails, cellSize, onoptions }: { state: GameState; name: string; children: Snippet; camera?: MapCamera; boardDetails?: Snippet; cellSize?: number; onoptions?: () => void } = $props()
 	let viewport = $state<HTMLDivElement>()
 	let mapSpace = $state<HTMLDivElement>()
 	let surface = $state<HTMLDivElement>()
@@ -238,7 +238,15 @@
 				{/each}
 			{/if}
 		</div>
-		{#if cellSize === undefined}<div class="board-zoom game-context-container"><Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} /><ZoomControls {camera} /></div>{/if}
+		{#if cellSize === undefined}
+			<div class="board-zoom game-context-container">
+				<Minimap state={gameState} visibleLeft={visible.left} visibleTop={visible.top} visibleWidth={visible.width} visibleHeight={visible.height} onseek={centerMapAt} />
+				<ZoomControls {camera} />
+				{#if onoptions}
+					<button class="options-button pixel-icon-button" aria-label={translate(messages.options_and_help)} title={translate(messages.options_and_help)} aria-haspopup="dialog" onclick={onoptions}><UiIcon name="game-settings" /></button>
+				{/if}
+			</div>
+		{/if}
 	</div>
 	{@render boardDetails?.()}
 </div>
@@ -272,11 +280,30 @@
 	}
 	.board-zoom {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
 		gap: 16px;
-		padding: 12px var(--game-panel-inset);
+		padding: 4px;
 		flex: none;
+		background: var(--site-yellow-light);
+	}
+	.options-button {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+	}
+	@media (max-width: 360px) {
+		.board-zoom {
+			gap: 8px;
+		}
+	}
+	@media (min-height: 1088px) {
+		.board-zoom {
+			padding-block: 12px;
+		}
 	}
 	.board-frame {
 		position: relative;
